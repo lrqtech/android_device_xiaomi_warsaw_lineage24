@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.sina.weibo.xml">
+
+    <app prio="100" name="com.sina.weibo" >
+        <profile name="normal">
+
+            <activity name="com.sina.weibo.wblive.activity.WBLivePublishActivity">
+            </activity>
+
+
+            <activity name="com.sina.weibo.mediaproducer.activity.StoryCameraIndependentActivity">
+            </activity>
+
+
+            <activity name="com.sina.weibo.qrcode.CaptureActivity">
+            </activity>
+
+        </profile>
+    </app>
+</policy>

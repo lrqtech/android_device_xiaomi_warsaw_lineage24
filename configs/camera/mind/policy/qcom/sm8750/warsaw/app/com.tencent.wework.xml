@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.tencent.wework.xml">
+
+    <app prio="100" name="com.tencent.wework" >
+        <profile name="normal">
+
+            <activity name="com.tencent.wemeet.sdk.meeting.inmeeting.InMeetingActivity">
+            </activity>
+
+            <activity name="com.tencent.wework.msg.controller.CustomCameraActivity">
+                <case cameraUsing="true">
+                    <action name ="cameraPreviewFps" value="30:30" />
+                </case>
+            </activity>
+        </profile>
+    </app>
+</policy>

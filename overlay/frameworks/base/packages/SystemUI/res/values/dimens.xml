@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!-- OS4 DevicesOverlay, independent of whether a software mask is drawn. -->
+    <dimen name="rounded_corner_content_padding">100px</dimen>
+    <dimen name="physical_fingerprint_sensor_center_screen_location_x">640px</dimen>
+    <dimen name="physical_fingerprint_sensor_center_screen_location_y">2082px</dimen>
+</resources>

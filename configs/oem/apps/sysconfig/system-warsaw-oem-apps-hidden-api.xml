@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<config>
+<hidden-api-whitelisted-app package="com.qualcomm.uimremoteserver" />
+<hidden-api-whitelisted-app package="com.qualcomm.uimremoteclient" />
+<hidden-api-whitelisted-app package="com.qualcomm.atfwd" />
+<hidden-api-whitelisted-app package="com.qti.phone" />
+<hidden-api-whitelisted-app package="com.qti.qualcomm.deviceinfo" />
+<hidden-api-whitelisted-app package="com.qualcomm.qti.ims" />
+<hidden-api-whitelisted-app package="com.qualcomm.qcrilmsgtunnel" />
+</config>

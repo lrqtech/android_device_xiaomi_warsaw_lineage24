@@ -1,0 +1,93 @@
+typeattribute hal_vibrator_default hal_audio_client;
+
+typeattribute hal_vibrator_default hal_vibrator;
+
+typeattribute hal_vibrator_default hal_vibrator_server;
+
+typeattribute hal_vibrator_default halclientdomain;
+
+typeattribute hal_vibrator_default halserverdomain;
+
+allow hal_vibrator_default hal_vibrator_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_vibrator_default sysfs_leds:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_vibrator_default sysfs_leds:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator_default sysfs_leds:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator_default sysfs_leds:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_vibrator_default vendor_sysfs_haptics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_vibrator_default vendor_sysfs_haptics:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator_default vendor_sysfs_haptics:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator_default vendor_sysfs_haptics:file { write lock append map open };
+
+allow hal_vibrator_default vendor_persist_haptics_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_vibrator_default vendor_persist_haptics_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator_default vendor_persist_haptics_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator_default mnt_vendor_file:dir { search };
+
+allow hal_vibrator_default property_socket:sock_file { write };
+
+allow hal_vibrator_default init:unix_stream_socket { connectto };
+
+allow hal_vibrator_default vendor_audio_prop:property_service { set };
+
+allow hal_vibrator_default vendor_audio_prop:file { read getattr map open };
+
+allow hal_vibrator_default sysfs:dir { read open };
+
+allow hal_vibrator_default sysfs_block:dir { read open };
+
+allow hal_vibrator_default sysfs_mem_sleep:dir { read open };
+
+allow hal_vibrator_default sysfs_powercap:dir { read open };
+
+allow hal_vibrator_default sysfs_thunderbolt:dir { read open };
+
+allow hal_vibrator_default sysfs_typec:dir { read open };
+
+allow hal_vibrator_default sysfs_udc:dir { read open };
+
+allow hal_vibrator_default sysfs_usb_pd:dir { read open };
+
+allow hal_vibrator_default sysfs_usbcore:dir { read open };
+
+allow hal_vibrator_default sysfs:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_block:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_mem_sleep:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_powercap:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_thunderbolt:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_typec:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_udc:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_usb_pd:file { read write getattr open };
+
+allow hal_vibrator_default sysfs_usbcore:file { read write getattr open };
+
+allow hal_vibrator_default aac_richtap_dev_device:chr_file { ioctl read write getattr map open };
+
+allow hal_vibrator_default fwk_sensor_hwservice:hwservice_manager { find };
+
+allow hal_vibrator_default mnt_vendor_file:file { read write getattr open };
+
+allow hal_vibrator_default proc_asound:dir { search };
+
+allow hal_vibrator_default vendor_sysfs_sndcard:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_vibrator_default audio_device:dir { search };
+
+allow hal_vibrator_default hal_audio_hwservice:hwservice_manager { find };

@@ -1,0 +1,3 @@
+on init
+    setprop ro.boot.vendor.qspa.modem "enabled"
+    setprop ro.boot.vendor.qspa.nav "enabled"

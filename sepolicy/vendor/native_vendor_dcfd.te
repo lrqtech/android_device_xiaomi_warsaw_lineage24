@@ -1,0 +1,57 @@
+type vendor_dcfd, domain;
+
+domain_auto_trans(init, vendor_dcfd_exec, vendor_dcfd)
+
+binder_use(vendor_dcfd)
+
+hwbinder_use(vendor_dcfd)
+
+allow vendor_dcfd vendor_dcfd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_dcfd vendor_qesd_socket:sock_file { write };
+
+allow vendor_dcfd self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dcfd anr_data_file:file { append };
+
+allow vendor_dcfd dumpstate:fd { use };
+
+allow vendor_dcfd incidentd:fd { use };
+
+allow vendor_dcfd dumpstate:fifo_file { write append };
+
+allow vendor_dcfd incidentd:fifo_file { write append };
+
+allow vendor_dcfd system_server:fifo_file { write append };
+
+allow vendor_dcfd tombstoned:unix_stream_socket { connectto };
+
+allow vendor_dcfd tombstoned:fd { use };
+
+allow vendor_dcfd tombstoned_crash_socket:sock_file { write };
+
+allow vendor_dcfd tombstone_data_file:file { append };
+
+allow vendor_dcfd sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_dcfd self:capability2 { block_suspend };
+
+allow vendor_dcfd self:cap2_userns { block_suspend };
+
+allow vendor_dcfd system_suspend_server:binder { call transfer };
+
+allow vendor_dcfd system_suspend_server:fd { use };
+
+allow vendor_dcfd system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_dcfd hwservicemanager:binder { call transfer };
+
+allow vendor_dcfd hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_dcfd hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_dcfd hal_system_suspend_service:service_manager { find };
+
+allow vendor_dcfd servicemanager:binder { call transfer };
+
+allow vendor_dcfd vendor_dcf_prop:file { read getattr map open };

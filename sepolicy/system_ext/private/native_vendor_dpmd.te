@@ -1,0 +1,122 @@
+domain_auto_trans(init, vendor_dpmd_exec, vendor_dpmd)
+
+typeattribute vendor_dpmd coredomain;
+
+typeattribute vendor_dpmd halclientdomain;
+
+typeattribute vendor_dpmd mlstrustedsubject;
+
+typeattribute vendor_dpmd netdomain;
+
+typeattribute vendor_dpmd vendor_hal_dpmqmiservice_qti_client;
+
+binder_use(vendor_dpmd)
+
+hwbinder_use(vendor_dpmd)
+
+allow vendor_dpmd vendor_dpmd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_dpmd system_file:file { getattr map execute execute_no_trans };
+
+allow vendor_dpmd vendor_dpmd_exec:file { getattr map execute execute_no_trans };
+
+allow vendor_dpmd vendor_dpmd_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_dpmd vendor_dpmd_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_dpmd proc_net:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd proc_net:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd proc_net:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd self:capability { setuid net_admin net_raw };
+
+allow vendor_dpmd netutils_wrapper:process { sigkill };
+
+allow vendor_dpmd self:capability2 { wake_alarm };
+
+allow vendor_dpmd appdomain:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd appdomain:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd appdomain:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_dpmd self:capability2 { block_suspend };
+
+allow vendor_dpmd self:cap2_userns { block_suspend };
+
+allow vendor_dpmd system_suspend_server:binder { call transfer };
+
+allow vendor_dpmd system_suspend_server:fd { use };
+
+allow vendor_dpmd system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_dpmd hwservicemanager:binder { call transfer };
+
+allow vendor_dpmd hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_dpmd hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_dpmd hal_system_suspend_service:service_manager { find };
+
+allow vendor_dpmd servicemanager:binder { call transfer };
+
+allow vendor_dpmd shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_dpmd property_socket:sock_file { write };
+
+allow vendor_dpmd init:unix_stream_socket { connectto };
+
+allow vendor_dpmd vendor_persist_dpm_prop:property_service { set };
+
+allow vendor_dpmd vendor_persist_dpm_prop:file { read getattr map open };
+
+allow vendor_dpmd self:socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd self:netlink_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd priv_app:fd { use };
+
+allow vendor_dpmd priv_app:tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd system_server:fd { use };
+
+allow vendor_dpmd system_server:tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd system_app:fd { use };
+
+allow vendor_dpmd system_app:tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd untrusted_app:fd { use };
+
+allow vendor_dpmd untrusted_app:tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd untrusted_app_25:fd { use };
+
+allow vendor_dpmd untrusted_app_25:tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd platform_app:fd { use };
+
+allow vendor_dpmd platform_app:tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd proc_net:file { write };
+
+allow vendor_dpmd self:capability { kill };
+
+allow vendor_dpmd ctl_dpmd_prop:property_service { set };
+
+allow vendor_dpmd ctl_dpmd_prop:file { read getattr map open };
+
+allow vendor_dpmd netutils_wrapper_exec:file { read getattr map execute open };
+
+allow vendor_dpmd netutils_wrapper:process { transition };
+
+allow vendor_dpmd netutils_wrapper:process { siginh rlimitinh };
+
+# Named sockets created by init for the retained conditional DPM service.
+allow vendor_dpmd vendor_dpmd_socket:sock_file rw_file_perms;

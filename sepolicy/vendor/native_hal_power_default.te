@@ -1,0 +1,15 @@
+typeattribute hal_power_default hal_power;
+
+typeattribute hal_power_default hal_power_server;
+
+typeattribute hal_power_default halclientdomain;
+
+typeattribute hal_power_default halserverdomain;
+
+typeattribute hal_power_default vendor_hal_perf_client;
+
+allow hal_power_default hal_power_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_power_default vendor_hbtp_kernel_sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_power_default dumpstate:binder { transfer };

@@ -1,0 +1,95 @@
+type hal_mimd_default, domain;
+
+domain_auto_trans(init, hal_mimd_default_exec, hal_mimd_default)
+
+typeattribute hal_mimd_default hal_mimd;
+
+typeattribute hal_mimd_default hal_mimd_server;
+
+typeattribute hal_mimd_default halserverdomain;
+
+typeattribute hal_mimd_default mlstrustedsubject;
+
+binder_use(hal_mimd_default)
+
+allow hal_mimd_default hal_mimd_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_mimd_default servicemanager:binder { call transfer };
+
+allow hal_mimd_default proc_zoneinfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_meminfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_pagetypeinfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_pressure_cpu:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_pressure_io:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_pressure_mem:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_swaps:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_vmstat:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_vmallocinfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default proc_slabinfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default sysfs_thermal:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mimd_default kernel:process { setsched };
+
+allow hal_mimd_default proc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_firmware_config:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_dirty:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_drop_caches:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_extra_free_kbytes:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_watermark_scale_factor:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_max_map_count:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_overcommit_memory:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default proc_page_cluster:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default vendor_proc_mimdlog:file { write lock append map open };
+
+allow hal_mimd_default vendor_proc_global_reclaim:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_mimdtrigger:dir { search };
+
+allow hal_mimd_default sysfs_mimdtrigger:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default hal_mimd_default:capability2 { block_suspend };
+
+allow hal_mimd_default cgroup:file { ioctl read getattr setattr lock map open watch watch_reads };
+
+allow hal_mimd_default sysfs_lru_gen_enabled:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mimd_default hal_mimd_default:capability { chown sys_nice sys_resource };

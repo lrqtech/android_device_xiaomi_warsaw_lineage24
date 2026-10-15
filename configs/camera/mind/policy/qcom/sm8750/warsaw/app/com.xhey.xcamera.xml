@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.xhey.xcamera.xml">
+
+    <app prio="100" name="com.xhey.xcamera" >
+        <profile name="normal">
+
+            <activity name="com.xhey.xcamera.ui.camera.picNew.PreviewActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

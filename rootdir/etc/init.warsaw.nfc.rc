@@ -1,0 +1,4 @@
+# Correct labels retained from builds that lacked the NFC file-context mapping.
+# The platform post-fs-data action creates /data/nfc before this partition action.
+on post-fs-data
+    restorecon_recursive /data/nfc

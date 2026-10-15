@@ -1,0 +1,31 @@
+type vendor_hal_gatekeeper_qti, domain;
+
+domain_auto_trans(init, vendor_hal_gatekeeper_qti_exec, vendor_hal_gatekeeper_qti)
+
+typeattribute vendor_hal_gatekeeper_qti hal_gatekeeper;
+
+typeattribute vendor_hal_gatekeeper_qti hal_gatekeeper_server;
+
+typeattribute vendor_hal_gatekeeper_qti halserverdomain;
+
+allow vendor_hal_gatekeeper_qti vendor_hal_gatekeeper_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_gatekeeper_qti vendor_tee_listener_prop:file { read getattr map open };
+
+allow vendor_hal_gatekeeper_qti vendor_spcom_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_gatekeeper_qti vendor_skp_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_gatekeeper_qti vendor_spss_utils_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_gatekeeper_qti vendor_sp_keymaster_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_gatekeeper_qti vendor_sp_ssr_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_gatekeeper_qti vendor_spcomlib_prop:file { read getattr map open };
+
+allow vendor_hal_gatekeeper_qti vendor_disable_spu_prop:file { read getattr map open };
+
+allow vendor_hal_gatekeeper_qti vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_gatekeeper_qti vendor_dmabuf_secure_sp_tz_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };

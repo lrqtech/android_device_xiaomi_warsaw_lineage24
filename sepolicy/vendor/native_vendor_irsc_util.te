@@ -1,0 +1,9 @@
+type vendor_irsc_util, domain;
+
+domain_auto_trans(init, vendor_irsc_util_exec, vendor_irsc_util)
+
+allow vendor_irsc_util vendor_irsc_util_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_irsc_util self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allowxperm vendor_irsc_util self:socket ioctl { 0xc300-0xc305 };

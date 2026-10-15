@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.meitu.meiyancamera.xml">
+
+    <app prio="100" name="com.meitu.meiyancamera" >
+        <profile name="normal">
+
+            <activity name="com.meitu.myxj.selfie.merge.activity.SelfieCameraActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

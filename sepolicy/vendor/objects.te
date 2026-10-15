@@ -1,0 +1,1700 @@
+type hal_micharge_service, hal_service_type, service_manager_type;
+
+type hal_visdisplaysrv_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_displayfeature_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_framemaster_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_framecapturemanager_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_imsrtp_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_telephony_service2, hal_service_type, protected_service, service_manager_type;
+
+type batterysecret_exec, exec_type, file_type, vendor_file_type;
+
+type ddr_freq_exec, exec_type, file_type, vendor_file_type;
+
+type dvs_aidl_default_exec, exec_type, file_type, vendor_file_type;
+
+type ffu_exec, exec_type, file_type, vendor_file_type;
+
+type hal_aidl_dms_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_batteryantiaging_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_cit_bluetooth_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_cit_wifi_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_cld_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_display_demura_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_dumpstate_impl_exec, exec_type, file_type, vendor_file_type;
+
+type hal_eid_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_fbo_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_idmanager_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mediaeventgatherservice_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mfidoca_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_micrtk_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_miface_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mikeybag_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mimd_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_minetaidlservice_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_miperf_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_miqms_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_misecmedia_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_misys_vendor_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_misyscore_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_miweaver_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mlipay_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mrm_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mseccam_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_mtdservice_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_otrpagent_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_ozonotify_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_seaaudio_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_swap_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_tidaservice_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_touchfeature_xiaomi_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_uniperf_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_videoservice_default_exec, exec_type, file_type, vendor_file_type;
+
+type hal_vsimapp_default_exec, exec_type, file_type, vendor_file_type;
+
+type mi_ambient_exec, exec_type, file_type, vendor_file_type;
+
+type mi_ic_exec, exec_type, file_type, vendor_file_type;
+
+type mi_ric_exec, exec_type, file_type, vendor_file_type;
+
+type mi_thermald_exec, exec_type, file_type, vendor_file_type;
+
+type minetd_exec, exec_type, file_type, vendor_file_type;
+
+type mtb_exec, exec_type, file_type, vendor_file_type;
+
+type qti_display_boot_exec, exec_type, file_type, vendor_file_type;
+
+type set_diag_state_exec, exec_type, file_type, vendor_file_type;
+
+type slad_exec, exec_type, file_type, vendor_file_type;
+
+type tpevent_exec, exec_type, file_type, vendor_file_type;
+
+type ufs_utils_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_adpl_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_adsprpcd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_audioadsprpcd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_audioftm_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_c2painternetservice_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_cdsprpcd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_cnd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_dcfd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_diag-router_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_dlsc_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_dpmd_vndr_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_dspservice_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_feature_enabler_client_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_MemHal_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_alarm_qti_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_capabilityconfigstore_qti_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_citsensorservice_xiaomi_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_display_color_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_embmssl_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_gatekeeper_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_gnss_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_keymaster_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_keymint_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_keymint_strongbox_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_minkipcbinder_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_misensor_camera_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_perf_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_poweroptservice_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_qseecom_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_qspa_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_qspmhal_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_secureprocessor_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_sensorscalibrate_qti_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_snapx_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_soter_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_srvctracker_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_trustedui_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_usb_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hal_weaver_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hexlpservice_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hlosminkdaemon_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_hostapd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_ims_dcservice_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_ims_service_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_init-qcom-sensors-sh_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_init-qti-keymaster-sh_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_irsc_util_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_edgnss_daemon_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_lowi_server_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_xtra_daemon_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_xtwifi_client_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_mbnota_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_mfp-daemon_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_mlid_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_modinstall-sh_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_nicmd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_nqnfcinfo_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_pasrmanager_memory_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_pd_mapper_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_per_mgr_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_per_proxy_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_port-bridge_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_power_off_alarm_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qccvendor_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qdcm-ss_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qlm_service_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qlogd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qmipriod_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qms_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qrtr_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qt_service_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qti_init_shell_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qti_init_shell_bg_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qti_media_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qvrd_vndr_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_qwesd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_rfs_access_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_rmt_storage_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_sensors_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_sensors_qesdk_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_sensors_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_shsusrd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_ssgqmigd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_ssgtzd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_ssr_diag_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_ssr_setup_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_subsystem_ramdump_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_sxrd_vndr_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_syshealthmon_default_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_thermal-engine_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_time_daemon_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_tlpd_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_trusteduilistener_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_vm_mgr_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_vppservice_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_wcnss_service_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_wfdhdcphalservice_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_wfdvndservice_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_wifidisplayhalservice_qti_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_wifilearnersvc_exec, exec_type, file_type, vendor_file_type;
+
+type wallpapercolor_exec, exec_type, file_type, vendor_file_type;
+
+type wdsdaemon_exec, exec_type, file_type, vendor_file_type;
+
+type wlanramdumpcollector_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_cnd_socket, file_type;
+
+type vendor_persist_rfs_file, file_type;
+
+type vendor_persist_rfs_shared_hlos_file, file_type;
+
+type vendor_hal_fingerprint_service_xiaomi, hal_service_type, service_manager_type;
+
+type vendor_fp_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_audio_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_touchfeature_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type aidlintentaware_service, hal_service_type, protected_service, service_manager_type;
+
+type thermal_data_file, data_file_type, file_type;
+
+type sysfs_pmic_pon_log, fs_type, sysfs_type;
+
+type minidump_data_file, data_file_type, file_type;
+
+type vendor_minidump_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_camera_data_file, data_file_type, file_type;
+
+type vendor_proc_vmkmsg, fs_type, proc_type;
+
+type vendor_bsp_data_log_file, data_file_type, file_type;
+
+type vendor_sysfs_xm_power, fs_type, sysfs_type;
+
+type vendor_sysfs_battery_supply, fs_type, sysfs_type;
+
+type mitee_data_file, data_file_type, file_type;
+
+type hal_postprocservice_service, hal_service_type, protected_service, service_manager_type;
+
+type mitee_client_device, dev_type, mlstrustedobject;
+
+type nvt_device, dev_type;
+
+type vendor_display_vendor_data_file, data_file_type, file_type;
+
+type vendor_qvirtmgr_exec, exec_type, file_type, system_file_type;
+
+type vendor_qvirtmgr_prop, property_type, system_property_type, system_restricted_property_type;
+
+
+type vendor_vm_qti_data_file, core_data_file_type, data_file_type, file_type, mlstrustedobject;
+
+type vendor_hal_diaghal_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_mediaeventgatherservice_service, hal_service_type, service_manager_type;
+
+type hal_seaaudio_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_system_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type hal_aidl_dms_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_mimd_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_proc_mimdlog, fs_type, proc_type;
+
+type vendor_proc_global_reclaim, fs_type, proc_type;
+
+type sysfs_mimdtrigger, fs_type, sysfs_type;
+
+type hal_uniperf_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_uniperf_debug, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_dolbyv_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type dvs_aidl_service, hal_service_type, service_manager_type;
+
+type vendor_sysfs_graphics, fs_type, sysfs_type;
+
+type vendor_xdsp_device, dev_type;
+
+type vendor_qdsp_device, dev_type, mlstrustedobject;
+
+type hal_ozonotify_hwservice, hwservice_manager_type;
+
+type hal_ozonotify_service, service_manager_type;
+
+type vendor_sysfs_displayfeature, fs_type, sysfs_type;
+
+type vendor_displayfeature_device, dev_type;
+
+type vendor_displayfeature_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_DisplayFeatureControl_service, vndservice_manager_type;
+
+type vendor_displaylog_device, dev_type;
+
+type vendor_qdisplay_service, vndservice_manager_type;
+
+type vendor_display_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_hal_display_config_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_mpctl_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_mistcdisplay_service, vndservice_manager_type;
+
+type vendor_miclstc_service, vndservice_manager_type;
+
+type vendor_hal_vnddisplayconfig_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_persist_display_file, file_type;
+
+type vendor_fitp_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_hal_hwcextension_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type migt_dev, dev_type, mlstrustedobject;
+
+type vendor_turbosched_prop, property_type, system_property_type, system_public_property_type;
+
+type touchfeature_device, dev_type;
+
+type hal_touchfeature_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_touch_hostprocess_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type sysfs_touch_hostprocess, fs_type, sysfs_type;
+
+type sysfs_tp_virtual_prox, fs_type, sysfs_type;
+
+type sysfs_touch_suspend, fs_type, sysfs_type;
+
+type proc_tp_file, fs_type, proc_type;
+
+type touchreport_exec, exec_type, file_type, vendor_file_type;
+
+type touchreport_data_file, data_file_type, file_type;
+
+type vendor_data_touchreport_file, data_file_type, file_type;
+
+type vendor_hal_perf_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_perf2_service, hal_service_type, protected_service, service_manager_type;
+
+type proc_tp_lockdown, fs_type, proc_type;
+
+type sysfs_keyboard_status, fs_type, sysfs_type;
+
+type vendor_dmabuf_system_heap_device, dev_type, dmabuf_heap_device_type, mlstrustedobject;
+
+type vendor_dmabuf_adsp_heap_device, dev_type, dmabuf_heap_device_type;
+
+type adsprpcd_file, file_type, mlstrustedobject, vendor_file_type;
+
+type vendor_adsprpc_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_persist_sensors_file, file_type;
+
+type vendor_audio_dsp_data_file, data_file_type, file_type;
+
+type vendor_ssgtzd_socket, file_type, mlstrustedobject;
+
+type vendor_ssgtzd_opener_socket, file_type, mlstrustedobject;
+
+type vendor_hal_cacert_aidlservice, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sysfs_devfreq, fs_type, sysfs_type;
+
+type vendor_sysfs_devfreq_l3cdsp, fs_type, sysfs_type;
+
+type vendor_sysfs_data, fs_type, sysfs_type;
+
+type vendor_cnd_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_cnd_data_file, data_file_type, file_type;
+
+type vendor_ipa_vendor_data_file, data_file_type, file_type;
+
+type vendor_nicmd_socket, file_type;
+
+type vendor_hal_datafactory_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_factory_aidlservice, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sysfs_ssr, fs_type, sysfs_type;
+
+type vendor_wlan_device, dev_type;
+
+type vendor_hal_diaghal_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_sysfs_soc, fs_type, sysfs_type;
+
+type vendor_sysfs_qdss_dev, fs_type, sysfs_type;
+
+type vendor_mhi_diag_device, dev_type;
+
+type vendor_dlsc_socket, file_type;
+
+type vendor_tlpd_socket, file_type;
+
+type vendor_dlsc_data_file, data_file_type, file_type;
+
+type vendor_hal_dspmanager_aidlservice, hal_service_type, service_manager_type;
+
+type vendor_persist_feature_enabler_file, file_type;
+
+type vendor_persist_data_file, file_type;
+
+type vendor_qfeatenab_client_service, vndservice_manager_type;
+
+type vendor_dmabuf_qseecom_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_dmabuf_qseecom_ta_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_dmabuf_user_contig_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_hal_alarm_qti_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_atfwd_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_adsp_sleepmon_device, dev_type;
+
+type vendor_sysfs_haptics, fs_type, sysfs_type;
+
+type vendor_persist_audio_file, file_type;
+
+type firmware_file, contextmount_type, file_type, vendor_file_type;
+
+type vendor_proc_audiod, fs_type, proc_type;
+
+type vendor_audio_data_file, data_file_type, file_type;
+
+type vendor_agm_device, dev_type;
+
+type vendor_dmabuf_system_uncached_heap_device, dev_type, dmabuf_heap_device_type, mlstrustedobject;
+
+type vendor_dmabuf_audio_ml_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_sysfs_agm, fs_type, sysfs_type;
+
+type vendor_sysfs_adsp_ssr, fs_type, sysfs_type;
+
+type vendor_qtrsdkservice_service, vndservice_manager_type;
+
+type vendor_vuidmgr_socket, file_type;
+
+type vendor_sysfs_audio, fs_type, sysfs_type;
+
+type vendor_sysfs_sndcard, fs_type, sysfs_type;
+
+type vendor_audio_ssr_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_bluetooth_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_bt_device, dev_type;
+
+type vendor_bluetooth_wifi_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_bluetooth_btadvaudio_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type bt_firmware_file, contextmount_type, file_type, vendor_file_type;
+
+type vendor_persist_bluetooth_file, file_type;
+
+type vendor_bt_data_file, data_file_type, file_type;
+
+type vendor_sysfs_diag, fs_type, sysfs_type;
+
+type vendor_diag_device, dev_type, mlstrustedobject;
+
+type vendor_ramdump_vendor_data_file, data_file_type, file_type, mlstrustedobject;
+
+type vendor_debugfs_bt_tracing, debugfs_type, fs_type, tracefs_type;
+
+type vendor_soc_id_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_gpt_block_device, dev_type;
+
+type vendor_ab_block_device, dev_type;
+
+type vendor_xbl_block_device, dev_type;
+
+type vendor_modem_block_device, dev_type;
+
+type vendor_custom_ab_block_device, dev_type;
+
+type vendor_mdtp_device, dev_type;
+
+type vendor_uefi_block_device, dev_type;
+
+type vendor_sg_device, dev_type;
+
+type vendor_bsg_device, dev_type;
+
+type vendor_sysfs_scsi_target, fs_type, sysfs_type;
+
+type vendor_camera_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_thermal_socket, file_type;
+
+type vendor_synx_device, dev_type;
+
+type vendor_ubwcp_device, dev_type;
+
+type vendor_hal_camera_postproc_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_camera_aon_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_sysfs_camera, fs_type, sysfs_type;
+
+type vendor_hal_offlinecamera_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_camera_aon_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sys_nonsp_comp, fs_type, sysfs_type;
+
+type vendor_sys_sp_comp, fs_type, sysfs_type;
+
+type vendor_pps_socket, file_type;
+
+type vendor_qdcmss_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_hal_display_color_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_display_aiqe_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_embmsslaidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_tee_listener_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_per_mgr_service, vndservice_manager_type;
+
+type vendor_per_mgr_state_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_location_data_file, data_file_type, file_type;
+
+type vendor_location_socket, file_type;
+
+type vendor_qsap_location_socket, file_type;
+
+type vendor_sysfs_mhi, fs_type, sysfs_type;
+
+type vendor_rild_socket, file_type;
+
+type vendor_display_notch_prop, property_type, system_property_type, system_restricted_property_type;
+
+type vendor_qmcs_file, file_type;
+
+type vendor_membuf_dev, dev_type;
+
+type vendor_vm_trusted_device, dev_type;
+
+type vendor_vm_cp_pixel_device, dev_type;
+
+type vendor_vm_hlos_device, dev_type;
+
+type vendor_qdcmsocket_socket, file_type;
+
+type vendor_sysfs_disp_boot_param, fs_type, sysfs_type;
+
+type vendor_sysfs_usb_supply, fs_type, sysfs_type;
+
+type vendor_ims_service_socket, file_type;
+
+type vendor_qce_device, dev_type;
+
+type vendor_ims_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_disable_spu_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_keymint_retry_timer_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_led_file, fs_type, sysfs_type;
+
+type vendor_sysfs_kgsl_proc, fs_type, sysfs_type;
+
+type vendor_sysfs_kgsl, fs_type, sysfs_type;
+
+type vendor_hbtp_kernel_sysfs, fs_type, sysfs_type;
+
+type vendor_hal_qdutils_disp_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_sensors_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_sensors, fs_type, sysfs_type;
+
+type vendor_sysfs_slpi, fs_type, sysfs_type;
+
+type vendor_remoteproc_adsp_ssr, fs_type, sysfs_type;
+
+type vendor_dynamic_sensor_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_radio_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_ipa_dev, dev_type;
+
+type vendor_ipacm_socket, file_type;
+
+type vendor_hal_trustedui_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_sysfs_sectouch, fs_type, sysfs_type;
+
+type vendor_tui_data_file, data_file_type, file_type;
+
+type vendor_sysfs_trusted_touch_enable, fs_type, sysfs_type;
+
+type vendor_sysfs_trusted_touch_event, fs_type, sysfs_type;
+
+type vendor_sysfs_trusted_touch_type, fs_type, sysfs_type;
+
+type vendor_vm_cp_app_device, dev_type;
+
+type vendor_vm_self_device, dev_type;
+
+type vendor_dmabuf_display_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_hal_trustedui_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_persist_haptics_file, file_type;
+
+type vendor_proc_wifi_dbg, fs_type, proc_type;
+
+type vendor_wifihal_socket, file_type;
+
+type vendor_wifi_version, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_tombstone_data_file, data_file_type, file_type;
+
+type vendor_hal_imsdc_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_imsdc_device, dev_type;
+
+type vendor_ctl_vendor_imsrcsservice_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_hal_cne_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_aidl_imsfactory_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_aidl_rcsservice, hal_service_type, protected_service, service_manager_type;
+
+type vendor_imsd_data_file, data_file_type, file_type;
+
+type vendor_sysfs_devicetree_soc, fs_type, sysfs_type;
+
+type vendor_km_strongbox_version_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_smd_device, dev_type;
+
+type vendor_sysfs_cpu_boost, fs_type, sysfs_type;
+
+type vendor_ctl_port-bridge_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_ctl_qcrild_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_ipacm-diag_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_ipacm_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_msm_irqbalance_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_dataqti_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_alarm_boot_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_gralloc_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_usb_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_gpu_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_sysfs_mmc_host, fs_type, sysfs_type;
+
+type vendor_sysfs_process_reclaim, fs_type, sysfs_type;
+
+type vendor_sysfs_wdog_device, fs_type, sysfs_type;
+
+type vendor_radio_vendor_data_file, data_file_type, file_type, mlstrustedobject;
+
+type vendor_mbn_data_file, data_file_type, file_type;
+
+type vendor_ctl_vendor_hbtp_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_usbpd_device, fs_type, sysfs_type;
+
+type vendor_sysfs_msm_power, fs_type, sysfs_type;
+
+type vendor_msm_irqbalanced_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_wifi_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_soc_name_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_soc_model_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_media_performance_class, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_console_log_level_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_dcvs_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_sd, fs_type, sysfs_type;
+
+type vendor_wifi_vendor_data_file, data_file_type, file_type;
+
+type vendor_qms_service, service_manager_type;
+
+type vendor_xtra_service, vndservice_manager_type;
+
+type vendor_qcc_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_media_data_file, data_file_type, file_type;
+
+type vendor_nicm_data_file, data_file_type, file_type;
+
+type vendor_shsusrd_socket, file_type;
+
+type vendor_data_shsusr_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_data_qmipriod_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_pd_locater_dbg_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_ssr_device, dev_type;
+
+type vendor_at_device, dev_type;
+
+type vendor_mhi_device, dev_type;
+
+type vendor_port_bridge_data_file, data_file_type, file_type;
+
+type vendor_port-bridge_socket, file_type;
+
+type vendor_qlm_socket, file_type;
+
+type vendor_video_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_qti_data_file, data_file_type, file_type;
+
+type vendor_rmnet_device, dev_type;
+
+type vendor_dataqti_socket, file_type;
+
+type vendor_hal_cacert_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_firmware_data_file, data_file_type, file_type;
+
+type vendor_pddump_data_file, data_file_type, file_type;
+
+type vendor_hal_iwlan_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_dataqdp_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_qmuxd_socket, file_type;
+
+type vendor_ctl_vendor_rmt_storage_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_uio_file, fs_type, sysfs_type;
+
+type vendor_modem_efs_partition_device, dev_type;
+
+type vendor_ssd_block_device, dev_type;
+
+type vendor_qesd_socket, file_type;
+
+type vendor_proc_shs, fs_type, proc_type;
+
+type vendor_shsusr_data_file, data_file_type, file_type;
+
+type vendor_sysfs_rmnet, fs_type, sysfs_type;
+
+type vendor_sysfs_ssr_toggle, fs_type, sysfs_type;
+
+type vendor_ssr_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_ramdump_device, dev_type;
+
+type vendor_ramdump_microdump_modem_device, dev_type;
+
+type vendor_sysfs_devcd, fs_type, sysfs_type;
+
+type vendor_sysfs_qcom_ramdump, fs_type, sysfs_type;
+
+type vendor_mdmhelperdata_data_file, data_file_type, file_type;
+
+type vendor_rpmb_device, dev_type;
+
+type vendor_ufs_lun4_bsg_device, dev_type;
+
+type vendor_persist_drm_file, file_type;
+
+type vendor_data_tzstorage_file, data_file_type, file_type;
+
+type vendor_limits_block_device, dev_type;
+
+type vendor_sysfs_ddr, fs_type, sysfs_type;
+
+type vendor_sysfs_scsi_host, fs_type, sysfs_type;
+
+type vendor_smem_log_device, dev_type;
+
+type vendor_time_data_file, data_file_type, file_type;
+
+type vendor_persist_time_file, file_type;
+
+type vendor_time_service_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_tlpd_data_file, data_file_type, file_type;
+
+type vendor_hal_capabilityconfigstore_qti_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_capabilityconfigstore_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_capabilityconfigstore_data_file, data_file_type, file_type;
+
+type vendor_hal_dataconnection_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_dataconnection_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_modprobe_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_sysfs_boot_adsp, fs_type, sysfs_type;
+
+type vendor_sysfs_boot_cdsp, fs_type, sysfs_type;
+
+type vendor_sysfs_boot_cvp, fs_type, sysfs_type;
+
+type vendor_vm_system_file, file_type, vendor_file_type;
+
+type vendor_sysfs_bootguestvm, fs_type, sysfs_type;
+
+type vendor_sysfs_svm_neuron, fs_type, sysfs_type;
+
+type vendor_dataadpl_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_dataadpl_socket, file_type;
+
+type vendor_cnd_vendor_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_wifi_vendor_wpa_socket, data_file_type, file_type;
+
+type vendor_hostapd_socket, data_file_type, file_type;
+
+type vendor_hal_latency_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_slmadapter_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_slm_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_hal_mwqemadapter_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_mwqem_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_nwmgr_service, vndservice_manager_type;
+
+type vendor_hal_mwqemadapter_aidlservice, hal_service_type, protected_service, service_manager_type;
+
+type vendor_dcf_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_hal_dpmapi_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_dpmaidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_dpm_vndr_data_file, data_file_type, file_type;
+
+type vendor_hal_MemHal_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_alarm_qti_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_fm_radio_device, dev_type;
+
+type vendor_hal_bluetooth_sar_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_bttpi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_btconfigstore_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_sysfs_jpeg, fs_type, sysfs_type;
+
+type vendor_hal_fm_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_fm_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_spcom_device, dev_type;
+
+type vendor_skp_device, dev_type;
+
+type vendor_spss_utils_device, dev_type;
+
+type vendor_sp_keymaster_device, dev_type;
+
+type vendor_sp_ssr_device, dev_type;
+
+type vendor_spcomlib_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_dmabuf_secure_sp_tz_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_qms_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_hal_minkipcbinder_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_nfc_nq_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_nfc_vendor_data_file, data_file_type, file_type;
+
+type vendor_hal_nxpnfc_service, hal_service_type, service_manager_type;
+
+type vendor_aidl_hal_pasrmanager_memory_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sysfs_system_memory, fs_type, sysfs_type;
+
+type vendor_sysfs_mem_offline, fs_type, sysfs_type;
+
+type vendor_pasr_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_memory_min_free_kbytes, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_latency_device, dev_type;
+
+type vendor_freq_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_mpctl_data_file, data_file_type, file_type;
+
+type vendor_lm_data_file, data_file_type, file_type;
+
+type vendor_sysfs_lib, fs_type, sysfs_type;
+
+type vendor_sysfs_msm_perf, fs_type, sysfs_type;
+
+type vendor_sysfs_sched_penalty, fs_type, sysfs_type;
+
+type vendor_sysfs_memory, fs_type, sysfs_type;
+
+type vendor_sysfs_mpctl, fs_type, sysfs_type;
+
+type vendor_sysfs_qfprom, fs_type, sysfs_type;
+
+type vendor_sysfs_ufs, fs_type, sysfs_type;
+
+type vendor_procomp_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_hal_qseecom_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_qspa_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sysfs_devicetree_cpu, fs_type, sysfs_type;
+
+type vendor_hal_qteeconnector_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_secure_element_vendor_data_file, data_file_type, file_type;
+
+type vendor_ese_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_ese_gpio_device, dev_type;
+
+type vendor_hal_secureprocessor_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_vm_oem_device, dev_type;
+
+type vendor_hal_secureprocessor_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_sensorscalibrateaidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_soter_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_soteraidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_spu_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_spu_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_srvctracker_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_servicetrackeraidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sysfs_usb_c, fs_type, sysfs_type;
+
+type vendor_sysfs_usb_node, fs_type, sysfs_type;
+
+type vendor_sysfs_usb_device, fs_type, sysfs_type;
+
+type vendor_wigig_hostapd_socket, data_file_type, file_type;
+
+type vendor_wigig_vendor_wpa_socket, file_type;
+
+type vendor_log_wifi_data_file, data_file_type, file_type;
+
+type vendor_hal_xpanprovider_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_hexlp_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hexlp_data_file, data_file_type, file_type;
+
+type vendor_persist_hexlp_file, file_type;
+
+type vendor_sysfs_npu, fs_type, sysfs_type;
+
+type vendor_mdm_helper_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_mmi_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_hvdcp_opti_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_vmpressure, fs_type, sysfs_type;
+
+type vendor_sysfs_slab_zshandle_storeuser, fs_type, sysfs_type;
+
+type vendor_sysfs_slab_zspage_storeuser, fs_type, sysfs_type;
+
+type vendor_ese_strongbox_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_location_engine_service_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_slim_daemon_exec, exec_type, file_type, vendor_file_type;
+
+type vendor_location_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_wfdnativemm_service, vndservice_manager_type;
+
+type vendor_vm_cp_bitstream_device, dev_type;
+
+type vendor_qccvendor_data_file, data_file_type, file_type;
+
+type vendor_qtr_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_firmware_file, file_type, vendor_file_type;
+
+type vendor_qcc_trd_data_file, data_file_type, file_type;
+
+type vendor_hal_qccvndhal_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_persist_qcc_file, file_type;
+
+type vendor_hal_qconfig_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_qfpextendedfingerprint_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_qms_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_qmc_dma_device, dev_type;
+
+type vendor_qmc_cma_device, dev_type;
+
+type vendor_qms_vndr_data_file, data_file_type, file_type;
+
+type vendor_qms_main_data_file, data_file_type, file_type;
+
+type vendor_qms_config_data_file, data_file_type, file_type;
+
+type vendor_ipaevents_device, dev_type;
+
+type vendor_qsee_ipc_irq_spss_device, dev_type;
+
+type vendor_data_qsee_file, data_file_type, file_type;
+
+type vendor_qfp-daemon_data_file, data_file_type, file_type;
+
+type vendor_persist_qti_fp_file, file_type;
+
+type vendor_hal_qspmhal_service, hal_service_type, service_manager_type;
+
+type vendor_hal_qspmhal_hwservice, hwservice_manager_type;
+
+type vendor_qspmhal_data_file, data_file_type, file_type;
+
+type vendor_sysfs_sku, fs_type, sysfs_type;
+
+type vendor_vm_ssrenable_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_hal_qvirtvendor_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_qvrd_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_xrcommd_socket, file_type;
+
+type vendor_xrcomm_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_qvrd_vndr_data_file, data_file_type, file_type;
+
+type vendor_qvrd_vndr_socket, file_type;
+
+type vendor_sysfs_qvr_external_sensor, fs_type, sysfs_type;
+
+type vendor_qvr_external_sensor_device, dev_type;
+
+type vendor_qvr_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_sxr_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_qvrd_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_qvr_persist_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_qvrd_persist_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_qwes_data_file, data_file_type, file_type;
+
+type vendor_xlat_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_hal_snapx_service, hal_service_type, service_manager_type;
+
+type vendor_hal_sxrd_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sxrd_vndr_socket, file_type;
+
+type vendor_sxrd_vndr_data_file, data_file_type, file_type;
+
+type vendor_syshealthmon_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sysfs_rproc_state, fs_type, sysfs_type;
+
+type vendor_hal_vpp_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_vpp_data_file, data_file_type, file_type;
+
+type vendor_persist_vpp_file, file_type;
+
+type vendor_wigignpt_socket, file_type;
+
+type vendor_sysfs_max_chipset_log_size, fs_type, sysfs_type;
+
+type vendor_sysfs_dump_in_progress, fs_type, sysfs_type;
+
+type vendor_wfdhdcpvndservice_service, vndservice_manager_type;
+
+type vendor_tsa_hdcpvndservice, service_manager_type;
+
+type hal_wifidisplaysession_service, hal_service_type, service_manager_type;
+
+type hal_wifidisplayvideo_service, hal_service_type, service_manager_type;
+
+type hal_wifidisplayaudio_service, hal_service_type, service_manager_type;
+
+type hal_wifidisplayimage_service, hal_service_type, service_manager_type;
+
+type vendor_hal_wifilearner_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_vm_cp_non_pixel_device, dev_type;
+
+type vendor_hal_display_demura_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_dmabuf_secure_pixel, dev_type, dmabuf_heap_device_type;
+
+type vendor_dmabuf_secure_cdsp_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_vm_cp_camera_device, dev_type;
+
+type vendor_vm_cp_camera_preview_device, dev_type;
+
+type vendor_vm_cp_sec_display_device, dev_type;
+
+type vendor_vm_cp_cdsp_device, dev_type;
+
+type vendor_dmabuf_demura_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_dmabuf_ubwcp_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_smmu_proxy_device, dev_type;
+
+type vendor_dmabuf_system_movable_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_dmabuf_ubwcp_movable_heap_device, dev_type, dmabuf_heap_device_type;
+
+type vendor_hal_poweroptservice_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_poweroptservice_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_pm_data_file, data_file_type, file_type;
+
+type vendor_gunyah_chr_device, dev_type;
+
+type vendor_gunyah_dev, dev_type, mlstrustedobject, vm_manager_device_type;
+
+type vendor_mediadrm_vendor_data_file, data_file_type, file_type;
+type vendor_notify-topology_socket, file_type;
+type hal_drm_widevine_exec, exec_type, file_type, vendor_file_type;
+
+type camera_persist_file, file_type;
+
+type vendor_camera_sensor_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_camera_p3enable_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_camera_xdrversion_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_camera_aon_service, hal_service_type, protected_service, service_manager_type;
+
+type sysfs_migt, fs_type, sysfs_type;
+
+type stmvl53l5_device, dev_type;
+
+type sysfs_csiphy_umd_paras, fs_type, sysfs_type;
+
+type micam_sched_device, dev_type;
+
+type procfs_memory, fs_type, proc_type;
+
+type vendor_smc_power_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_camera_mi_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_camera_extcam_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type sysfs_perf, fs_type, sysfs_type;
+
+type dio_dma_mapper_device, dev_type;
+
+type vendor_sensors_log_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_video_qcom_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_miui_wifi_p2phc_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_wifi_mon_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_wlan_eht_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_miui_wifi_p2p_enable160m_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_wifi_sar_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_miui_wifi_sap_fast_ht_scan, property_type, system_property_type, system_public_property_type;
+
+type vendor_sysfs_extra_free_kbytes, fs_type, sysfs_type;
+
+type vendor_mi_extra_free_enable, property_type, vendor_internal_property_type, vendor_property_type;
+
+type perf_actuator_device, dev_type, mlstrustedobject;
+
+type xr_fbt_device, dev_type, mlstrustedobject;
+
+type camlog_device, dev_type;
+
+type vendor_color_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_wifi_vendor_log_data_file, data_file_type, file_type;
+
+type vendor_mac_vendor_data_file, data_file_type, file_type, mlstrustedobject;
+
+type vendor_wlan_chip_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_bluetooth_a2dp_mi_prop, property_type, system_property_type, system_public_property_type;
+
+type audio_socket, file_type;
+
+type sound_device, dev_type, mlstrustedobject;
+
+type vendor_audio_cloud_ctrl_mi_prop, property_type, system_property_type, system_public_property_type;
+
+type customized_panic, fs_type, proc_type;
+
+type vendor_bluetooth_mi_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_nfc_mi_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_proc_perflock_records, fs_type, proc_type;
+
+type sysfs_memory, fs_type, sysfs_type;
+
+type vendor_proc_perflock_exception, fs_type, proc_type;
+
+type sysfs_dmof, fs_type, sysfs_type;
+
+type vendor_ramdump_block_device, dev_type;
+
+type proc_usb_msflag, fs_type, proc_type;
+
+type proc_usb_ms_use, fs_type, proc_type;
+
+type proc_enable_msflag, fs_type, proc_type;
+
+type vendor_stability_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_persist_stability, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_misys_vendor_service, protected_service, service_manager_type;
+
+type data_io_monitor_file, data_file_type, file_type;
+
+type minidump_block_device, dev_type;
+
+type blackbox_block_device, dev_type;
+
+type sysfs_bootinfo, fs_type, sysfs_type;
+
+type wp_data_file, data_file_type, file_type;
+
+type abreuse_prop, property_type, system_property_type, system_public_property_type;
+
+type log_manager_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_sysfs_battery, fs_type, sysfs_type;
+
+type vendor_sysfs_hardwareinfo, fs_type, sysfs_type;
+
+type io_monitor_device, dev_type;
+
+type hal_misyscore_service, protected_service, service_manager_type;
+
+type oops_block_device, dev_type;
+
+type rescue_block_device, dev_type;
+
+type vendor_deviceid_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_sno_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_hal_citsensorservice_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_cct_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_parsedalgo_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_usedframebuffer_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_mischeck_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type sysfs_tp_fodstatus, fs_type, sysfs_type;
+
+type xiaomi_hall_device, dev_type;
+
+type vendor_ins_vendor_data_file, data_file_type, file_type;
+
+type vendor_mi_ins_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type ir_spi_device, dev_type;
+
+type vendor_hal_tofsensorservice_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sensors_vendor_data_file, data_file_type, file_type;
+
+type vendor_aon_vendor_data_file, data_file_type, file_type;
+
+type vendor_hal_misensor_camera_service, hal_service_type, service_manager_type;
+
+type hal_cit_wifi_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_cit_wifi_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_cit_bluetooth_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_cit_bluetooth_sub_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_miqms_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_miui_region_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_miui_singlesim_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_radio_smd_device, dev_type;
+
+type vendor_modem_data_file, data_file_type, file_type;
+
+type proc_ramdump, fs_type, proc_type;
+
+type vendor_cta_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_qdss_device, dev_type;
+
+type vendor_modem_diag_prop, property_type, vendor_internal_property_type, vendor_property_type;
+
+type vendor_sysfs_ssr_coredump_toggle, fs_type, sysfs_type;
+
+type sysfs_ispv4_dump, fs_type, sysfs_type;
+
+type vendor_sysfs_msm_subsys_restart, fs_type, sysfs_type;
+
+type sysfs_ramdump, fs_type, sysfs_type;
+
+type vendor_wlan_ramdump_prop, property_type, vendor_property_type;
+
+type vendor_checknv_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type ttyHS5_device, dev_type;
+
+type proc_modem_enhance, fs_type, proc_type;
+
+type i2c_device, dev_type;
+
+type proc_mitee_log, fs_type, proc_type;
+
+type mitee_sfs_file, file_type;
+
+type vendor_mitee_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type hal_aidlbgservice_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_fingerprint_data_file, data_file_type, file_type;
+
+type vendor_fingerprint_data_file_fpdump, data_file_type, file_type;
+
+type vendor_mfp-daemon_data_file, data_file_type, file_type;
+
+type vendor_fp_info_prop, property_type, vendor_property_type, vendor_restricted_property_type;
+
+type vendor_panel_info_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type vendor_hal_fingerprint_hwservice_xiaomi, hwservice_manager_type;
+
+type vendor_sysfs_spss, fs_type, sysfs_type;
+
+type vendor_fingerprint_device, dev_type;
+
+type vendor_qbt_device, dev_type;
+
+type vendor_mi_ic_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type mi_ic_data_file, data_file_type, file_type;
+
+type vendor_mi_ric_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type gsort_block_device, dev_type;
+
+type vendor_ffu_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type ffu_data_file, data_file_type, file_type;
+
+type ffu_partition, dev_type;
+
+type vendor_ddr_freq_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type ddr_freq_data_file, data_file_type, file_type;
+
+type mem_partition, dev_type;
+
+type hal_cld_service, hal_service_type, service_manager_type;
+
+type hal_swap_service, hal_service_type, service_manager_type;
+
+type hal_fbo_service, hal_service_type, service_manager_type;
+
+type snapshot_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_fbo_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type aac_richtap_dev_device, dev_type;
+
+type bpf_sys_kprobe_file, fs_type, sysfs_type;
+
+type fs_sys_miui, fs_type, sysfs_type;
+
+type hal_quickcamera_service, hal_service_type, protected_service, service_manager_type;
+
+type sysfs_poweraware, fs_type, sysfs_type;
+
+type vendor_sysfs_qcom_battery, fs_type, sysfs_type;
+
+type vendor_charge_block_device, dev_type;
+
+type vendor_smc_cal_data, file_type;
+
+type vendor_smc_file, data_file_type, file_type;
+
+type hal_miperf_service, hal_service_type, protected_service, service_manager_type;
+
+type miperf_data_file, data_file_type, file_type;
+
+type hal_batteryantiaging_service, hal_service_type, service_manager_type;
+
+type batteryantiaging_cfg_file, file_type, vendor_file_type;
+
+type batteryantiaging_cache_file, data_file_type, file_type;
+
+type batteryantiaging_persist_file, data_file_type, file_type;
+
+type vendor_batteryantiaging_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_mfidoca_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_payment_security_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_mlipay_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_mtdservice_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_persist_file, file_type;
+
+type vendor_cpuid_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type ta_data_file, data_file_type, file_type;
+
+type hal_tidaservice_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_vsimapp_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_otrpagent_service, hal_service_type, protected_service, service_manager_type;
+
+type otrp_data_file, data_file_type, file_type;
+
+type vendor_hal_eid_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_mrm_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_micrtk_service, service_manager_type;
+
+type hal_misecmedia_service, service_manager_type;
+
+type hal_mseccam_service, service_manager_type;
+
+type hal_miface_service, protected_service, service_manager_type;
+
+type vendor_miface_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_idmanager_service, hal_service_type, protected_service, service_manager_type;
+
+type secinfo_block_device, dev_type;
+
+type hal_mikeybag_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_video_mi_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_videoservice_service, hal_service_type, service_manager_type;
+
+type sys_thermal_flash_state, fs_type, sysfs_type;
+
+type sys_thermal_torch_real_level, fs_type, sysfs_type;
+
+type sys_thermal_wifi_limit, fs_type, sysfs_type;
+
+type sysfs_power_save, fs_type, sysfs_type;
+
+type vendor_thermal_normal_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_slaaidlservice_service, hal_service_type, protected_service, service_manager_type;
+
+type slad_socket, file_type;
+
+type sla_data_file, data_file_type, file_type;
+
+type vendor_slad_prop, property_type, vendor_property_type;
+
+type qti_proc_sla, proc_type;
+
+type hal_miwillservice_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_minetaidlservice_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_minetd_prop, property_type, vendor_property_type;
+
+type minetd_socket, file_type;
+
+type hal_dynamic_camera_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_dynamiccamera_config_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hal_external_camera_service, hal_service_type, service_manager_type;
+
+type hal_camera_observer_service, hal_service_type, protected_service, service_manager_type;
+
+type hal_miweaver_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_mitrustedui_persist_file, file_type;
+
+type vendor_persist_alarm_file, file_type;
+
+type vendor_persist_elabel_file, file_type;
+
+type vendor_persist_hvdcp_file, file_type;
+
+type vendor_persist_iar_db_file, file_type;
+
+type vendor_persist_mmi_file, file_type;
+
+type vendor_persist_secnvm_file, file_type;
+
+type vendor_persist_spudc_file, file_type;
+
+type vendor_persist_uwb_file, file_type;
+
+typeattribute hal_visdisplaysrv_service vendor_service;
+
+type vendor_radio_data_file, data_file_type, file_type;
+
+type hal_mitrustedui_service, hal_service_type, protected_service, service_manager_type;

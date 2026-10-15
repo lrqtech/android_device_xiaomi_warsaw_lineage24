@@ -1,0 +1,9 @@
+typeattribute hal_ir_default hal_ir;
+
+typeattribute hal_ir_default hal_ir_server;
+
+typeattribute hal_ir_default halserverdomain;
+
+allow hal_ir_default hal_ir_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_ir_default ir_spi_device:chr_file { ioctl read write open };

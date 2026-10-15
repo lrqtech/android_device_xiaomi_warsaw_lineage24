@@ -1,0 +1,79 @@
+type hal_tidaservice_default, domain;
+
+domain_auto_trans(init, hal_tidaservice_default_exec, hal_tidaservice_default)
+
+typeattribute hal_tidaservice_default hal_mtdservice_client;
+
+typeattribute hal_tidaservice_default hal_tidaservice;
+
+typeattribute hal_tidaservice_default hal_tidaservice_server;
+
+typeattribute hal_tidaservice_default halclientdomain;
+
+typeattribute hal_tidaservice_default halserverdomain;
+
+binder_use(hal_tidaservice_default)
+
+allow hal_tidaservice_default hal_mtdservice_default:binder { call transfer };
+
+allow hal_tidaservice_default hal_mtdservice_default:fd { use };
+
+allow hal_tidaservice_default hal_tidaservice_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_tidaservice_default servicemanager:binder { call transfer };
+
+allow hal_tidaservice_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_tidaservice_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_tidaservice_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_tidaservice_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_tidaservice_default rootfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_tidaservice_default vendor_fp_prop:file { read getattr map open };
+
+allow hal_tidaservice_default vendor_system_prop:file { read getattr map open };
+
+allow hal_tidaservice_default vendor_payment_security_prop:file { read getattr map open };
+
+allow hal_tidaservice_default sysfs:dir { read open };
+
+allow hal_tidaservice_default sysfs_block:dir { read open };
+
+allow hal_tidaservice_default sysfs_mem_sleep:dir { read open };
+
+allow hal_tidaservice_default sysfs_powercap:dir { read open };
+
+allow hal_tidaservice_default sysfs_thunderbolt:dir { read open };
+
+allow hal_tidaservice_default sysfs_typec:dir { read open };
+
+allow hal_tidaservice_default sysfs_udc:dir { read open };
+
+allow hal_tidaservice_default sysfs_usb_pd:dir { read open };
+
+allow hal_tidaservice_default sysfs_usbcore:dir { read open };
+
+allow hal_tidaservice_default sysfs:file { read write open };
+
+allow hal_tidaservice_default sysfs_block:file { read write open };
+
+allow hal_tidaservice_default sysfs_mem_sleep:file { read write open };
+
+allow hal_tidaservice_default sysfs_powercap:file { read write open };
+
+allow hal_tidaservice_default sysfs_thunderbolt:file { read write open };
+
+allow hal_tidaservice_default sysfs_typec:file { read write open };
+
+allow hal_tidaservice_default sysfs_udc:file { read write open };
+
+allow hal_tidaservice_default sysfs_usb_pd:file { read write open };
+
+allow hal_tidaservice_default sysfs_usbcore:file { read write open };
+
+allow hal_tidaservice_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_tidaservice_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };

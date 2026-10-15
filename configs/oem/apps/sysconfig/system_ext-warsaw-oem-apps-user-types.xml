@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<config>
+<install-in-user-type package="com.qualcomm.qcrilmsgtunnel">
+        <install-in user-type="SYSTEM" />
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+<install-in-user-type package="com.qualcomm.uimremoteclient">
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
+<install-in-user-type package="com.qualcomm.uimremoteserver">
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
+<install-in-user-type package="com.qualcomm.atfwd">
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
+<install-in-user-type package="com.qti.qualcomm.deviceinfo">
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
+<install-in-user-type package="com.qti.phone">
+        <install-in user-type="SYSTEM" />
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+<install-in-user-type package="com.qualcomm.qti.ims">
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
+<install-in-user-type package="com.qualcomm.qti.uimGbaApp">
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
+</config>

@@ -1,0 +1,6 @@
+<manifest version="8.0" type="device">
+    <hal format="aidl">
+        <name>vendor.qti.hardware.sensorscalibrate</name>
+        <fqname>ISensorsCalibrate/default</fqname>
+    </hal>
+</manifest>

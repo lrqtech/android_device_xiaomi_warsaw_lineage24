@@ -1,0 +1,331 @@
+typeattribute rild binderservicedomain;
+
+typeattribute rild hal_secure_element;
+
+typeattribute rild hal_secure_element_server;
+
+typeattribute rild hal_telephony;
+
+typeattribute rild hal_telephony_server;
+
+typeattribute rild halclientdomain;
+
+typeattribute rild halserverdomain;
+
+typeattribute rild netdomain;
+
+typeattribute rild vendor_hal_dataconnection_qti;
+
+typeattribute rild vendor_hal_dataconnection_qti_server;
+
+typeattribute rild vendor_hal_imsfactory_client;
+
+typeattribute rild vendor_hal_iwlanservice_qti;
+
+typeattribute rild vendor_hal_iwlanservice_qti_server;
+
+typeattribute rild vendor_syshealthmon_client;
+
+vndbinder_use(rild)
+
+allow rild rild_exec:file { read getattr map execute open entrypoint };
+
+allow rild vendor_per_mgr:binder { transfer };
+
+allow rild vendor_per_mgr:binder { call transfer };
+
+allow rild vendor_per_mgr:fd { use };
+
+allow rild vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow rild vndservicemanager:binder { call transfer };
+
+allow rild vendor_boot_ota_file:file { ioctl lock execute_no_trans };
+
+allow rild vendor_file:file { ioctl lock execute_no_trans };
+
+allow rild self:tipc_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow rild vendor_per_mgr_service:service_manager { find };
+
+allow rild self:socket { ioctl };
+
+allow rild vendor_time_daemon:unix_stream_socket { connectto };
+
+allow rild vendor_radio_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow rild vendor_radio_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild radio_control_prop:file { read getattr map open };
+
+allow rild vendor_dataqdp_prop:file { read getattr map open };
+
+allow rild vendor_qmuxd_socket:dir { write lock open add_name remove_name search };
+
+allow rild vendor_qmuxd_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild vendor_rild_socket:dir { write lock open add_name remove_name search };
+
+allow rild vendor_rild_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild vendor_mbn_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow rild vendor_mbn_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow rild vendor_mbn_data_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow rild self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow rild vendor_ssgtzd_socket:sock_file { write };
+
+allow rild vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow rild anr_data_file:file { append };
+
+allow rild dumpstate:fd { use };
+
+allow rild incidentd:fd { use };
+
+allow rild dumpstate:fifo_file { write append };
+
+allow rild incidentd:fifo_file { write append };
+
+allow rild system_server:fifo_file { write append };
+
+allow rild tombstoned:unix_stream_socket { connectto };
+
+allow rild tombstoned:fd { use };
+
+allow rild tombstoned_crash_socket:sock_file { write };
+
+allow rild tombstone_data_file:file { append };
+
+allow rild property_socket:sock_file { write };
+
+allow rild init:unix_stream_socket { connectto };
+
+allow rild vendor_xlat_prop:property_service { set };
+
+allow rild vendor_xlat_prop:file { read getattr map open };
+
+allow rild vendor_deviceid_prop:property_service { set };
+
+allow rild vendor_deviceid_prop:file { read getattr map open };
+
+allow rild vendor_sno_prop:property_service { set };
+
+allow rild vendor_sno_prop:file { read getattr map open };
+
+allow rild sysfs:dir { open };
+
+allow rild sysfs_block:dir { open };
+
+allow rild sysfs_mem_sleep:dir { open };
+
+allow rild sysfs_powercap:dir { open };
+
+allow rild sysfs_thunderbolt:dir { open };
+
+allow rild sysfs_typec:dir { open };
+
+allow rild sysfs_udc:dir { open };
+
+allow rild sysfs_usb_pd:dir { open };
+
+allow rild sysfs_usbcore:dir { open };
+
+allow rild sysfs:dir { read };
+
+allow rild sysfs_block:dir { read };
+
+allow rild sysfs_mem_sleep:dir { read };
+
+allow rild sysfs_powercap:dir { read };
+
+allow rild sysfs_thunderbolt:dir { read };
+
+allow rild sysfs_typec:dir { read };
+
+allow rild sysfs_udc:dir { read };
+
+allow rild sysfs_usb_pd:dir { read };
+
+allow rild sysfs_usbcore:dir { read };
+
+allow rild sysfs:file { read };
+
+allow rild sysfs_block:file { read };
+
+allow rild sysfs_mem_sleep:file { read };
+
+allow rild sysfs_powercap:file { read };
+
+allow rild sysfs_thunderbolt:file { read };
+
+allow rild sysfs_typec:file { read };
+
+allow rild sysfs_udc:file { read };
+
+allow rild sysfs_usb_pd:file { read };
+
+allow rild sysfs_usbcore:file { read };
+
+allow rild sysfs:file { open };
+
+allow rild sysfs_block:file { open };
+
+allow rild sysfs_mem_sleep:file { open };
+
+allow rild sysfs_powercap:file { open };
+
+allow rild sysfs_thunderbolt:file { open };
+
+allow rild sysfs_typec:file { open };
+
+allow rild sysfs_udc:file { open };
+
+allow rild sysfs_usb_pd:file { open };
+
+allow rild sysfs_usbcore:file { open };
+
+allow rild sysfs:file { write };
+
+allow rild sysfs_block:file { write };
+
+allow rild sysfs_mem_sleep:file { write };
+
+allow rild sysfs_powercap:file { write };
+
+allow rild sysfs_thunderbolt:file { write };
+
+allow rild sysfs_typec:file { write };
+
+allow rild sysfs_udc:file { write };
+
+allow rild sysfs_usb_pd:file { write };
+
+allow rild sysfs_usbcore:file { write };
+
+allow rild sysfs:file { getattr };
+
+allow rild sysfs_block:file { getattr };
+
+allow rild sysfs_mem_sleep:file { getattr };
+
+allow rild sysfs_powercap:file { getattr };
+
+allow rild sysfs_thunderbolt:file { getattr };
+
+allow rild sysfs_typec:file { getattr };
+
+allow rild sysfs_udc:file { getattr };
+
+allow rild sysfs_usb_pd:file { getattr };
+
+allow rild sysfs_usbcore:file { getattr };
+
+allow rild system_data_file:file { read };
+
+allow rild vendor_system_prop:file { read getattr map open };
+
+allow rild vendor_system_prop:property_service { set };
+
+allow rild vendor_radio_prop:file { read getattr map open };
+
+allow rild vendor_radio_prop:property_service { set };
+
+allow rild vendor_ssr_prop:file { read getattr map open };
+
+allow rild vendor_ssr_prop:property_service { set };
+
+allow rild vendor_usb_prop:file { read getattr map open };
+
+allow rild vendor_usb_prop:property_service { set };
+
+allow rild ctl_start_prop:property_service { set };
+
+allow rild ctl_start_prop:file { read getattr map open };
+
+allow rild ctl_default_prop:property_service { set };
+
+allow rild ctl_default_prop:file { read getattr map open };
+
+allow rild vendor_toolbox_exec:file { execute_no_trans };
+
+allow rild system_data_file:file { ioctl read getattr };
+
+allow rild sdcardfs:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild sdcardfs:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild media_rw_data_file:file { read write getattr };
+
+allow rild storage_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild storage_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild storage_file:lnk_file { read write };
+
+allow rild mnt_user_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild mnt_user_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild mnt_user_file:lnk_file { read };
+
+allow rild vendor_tombstone_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild vendor_tombstone_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild vendor_qdisplay_service:service_manager { find };
+
+allow rild hal_graphics_composer_default:binder { call transfer };
+
+allow rild hal_graphics_composer_default:fd { use };
+
+allow rild vendor_miui_region_prop:file { read getattr map open };
+
+allow rild vendor_miui_singlesim_prop:file { read getattr map open };
+
+allow rild vendor_diag_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow rild vendor_radio_smd_device:file { read write open };
+
+allow rild vendor_radio_smd_device:chr_file { read write open };
+
+allow rild vendor_modem_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild vendor_modem_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild vendor_mbn_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild vendor_mbn_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow rild vendor_mbn_data_file:fifo_file { read write create getattr unlink open };
+
+allow rild vendor_mbn_data_file:file { read write create getattr setattr unlink open };
+
+allow rild vendor_sysfs_ssr_toggle:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow rild vendor_ramdump_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow rild vendor_ramdump_vendor_data_file:fifo_file { read write create getattr unlink open };
+
+allow rild vendor_ramdump_vendor_data_file:file { read write create getattr setattr unlink open };
+
+allow rild vendor_hal_display_config_hwservice:hwservice_manager { find };
+
+allow rild hal_graphics_composer_server:fd { use };
+
+allow rild audio_config_prop:file { read getattr map open };
+
+allow rild vendor_radio_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow rild proc_ramdump:file { ioctl read getattr lock map open watch watch_reads };
+
+allow rild vendor_cta_prop:property_service { set };
+
+allow rild vendor_cta_prop:file { read getattr map open };
+
+allow rild vendor_cpuid_prop:file { read getattr map open };
+
+allowxperm rild self:socket ioctl { 0xc300-0xc305 };

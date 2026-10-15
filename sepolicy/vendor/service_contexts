@@ -1,0 +1,347 @@
+vendor.dolby.dms.IDms/default    u:object_r:hal_aidl_dms_service:s0
+
+vendor.xiaomi.hardware.mediaeventgatherservice.IMediaGather/default                       u:object_r:hal_mediaeventgatherservice_service:s0
+
+vendor.xiaomi.hardware.mimd2.IMimd/default   u:object_r:hal_mimd_service:s0
+
+vendor.xiaomi.hardware.uniperf.IUniperf/default u:object_r:hal_uniperf_service:s0
+
+vendor.dolby.dvs.IDvs/default u:object_r:dvs_aidl_service:s0
+
+vendor.xiaomi.hardware.seaaudio.ISeaAudio/default                       u:object_r:hal_seaaudio_service:s0
+
+com.android.ozoaudio.notify.IOzoNotify/default                       u:object_r:hal_ozonotify_service:s0
+
+vendor.xiaomi.hardware.displayfeature_aidl.IDisplayFeature/default       u:object_r:vendor_hal_displayfeature_xiaomi_service:s0
+
+vendor.xiaomi.hardware.display.mihwcextension.IMiHwcExtension/default       u:object_r:vendor_hal_hwcextension_xiaomi_service:s0
+
+vendor.xiaomi.hardware.framemaster.IFrameMaster/default       u:object_r:vendor_hal_framemaster_xiaomi_service:s0
+
+vendor.xiaomi.hardware.framecapturemanager.IFrameCaptureManager/default     u:object_r:vendor_hal_framecapturemanager_xiaomi_service:s0
+
+vendor.xiaomi.hw.touchfeature.ITouchFeature/default          u:object_r:hal_touchfeature_xiaomi_service:s0
+
+vendor.qti.data.factoryservice.IFactory/default                       u:object_r:vendor_hal_factory_aidlservice:s0
+
+vendor.qti.hardware.radio.ims.IImsRadio/imsradio0                     u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.ims.IImsRadio/imsradio1                     u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.qtiradio.IQtiRadioStable/slot1              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.qtiradio.IQtiRadioStable/slot2              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.am.IQcRilAudio/slot1                        u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.am.IQcRilAudio/slot2                        u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.qcrilhook.IQtiOemHook/oemhook0              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.qcrilhook.IQtiOemHook/oemhook1              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.internal.deviceinfo.IDeviceInfo/deviceinfo  u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.qtiradioconfig.IQtiRadioConfig/default      u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.atfwd.IAtFwd/AtFwdAidl                      u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.uim_remote_client.IUimRemoteServiceClient/uimRemoteClient0              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.uim_remote_client.IUimRemoteServiceClient/uimRemoteClient1              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.uim_remote_server.IUimRemoteServiceServer/uimRemoteServer0              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.uim_remote_server.IUimRemoteServiceServer/uimRemoteServer1              u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.lpa.IUimLpa/UimLpa0                         u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.lpa.IUimLpa/UimLpa1                         u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.uim.IUim/Uim0                               u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.radio.uim.IUim/Uim1                               u:object_r:vendor_hal_telephony_service2:s0
+
+vendor.qti.hardware.display.color.IDisplayColor/default               u:object_r:vendor_hal_display_color_aidl_service:s0
+
+vendor.qti.hardware.display.postproc.IDisplayPostproc/default         u:object_r:vendor_hal_display_color_aidl_service:s0
+
+vendor.qti.hardware.display.demura.IDemuraFileFinder/default          u:object_r:vendor_hal_display_demura_aidl_service:s0
+
+vendor.qti.hardware.display.aiqe.IDisplayAiqe/default                 u:object_r:vendor_hal_display_aiqe_aidl_service:s0
+
+vendor.qti.hardware.camera.offlinecamera.IOfflineCameraService/default    u:object_r:vendor_hal_offlinecamera_service:s0
+
+vendor.qti.hardware.camera.aon.IAONService/default                    u:object_r:vendor_hal_camera_aon_service:s0
+
+vendor.qti.ims.datachannelservice.IDataChannelService/default         u:object_r:vendor_hal_imsdc_service:s0
+
+vendor.qti.ImsRtpService.IRTPService/ImsRtpService                    u:object_r:vendor_hal_imsrtp_service:s0
+
+vendor.qti.hardware.embmssl.IEmbms/default                            u:object_r:vendor_hal_embmsslaidl_service:s0
+
+vendor.qti.hardware.data.connectionaidl.IDataConnection/slot1         u:object_r:vendor_hal_dataconnection_aidl_service:s0
+
+vendor.qti.hardware.data.connectionaidl.IDataConnection/slot2         u:object_r:vendor_hal_dataconnection_aidl_service:s0
+
+vendor.qti.hardware.cacertaidlservice.IService/default                u:object_r:vendor_hal_cacert_aidlservice:s0
+
+vendor.qti.ims.factoryaidlservice.IImsFactory/default                 u:object_r:vendor_aidl_imsfactory_service:s0
+
+vendor.qti.hardware.data.iwlandata.IIWlan/slot1                       u:object_r:vendor_hal_iwlan_service:s0
+
+vendor.qti.hardware.data.iwlandata.IIWlan/slot2                       u:object_r:vendor_hal_iwlan_service:s0
+
+vendor.qti.hardware.trustedui.ITrustedUI/default                      u:object_r:vendor_hal_trustedui_aidl_service:s0
+
+vendor.qti.hardware.trustedui.ITrustedInput/default                   u:object_r:vendor_hal_trustedui_aidl_service:s0
+
+vendor.qti.data.qmsservice.IQmsService                                u:object_r:vendor_qms_service:s0
+
+vendor.qti.hardware.capabilityconfigstore.ICapabilityConfigStore/default u:object_r:vendor_hal_capabilityconfigstore_service:s0
+
+vendor.qti.ims.uceaidlservice.IUceService/default                     u:object_r:vendor_aidl_rcsservice:s0
+
+vendor.qti.ims.imscmaidlservice.IImsCmService/default                 u:object_r:vendor_aidl_rcsservice:s0
+
+vendor.qti.hardware.dsp.IDspService/default                           u:object_r:vendor_hal_dspmanager_aidlservice:s0
+
+vendor.qti.diaghal.Idiag/default                                      u:object_r:vendor_hal_diaghal_service:s0
+
+vendor.qti.hardware.dpmaidlservice.IDpmService/default                   u:object_r:vendor_hal_dpmaidl_service:s0
+
+vendor.qti.hardware.mwqemadapteraidlservice.IMwqemAdapter/MwqemAdapter        u:object_r:vendor_hal_mwqemadapter_aidlservice:s0
+
+vendor.qti.hardware.qxr.IQXRCoreService/default        u:object_r:vendor_hal_qvrd_service:s0
+
+vendor.qti.hardware.qxr.IQXRCamService/default         u:object_r:vendor_hal_qvrd_service:s0
+
+vendor.qti.hardware.qxr.IQXRModService/default         u:object_r:vendor_hal_qvrd_service:s0
+
+vendor.qti.hardware.qxr.IQXRSplitService/default        u:object_r:vendor_hal_sxrd_service:s0
+
+vendor.qti.hardware.qxr.IQXRAudioService/default        u:object_r:vendor_hal_sxrd_service:s0
+
+vendor.qti.hardware.data.connectionfactory.IFactory/slot0 u:object_r:vendor_hal_dataconnection_service:s0
+
+vendor.qti.hardware.data.connectionfactory.IFactory/slot1 u:object_r:vendor_hal_dataconnection_service:s0
+
+vendor.qti.data.txpwrservice.ITxPwrService/default     u:object_r:vendor_hal_qms_service:s0
+
+vendor.qti.data.dmapconsent.IService/default           u:object_r:vendor_hal_qms_service:s0
+
+vendor.qti.data.ntn.IQmsSatelliteService/default       u:object_r:vendor_hal_qms_service:s0
+
+vendor.qti.hardware.bttpi.IBtTpi/default               u:object_r:vendor_hal_bttpi_service:s0
+
+vendor.qti.hardware.alarm.IAlarm/default               u:object_r:vendor_hal_alarm_qti_aidl_service:s0
+
+vendor.qti.hardware.spu.ISPUManager/default            u:object_r:vendor_hal_spu_service:s0
+
+vendor.nxp.nxpnfc_aidl.INxpNfc/default                 u:object_r:vendor_hal_nxpnfc_service:s0
+
+vendor.qti.hardware.servicetrackeraidl.IServicetracker/default           u:object_r:vendor_hal_servicetrackeraidl_service:s0
+
+vendor.qti.qccvndhal_aidl.IQccvndhal/qccvndhal         u:object_r:vendor_hal_qccvndhal_service:s0
+
+vendor.qti.hardware.bluetooth.xpanprovider.IXpanProvider/default          u:object_r:vendor_hal_xpanprovider_service:s0
+
+vendor.qti.hardware.bluetooth_sar.IBluetoothSar/default          u:object_r:vendor_hal_bluetooth_sar_service:s0
+
+vendor.qti.hardware.fm.IFmHci/default          u:object_r:vendor_hal_fm_aidl_service:s0
+
+vendor.qti.hardware.sensorscalibrate.ISensorsCalibrate/default           u:object_r:vendor_hal_sensorscalibrateaidl_service:s0
+
+vendor.qti.qspmhal.IQspmhal/default                           u:object_r:vendor_hal_qspmhal_service:s0
+
+vendor.qti.hardware.wifidisplaysession_aidl.IWifiDisplaySession/default               u:object_r:hal_wifidisplaysession_service:s0
+
+vendor.qti.hardware.wifidisplaysession_aidl.IWifiDisplaySessionVideoTrack/default     u:object_r:hal_wifidisplayvideo_service:s0
+
+vendor.qti.hardware.wifidisplaysession_aidl.IWifiDisplaySessionAudioTrack/default     u:object_r:hal_wifidisplayaudio_service:s0
+
+vendor.qti.hardware.wifidisplaysession_aidl.IWifiDisplaySessionImageTrack/default     u:object_r:hal_wifidisplayimage_service:s0
+
+vendor.qti.hardware.qconfig.IQConfig/default                          u:object_r:vendor_hal_qconfig_service:s0
+
+vendor.qti.hardware.perf2.IPerf/default                u:object_r:vendor_hal_perf2_service:s0
+
+vendor.qti.MemHal.IMemHal/default                u:object_r:vendor_hal_MemHal_service:s0
+
+vendor.qti.hardware.vpp.IVppService/default            u:object_r:vendor_hal_vpp_service:s0
+
+vendor.qti.hardware.hexlp.IHexlpService/default           u:object_r:vendor_hal_hexlp_service:s0
+
+vendor.qti.hardware.power.powermodule.IPowerModule/default     u:object_r:vendor_hal_poweroptservice_service:s0
+
+vendor.qti.qhcp.IQHDC/default                          u:object_r:vendor_qms_service:s0
+
+vendor.qti.hardware.qseecom.IQSEECom/default           u:object_r:vendor_hal_qseecom_service:s0
+
+vendor.qti.hardware.minkipcbinder.IMinkServer/default           u:object_r:vendor_hal_minkipcbinder_service:s0
+
+vendor.qti.hardware.minkipcbinder.IMinkTransact/default           u:object_r:vendor_hal_minkipcbinder_service:s0
+
+vendor.tsa.hdcp.IHDCPInterface/default                 u:object_r:vendor_tsa_hdcpvndservice:s0
+
+vendor.qti.hardware.soter.ISoter/default               u:object_r:vendor_hal_soteraidl_service:s0
+
+vendor.qti.memory.pasrmanager.IPasrManager/default	u:object_r:vendor_aidl_hal_pasrmanager_memory_service:s0
+
+vendor.qti.hardware.secureprocessor.device.ISecureProcessor/qti-tee            u:object_r:vendor_hal_secureprocessor_aidl_service:s0
+
+vendor.qti.hardware.secureprocessor.device.ISecureProcessor/qti-tvm            u:object_r:vendor_hal_secureprocessor_aidl_service:s0
+
+vendor.qti.hardware.qspa.IQspa/default                 u:object_r:vendor_hal_qspa_service:s0
+
+vendor.qti.hardware.wifi.wifilearner.IWifiStats/default  u:object_r:vendor_hal_wifilearner_service:s0
+
+vendor.qti.syshealthmon.ISysHealthMon/default          u:object_r:vendor_syshealthmon_service:s0
+
+vendor.qti.snapdragonServices.ISnapdragonServices/default           u:object_r:vendor_hal_snapx_service:s0
+
+vendor.qti.qvirtvendor.IVendorVM/default               u:object_r:vendor_hal_qvirtvendor_service:s0
+
+vendor.xiaomi.hardware.aon.IAlwaysOn/miaonservicehal           u:object_r:hal_camera_aon_service:s0
+
+vendor.xiaomi.hardware.misys.common.IMiSysImpl/default       u:object_r:hal_misys_vendor_service:s0
+
+vendor.xiaomi.hardware.blackbox.IBlackboxImpl/default            u:object_r:hal_misys_vendor_service:s0
+
+vendor.xiaomi.hardware.misys.common.IHypSysIntl/default      u:object_r:hal_misys_vendor_service:s0
+
+vendor.xiaomi.hardware.misys.core.IMiSysCore/default       u:object_r:hal_misyscore_service:s0
+
+vendor.xiaomi.sensor.citsensorservice.ICitSensorService/default   u:object_r:vendor_hal_citsensorservice_xiaomi_service:s0
+
+vendor.xiaomi.sensor.tofsensorservice.ITofSensorService/default   u:object_r:vendor_hal_tofsensorservice_xiaomi_service:s0
+
+vendor.xiaomi.sensor.camera.IMiCam/default  u:object_r:vendor_hal_misensor_camera_service:s0
+
+vendor.xiaomi.cit.wifi.IWifiService/default  u:object_r:hal_cit_wifi_service:s0
+
+vendor.xiaomi.cit.bluetooth.IBluetoothService/default  u:object_r:hal_cit_bluetooth_service:s0
+
+vendor.xiaomi.modem.qms.IMiQms/default    u:object_r:hal_miqms_service:s0
+
+vendor.xiaomi.hardware.aidlbgservice.IBGService/default           u:object_r:hal_aidlbgservice_service:s0
+
+com.fingerprints.extension3.IFingerprintNavigation/default              u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
+
+com.fingerprints.extension3.IFingerprintSensorTest/default              u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
+
+vendor.xiaomi.hardware.fingerprintextension.IXiaomiFingerprint/default  u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
+
+vendor.xiaomi.hardware.fx.tunnel.IMiFxTunnel/default                    u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
+
+vendor.qti.hardware.fingerprint.IQfpExtendedFingerprint/default         u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
+
+vendor.xiaomi.hardware.cld_aidl.ICld/default   u:object_r:hal_cld_service:s0
+
+vendor.xiaomi.hardware.swap.ISwap/default   u:object_r:hal_swap_service:s0
+
+vendor.xiaomi.hardware.fbo.IFbo/default   u:object_r:hal_fbo_service:s0
+
+vendor.xiaomi.hardware.quickcamera.IQuickCameraService/default u:object_r:hal_quickcamera_service:s0
+
+vendor.xiaomi.hardware.micharge.IMiCharge/default   u:object_r:hal_micharge_service:s0
+
+vendor.xiaomi.hardware.miperf2.IMiPerf/default       u:object_r:hal_miperf_service:s0
+
+vendor.xiaomi.hardware.batteryantiaging.IBatteryAntiAging/default   u:object_r:hal_batteryantiaging_service:s0
+
+vendor.xiaomi.hardware.mfidoca.IFidoService/default       u:object_r:hal_mfidoca_service:s0
+
+vendor.xiaomi.hardware.mlipay.IMlipayService/default        u:object_r:hal_mlipay_service:s0
+
+vendor.xiaomi.hardware.aidl.mtdservice.IMTService/default        u:object_r:hal_mtdservice_service:s0
+
+vendor.xiaomi.hardware.aidl.tidaservice.ITidaService/default       u:object_r:hal_tidaservice_service:s0
+
+vendor.xiaomi.hardware.vsimapp.IVSIMService/default        u:object_r:hal_vsimapp_service:s0
+
+vendor.xiaomi.hardware.otrpagent2.IOTrPAgent/default        u:object_r:hal_otrpagent_service:s0
+
+vendor.qti.hardware.systemhelperaidl.ISystemTUICallback/default u:object_r:vendor_hal_systemhelper_aidl_service:s0
+
+vendor.rongcard.eid.IEidDeviceAidl/default                                u:object_r:vendor_hal_eid_service:s0
+
+vendor.xiaomi.hardware.mrm.IMrm/default            u:object_r:hal_mrm_service:s0
+
+vendor.xiaomi.hardware.mrm.IMiCertificate/default  u:object_r:hal_mrm_service:s0
+
+vendor.xiaomi.hardware.mrm.IMrmRemoteAuth/default  u:object_r:hal_mrm_service:s0
+
+vendor.xiaomi.hardware.misauth.IMiSharedAuth/default  u:object_r:hal_mrm_service:s0
+
+vendor.xiaomi.hardware.micrtk.IMiCertKeyService/default            u:object_r:hal_micrtk_service:s0
+
+vendor.xiaomi.hardware.misecmedia.IMiSecMediaService/default            u:object_r:hal_misecmedia_service:s0
+
+vendor.xiaomi.hardware.seccam.IMiSecCam/default            u:object_r:hal_mseccam_service:s0
+
+vendor.xiaomi.hardware.aon.IAlwaysOn/miaonservicebymiface u:object_r:hal_miface_service:s0
+
+vendor.xiaomi.hardware.aek.IAEKService/default            u:object_r:hal_miface_service:s0
+
+vendor.xiaomi.hardware.idmanager.IIdManagerService/default u:object_r:hal_idmanager_service:s0
+
+vendor.xiaomi.hardware.idmanager.ISecidService/default u:object_r:hal_idmanager_service:s0
+
+vendor.xiaomi.hardware.mikeybag.IMiKeyBagService/default       u:object_r:hal_mikeybag_service:s0
+
+vendor.xiaomi.hardware.videoservice.IVideoService/default   u:object_r:hal_videoservice_service:s0
+
+vendor.qti.sla.service.ISlaAIDLService/default  u:object_r:hal_slaaidlservice_service:s0
+
+vendor.xiaomi.aidl.miwill.IMiwillAIDLService/default  u:object_r:hal_miwillservice_service:s0
+
+vendor.xiaomi.aidl.minet.IMiNetAIDLService/default  u:object_r:hal_minetaidlservice_service:s0
+
+vendor.xiaomi.hardware.camera.injection.ICameraInjectionService/default         u:object_r:hal_dynamic_camera_service:s0
+
+vendor.xiaomi.hardware.camera.synthetic.IVirtualCameraRegistrar/default         u:object_r:hal_dynamic_camera_service:s0
+
+android.hardware.camera.provider.ICameraProvider/external/0               u:object_r:hal_external_camera_service:s0
+
+vendor.xiaomi.hardware.camera.observer.ICameraObserver/default    u:object_r:hal_camera_observer_service:s0
+
+vendor.xiaomi.hardware.miauthsecretd.ICpaceService/default            u:object_r:hal_miweaver_service:s0
+
+vendor.xiaomi.hardware.miauthsecretd.IMIAuthSecret/default            u:object_r:hal_miweaver_service:s0
+
+vendor.xiaomi.hardware.oldcredential.IOldCredentialService/default    u:object_r:hal_miweaver_service:s0
+
+# Warsaw runtime AVC repairs (2026-10-13)
+# Official OS4 service instances use the standard HAL service types.
+mapper/qti u:object_r:hal_graphics_mapper_service:s0
+vendor.qti.gnss.ILocAidlGnss/default u:object_r:hal_gnss_service:s0
+android.hardware.media.c2.IComponentStore/default9 u:object_r:hal_codec2_service:s0
+android.hardware.media.c2.IComponentStore/vendor0_software u:object_r:hal_codec2_service:s0
+
+# OS4.0.0.15 OTA hardware labels, audited 2026-10-14.
+vendor.qti.hardware.ListenSoundModelAidl.IListenSoundModel/default u:object_r:hal_audio_service:s0
+android.hardware.neuralnetworks.IDevice/qti-default u:object_r:hal_neuralnetworks_service:s0
+android.hardware.neuralnetworks.IDevice/qti-gpu u:object_r:hal_neuralnetworks_service:s0
+android.hardware.neuralnetworks.IDevice/qti-dsp u:object_r:hal_neuralnetworks_service:s0
+android.hardware.camera.provider.ICameraProvider/vendor.qti/0 u:object_r:hal_camera_service:s0
+android.hardware.camera.provider.ICameraProvider/vendor_qti/0 u:object_r:hal_camera_service:s0
+android.hardware.drm.IDrmFactory/widevine u:object_r:hal_drm_service:s0
+vendor.qti.hardware.wifi.supplicant.ISupplicantVendor/default u:object_r:hal_wifi_supplicant_service:s0
+vendor.qti.hardware.agm.IAGM/default u:object_r:hal_audio_service:s0
+vendor.qti.hardware.pal.IPAL/default u:object_r:hal_audio_service:s0
+vendor.qti.hardware.qasr.IQasr/default u:object_r:hal_audio_service:s0
+vendor.qti.hardware.paleventnotifier.IPALEventNotifier/default u:object_r:hal_audio_service:s0
+android.hardware.security.keymint.IKeyMintDevice/strongbox u:object_r:hal_keymint_service:s0
+android.hardware.security.sharedsecret.ISharedSecret/strongbox u:object_r:hal_sharedsecret_service:s0
+android.hardware.authsecret.qti.spu.IAuthSecret/default u:object_r:hal_authsecret_service:s0
+android.hardware.security.keymint.IRemotelyProvisionedComponent/strongbox u:object_r:hal_keymint_service:s0
+android.hardware.drm.IDrmFactory/wfdhdcp u:object_r:hal_drm_service:s0
+mi_nfc u:object_r:nfc_service:s0
+nfc.wallet u:object_r:nfc_service:s0
+nfc.st_ext u:object_r:nfc_service:s0
+nfc.ndef_nfcee u:object_r:nfc_service:s0
+android.hardware.vibrator.IVibrator/vibratorfeature u:object_r:hal_vibrator_service:s0
+vendor.xiaomi.hardware.mitrustedui.IMiTrustedUIService/default u:object_r:hal_mitrustedui_service:s0
+vendor.xiaomi.hardware.mitrustedui.IMiTrustedUIListener/default u:object_r:hal_mitrustedui_service:s0
+vendor.novatek.hardware.visdisplaysrv.IVisdisplaysrv/default u:object_r:hal_visdisplaysrv_service:s0

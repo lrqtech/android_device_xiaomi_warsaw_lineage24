@@ -1,0 +1,7 @@
+vendor.xiaomi.hardware.aidl.intentaware.IIntentAwareService/default           u:object_r:aidlintentaware_service:s0
+
+vendor.xiaomi.hardware.postprocservice.IPostProcService/default           u:object_r:hal_postprocservice_service:s0
+
+vendor.novatek.hardware.visdisplaysrv_v2.IVisdisplaysrv/default         u:object_r:hal_visdisplaysrv_service:s0
+
+vendor.qti.hardware.display.config.IDisplayConfig/default             u:object_r:vendor_hal_vnddisplayconfig_service:s0

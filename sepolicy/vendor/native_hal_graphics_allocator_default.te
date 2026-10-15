@@ -1,0 +1,45 @@
+typeattribute hal_graphics_allocator_default hal_graphics_allocator;
+
+typeattribute hal_graphics_allocator_default hal_graphics_allocator_server;
+
+typeattribute hal_graphics_allocator_default halserverdomain;
+
+allow hal_graphics_allocator_default hal_graphics_allocator_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_graphics_allocator_default hal_graphics_allocator_default_tmpfs:file { read write getattr map };
+
+allow hal_graphics_allocator_default vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_secure_pixel:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_display_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_secure_cdsp_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_vm_cp_camera_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_vm_cp_camera_preview_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_vm_cp_sec_display_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_vm_cp_cdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_demura_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_ubwcp_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_smmu_proxy_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_system_movable_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_dmabuf_ubwcp_movable_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_allocator_default vendor_hal_misensor_camera_default:binder { transfer };
+
+allow hal_graphics_allocator_default hal_misecmedia_default:binder { transfer };
+
+allow hal_graphics_allocator_default hal_mseccam_default:binder { transfer };
+
+allow hal_graphics_allocator_default hal_miface_default:binder { transfer };

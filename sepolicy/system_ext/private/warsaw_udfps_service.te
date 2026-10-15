@@ -1,0 +1,5 @@
+type warsaw_udfps_ui_service, system_server_service, service_manager_type;
+
+add_service(system_server, warsaw_udfps_ui_service)
+
+allow platform_app warsaw_udfps_ui_service:service_manager { find };

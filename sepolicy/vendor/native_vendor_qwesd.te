@@ -1,0 +1,17 @@
+type vendor_qwesd, domain;
+
+domain_auto_trans(init, vendor_qwesd_exec, vendor_qwesd)
+
+typeattribute vendor_qwesd netdomain;
+
+allow vendor_qwesd vendor_qwesd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qwesd vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_qwesd vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_qwesd self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qwesd vendor_qwes_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qwesd vendor_qwes_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };

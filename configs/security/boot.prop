@@ -1,0 +1,7 @@
+# Official OS4.0.0.15 vendor security HAL startup selectors.
+vendor.gatekeeper.disable_spu=true
+vendor.gatekeeper.is_security_level_spu=0
+vendor.keymint.retry_timer=5
+
+# Start the official MiTEE-backed face HAL after secure VM boot.
+ro.vendor.miface.started=true

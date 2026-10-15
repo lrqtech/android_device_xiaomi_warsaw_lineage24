@@ -1,0 +1,21 @@
+type qti_display_boot, domain;
+
+domain_auto_trans(init, qti_display_boot_exec, qti_display_boot)
+
+allow qti_display_boot qti_display_boot_exec:file { read getattr map execute open entrypoint };
+
+allow qti_display_boot vendor_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow qti_display_boot vendor_toolbox_exec:file { getattr map execute execute_no_trans };
+
+allow qti_display_boot property_socket:sock_file { write };
+
+allow qti_display_boot init:unix_stream_socket { connectto };
+
+allow qti_display_boot vendor_display_prop:property_service { set };
+
+allow qti_display_boot vendor_display_prop:file { read getattr map open };
+
+allow qti_display_boot vendor_gralloc_prop:property_service { set };
+
+allow qti_display_boot vendor_gralloc_prop:file { read getattr map open };

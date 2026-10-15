@@ -1,0 +1,1627 @@
+# OS4 access to retained audio, memory, SoC, camera and IPC nodes.
+allow {
+    audioserver bluetooth cameraserver ddr_freq
+    dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default
+    hal_batteryantiaging_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default
+    hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default
+    hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default
+    hal_fbo_default hal_graphics_allocator_default hal_health_default hal_light_default
+    hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default
+    hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default
+    hal_miqms_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_hostapd_default healthd hwservicemanager mediacodec
+    mediaextractor mediaserver mi_ambient mi_ic
+    mi_ric mi_thermald minetd mtb
+    netd servicemanager set_diag_state slad
+    surfaceflinger tpevent ufs_utils vendor_adpl
+    vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice
+    vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router
+    vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr
+    vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default
+    vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default
+    vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp
+    vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default
+    vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default
+    vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti
+    vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default
+    vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice
+    vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service
+    vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util
+    vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon
+    vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid
+    vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper
+    vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm
+    vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd
+    vendor_qmipriod vendor_qms vendor_qt_service vendor_qti
+    vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr
+    vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors
+    vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd
+    vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump
+    vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon
+    vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice
+    vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti
+    vendor_wifilearnersvc vndservicemanager wallpapercolor wdsdaemon
+    wlanramdumpcollector
+} sysfs_flashlight:dir { getattr };
+
+allow ueventd sysfs_flashlight:dir { getattr ioctl lock open read relabelfrom relabelto search setattr watch watch_reads };
+
+allow vendor_init sysfs_flashlight:dir { getattr ioctl lock open read search setattr watch watch_reads };
+
+allow {
+    batterysecret hal_bluetooth_default hal_graphics_composer_default hal_misys_vendor_default
+    hal_wifi_default hal_wifi_supplicant_default rild system_server
+    tee vendor_qti_init_shell vold
+} sysfs_flashlight:dir { getattr ioctl lock open read search watch watch_reads };
+
+allow init sysfs_flashlight:dir { getattr open read relabelto search setattr };
+
+allow ueventd sysfs_flashlight:file { append getattr ioctl lock map open read relabelfrom relabelto setattr watch watch_reads write };
+
+allow vendor_init sysfs_flashlight:file { append getattr ioctl lock map open read setattr watch watch_reads write };
+
+allow {
+    batterysecret hal_bluetooth_default hal_graphics_composer_default hal_misys_vendor_default
+    hal_wifi_default hal_wifi_supplicant_default rild tee
+    vendor_qti_init_shell vold
+} sysfs_flashlight:file { getattr ioctl lock map open read watch watch_reads };
+
+allow init sysfs_flashlight:file { getattr read relabelto };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ueventd
+    ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd
+    vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd
+    vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc
+    vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client
+    vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default
+    vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti
+    vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti
+    vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default
+    vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default
+    vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default
+    vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti
+    vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd
+    vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init
+    vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location
+    vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client
+    vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd
+    vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr
+    vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor
+    vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod
+    vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell
+    vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr
+    vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors
+    vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd
+    vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump
+    vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon
+    vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice
+    vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti
+    vendor_wifilearnersvc vndservicemanager vold wallpapercolor
+    wdsdaemon wlanramdumpcollector
+} sysfs_flashlight:filesystem { getattr };
+
+allow init sysfs_flashlight:filesystem { getattr mount quotaget quotamod relabelfrom remount unmount watch };
+
+allow ueventd sysfs_flashlight:lnk_file { getattr ioctl lock map open read relabelfrom relabelto setattr watch watch_reads };
+
+allow {
+    batterysecret hal_bluetooth_default hal_graphics_composer_default hal_misys_vendor_default
+    hal_wifi_default hal_wifi_supplicant_default rild tee
+    vendor_qti_init_shell vold
+} sysfs_flashlight:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow init sysfs_flashlight:lnk_file { getattr relabelto };
+
+allow vendor_init sysfs_flashlight:lnk_file { read };
+
+allow {
+    audioserver bluetooth cameraserver ddr_freq
+    dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default
+    hal_batteryantiaging_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default
+    hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default
+    hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default
+    hal_fbo_default hal_graphics_allocator_default hal_health_default hal_light_default
+    hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default
+    hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default
+    hal_miqms_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_hostapd_default healthd hwservicemanager mediacodec
+    mediaextractor mediaserver mi_ambient mi_ic
+    mi_ric mi_thermald minetd mtb
+    netd servicemanager set_diag_state slad
+    surfaceflinger tpevent ufs_utils vendor_adpl
+    vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice
+    vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router
+    vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr
+    vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default
+    vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default
+    vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp
+    vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default
+    vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default
+    vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti
+    vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default
+    vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice
+    vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service
+    vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util
+    vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon
+    vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid
+    vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper
+    vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm
+    vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd
+    vendor_qmipriod vendor_qms vendor_qt_service vendor_qti
+    vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr
+    vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors
+    vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd
+    vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump
+    vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon
+    vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice
+    vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti
+    vendor_wifilearnersvc vndservicemanager wallpapercolor wdsdaemon
+    wlanramdumpcollector
+} sysfs_led_torch:dir { getattr };
+
+allow ueventd sysfs_led_torch:dir { getattr ioctl lock open read relabelfrom relabelto search setattr watch watch_reads };
+
+allow vendor_init sysfs_led_torch:dir { getattr ioctl lock open read search setattr watch watch_reads };
+
+allow {
+    batterysecret hal_bluetooth_default hal_graphics_composer_default hal_misys_vendor_default
+    hal_wifi_default hal_wifi_supplicant_default rild system_server
+    tee vendor_qti_init_shell vold
+} sysfs_led_torch:dir { getattr ioctl lock open read search watch watch_reads };
+
+allow init sysfs_led_torch:dir { getattr open read relabelto search setattr };
+
+allow ueventd sysfs_led_torch:file { append getattr ioctl lock map open read relabelfrom relabelto setattr watch watch_reads write };
+
+allow vendor_init sysfs_led_torch:file { append getattr ioctl lock map open read setattr watch watch_reads write };
+
+allow {
+    batterysecret hal_bluetooth_default hal_graphics_composer_default hal_misys_vendor_default
+    hal_wifi_default hal_wifi_supplicant_default rild tee
+    vendor_qti_init_shell vold
+} sysfs_led_torch:file { getattr ioctl lock map open read watch watch_reads };
+
+allow init sysfs_led_torch:file { getattr read relabelto };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ueventd
+    ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd
+    vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd
+    vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc
+    vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client
+    vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default
+    vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti
+    vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti
+    vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default
+    vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default
+    vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default
+    vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti
+    vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd
+    vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init
+    vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location
+    vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client
+    vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd
+    vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr
+    vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor
+    vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod
+    vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell
+    vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr
+    vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors
+    vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd
+    vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump
+    vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon
+    vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice
+    vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti
+    vendor_wifilearnersvc vndservicemanager vold wallpapercolor
+    wdsdaemon wlanramdumpcollector
+} sysfs_led_torch:filesystem { getattr };
+
+allow init sysfs_led_torch:filesystem { getattr mount quotaget quotamod relabelfrom remount unmount watch };
+
+allow ueventd sysfs_led_torch:lnk_file { getattr ioctl lock map open read relabelfrom relabelto setattr watch watch_reads };
+
+allow {
+    batterysecret hal_bluetooth_default hal_graphics_composer_default hal_misys_vendor_default
+    hal_wifi_default hal_wifi_supplicant_default rild tee
+    vendor_qti_init_shell vold
+} sysfs_led_torch:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow init sysfs_led_torch:lnk_file { getattr relabelto };
+
+allow vendor_init sysfs_led_torch:lnk_file { read };
+
+allow ueventd vendor_avtimer_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_avtimer_device:blk_file { getattr };
+
+allow init vendor_avtimer_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_avtimer_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_avtimer_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_avtimer_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_avtimer_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_avtimer_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_avtimer_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_cma_secure_cdsp_heap_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_dmabuf_cma_secure_cdsp_heap_device:blk_file { getattr };
+
+allow init vendor_dmabuf_cma_secure_cdsp_heap_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_cma_secure_cdsp_heap_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_cma_secure_cdsp_heap_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_dmabuf_cma_secure_cdsp_heap_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_dmabuf_cma_secure_cdsp_heap_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_cma_secure_cdsp_heap_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_dmabuf_cma_secure_cdsp_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_secure_non_pixel:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_dmabuf_secure_non_pixel:blk_file { getattr };
+
+allow init vendor_dmabuf_secure_non_pixel:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_secure_non_pixel:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_secure_non_pixel:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_dmabuf_secure_non_pixel:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_dmabuf_secure_non_pixel:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_secure_non_pixel:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_dmabuf_secure_non_pixel:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_secure_sp_modem_heap_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_dmabuf_secure_sp_modem_heap_device:blk_file { getattr };
+
+allow init vendor_dmabuf_secure_sp_modem_heap_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_secure_sp_modem_heap_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_secure_sp_modem_heap_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_dmabuf_secure_sp_modem_heap_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_dmabuf_secure_sp_modem_heap_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_secure_sp_modem_heap_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_dmabuf_secure_sp_modem_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_sp_hlos_heap_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_dmabuf_sp_hlos_heap_device:blk_file { getattr };
+
+allow init vendor_dmabuf_sp_hlos_heap_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_dmabuf_sp_hlos_heap_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_sp_hlos_heap_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_dmabuf_sp_hlos_heap_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_dmabuf_sp_hlos_heap_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_dmabuf_sp_hlos_heap_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_dmabuf_sp_hlos_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:blk_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:chr_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:dir { add_name create getattr ioctl open read relabelfrom relabelto remove_name rmdir search setattr write };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:fifo_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:file { create getattr map open read relabelfrom relabelto setattr unlink write };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:lnk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_hlos_minkd_opener_socket:sock_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:blk_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:chr_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:dir { add_name create getattr ioctl open read relabelfrom relabelto remove_name rmdir search setattr write };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:fifo_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:file { create getattr map open read relabelfrom relabelto setattr unlink write };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:lnk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_mlid_socket:sock_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow ueventd vendor_q2spiuwb_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_q2spiuwb_device:blk_file { getattr };
+
+allow init vendor_q2spiuwb_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_q2spiuwb_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_q2spiuwb_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_q2spiuwb_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_q2spiuwb_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_q2spiuwb_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_q2spiuwb_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_qg_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_qg_device:blk_file { getattr };
+
+allow init vendor_qg_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_qg_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_qg_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_qg_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_qg_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_qg_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_qg_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:blk_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:chr_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:dir { add_name create getattr ioctl open read relabelfrom relabelto remove_name rmdir search setattr write };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:fifo_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:file { create getattr map open read relabelfrom relabelto setattr unlink write };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:lnk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_qwesd_socket:sock_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:blk_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:chr_file { relabelto };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:dir { add_name create getattr ioctl open read relabelfrom relabelto remove_name rmdir search setattr write };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:fifo_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:file { create getattr map open read relabelfrom relabelto setattr unlink write };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:lnk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_ssgqmig_socket:sock_file { create getattr open read relabelfrom relabelto setattr unlink };
+
+allow ueventd vendor_sysfs_public:dir { getattr ioctl lock open read relabelfrom relabelto search setattr watch watch_reads };
+
+allow init vendor_sysfs_public:dir { getattr ioctl lock open read relabelto search setattr watch watch_reads };
+
+allow vendor_init vendor_sysfs_public:dir { getattr ioctl lock open read search setattr watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_sysfs_public:dir { getattr ioctl lock open read search watch watch_reads };
+
+allow ueventd vendor_sysfs_public:file { append getattr ioctl lock map open read relabelfrom relabelto setattr watch watch_reads write };
+
+allow vendor_init vendor_sysfs_public:file { append getattr ioctl lock map open read setattr watch watch_reads write };
+
+allow init vendor_sysfs_public:file { getattr ioctl lock map open read relabelto watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_sysfs_public:file { getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ueventd
+    ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd
+    vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd
+    vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc
+    vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client
+    vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default
+    vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti
+    vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti
+    vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default
+    vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default
+    vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default
+    vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti
+    vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd
+    vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init
+    vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location
+    vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client
+    vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd
+    vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr
+    vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor
+    vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod
+    vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell
+    vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr
+    vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors
+    vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd
+    vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump
+    vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon
+    vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice
+    vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti
+    vendor_wifilearnersvc vndservicemanager vold wallpapercolor
+    wdsdaemon wlanramdumpcollector
+} vendor_sysfs_public:filesystem { getattr };
+
+allow init vendor_sysfs_public:filesystem { getattr mount quotaget quotamod relabelfrom remount unmount watch };
+
+allow ueventd vendor_sysfs_public:lnk_file { getattr ioctl lock map open read relabelfrom relabelto setattr watch watch_reads };
+
+allow init vendor_sysfs_public:lnk_file { getattr ioctl lock map open read relabelto watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init vendor_init-qcom-sensors-sh
+    vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon
+    vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota
+    vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo
+    vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy
+    vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss
+    vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms
+    vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg
+    vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd
+    vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk
+    vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd
+    vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr
+    vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd
+    vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service
+    vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc
+    vndservicemanager vold wallpapercolor wdsdaemon
+    wlanramdumpcollector
+} vendor_sysfs_public:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_spss_hlos_shared_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_vm_cp_spss_hlos_shared_device:blk_file { getattr };
+
+allow init vendor_vm_cp_spss_hlos_shared_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_spss_hlos_shared_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_spss_hlos_shared_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_vm_cp_spss_hlos_shared_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_vm_cp_spss_hlos_shared_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_spss_hlos_shared_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_vm_cp_spss_hlos_shared_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_spss_sp_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_vm_cp_spss_sp_device:blk_file { getattr };
+
+allow init vendor_vm_cp_spss_sp_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_spss_sp_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_spss_sp_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_vm_cp_spss_sp_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_vm_cp_spss_sp_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_spss_sp_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_vm_cp_spss_sp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_spss_sp_shared_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_vm_cp_spss_sp_shared_device:blk_file { getattr };
+
+allow init vendor_vm_cp_spss_sp_shared_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_spss_sp_shared_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_spss_sp_shared_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_vm_cp_spss_sp_shared_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_vm_cp_spss_sp_shared_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_spss_sp_shared_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_vm_cp_spss_sp_shared_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_touch_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+
+allow vendor_init vendor_vm_cp_touch_device:blk_file { getattr };
+
+allow init vendor_vm_cp_touch_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow ueventd vendor_vm_cp_touch_device:chr_file { create getattr setattr unlink };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_touch_device:chr_file { setattr };
+
+allow {
+    init ueventd vendor_init
+} vendor_vm_cp_touch_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+
+allow ueventd vendor_vm_cp_touch_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+
+allow {
+    init vendor_init
+} vendor_vm_cp_touch_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    audioserver batterysecret bluetooth cameraserver
+    ddr_freq dvs_aidl_default ffu hal_aidl_dms_default
+    hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default
+    hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default
+    hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl
+    hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default
+    hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default
+    hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default
+    hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default
+    hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default
+    hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default
+    hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default
+    hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default
+    hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default
+    hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default
+    hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd
+    hwservicemanager mediacodec mediaextractor mediaserver
+    mi_ambient mi_ic mi_ric mi_thermald
+    minetd mtb netd rild
+    servicemanager set_diag_state slad surfaceflinger
+    system_server tee tpevent ufs_utils
+    vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm
+    vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd
+    vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd
+    vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default
+    vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default
+    vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti
+    vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox
+    vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti
+    vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti
+    vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti
+    vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default
+    vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice
+    vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh
+    vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server
+    vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon
+    vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti
+    vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge
+    vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service
+    vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service
+    vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media
+    vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access
+    vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti
+    vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag
+    vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default
+    vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener
+    vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti
+    vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager
+    vold wallpapercolor wdsdaemon wlanramdumpcollector
+} vendor_vm_cp_touch_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+recovery_only(`
+allow {
+    fastbootd recovery
+} sysfs_flashlight:dir { getattr };
+
+allow recovery sysfs_flashlight:filesystem { associate getattr mount quotaget quotamod relabelfrom remount unmount watch };
+
+allow fastbootd sysfs_flashlight:filesystem { getattr };
+
+allow {
+    fastbootd recovery
+} sysfs_led_torch:dir { getattr };
+
+allow recovery sysfs_led_torch:filesystem { associate getattr mount quotaget quotamod relabelfrom remount unmount watch };
+
+allow fastbootd sysfs_led_torch:filesystem { getattr };
+
+allow recovery vendor_avtimer_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_avtimer_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_dmabuf_cma_secure_cdsp_heap_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_dmabuf_cma_secure_cdsp_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_dmabuf_secure_non_pixel:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_dmabuf_secure_non_pixel:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_dmabuf_secure_sp_modem_heap_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_dmabuf_secure_sp_modem_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_dmabuf_sp_hlos_heap_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_dmabuf_sp_hlos_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_q2spiuwb_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_q2spiuwb_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_qg_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_qg_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_public:dir { getattr ioctl lock open read search watch watch_reads };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_public:file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_sysfs_public:filesystem { associate getattr mount quotaget quotamod relabelfrom remount unmount watch };
+
+allow fastbootd vendor_sysfs_public:filesystem { getattr };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_public:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_vm_cp_spss_hlos_shared_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_vm_cp_spss_hlos_shared_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_vm_cp_spss_sp_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_vm_cp_spss_sp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_vm_cp_spss_sp_shared_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_vm_cp_spss_sp_shared_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_vm_cp_touch_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_vm_cp_touch_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+')
+
+allow ueventd vendor_cryptoapp_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_cryptoapp_device:blk_file { getattr };
+allow init vendor_cryptoapp_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_cryptoapp_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_cryptoapp_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_cryptoapp_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_cryptoapp_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_cryptoapp_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_cryptoapp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_dsp_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_dsp_device:blk_file { getattr };
+allow init vendor_dsp_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_dsp_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_dsp_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_dsp_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_dsp_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_dsp_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_dsp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_hbtp_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_hbtp_device:blk_file { getattr };
+allow init vendor_hbtp_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_hbtp_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_hbtp_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_hbtp_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_hbtp_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_hbtp_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_hbtp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_npu_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_npu_device:blk_file { getattr };
+allow init vendor_npu_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_npu_device:chr_file { create getattr setattr unlink };
+allow bluetooth vendor_npu_device:chr_file { getattr ioctl lock map open read watch watch_reads };
+allow { init vendor_init } vendor_npu_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_npu_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_npu_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_npu_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_npu_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_sp_keymaster_ssr_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_sp_keymaster_ssr_device:blk_file { getattr };
+allow init vendor_sp_keymaster_ssr_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_sp_keymaster_ssr_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_sp_keymaster_ssr_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_sp_keymaster_ssr_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_sp_keymaster_ssr_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_sp_keymaster_ssr_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_sp_keymaster_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_sp_nvm_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_sp_nvm_device:blk_file { getattr };
+allow init vendor_sp_nvm_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_sp_nvm_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_sp_nvm_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_sp_nvm_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_sp_nvm_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_sp_nvm_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_sp_nvm_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_spdaemon_ssr_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_spdaemon_ssr_device:blk_file { getattr };
+allow init vendor_spdaemon_ssr_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_spdaemon_ssr_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_spdaemon_ssr_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_spdaemon_ssr_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_spdaemon_ssr_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_spdaemon_ssr_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_spdaemon_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_spu_hal_ssr_device:blk_file { create getattr relabelfrom relabelto setattr unlink };
+allow vendor_init vendor_spu_hal_ssr_device:blk_file { getattr };
+allow init vendor_spu_hal_ssr_device:blk_file { getattr ioctl lock map open read watch watch_reads };
+allow ueventd vendor_spu_hal_ssr_device:chr_file { create getattr setattr unlink };
+allow { init vendor_init } vendor_spu_hal_ssr_device:chr_file { setattr };
+allow { init ueventd vendor_init } vendor_spu_hal_ssr_device:dir { add_name create getattr ioctl lock open read remove_name rename reparent rmdir search setattr watch watch_reads write };
+allow ueventd vendor_spu_hal_ssr_device:lnk_file { create getattr ioctl lock map open read unlink watch watch_reads };
+allow { init vendor_init } vendor_spu_hal_ssr_device:lnk_file { create getattr ioctl lock map open read watch watch_reads };
+allow { audioserver batterysecret bluetooth cameraserver ddr_freq dvs_aidl_default ffu hal_aidl_dms_default hal_audio_default hal_batteryantiaging_default hal_bluetooth_default hal_bootctl_default hal_camera_default hal_cit_bluetooth_default hal_cit_bluetooth_sub hal_cit_wifi_default hal_cld_default hal_contexthub_default hal_display_demura_default hal_drm_clearkey_aidl hal_dumpstate_impl hal_eid_default hal_fbo_default hal_graphics_allocator_default hal_graphics_composer_default hal_health_default hal_light_default hal_mediaeventgatherservice_default hal_memtrack_default hal_micharge_default hal_miface_default hal_mikeybag_default hal_mimd_default hal_minetaidlservice_default hal_miperf_default hal_miqms_default hal_misys_vendor_default hal_misyscore_default hal_miweaver_default hal_mlipay_default hal_mrm_default hal_mseccam_default hal_mtdservice_default hal_nfc_default hal_otrpagent_default hal_ozonotify_default hal_power_default hal_seaaudio_default hal_secure_element_default hal_sensors_default hal_swap_default hal_tetheroffload_default hal_thermal_default hal_tidaservice_default hal_touchfeature_xiaomi_default hal_uniperf_default hal_vibrator_default hal_videoservice_default hal_visdisplaysrv_default hal_vsimapp_default hal_wifi_default hal_wifi_hostapd_default hal_wifi_supplicant_default healthd hwservicemanager mediacodec mediaextractor mediaserver mi_ambient mi_ic mi_ric mi_thermald minetd mtb netd rild servicemanager set_diag_state slad surfaceflinger system_server tee tpevent ufs_utils vendor_adpl vendor_adsprpcd vendor_audioadsprpcd vendor_audioftm vendor_c2painternetservice vendor_cdsprpcd vendor_cnd vendor_dcfd vendor_diag-router vendor_displayfeature vendor_dlsc vendor_dpmd vendor_dpmd_vndr vendor_dspservice vendor_feature_enabler_client vendor_hal_MemHal_default vendor_hal_alarm_qti_default vendor_hal_capabilityconfigstore_qti_default vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_color_default vendor_hal_displayfeature_xiaomi_default vendor_hal_embmssl_qti vendor_hal_gatekeeper_qti vendor_hal_gnss_qti vendor_hal_imsrtp vendor_hal_keymaster_qti vendor_hal_keymint_qti vendor_hal_keymint_strongbox vendor_hal_minkipcbinder_default vendor_hal_misensor_camera_default vendor_hal_perf_default vendor_hal_poweroptservice_qti vendor_hal_qseecom_default vendor_hal_qspa_default vendor_hal_qspmhal_default vendor_hal_qvirtservice_qti vendor_hal_secureprocessor_qti vendor_hal_sensorscalibrate_qti_default vendor_hal_snapx_default vendor_hal_soter_qti vendor_hal_srvctracker_default vendor_hal_trustedui_qti vendor_hal_usb_qti vendor_hal_weaver_default vendor_hexlpservice vendor_hlosminkdaemon vendor_hostapd vendor_ims_dcservice vendor_ims_service vendor_imsvtdaemon vendor_init-qcom-sensors-sh vendor_init-qti-keymaster-sh vendor_irsc_util vendor_location vendor_location_edgnss_daemon vendor_location_lowi_server vendor_location_xtra_daemon vendor_location_xtwifi_client vendor_mbnota vendor_mfp-daemon vendor_mlid vendor_nicmd vendor_nqnfcinfo vendor_pasrmanager_memory_qti vendor_pd_mapper vendor_per_mgr vendor_per_proxy vendor_port-bridge vendor_power_off_alarm vendor_qccvendor vendor_qdcm-ss vendor_qlm_service vendor_qlogd vendor_qmipriod vendor_qms vendor_qt_service vendor_qti vendor_qti_init_shell vendor_qti_init_shell_bg vendor_qti_media vendor_qvirtmgr vendor_qvrd_vndr vendor_qwesd vendor_rfs_access vendor_rmt_storage vendor_sensors vendor_sensors_qesdk vendor_sensors_qti vendor_shsusrd vendor_ssgqmigd vendor_ssgtzd vendor_ssr_diag vendor_ssr_setup vendor_subsystem_ramdump vendor_sxrd_vndr vendor_syshealthmon_default vendor_thermal-engine vendor_time_daemon vendor_tlpd vendor_trusteduilistener vendor_vm_mgr vendor_vppservice vendor_wcnss_service vendor_wfdhdcphalservice_qti vendor_wfdvndservice vendor_wifidisplayhalservice_qti vendor_wifilearnersvc vndservicemanager vold wallpapercolor wdsdaemon wlanramdumpcollector } vendor_spu_hal_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+recovery_only(`
+allow recovery vendor_cryptoapp_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_cryptoapp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_dsp_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_dsp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_hbtp_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_hbtp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_npu_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_npu_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_sp_keymaster_ssr_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_sp_keymaster_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_sp_nvm_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_sp_nvm_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_spdaemon_ssr_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_spdaemon_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow recovery vendor_spu_hal_ssr_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+allow { fastbootd recovery } vendor_spu_hal_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };')

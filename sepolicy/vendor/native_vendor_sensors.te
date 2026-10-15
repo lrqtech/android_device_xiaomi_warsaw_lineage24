@@ -1,0 +1,89 @@
+type vendor_sensors, domain;
+
+domain_auto_trans(init, vendor_sensors_exec, vendor_sensors)
+
+binder_use(vendor_sensors)
+
+hwbinder_use(vendor_sensors)
+
+allow vendor_sensors vendor_sensors_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_sensors vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_sensors self:capability { setgid setuid net_bind_service };
+
+allow vendor_sensors self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_sensors self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_sensors mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_sensors system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_sensors sensors_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_sensors vendor_sysfs_soc:file { write lock append map open };
+
+allow vendor_sensors vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors vendor_xdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors device:dir { read watch };
+
+allow vendor_sensors adsprpcd_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_sensors adsprpcd_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors adsprpcd_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors vendor_adsprpc_prop:file { read getattr map open };
+
+allow vendor_sensors vendor_persist_sensors_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_sensors vendor_persist_sensors_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_sensors sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_sensors self:capability2 { block_suspend };
+
+allow vendor_sensors self:cap2_userns { block_suspend };
+
+allow vendor_sensors system_suspend_server:binder { call transfer };
+
+allow vendor_sensors system_suspend_server:fd { use };
+
+allow vendor_sensors system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_sensors hwservicemanager:binder { call transfer };
+
+allow vendor_sensors hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_sensors hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_sensors hal_system_suspend_service:service_manager { find };
+
+allow vendor_sensors servicemanager:binder { call transfer };
+
+allow vendor_sensors unlabeled:lnk_file { read };
+
+allow vendor_sensors vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_sensors vendor_sysfs_graphics:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_sensors vendor_sysfs_displayfeature:dir { search };
+
+allow vendor_sensors vendor_sysfs_displayfeature:file { read getattr open };
+
+allow vendor_sensors vendor_aon_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_sensors vendor_aon_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allowxperm vendor_sensors self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_sensors self:qipcrtr_socket ioctl { 0xc300-0xc305 };

@@ -1,0 +1,217 @@
+typeattribute tee hal_graphics_allocator_client;
+
+typeattribute tee hal_graphics_composer_client;
+
+typeattribute tee halclientdomain;
+
+typeattribute tee vendor_hal_eid_client;
+
+typeattribute tee vendor_hal_qdutils_disp_client;
+
+typeattribute tee vendor_hal_qvirtservice_client;
+
+typeattribute tee vendor_hal_soter_client;
+
+binder_use(tee)
+
+hwbinder_use(tee)
+
+vndbinder_use(tee)
+
+allow tee fingerprint_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow tee fingerprint_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee tee_exec:file { read getattr map execute open entrypoint };
+
+allow tee self:capability { dac_override };
+
+allow tee self:cap_userns { dac_override };
+
+allow tee tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee tee_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee tee_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee self:netlink_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow tee self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow tee ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee sysfs_type:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee sysfs_type:file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee sysfs_type:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee system_data_file:file { read getattr };
+
+allow tee system_data_file:lnk_file { read getattr };
+
+allow tee self:capability { chown setgid setuid sys_rawio sys_admin };
+
+allow tee device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee property_socket:sock_file { write };
+
+allow tee init:unix_stream_socket { connectto };
+
+allow tee vendor_tee_listener_prop:property_service { set };
+
+allow tee vendor_tee_listener_prop:file { read getattr map open };
+
+allow tee firmware_file:dir { search };
+
+allow tee block_device:dir { getattr search };
+
+allow tee vendor_rpmb_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_rpmb_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_ssd_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_sg_device:chr_file { ioctl read write getattr setattr lock append map open watch watch_reads };
+
+allow tee vendor_bsg_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_ufs_lun4_bsg_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee vendor_persist_drm_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_persist_drm_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_persist_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_persist_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_time_daemon:unix_stream_socket { connectto };
+
+allow tee vendor_data_tzstorage_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_data_tzstorage_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vndservicemanager:binder { call transfer };
+
+allow tee vendor_qdisplay_service:service_manager { find };
+
+allow tee vendor_sysfs_sectouch:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee vendor_sysfs_graphics:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_qsee_ipc_irq_spss_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_data_qsee_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_data_qsee_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee graphics_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee graphics_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee vendor_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee self:capability2 { block_suspend };
+
+allow tee self:cap2_userns { block_suspend };
+
+allow tee system_suspend_server:binder { call transfer };
+
+allow tee system_suspend_server:fd { use };
+
+allow tee system_suspend_hwservice:hwservice_manager { find };
+
+allow tee hwservicemanager:binder { call transfer };
+
+allow tee hwservicemanager_prop:file { read getattr map open };
+
+allow tee hidl_manager_hwservice:hwservice_manager { find };
+
+allow tee hal_system_suspend_service:service_manager { find };
+
+allow tee servicemanager:binder { call transfer };
+
+allow tee firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow tee firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee vendor_qfp-daemon_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_qfp-daemon_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_persist_qti_fp_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_persist_qti_fp_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee vendor_dmabuf_user_contig_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow tee userspace_reboot_exported_prop:file { read getattr map open };
+
+allow tee mnt_vendor_file:dir { ioctl read write create getattr setattr lock relabelto rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee mnt_vendor_file:file { ioctl read write create getattr setattr lock relabelto append map unlink rename open watch watch_reads };
+
+allow tee proc_mitee_log:file { read getattr open };
+
+allow tee mitee_client_device:chr_file { ioctl read write create getattr setattr lock append map unlink open watch watch_reads };
+
+allow tee vendor_gunyah_chr_device:chr_file { ioctl read write create getattr setattr lock append map unlink open watch watch_reads };
+
+allow tee mitee_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee mitee_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee mitee_sfs_file:dir { ioctl read write create getattr setattr lock relabelto rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee mitee_sfs_file:file { ioctl read write create getattr setattr lock relabelto append map unlink rename open watch watch_reads };
+
+allow tee mitee_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_mitee_prop:property_service { set };
+
+allow tee vendor_mitee_prop:file { read getattr map open };
+
+allow tee vendor_qvirtmgr_prop:file { read getattr map open };
+
+allow tee vendor_fingerprint_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow tee vendor_fingerprint_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_fingerprint_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_fingerprint_data_file_fpdump:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow tee vendor_fingerprint_data_file_fpdump:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow tee vendor_fingerprint_data_file_fpdump:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee vendor_fingerprint_data_file_fpdump:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_mfp-daemon_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee vendor_mfp-daemon_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow tee otrp_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow tee otrp_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allowxperm tee vendor_rpmb_device:chr_file ioctl { 0xb301 };
+
+allowxperm tee vendor_rpmb_device:blk_file ioctl { 0xb300 };

@@ -1,0 +1,15 @@
+type vendor_nqnfcinfo, domain;
+
+domain_auto_trans(init, vendor_nqnfcinfo_exec, vendor_nqnfcinfo)
+
+allow vendor_nqnfcinfo vendor_nqnfcinfo_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_nqnfcinfo property_socket:sock_file { write };
+
+allow vendor_nqnfcinfo init:unix_stream_socket { connectto };
+
+allow vendor_nqnfcinfo vendor_nfc_nq_prop:property_service { set };
+
+allow vendor_nqnfcinfo vendor_nfc_nq_prop:file { read getattr map open };
+
+allow vendor_nqnfcinfo nfc_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };

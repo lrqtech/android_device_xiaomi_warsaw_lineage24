@@ -1,0 +1,16 @@
+allow cameramind_app camlog_device:chr_file rw_file_perms;
+allow cameramind_app vendor_camera_data_file:dir create_dir_perms;
+allow cameramind_app vendor_camera_data_file:file create_file_perms;
+get_prop(cameramind_app, vendor_camera_prop)
+
+binder_call(cameramind_app, hal_camera_default)
+binder_call(hal_camera_default, cameramind_app)
+allow cameramind_app aidlintentaware_service:service_manager find;
+allow cameramind_app vendor_hal_perf_hwservice:hwservice_manager find;
+allow cameramind_app vendor_sysfs_kgsl:dir r_dir_perms;
+allow cameramind_app vendor_sysfs_kgsl:file r_file_perms;
+allow cameramind_app vendor_sysfs_battery_supply:dir r_dir_perms;
+allow cameramind_app vendor_sysfs_battery_supply:file r_file_perms;
+allow cameramind_app vendor_hal_perf2_service:service_manager find;
+allow cameramind_app sysfs_poweraware:dir r_dir_perms;
+allow cameramind_app sysfs_poweraware:file r_file_perms;

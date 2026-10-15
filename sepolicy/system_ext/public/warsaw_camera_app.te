@@ -1,0 +1,5 @@
+# Retained platform-signed camera; vendor policy can name only this client.
+type warsaw_camera_app, domain;
+
+# OS4.0.0.15 OTA hardware labels, audited 2026-10-14.
+type miev_device, dev_type, mlstrustedobject;

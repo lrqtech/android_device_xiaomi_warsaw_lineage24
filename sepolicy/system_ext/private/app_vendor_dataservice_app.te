@@ -1,0 +1,93 @@
+typeattribute vendor_dataservice_app coredomain;
+
+app_domain(vendor_dataservice_app)
+
+net_domain(vendor_dataservice_app)
+
+typeattribute vendor_dataservice_app halclientdomain;
+
+typeattribute vendor_dataservice_app mlstrustedsubject;
+
+typeattribute vendor_dataservice_app vendor_hal_datafactory_qti_client;
+
+typeattribute vendor_dataservice_app vendor_hal_dcservice_qti_client;
+
+typeattribute vendor_dataservice_app vendor_hal_dpmapiservice_qti_client;
+
+typeattribute vendor_dataservice_app vendor_hal_imsfactory_client;
+
+typeattribute vendor_dataservice_app vendor_hal_mwqemadapter_qti_client;
+
+typeattribute vendor_dataservice_app vendor_hal_perf_client;
+
+typeattribute vendor_dataservice_app vendor_hal_qms_qti_client;
+
+hwbinder_use(vendor_dataservice_app)
+
+allow vendor_dataservice_app miui_native_file:dir { search };
+
+allow vendor_dataservice_app data_log_stability_file:dir { search };
+
+allow vendor_dataservice_app miui_coredump_file:dir { write add_name search };
+
+allow vendor_dataservice_app miui_coredump_file:file { read write create open };
+
+allow vendor_dataservice_app miui_hprof_file:dir { write getattr setattr add_name search };
+
+allow vendor_dataservice_app miui_hprof_file:file { read write create getattr setattr open };
+
+allow vendor_dataservice_app appdomain_tmpfs:file { read write getattr map execute };
+
+allow vendor_dataservice_app appdomain:memfd_file { read write getattr map execute };
+
+allow vendor_dataservice_app vendor_cne_service:service_manager { add find };
+
+allow vendor_dataservice_app vendor_dpmservice:service_manager { add find };
+
+allow vendor_dataservice_app uce_service:service_manager { add find };
+
+allow vendor_dataservice_app vendor_imsdc_service:service_manager { add find };
+
+allow vendor_dataservice_app app_api_service:service_manager { find };
+
+allow vendor_dataservice_app system_api_service:service_manager { find };
+
+allow vendor_dataservice_app audioserver_service:service_manager { find };
+
+allow vendor_dataservice_app radio_service:service_manager { find };
+
+allow vendor_dataservice_app radio_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_dataservice_app radio_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_dataservice_app radio_data_file:lnk_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_dataservice_app hwservicemanager:binder { call transfer };
+
+allow vendor_dataservice_app system_app_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_dataservice_app vendor_dpmd_socket:sock_file { write };
+
+allow vendor_dataservice_app vendor_dpmd_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_dataservice_app vendor_dpmd_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_dataservice_app vendor_dpmd:unix_stream_socket { connectto };
+
+allow vendor_dataservice_app vendor_persist_ntn_prop:file { read getattr map open };
+
+allow vendor_dataservice_app property_socket:sock_file { write };
+
+allow vendor_dataservice_app init:unix_stream_socket { connectto };
+
+allow vendor_dataservice_app vendor_persist_ntn_prop:property_service { set };
+
+allow vendor_dataservice_app vendor_persist_dpm_prop:property_service { set };
+
+allow vendor_dataservice_app vendor_persist_dpm_prop:file { read getattr map open };
+
+allow vendor_dataservice_app vendor_persist_rcs_prop:property_service { set };
+
+allow vendor_dataservice_app vendor_persist_rcs_prop:file { read getattr map open };
+
+type_transition vendor_dataservice_app tmpfs:file appdomain_tmpfs;

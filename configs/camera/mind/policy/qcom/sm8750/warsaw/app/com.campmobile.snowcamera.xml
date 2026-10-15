@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.campmobile.snowcamera.xml">
+
+    <app prio="100" name="com.campmobile.snowcamera" >
+        <profile name="normal">
+
+            <activity name="com.linecorp.b612.android.activity.ActivityCamera">
+            </activity>
+        </profile>
+    </app>
+</policy>

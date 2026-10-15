@@ -1,0 +1,89 @@
+type hal_miperf_default, domain;
+
+domain_auto_trans(init, hal_miperf_default_exec, hal_miperf_default)
+
+typeattribute hal_miperf_default hal_miperf;
+
+typeattribute hal_miperf_default hal_miperf_client;
+
+typeattribute hal_miperf_default hal_miperf_server;
+
+typeattribute hal_miperf_default halclientdomain;
+
+typeattribute hal_miperf_default halserverdomain;
+
+typeattribute hal_miperf_default vendor_hal_perf_client;
+
+binder_use(hal_miperf_default)
+
+allow hal_miperf_default sysfs_perfmgr:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_miperf_default sysfs_perfmgr:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_perfmgr:lnk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default proc_sys_walt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_miperf_default proc_sys_walt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default proc_sys_walt:lnk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default proc_perfmgr:dir { search };
+
+allow hal_miperf_default proc_perfmgr:file { ioctl read getattr open };
+
+allow hal_miperf_default hal_miperf_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_miperf_default servicemanager:binder { call transfer };
+
+allow hal_miperf_default mnt_vendor_file:dir { read getattr open search };
+
+allow hal_miperf_default mnt_vendor_file:file { read getattr open };
+
+allow hal_miperf_default mnt_vendor_file:file { write };
+
+allow hal_miperf_default mnt_vendor_file:dir { write };
+
+allow hal_miperf_default mnt_vendor_file:dir { add_name remove_name rmdir };
+
+allow hal_miperf_default mnt_vendor_file:file { create unlink };
+
+allow hal_miperf_default proc:file { read write getattr setattr open };
+
+allow hal_miperf_default proc_firmware_config:file { read write getattr setattr open };
+
+allow hal_miperf_default cgroup:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default sysfs_devices_system_cpu:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miperf_default vendor_hal_perf_hwservice:hwservice_manager { find };
+
+allow hal_miperf_default vendor_hal_perf_default:binder { call };
+
+allow hal_miperf_default miperf_data_file:dir { read write watch add_name remove_name search };
+
+allow hal_miperf_default miperf_data_file:file { read write create getattr setattr unlink rename open };
+
+allow hal_miperf_default system_server:binder { call };
+
+allow hal_miperf_default vendor_system_prop:file { read getattr open };
+
+allowxperm hal_miperf_default proc_perfmgr:file ioctl { 0x6701 0x6703 0x670f };

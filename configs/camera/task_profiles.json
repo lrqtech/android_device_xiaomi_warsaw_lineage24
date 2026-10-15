@@ -1,0 +1,216 @@
+{
+  "AggregateProfiles": [
+    {
+      "Name": "CPUSET_SP_CAMERA_BACKGROUND_LIMIT_LEVEL0",
+      "Profiles": [
+        "HighEnergySaving",
+        "CameraProcessCapacityLevel0",
+        "LowIoPriority",
+        "TimerSlackHigh"
+      ]
+    },
+    {
+      "Name": "CPUSET_SP_CAMERA_BACKGROUND_LIMIT_LEVEL1",
+      "Profiles": [
+        "CameraProcessCapacityLevel1"
+      ]
+    },
+    {
+      "Name": "CPUSET_SP_CAMERA_BACKGROUND_LIMIT_LEVEL2",
+      "Profiles": [
+        "CameraProcessCapacityLevel2"
+      ]
+    },
+    {
+      "Name": "CPUSET_SP_CAMERA_BACKGROUND_LIMIT_LEVEL3",
+      "Profiles": [
+        "CameraProcessCapacityLevel3"
+      ]
+    },
+    {
+      "Name": "CPUSET_SP_CAMERA_BACKGROUND_LIMIT_LEVEL5",
+      "Profiles": [
+        "CameraProcessCapacityLevel5"
+      ]
+    },
+    {
+      "Name": "CAMERA_PRIME_SCHED",
+      "Profiles": [
+        "CameraVipPerformance",
+        "CameraPrimePerformance"
+      ]
+    },
+    {
+      "Name": "CPUSET_SP_CAMERA_BACKGROUND_LIMIT_LEVEL3_HIGHER",
+      "Profiles": [
+        "CameraProcessCapacityLevel3",
+        "CameraProcessPerformanceLevel0"
+      ]
+    },
+    {
+      "Name": "CAMERA_CAPTURE_SCHED",
+      "Profiles": [
+        "CameraProcessCapacityLevel6",
+        "CameraPerformanceLevel2"
+      ]
+    }
+  ],
+  "Profiles": [
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level0"
+          }
+        }
+      ],
+      "Name": "CameraProcessCapacityLevel0"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level1"
+          }
+        }
+      ],
+      "Name": "CameraProcessCapacityLevel1"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level2"
+          }
+        }
+      ],
+      "Name": "CameraProcessCapacityLevel2"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level3"
+          }
+        }
+      ],
+      "Name": "CameraProcessCapacityLevel3"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level5"
+          }
+        }
+      ],
+      "Name": "CameraProcessCapacityLevel5"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level6"
+          }
+        }
+      ],
+      "Name": "CameraProcessCapacityLevel6"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpu",
+            "Path": "camera-daemon/limit-level0"
+          }
+        }
+      ],
+      "Name": "CameraProcessPerformanceLevel0"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "memory",
+            "Path": "camera/provider"
+          }
+        }
+      ],
+      "Name": "CameraProcessProviderMemcg"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpu",
+            "Path": "camera-daemon/limit-level1"
+          }
+        }
+      ],
+      "Name": "CameraPreviewPerformance"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpu",
+            "Path": "camera-daemon/limit-level2"
+          }
+        }
+      ],
+      "Name": "CameraPerformanceLevel2"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpu",
+            "Path": "camera-daemon/limit-level3"
+          }
+        }
+      ],
+      "Name": "CameraVipPerformance"
+    },
+    {
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpuset",
+            "Path": "camera-daemon/limit-level4"
+          }
+        }
+      ],
+      "Name": "CameraPrimePerformance"
+    },
+    {
+      "Name": "CameraCapturePerformance",
+      "Actions": [
+        {
+          "Name": "JoinCgroup",
+          "Params": {
+            "Controller": "cpu",
+            "Path": "camera-daemon/limit-level2"
+          }
+        }
+      ]
+    }
+  ]
+}

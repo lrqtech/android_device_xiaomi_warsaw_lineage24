@@ -1,0 +1,84 @@
+type vendor_hal_usb_qti, domain;
+
+domain_auto_trans(init, vendor_hal_usb_qti_exec, vendor_hal_usb_qti)
+
+typeattribute vendor_hal_usb_qti hal_usb;
+
+typeattribute vendor_hal_usb_qti hal_usb_gadget;
+
+typeattribute vendor_hal_usb_qti hal_usb_gadget_server;
+
+typeattribute vendor_hal_usb_qti hal_usb_server;
+
+typeattribute vendor_hal_usb_qti halserverdomain;
+
+allow vendor_hal_usb_qti vendor_hal_usb_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_usb_qti vendor_usb_prop:file { read getattr map open };
+
+allow vendor_hal_usb_qti property_socket:sock_file { write };
+
+allow vendor_hal_usb_qti init:unix_stream_socket { connectto };
+
+allow vendor_hal_usb_qti vendor_usb_prop:property_service { set };
+
+allow vendor_hal_usb_qti configfs:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_usb_qti functionfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_c:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_c:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_c:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_node:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_node:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti vendor_sysfs_battery_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_battery_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_device:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti vendor_sysfs_graphics:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_graphics:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti block_device:dir { search };
+
+allow vendor_hal_usb_qti vendor_ramdump_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_usb_qti vendor_sysfs_usb_device:file { read write getattr open };
+
+allow vendor_hal_usb_qti proc_usb_msflag:file { read write getattr open };
+
+allow vendor_hal_usb_qti proc_usb_ms_use:file { read write getattr open };
+
+allow vendor_hal_usb_qti proc_enable_msflag:file { read getattr open };
+
+allow vendor_hal_usb_qti vendor_audio_prop:file { read getattr map open };
+
+allow vendor_hal_usb_qti vendor_sysfs_xm_power:dir { search };
+
+allow vendor_hal_usb_qti vendor_sysfs_xm_power:file { read write getattr open };
+
+allow vendor_hal_usb_qti sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_usb_qti sysfs_typec:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_usb_qti sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+# Runtime UDC discovery traverses the controller directory.
+allow vendor_hal_usb_qti sysfs_udc:dir search;

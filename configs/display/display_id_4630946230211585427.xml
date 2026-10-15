@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+
+<displayConfiguration>
+
+    <screenBrightnessMap>
+        <point>
+            <value>0.000244170</value>
+            <nits>1.0</nits>
+        </point>
+        <point>
+            <value>0.002258576</value>
+            <nits>2.0</nits>
+        </point>
+        <point>
+            <value>0.006287389</value>
+            <nits>5.0</nits>
+        </point>
+        <point>
+            <value>0.013734587</value>
+            <nits>13.0</nits>
+        </point>
+        <point>
+            <value>0.024478086</value>
+            <nits>30.0</nits>
+        </point>
+        <point>
+            <value>0.043218166</value>
+            <nits>60.0</nits>
+        </point>
+        <point>
+            <value>0.411976560</value>
+            <nits>850.0</nits>
+        </point>
+        <point>
+            <value>0.824014162</value>
+            <nits>2000.0</nits>
+        </point>
+        <point>
+            <value>1.0</value>
+            <nits>3500.0</nits>
+        </point>
+    </screenBrightnessMap>
+
+    <highBrightnessMode enabled="true">
+
+        <transitionPoint>0.295263094</transitionPoint>
+
+        <minimumLux>4946</minimumLux>
+
+        <timing>
+            <timeWindowSecs>0</timeWindowSecs>
+            <timeMaxSecs>0</timeMaxSecs>
+            <timeMinSecs>0</timeMinSecs>
+        </timing>
+
+
+
+        <thermalStatusLimit>critical</thermalStatusLimit>
+
+        <allowInLowPowerMode>true</allowInLowPowerMode>
+        <minimumHdrPercentOfScreen>0</minimumHdrPercentOfScreen>
+        <sdrHdrRatioMap>
+            <point>
+                <sdrNits>1.0</sdrNits>
+                <hdrRatio>8.0</hdrRatio>
+            </point>
+            <point>
+                <sdrNits>2000.0</sdrNits>
+                <hdrRatio>8.0</hdrRatio>
+            </point>
+        </sdrHdrRatioMap>
+    </highBrightnessMode>
+    <ambientLightHorizonLong>1500</ambientLightHorizonLong>
+    <ambientLightHorizonShort>1000</ambientLightHorizonShort>
+</displayConfiguration>

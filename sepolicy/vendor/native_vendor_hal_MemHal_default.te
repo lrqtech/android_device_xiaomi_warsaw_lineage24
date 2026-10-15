@@ -1,0 +1,21 @@
+type vendor_hal_MemHal_default, domain;
+
+domain_auto_trans(init, vendor_hal_MemHal_default_exec, vendor_hal_MemHal_default)
+
+typeattribute vendor_hal_MemHal_default halclientdomain;
+
+typeattribute vendor_hal_MemHal_default halserverdomain;
+
+typeattribute vendor_hal_MemHal_default mlstrustedsubject;
+
+typeattribute vendor_hal_MemHal_default vendor_hal_MemHal;
+
+typeattribute vendor_hal_MemHal_default vendor_hal_MemHal_server;
+
+typeattribute vendor_hal_MemHal_default vendor_hal_perf_client;
+
+allow vendor_hal_MemHal_default vendor_hal_MemHal_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_MemHal_default vendor_mpctl_prop:file { read getattr map open };
+
+allow vendor_hal_MemHal_default proc_meminfo:file { ioctl read getattr lock map open watch watch_reads };

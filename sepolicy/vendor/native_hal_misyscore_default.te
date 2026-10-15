@@ -1,0 +1,43 @@
+type hal_misyscore_default, domain;
+
+domain_auto_trans(init, hal_misyscore_default_exec, hal_misyscore_default)
+
+typeattribute hal_misyscore_default hal_misyscore;
+
+typeattribute hal_misyscore_default hal_misyscore_server;
+
+typeattribute hal_misyscore_default halserverdomain;
+
+typeattribute hal_misyscore_default mlstrustedsubject;
+
+binder_use(hal_misyscore_default)
+
+allow hal_misyscore_default hal_misyscore_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_misyscore_default servicemanager:binder { call transfer };
+
+allow hal_misyscore_default block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misyscore_default blackbox_block_device:blk_file { ioctl read getattr setattr lock map open watch watch_reads };
+
+allow hal_misyscore_default minidump_block_device:blk_file { ioctl read getattr setattr lock map open watch watch_reads };
+
+allow hal_misyscore_default super_block_device:blk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misyscore_default oops_block_device:blk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misyscore_default rescue_block_device:blk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misyscore_default vendor_ramdump_block_device:blk_file { ioctl read getattr setattr lock map open watch watch_reads };
+
+allow hal_misyscore_default minidump_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misyscore_default minidump_data_file:file { setattr };
+
+allow hal_misyscore_default wp_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misyscore_default wp_data_file:file { setattr };
+
+allow hal_misyscore_default graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misyscore_default secinfo_block_device:blk_file { ioctl read getattr setattr lock map open watch watch_reads };

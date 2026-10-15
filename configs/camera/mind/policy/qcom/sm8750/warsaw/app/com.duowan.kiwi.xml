@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.duowan.kiwi.xml">
+
+    <app prio="100" name="com.duowan.kiwi" >
+        <profile name="normal">
+
+            <activity name="com.duowan.liveroom.LiveRoomActivity">
+                <macro name="thirdPartAppTempPolicyNoActivity" />
+            </activity>
+        </profile>
+    </app>
+</policy>

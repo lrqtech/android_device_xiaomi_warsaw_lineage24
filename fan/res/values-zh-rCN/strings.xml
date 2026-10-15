@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="warsaw_fan_app_name">散热风扇</string>
+    <string name="warsaw_fan_enabled">启用散热风扇</string>
+    <string name="warsaw_fan_mode">散热模式</string>
+    <string-array name="warsaw_fan_modes"><item>智能调频</item><item>高速强冷</item><item>静谧模式</item><item>狂暴模式 · 约 20000 转/分</item><item>手动档位</item></string-array>
+    <string name="warsaw_fan_range">启用范围</string>
+    <string-array name="warsaw_fan_ranges"><item>选定场景</item><item>其他场景也启用</item></string-array>
+    <string name="warsaw_fan_gaming">游戏</string>
+    <string name="warsaw_fan_rapid_charge">快速充电</string>
+    <string name="warsaw_fan_navigation">导航</string>
+    <string name="warsaw_fan_recording">录音时减少风扇噪声</string>
+    <string name="warsaw_fan_self_clean">自动清洁</string>
+    <string name="warsaw_fan_self_clean_description">连续 30 天未运转后，在熄屏、充电且无通话的状态持续 5 分钟时，风扇可进行 8 秒自动清洁。</string>
+    <string name="warsaw_fan_behavior_description">风扇根据温度和使用场景运行，锁屏、通话或录音时可能暂停。选择模式不代表风扇正在运转。</string>
+    <string name="warsaw_fan_state_waiting">正在等待最新风扇状态…</string>
+    <string name="warsaw_fan_state_cleaning">正在自动清洁</string>
+    <string name="warsaw_fan_state_stopped">风扇已停止</string>
+    <string name="warsaw_fan_state_running">风扇当前设为 %1$d 档</string>
+    <string name="warsaw_fan_state_inputs_unavailable">自动控制正在等待设备状态，尚未确认当前设置生效。</string>
+    <string name="warsaw_fan_state_unavailable">暂时无法控制风扇，尚未确认设置生效。</string>
+    <string name="warsaw_fan_save_failed">设置保存失败</string>
+    <string name="warsaw_fan_choose_value">请选择</string>
+    <string name="warsaw_fan_state_rpm">实测转速：%1$d 转/分</string>
+    <string name="warsaw_fan_speed_waiting">正在等待实测转速</string>
+    <string name="warsaw_fan_manual_level">风扇档位</string>
+    <string-array name="warsaw_fan_manual_entries"><item>1 档 · 约 12000 转/分</item><item>2 档 · 约 14000 转/分</item><item>3 档 · 约 16000 转/分</item><item>4 档 · 约 20000 转/分</item></string-array>
+    <string name="warsaw_fan_state_inputs_stopped">设备状态暂时无法获取，风扇已停止；状态恢复后将继续自动控制。</string>
+    <string name="warsaw_fan_state_configuration_stopped">风扇控制配置不可用，风扇已停止。</string>
+    <string name="warsaw_fan_speed_driver_error">风扇硬件报告故障</string>
+    <string name="warsaw_fan_speed_sensor_unavailable">风扇转速传感器不可用</string>
+    <string name="warsaw_fan_speed_write_failed">实测转速未能传递给风扇控制器</string>
+    <string name="warsaw_fan_speed_invalid">暂时没有有效的转速数据</string>
+    <string name="warsaw_fan_speed_inactive">充电且风扇启用时测量转速</string>
+    <string name="warsaw_fan_state_hal_stopped">风扇已停止，但暂时无法读取控制器状态。</string>
+    <string name="warsaw_fan_homepage_title">散热风扇</string>
+    <string name="warsaw_fan_homepage_summary">启用风扇与调节 PWM</string>
+    <string name="warsaw_fan_pwm_title">PWM 占空比</string>
+    <string name="warsaw_fan_pwm_value">%1$d%%</string>
+    <string name="warsaw_fan_control_unavailable">暂时无法控制风扇</string>
+</resources>

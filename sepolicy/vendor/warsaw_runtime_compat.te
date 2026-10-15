@@ -1,0 +1,61 @@
+# Warsaw runtime AVC repairs (2026-10-13)
+# The performance HAL already has thermal file access, but needs traversal.
+allow vendor_hal_perf_default sysfs_thermal:dir search;
+
+# Camera performance/identity queries captured during real preview requests.
+allow hal_camera_default cgroup:file read;
+allow hal_camera_default sysfs_thermal:dir search;
+allow hal_camera_default sysfs_thermal:file { open read getattr };
+allow hal_camera_default vendor_sysfs_ssr:dir { open read search getattr };
+allow hal_camera_default vendor_sysfs_ssr:file { open read getattr };
+allow hal_camera_default vendor_sysfs_displayfeature:dir search;
+allow hal_camera_default vendor_sysfs_displayfeature:file { open read getattr };
+allow hal_camera_default vendor_sysfs_kgsl:dir search;
+# StorageController reads UFS wb_avail_buf, labeled sysfs_memory here.
+allow hal_camera_default sysfs_memory:file r_file_perms;
+typeattribute hal_camera_default vendor_hal_qspmhal_client;
+typeattribute mediacodec vendor_hal_qspmhal_client;
+
+# NFC and GNSS identify the SoC; the media stack reads the subset-parts mask.
+allow { hal_nfc_default vendor_hal_gnss_qti vendor_location_xtra_daemon hal_camera_default mediacodec } vendor_sysfs_soc:dir search;
+allow { hal_nfc_default vendor_hal_gnss_qti vendor_location_xtra_daemon } vendor_sysfs_soc:file { open read getattr };
+allow mediacodec vendor_sys_nonsp_comp:file { open read getattr };
+
+# GNSS locates modem remoteproc instances and reads its vendor debug setting.
+allow vendor_hal_gnss_qti vendor_sysfs_ssr:dir { open read search getattr };
+allow vendor_hal_gnss_qti vendor_sysfs_ssr:file { open read getattr };
+get_prop(vendor_hal_gnss_qti, vendor_pd_locater_dbg_prop)
+
+# Complete the existing vendor wake-lock and secure-element Binder contracts.
+binder_call(vendor_qms, system_suspend_server)
+binder_call(vendor_hal_weaver_default, system_suspend_server)
+allow vendor_hal_weaver_default hal_system_suspend_service:service_manager find;
+binder_call(vendor_hal_weaver_default, secure_element)
+
+# The vendor graphics library reads gralloc configuration inside its clients.
+# Reuse Android's existing GPU/SPHAL role; grant no property write operation.
+get_prop({ gpu_sphal_domain -isolated_app_all }, vendor_gralloc_prop)
+
+# The retained Codec2 service loads libgui/GraphicsEnv, which reads the public
+# zygote GL-preload configuration (the same contract as AOSP hal_evs_default).
+get_prop(mediacodec, zygote_config_prop)
+
+# These four observed GPU clients call the retained Adreno profile library's
+# AIDL getGpuProf path. It returns read/write shared memory allocated by QSPM.
+# Do not grant the broader legacy HIDL or reverse-callback client contract.
+allow warsaw_qspm_render_client vendor_hal_qspmhal_service:service_manager find;
+allow warsaw_qspm_render_client vendor_hal_qspmhal_default:binder { call transfer };
+allow vendor_hal_qspmhal_default warsaw_qspm_render_client:binder transfer;
+allow warsaw_qspm_render_client vendor_hal_qspmhal_default:fd use;
+allow warsaw_qspm_render_client vendor_hal_qspmhal_default:memfd_file { read write getattr map };
+
+# v2 runtime evidence: return WakeLock Binder objects to the registered clients.
+# These exact reverse transfers are also present in the OS4 reference policy.
+allow system_suspend_server { vendor_cnd hal_drm_widevine vendor_hal_keymint_strongbox }:binder transfer;
+
+# Retained IMS media clients; mirror the OEM Binder contract, not diagnostic IPC.
+allow { priv_app mediaserver } vendor_imsvtdaemon:binder { call transfer };
+
+# The same observed Adreno readers need the kgsl directory and GPU model file.
+allow warsaw_qspm_render_client vendor_sysfs_kgsl:dir search;
+allow warsaw_qspm_render_client vendor_sysfs_kgsl:file r_file_perms;

@@ -1,0 +1,25 @@
+type vendor_mlid, domain;
+
+domain_auto_trans(init, vendor_mlid_exec, vendor_mlid)
+
+typeattribute vendor_mlid mlstrustedsubject;
+
+allow vendor_mlid vendor_mlid_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_mlid self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_mlid vendor_location_socket:sock_file { write };
+
+allow vendor_mlid vendor_location_lowi_server:unix_stream_socket { connectto };
+
+allow vendor_mlid vendor_hal_gnss_qti:unix_dgram_socket { sendto };
+
+allow vendor_mlid vendor_location_lowi_server:unix_dgram_socket { sendto };
+
+allow vendor_mlid vendor_location_socket:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_mlid vendor_location_socket:lnk_file { read };
+
+allow vendor_mlid vendor_location_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_mlid vendor_location:unix_dgram_socket { sendto };

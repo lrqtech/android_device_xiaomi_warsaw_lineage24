@@ -1,0 +1,349 @@
+type hal_misys_vendor_default, domain;
+
+domain_auto_trans(init, hal_misys_vendor_default_exec, hal_misys_vendor_default)
+
+typeattribute hal_misys_vendor_default hal_misys_vendor;
+
+typeattribute hal_misys_vendor_default hal_misys_vendor_server;
+
+typeattribute hal_misys_vendor_default hal_misyscore_client;
+
+typeattribute hal_misys_vendor_default halclientdomain;
+
+typeattribute hal_misys_vendor_default halserverdomain;
+
+typeattribute hal_misys_vendor_default hypsys_ssi_client;
+
+typeattribute hal_misys_vendor_default mlstrustedsubject;
+
+binder_use(hal_misys_vendor_default)
+
+hwbinder_use(hal_misys_vendor_default)
+
+allow hal_misys_vendor_default camera_persist_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default camera_persist_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_camera_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_misys_vendor_default vendor_camera_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default hal_misys_vendor_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_misys_vendor_default servicemanager:binder { call transfer };
+
+allow hal_misys_vendor_default mnt_vendor_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default mnt_vendor_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default proc:file { read write getattr setattr open };
+
+allow hal_misys_vendor_default proc_firmware_config:file { read write getattr setattr open };
+
+allow hal_misys_vendor_default property_socket:sock_file { write };
+
+allow hal_misys_vendor_default vendor_default_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_system_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default init:unix_stream_socket { connectto };
+
+allow hal_misys_vendor_default vendor_system_prop:property_service { set };
+
+allow hal_misys_vendor_default vendor_stability_prop:property_service { set };
+
+allow hal_misys_vendor_default vendor_stability_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_data_file:file { read write create getattr setattr open };
+
+allow hal_misys_vendor_default vendor_data_file:dir { write add_name };
+
+allow hal_misys_vendor_default system_app:binder { transfer };
+
+allow hal_misys_vendor_default su:binder { call transfer };
+
+allow hal_misys_vendor_default proc_meminfo:file { read };
+
+allow hal_misys_vendor_default appdomain_tmpfs:file { read };
+
+allow hal_misys_vendor_default vendor_bsp_data_log_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default vendor_bsp_data_log_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default mnt_user_file:lnk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default mnt_user_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default hidraw_device:chr_file { ioctl read write open };
+
+allow hal_misys_vendor_default data_io_monitor_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default data_io_monitor_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_minidump_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_minidump_prop:property_service { set };
+
+allow hal_misys_vendor_default minidump_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default minidump_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default minidump_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default blackbox_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default kmsg_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default kernel:system { syslog_read };
+
+allow hal_misys_vendor_default sysfs_bootinfo:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_bootinfo:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default vfat:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_misys_vendor_default vfat:file { ioctl read write getattr lock append map rename open watch watch_reads };
+
+allow hal_misys_vendor_default wp_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default wp_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_type:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_type:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_type:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default rootfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default rootfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default rootfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default cgroup:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default cgroup:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default cgroup:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default self:capability { sys_boot sys_tty_config };
+
+allow hal_misys_vendor_default self:netlink_kobject_uevent_socket { read create bind setopt };
+
+allow hal_misys_vendor_default sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_xm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default self:capability2 { block_suspend };
+
+allow hal_misys_vendor_default self:cap2_userns { block_suspend };
+
+allow hal_misys_vendor_default system_suspend_server:binder { call transfer };
+
+allow hal_misys_vendor_default system_suspend_server:fd { use };
+
+allow hal_misys_vendor_default system_suspend_hwservice:hwservice_manager { find };
+
+allow hal_misys_vendor_default hwservicemanager:binder { call transfer };
+
+allow hal_misys_vendor_default hwservicemanager_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default hidl_manager_hwservice:hwservice_manager { find };
+
+allow hal_misys_vendor_default hal_system_suspend_service:service_manager { find };
+
+allow hal_misys_vendor_default sysfs_batteryinfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_usb:file { write lock append map open };
+
+allow hal_misys_vendor_default vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default vendor_sysfs_usb_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default vendor_sysfs_usb_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_usb_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_xm_power:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default vendor_sysfs_xm_power:file { read write open };
+
+allow hal_misys_vendor_default kmsg_device:chr_file { read write open };
+
+allow hal_misys_vendor_default kmsg_device:chr_file { write lock append map open };
+
+allow hal_misys_vendor_default kmsg_device:chr_file { getattr };
+
+allow hal_misys_vendor_default boot_status_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default fuse:dir { ioctl read write getattr lock append map open watch watch_reads add_name search };
+
+allow hal_misys_vendor_default fuse:file { ioctl read write create getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default hal_misys_vendor_default:capability2 { block_suspend };
+
+allow hal_misys_vendor_default vfat:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default vfat:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_ramdump_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default vendor_ramdump_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default abreuse_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default log_manager_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_audio_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default vendor_audio_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_display_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default vendor_display_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_wifi_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default vendor_wifi_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_ramdump_block_device:blk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_camera_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_misys_vendor_default sysfs_memory:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_memory:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_memory:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_fp_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_wifi_version:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_nfc_mi_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default vendor_camera_sensor_prop:file { read getattr map open };
+
+allow hal_misys_vendor_default sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_toolbox_exec:file { read getattr execute open };
+
+allow hal_misys_vendor_default sysfs_bootinfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default procfs_memory:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default procfs_memory:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_soc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default vendor_sysfs_soc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default proc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default proc_firmware_config:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default proc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default proc_firmware_config:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default proc_tp_lockdown:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default proc_tp_lockdown:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default proc_tp_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default proc_tp_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_displayfeature:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default vendor_sysfs_displayfeature:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_battery:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_misys_vendor_default vendor_sysfs_battery:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_misys_vendor_default vendor_sysfs_hardwareinfo:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_misys_vendor_default io_monitor_device:chr_file { read write open };
+
+allow hal_misys_vendor_default mitee_data_file:dir { search };
+
+allow hal_misys_vendor_default mitee_data_file:file { read getattr open };
+
+allow hal_misys_vendor_default vendor_mi_ic_prop:property_service { set };
+
+allow hal_misys_vendor_default mi_ic_data_file:dir { search };
+
+allow hal_misys_vendor_default mi_ic_data_file:file { read getattr open };
+
+allow hal_misys_vendor_default vendor_mi_ric_prop:property_service { set };
+
+allow hal_misys_vendor_default vendor_ffu_prop:property_service { set };
+
+allow hal_misys_vendor_default ffu_data_file:dir { search };
+
+allow hal_misys_vendor_default ffu_data_file:file { read getattr open };
+
+allow hal_misys_vendor_default vendor_ddr_freq_prop:property_service { set };
+
+allow hal_misys_vendor_default ddr_freq_data_file:dir { search };
+
+allow hal_misys_vendor_default ddr_freq_data_file:file { read getattr open };
+
+allow hal_misys_vendor_default vendor_data_file:dir { read open };
+
+allow hal_misys_vendor_default vendor_smc_cal_data:dir { read write create open add_name remove_name search };
+
+allow hal_misys_vendor_default vendor_smc_cal_data:file { read write getattr setattr unlink open };
+
+allow hal_misys_vendor_default vendor_smc_file:dir { read write create open add_name remove_name search };
+
+allow hal_misys_vendor_default vendor_smc_file:file { read write getattr unlink open };
+
+allow hal_misys_vendor_default vendor_smc_file:fifo_file { read write create getattr append unlink open };
+
+allow hal_misys_vendor_default thermal_data_file:dir { read getattr open search };
+
+allow hal_misys_vendor_default thermal_data_file:file { read getattr open };

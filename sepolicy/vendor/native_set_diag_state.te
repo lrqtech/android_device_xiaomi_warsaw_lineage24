@@ -1,0 +1,9 @@
+type set_diag_state, domain;
+
+domain_trans(init, set_diag_state_exec, set_diag_state)
+
+allow set_diag_state set_diag_state_exec:file { read getattr map execute open entrypoint };
+
+allow set_diag_state audio_socket:sock_file { write };
+
+allow set_diag_state hal_audio_default:unix_stream_socket { connectto };

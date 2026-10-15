@@ -1,0 +1,47 @@
+typeattribute hal_wifi_default hal_wifi;
+
+typeattribute hal_wifi_default hal_wifi_server;
+
+typeattribute hal_wifi_default halserverdomain;
+
+allow hal_wifi_default hal_wifi_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_wifi_default vendor_proc_wifi_dbg:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_wifi_default vendor_proc_wifi_dbg:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_wifi_default vendor_proc_wifi_dbg:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_wifi_default vendor_location_socket:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_wifi_default vendor_location_socket:lnk_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_default vendor_location_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_default vendor_location:unix_dgram_socket { sendto };
+
+allow hal_wifi_default vendor_location_lowi_server:unix_dgram_socket { sendto };
+
+allow hal_wifi_default vendor_location_xtwifi_client:unix_dgram_socket { sendto };
+
+allow hal_wifi_default vendor_wifihal_socket:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_wifi_default vendor_wifihal_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_default property_socket:sock_file { write };
+
+allow hal_wifi_default init:unix_stream_socket { connectto };
+
+allow hal_wifi_default vendor_wifi_version:property_service { set };
+
+allow hal_wifi_default vendor_wifi_version:file { read getattr map open };
+
+allow hal_wifi_default vendor_boot_ota_file:system { module_load };
+
+allow hal_wifi_default vendor_file:system { module_load };
+
+allow hal_wifi_default vendor_wlan_chip_prop:file { read getattr map open };
+
+allow hal_wifi_default hal_wifi_default:capability { sys_module };
+
+allowxperm hal_wifi_default self:udp_socket ioctl { 0x89a0-0x89a3 };

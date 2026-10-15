@@ -1,0 +1,699 @@
+# OS4 recovery permissions for shared types, adapted to Android neverallows.
+# Only recovery receives these grants. Writable VM data is not executable.
+recovery_only(`
+allow recovery apexd_devpts:filesystem { associate };
+
+allow recovery app_fusefs:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} ashmem_libcutils_device:chr_file { watch watch_reads };
+
+allow recovery binderfs:filesystem { associate };
+
+allow recovery binderfs_features:filesystem { associate };
+
+allow recovery binderfs_logs:filesystem { associate };
+
+allow recovery binderfs_logs_proc:filesystem { associate };
+
+allow recovery binderfs_logs_stats:filesystem { associate };
+
+allow recovery binderfs_logs_transaction_history:filesystem { associate };
+
+allow recovery binderfs_logs_transactions:filesystem { associate };
+
+allow recovery binfmt_miscfs:filesystem { associate };
+
+allow recovery bpf_sys_kprobe_file:filesystem { associate };
+
+allow recovery bt_firmware_file:filesystem { getattr };
+
+allow recovery cache_file:dir { mounton };
+
+allow recovery cgroup:filesystem { associate };
+
+allow recovery cgroup_v2:filesystem { associate };
+
+allow recovery config_gz:filesystem { associate };
+
+allow recovery configfs:filesystem { associate };
+
+allow recovery customized_panic:filesystem { associate };
+
+allow recovery device:filesystem { associate };
+
+allow recovery devpts:filesystem { associate };
+
+allow recovery exfat:filesystem { associate };
+
+allow recovery firmware_file:filesystem { getattr };
+
+allow recovery fs_bpf:filesystem { associate };
+
+allow recovery fs_bpf_loader:filesystem { associate };
+
+allow recovery fs_bpf_net_private:filesystem { associate };
+
+allow recovery fs_bpf_net_shared:filesystem { associate };
+
+allow recovery fs_bpf_netd_readonly:filesystem { associate };
+
+allow recovery fs_bpf_netd_shared:filesystem { associate };
+
+allow recovery fs_bpf_tethering:filesystem { associate };
+
+allow recovery fs_bpf_uprobestats:filesystem { associate };
+
+allow recovery fs_bpf_vendor:filesystem { associate };
+
+allow recovery fs_sys_miui:filesystem { associate };
+
+allow recovery functionfs:filesystem { associate };
+
+allow recovery fuse:filesystem { associate };
+
+allow recovery fuseblk:filesystem { associate };
+
+allow recovery fusectlfs:filesystem { associate };
+
+allow recovery inotify:filesystem { associate };
+
+allow recovery labeledfs:filesystem { associate };
+
+allow recovery mqueue:filesystem { associate };
+
+allow recovery odsign_devpts:filesystem { associate };
+
+allow recovery oemfs:filesystem { associate };
+
+allow recovery pipefs:filesystem { associate };
+
+allow recovery priv_app_devpts:filesystem { associate };
+
+allow recovery proc_abi:filesystem { associate };
+
+allow recovery proc_asound:filesystem { associate };
+
+allow recovery proc_bluetooth_writable:filesystem { associate };
+
+allow recovery proc_bootconfig:filesystem { associate };
+
+allow recovery proc_bpf:filesystem { associate };
+
+allow recovery proc_buddyinfo:filesystem { associate };
+
+allow recovery proc_cgroups:filesystem { associate };
+
+allow recovery proc_cmdline:filesystem { associate };
+
+allow recovery proc_cpu_alignment:filesystem { associate };
+
+allow recovery proc_cpuinfo:filesystem { associate };
+
+allow recovery proc_dirty:filesystem { associate };
+
+allow recovery proc_diskstats:filesystem { associate };
+
+allow recovery proc_drop_caches:filesystem { associate };
+
+allow recovery proc_dt_avf:filesystem { associate };
+
+allow recovery proc_enable_msflag:filesystem { associate };
+
+allow recovery proc_extra_free_kbytes:filesystem { associate };
+
+allow recovery proc_filesystems:filesystem { associate };
+
+allow recovery proc_fs_verity:filesystem { associate };
+
+allow recovery proc_hostname:filesystem { associate };
+
+allow recovery proc_hung_task:filesystem { associate };
+
+allow recovery proc_interrupts:filesystem { associate };
+
+allow recovery proc_iomem:filesystem { associate };
+
+allow recovery proc_kallsyms:filesystem { associate };
+
+allow recovery proc_keys:filesystem { associate };
+
+allow recovery proc_kmsg:filesystem { associate };
+
+allow recovery proc_kpageflags:filesystem { associate };
+
+allow recovery proc_loadavg:filesystem { associate };
+
+allow recovery proc_locks:filesystem { associate };
+
+allow recovery proc_lowmemorykiller:filesystem { associate };
+
+allow recovery proc_max_map_count:filesystem { associate };
+
+allow recovery proc_meminfo:filesystem { associate };
+
+allow recovery proc_min_free_order_shift:filesystem { associate };
+
+allow recovery proc_misc:filesystem { associate };
+
+allow recovery proc_mitee_log:filesystem { associate };
+
+allow recovery proc_modem_enhance:filesystem { associate };
+
+allow recovery proc_modules:filesystem { associate };
+
+allow recovery proc_mounts:filesystem { associate };
+
+allow recovery proc_net:filesystem { associate };
+
+allow recovery proc_net_tcp_udp:filesystem { associate };
+
+allow recovery proc_overcommit_memory:filesystem { associate };
+
+allow recovery proc_page_cluster:filesystem { associate };
+
+allow recovery proc_pagetypeinfo:filesystem { associate };
+
+allow recovery proc_panic:filesystem { associate };
+
+allow recovery proc_percpu_pagelist_high_fraction:filesystem { associate };
+
+allow recovery proc_perf:filesystem { associate };
+
+allow recovery proc_pid_max:filesystem { associate };
+
+allow recovery proc_pipe_conf:filesystem { associate };
+
+allow recovery proc_pressure_cpu:filesystem { associate };
+
+allow recovery proc_pressure_io:filesystem { associate };
+
+allow recovery proc_pressure_mem:filesystem { associate };
+
+allow recovery proc_qtaguid_ctrl:filesystem { associate };
+
+allow recovery proc_qtaguid_stat:filesystem { associate };
+
+allow recovery proc_ramdump:filesystem { associate };
+
+allow recovery proc_random:filesystem { associate };
+
+allow recovery proc_sched:filesystem { associate };
+
+allow recovery proc_security:filesystem { associate };
+
+allow recovery proc_slabinfo:filesystem { associate };
+
+allow recovery proc_stat:filesystem { associate };
+
+allow recovery proc_swaps:filesystem { associate };
+
+allow recovery proc_sysrq:filesystem { associate };
+
+allow recovery proc_timer:filesystem { associate };
+
+allow recovery proc_tp_file:filesystem { associate };
+
+allow recovery proc_tp_lockdown:filesystem { associate };
+
+allow recovery proc_tty_drivers:filesystem { associate };
+
+allow recovery proc_uid_concurrent_active_time:filesystem { associate };
+
+allow recovery proc_uid_concurrent_policy_time:filesystem { associate };
+
+allow recovery proc_uid_cpupower:filesystem { associate };
+
+allow recovery proc_uid_cputime_removeuid:filesystem { associate };
+
+allow recovery proc_uid_cputime_showstat:filesystem { associate };
+
+allow recovery proc_uid_io_stats:filesystem { associate };
+
+allow recovery proc_uid_procstat_set:filesystem { associate };
+
+allow recovery proc_uid_time_in_state:filesystem { associate };
+
+allow recovery proc_uptime:filesystem { associate };
+
+allow recovery proc_usb_ms_use:filesystem { associate };
+
+allow recovery proc_usb_msflag:filesystem { associate };
+
+allow recovery proc_vendor_sched:filesystem { associate };
+
+allow recovery proc_version:filesystem { associate };
+
+allow recovery proc_vmallocinfo:filesystem { associate };
+
+allow recovery proc_vmstat:filesystem { associate };
+
+allow recovery proc_watermark_boost_factor:filesystem { associate };
+
+allow recovery proc_watermark_scale_factor:filesystem { associate };
+
+allow recovery proc_zoneinfo:filesystem { associate };
+
+allow recovery procfs_memory:filesystem { associate };
+
+allow recovery pstorefs:filesystem { associate };
+
+allow recovery recovery:capability { sys_rawio };
+
+allow fastbootd recovery_block_device:blk_file { append ioctl lock map open read watch watch_reads write };
+
+allow recovery rootfs:filesystem { associate };
+
+allow recovery sdcardfs:filesystem { associate };
+
+allow recovery securityfs:filesystem { associate };
+
+allow recovery selinuxfs:filesystem { associate };
+
+allow recovery shm:filesystem { associate };
+
+allow recovery sockfs:filesystem { associate };
+
+allow recovery sys_thermal_flash_state:filesystem { associate };
+
+allow recovery sys_thermal_torch_real_level:filesystem { associate };
+
+allow recovery sys_thermal_wifi_limit:filesystem { associate };
+
+allow fastbootd sysfs:dir { ioctl lock open read watch watch_reads };
+
+allow recovery sysfs:filesystem { associate };
+
+allow recovery sysfs_android_usb:filesystem { associate };
+
+allow recovery sysfs_batteryinfo:filesystem { associate };
+
+allow recovery sysfs_bluetooth_writable:filesystem { associate };
+
+allow recovery sysfs_bootinfo:filesystem { associate };
+
+allow recovery sysfs_csiphy_umd_paras:filesystem { associate };
+
+allow recovery sysfs_devfreq_cur:filesystem { associate };
+
+allow recovery sysfs_devfreq_dir:filesystem { associate };
+
+allow recovery sysfs_devices_block:filesystem { associate };
+
+allow recovery sysfs_devices_cs_etm:filesystem { associate };
+
+allow recovery sysfs_devices_system_cpu:filesystem { associate };
+
+allow recovery sysfs_dm:filesystem { associate };
+
+allow recovery sysfs_dm_verity:filesystem { associate };
+
+allow recovery sysfs_dma_heap:filesystem { associate };
+
+allow recovery sysfs_dmabuf_stats:filesystem { associate };
+
+allow recovery sysfs_dmof:filesystem { associate };
+
+allow recovery sysfs_dt_avf:filesystem { associate };
+
+allow recovery sysfs_dt_firmware_android:filesystem { associate };
+
+allow recovery sysfs_extcon:filesystem { associate };
+
+allow recovery sysfs_fs_ext4_features:filesystem { associate };
+
+allow recovery sysfs_fs_f2fs:filesystem { associate };
+
+allow recovery sysfs_fs_fuse_bpf:filesystem { associate };
+
+allow recovery sysfs_fs_fuse_features:filesystem { associate };
+
+allow recovery sysfs_fs_incfs_features:filesystem { associate };
+
+allow recovery sysfs_fs_incfs_metrics:filesystem { associate };
+
+allow recovery sysfs_gpu:filesystem { associate };
+
+allow recovery sysfs_hwrandom:filesystem { associate };
+
+allow recovery sysfs_ion:filesystem { associate };
+
+allow recovery sysfs_ipv4:filesystem { associate };
+
+allow recovery sysfs_ispv4_dump:filesystem { associate };
+
+allow recovery sysfs_kernel_notes:filesystem { associate };
+
+allow recovery sysfs_keyboard_status:filesystem { associate };
+
+allow recovery sysfs_leds:filesystem { associate };
+
+allow recovery sysfs_loop:filesystem { associate };
+
+allow recovery sysfs_lowmemorykiller:filesystem { associate };
+
+allow recovery sysfs_lru_gen_enabled:filesystem { associate };
+
+allow recovery sysfs_memory:filesystem { associate };
+
+allow recovery sysfs_migt:filesystem { associate };
+
+allow recovery sysfs_mimdtrigger:filesystem { associate };
+
+allow recovery sysfs_net:filesystem { associate };
+
+allow recovery sysfs_nfc_power_writable:filesystem { associate };
+
+allow recovery sysfs_perf:filesystem { associate };
+
+allow recovery sysfs_pgsize_migration:filesystem { associate };
+
+allow recovery sysfs_pmic_pon_log:filesystem { associate };
+
+allow recovery sysfs_power:filesystem { associate };
+
+allow recovery sysfs_power_save:filesystem { associate };
+
+allow recovery sysfs_poweraware:filesystem { associate };
+
+allow recovery sysfs_ramdump:filesystem { associate };
+
+allow recovery sysfs_rtc:filesystem { associate };
+
+allow recovery sysfs_suspend_stats:filesystem { associate };
+
+allow recovery sysfs_switch:filesystem { associate };
+
+allow recovery sysfs_sync_on_suspend:filesystem { associate };
+
+allow fastbootd sysfs_thermal:dir { ioctl lock open read search watch watch_reads };
+
+allow fastbootd sysfs_thermal:file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery sysfs_thermal:filesystem { associate };
+
+allow fastbootd sysfs_thermal:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery sysfs_touch_hostprocess:filesystem { associate };
+
+allow recovery sysfs_touch_suspend:filesystem { associate };
+
+allow recovery sysfs_tp_fodstatus:filesystem { associate };
+
+allow recovery sysfs_tp_virtual_prox:filesystem { associate };
+
+allow recovery sysfs_transparent_hugepage:filesystem { associate };
+
+allow recovery sysfs_uhid:filesystem { associate };
+
+allow recovery sysfs_uio:filesystem { associate };
+
+allow recovery sysfs_uprobe:filesystem { associate };
+
+allow recovery sysfs_usb:filesystem { associate };
+
+allow recovery sysfs_usermodehelper:filesystem { associate };
+
+allow recovery sysfs_vendor_sched:filesystem { associate };
+
+allow recovery sysfs_vibrator:filesystem { associate };
+
+allow recovery sysfs_wake_lock:filesystem { associate };
+
+allow recovery sysfs_wakeup:filesystem { associate };
+
+allow recovery sysfs_wakeup_reasons:filesystem { associate };
+
+allow recovery sysfs_wlan_fwpath:filesystem { associate };
+
+allow recovery sysfs_zram:filesystem { associate };
+
+allow recovery sysfs_zram_uevent:filesystem { associate };
+
+allow recovery system_data_file:dir { ioctl lock open read watch watch_reads };
+
+allow recovery system_data_file:file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery tmpfs:filesystem { associate };
+
+allow recovery tmpfs:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery unlabeled:filesystem { associate };
+
+allow recovery untrusted_app_all_devpts:filesystem { associate };
+
+allow recovery usbfs:filesystem { associate };
+
+allow recovery usermodehelper:filesystem { associate };
+
+allow fastbootd vendor_custom_ab_block_device:blk_file { append ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_gralloc_prop:file { getattr map open read };
+
+allow recovery vendor_hbtp_kernel_sysfs:filesystem { associate };
+
+allow fastbootd vendor_mdtp_device:blk_file { append ioctl lock map open read watch watch_reads write };
+
+allow fastbootd vendor_modem_block_device:blk_file { append ioctl lock map open read watch watch_reads write };
+
+allow recovery vendor_proc_audiod:filesystem { associate };
+
+allow recovery vendor_proc_global_reclaim:filesystem { associate };
+
+allow recovery vendor_proc_mimdlog:filesystem { associate };
+
+allow recovery vendor_proc_perflock_exception:filesystem { associate };
+
+allow recovery vendor_proc_perflock_records:filesystem { associate };
+
+allow recovery vendor_proc_shs:filesystem { associate };
+
+allow recovery vendor_proc_vmkmsg:filesystem { associate };
+
+allow recovery vendor_proc_wifi_dbg:filesystem { associate };
+
+allow recovery vendor_remoteproc_adsp_ssr:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} vendor_security_patch_level_prop:file { getattr map open read };
+
+allow fastbootd vendor_ssd_block_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow recovery vendor_sys_nonsp_comp:filesystem { associate };
+
+allow recovery vendor_sys_sp_comp:filesystem { associate };
+
+allow recovery vendor_sysfs_adsp_ssr:filesystem { associate };
+
+allow recovery vendor_sysfs_agm:filesystem { associate };
+
+allow recovery vendor_sysfs_audio:filesystem { associate };
+
+allow recovery vendor_sysfs_battery:filesystem { associate };
+
+allow recovery vendor_sysfs_battery_supply:filesystem { associate };
+
+allow recovery vendor_sysfs_boot_adsp:filesystem { associate };
+
+allow recovery vendor_sysfs_boot_cdsp:filesystem { associate };
+
+allow recovery vendor_sysfs_boot_cvp:filesystem { associate };
+
+allow recovery vendor_sysfs_bootguestvm:filesystem { associate };
+
+allow recovery vendor_sysfs_camera:filesystem { associate };
+
+allow recovery vendor_sysfs_cpu_boost:filesystem { associate };
+
+allow recovery vendor_sysfs_data:filesystem { associate };
+
+allow recovery vendor_sysfs_ddr:filesystem { associate };
+
+allow recovery vendor_sysfs_devcd:filesystem { associate };
+
+allow recovery vendor_sysfs_devfreq:filesystem { associate };
+
+allow recovery vendor_sysfs_devfreq_l3cdsp:filesystem { associate };
+
+allow recovery vendor_sysfs_devicetree_cpu:filesystem { associate };
+
+allow recovery vendor_sysfs_devicetree_soc:filesystem { associate };
+
+allow recovery vendor_sysfs_diag:filesystem { associate };
+
+allow recovery vendor_sysfs_disp_boot_param:filesystem { associate };
+
+allow recovery vendor_sysfs_displayfeature:filesystem { associate };
+
+allow recovery vendor_sysfs_dump_in_progress:filesystem { associate };
+
+allow recovery vendor_sysfs_extra_free_kbytes:filesystem { associate };
+
+allow recovery vendor_sysfs_graphics:dir { search };
+
+allow recovery vendor_sysfs_graphics:file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow recovery vendor_sysfs_graphics:filesystem { associate };
+
+allow recovery vendor_sysfs_haptics:filesystem { associate };
+
+allow recovery vendor_sysfs_hardwareinfo:filesystem { associate };
+
+allow recovery vendor_sysfs_jpeg:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_kgsl:dir { search };
+
+allow recovery vendor_sysfs_kgsl:filesystem { associate };
+
+allow recovery vendor_sysfs_kgsl_proc:filesystem { associate };
+
+allow recovery vendor_sysfs_led_file:filesystem { associate };
+
+allow recovery vendor_sysfs_lib:filesystem { associate };
+
+allow recovery vendor_sysfs_max_chipset_log_size:filesystem { associate };
+
+allow recovery vendor_sysfs_mem_offline:filesystem { associate };
+
+allow recovery vendor_sysfs_memory:filesystem { associate };
+
+allow recovery vendor_sysfs_mhi:filesystem { associate };
+
+allow recovery vendor_sysfs_mmc_host:filesystem { associate };
+
+allow recovery vendor_sysfs_mpctl:filesystem { associate };
+
+allow recovery vendor_sysfs_msm_perf:filesystem { associate };
+
+allow recovery vendor_sysfs_msm_power:filesystem { associate };
+
+allow recovery vendor_sysfs_msm_subsys_restart:filesystem { associate };
+
+allow recovery vendor_sysfs_npu:filesystem { associate };
+
+allow recovery vendor_sysfs_process_reclaim:filesystem { associate };
+
+allow recovery vendor_sysfs_qcom_battery:filesystem { associate };
+
+allow recovery vendor_sysfs_qcom_ramdump:filesystem { associate };
+
+allow recovery vendor_sysfs_qdss_dev:filesystem { associate };
+
+allow recovery vendor_sysfs_qfprom:filesystem { associate };
+
+allow recovery vendor_sysfs_qvr_external_sensor:filesystem { associate };
+
+allow recovery vendor_sysfs_rmnet:filesystem { associate };
+
+allow recovery vendor_sysfs_rproc_state:filesystem { associate };
+
+allow recovery vendor_sysfs_sched_penalty:filesystem { associate };
+
+allow recovery vendor_sysfs_scsi_host:filesystem { associate };
+
+allow recovery vendor_sysfs_scsi_target:filesystem { associate };
+
+allow recovery vendor_sysfs_sd:filesystem { associate };
+
+allow recovery vendor_sysfs_sectouch:filesystem { associate };
+
+allow recovery vendor_sysfs_sensors:filesystem { associate };
+
+allow recovery vendor_sysfs_sku:filesystem { associate };
+
+allow recovery vendor_sysfs_slab_zshandle_storeuser:filesystem { associate };
+
+allow recovery vendor_sysfs_slab_zspage_storeuser:filesystem { associate };
+
+allow recovery vendor_sysfs_slpi:filesystem { associate };
+
+allow recovery vendor_sysfs_sndcard:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_soc:dir { ioctl lock open read search watch watch_reads };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_soc:file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_sysfs_soc:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_soc:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_sysfs_spss:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_ssr:dir { ioctl lock open read search watch watch_reads };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_ssr:file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_sysfs_ssr:filesystem { associate };
+
+allow {
+    fastbootd recovery
+} vendor_sysfs_ssr:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow recovery vendor_sysfs_ssr_coredump_toggle:filesystem { associate };
+
+allow recovery vendor_sysfs_ssr_toggle:filesystem { associate };
+
+allow recovery vendor_sysfs_svm_neuron:filesystem { associate };
+
+allow recovery vendor_sysfs_system_memory:filesystem { associate };
+
+allow recovery vendor_sysfs_trusted_touch_enable:filesystem { associate };
+
+allow recovery vendor_sysfs_trusted_touch_event:filesystem { associate };
+
+allow recovery vendor_sysfs_trusted_touch_type:filesystem { associate };
+
+allow recovery vendor_sysfs_ufs:filesystem { associate };
+
+allow recovery vendor_sysfs_uio_file:filesystem { associate };
+
+allow recovery vendor_sysfs_usb_c:filesystem { associate };
+
+allow recovery vendor_sysfs_usb_device:filesystem { associate };
+
+allow recovery vendor_sysfs_usb_node:filesystem { associate };
+
+allow recovery vendor_sysfs_usb_supply:filesystem { associate };
+
+allow recovery vendor_sysfs_usbpd_device:filesystem { associate };
+
+allow recovery vendor_sysfs_vmpressure:filesystem { associate };
+
+allow recovery vendor_sysfs_wdog_device:filesystem { associate };
+
+allow recovery vendor_sysfs_xm_power:filesystem { associate };
+
+allow fastbootd vendor_uefi_block_device:blk_file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow {
+    fastbootd recovery
+} vendor_vm_data_file:dir { getattr search };
+
+allow {
+    fastbootd recovery
+} vendor_vm_data_file:file { getattr map open read };
+
+allow {
+    fastbootd recovery
+} vendor_vm_data_file:lnk_file { getattr read };
+
+allow recovery vfat:file { append create rename setattr unlink write };
+
+allow recovery vfat:filesystem { associate };
+')

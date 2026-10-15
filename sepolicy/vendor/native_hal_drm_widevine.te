@@ -1,0 +1,39 @@
+type hal_drm_widevine, domain;
+domain_auto_trans(init, hal_drm_widevine_exec, hal_drm_widevine)
+typeattribute hal_drm_widevine hal_drm;
+typeattribute hal_drm_widevine hal_drm_server;
+typeattribute hal_drm_widevine halserverdomain;
+typeattribute hal_drm_widevine halclientdomain;
+typeattribute hal_drm_widevine hal_graphics_composer_client;
+
+allow hal_drm_widevine hal_drm_widevine_exec:file { read getattr map execute open entrypoint };
+allow hal_drm_widevine mediacodec:fd { use };
+allow hal_drm_widevine vendor_qce_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+vndbinder_use(hal_drm_widevine)
+allow hal_drm_widevine vendor_qdisplay_service:service_manager { find };
+
+allow hal_drm_widevine vendor_mediadrm_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+allow hal_drm_widevine vendor_mediadrm_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_drm_widevine vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+allow hal_drm_widevine vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+allow hal_drm_widevine vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+allow hal_drm_widevine vendor_vm_cp_bitstream_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_drm_widevine vendor_notify-topology_socket:sock_file { write };
+allow hal_drm_widevine tee:unix_stream_socket { connectto };
+
+allow hal_drm_widevine sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+allow hal_drm_widevine self:capability2 { block_suspend };
+allow hal_drm_widevine self:cap2_userns { block_suspend };
+allow hal_drm_widevine system_suspend_server:binder { call transfer };
+allow hal_drm_widevine system_suspend_server:fd { use };
+allow hal_drm_widevine system_suspend_hwservice:hwservice_manager { find };
+
+hwbinder_use(hal_drm_widevine)
+allow hal_drm_widevine hwservicemanager_prop:file { read getattr map open };
+allow hal_drm_widevine hidl_manager_hwservice:hwservice_manager { find };
+allow hal_drm_widevine hal_system_suspend_service:service_manager { find };
+
+binder_use(hal_drm_widevine)

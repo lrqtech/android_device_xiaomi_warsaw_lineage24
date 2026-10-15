@@ -1,0 +1,45 @@
+java_library {
+    name: "warsaw-cameramind-wire",
+    srcs: ["java/common/**/*.java"],
+    installable: false,
+}
+
+java_library {
+    name: "warsaw-cameramind-client-component",
+    srcs: ["java/client/**/*.java"],
+    static_libs: ["warsaw-cameramind-wire"],
+    installable: false,
+}
+
+java_library {
+    name: "warsaw-cameramind-server-component",
+    srcs: ["java/server/**/*.java"],
+    static_libs: ["warsaw-cameramind-wire"],
+    installable: false,
+}
+
+cc_library_static {
+    name: "warsaw-cameramind-exposure-sampler",
+    visibility: ["//frameworks/av/services/camera/libcameraservice:__pkg__"],
+    srcs: [
+        "native/ExposureResultSampler.cpp",
+        "native/ExposureDamper.cpp",
+        "native/ExposureWire.cpp",
+        "native/control/CameraMindCommand.cpp",
+        "native/control/CameraMindControlState.cpp",
+    ],
+    export_include_dirs: ["native"],
+    shared_libs: ["libcamera_metadata"],
+    cpp_std: "c++17",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}
+
+cc_test {
+    name: "warsaw-cameramind-exposure-test",
+    srcs: ["native/tests/ExposureComponentTest.cpp", "native/control/tests/*.cpp"],
+    static_libs: ["warsaw-cameramind-exposure-sampler"],
+    shared_libs: ["libcamera_metadata"],
+    cpp_std: "c++17",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    test_suites: ["device-tests"],
+}

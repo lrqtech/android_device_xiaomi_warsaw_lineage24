@@ -1,0 +1,39 @@
+soong_namespace {
+    imports: ["vendor/xiaomi/warsaw"],
+}
+
+sh_binary {
+    name: "warsaw_system_dlkm_modprobe_sh",
+    vendor: true,
+    src: "configs/boot/system_dlkm_modprobe.sh",
+    filename: "system_dlkm_modprobe.sh",
+}
+
+cc_library_headers {
+    name: "warsaw_audio_kernel_uapi",
+    vendor_available: true,
+    recovery_available: true,
+    export_include_dirs: ["kernel-headers"],
+    visibility: ["//visibility:public"],
+}
+
+cc_library_headers {
+    name: "warsaw_display_kernel_uapi",
+    vendor_available: true,
+    recovery_available: true,
+    export_include_dirs: ["kernel-headers"],
+    visibility: ["//visibility:public"],
+}
+
+// Mount targets used by the official warsaw fstab on read-only partitions.
+mkdir {
+    name: "warsaw_vendor_modem_firmware_mountpoint",
+    dir: "modem_firmware",
+    vendor: true,
+}
+
+mkdir {
+    name: "warsaw_product_vm_system_mountpoint",
+    dir: "vm-system",
+    product_specific: true,
+}

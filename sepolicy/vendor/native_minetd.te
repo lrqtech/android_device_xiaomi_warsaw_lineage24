@@ -1,0 +1,39 @@
+type minetd, domain;
+
+domain_auto_trans(init, minetd_exec, minetd)
+
+typeattribute minetd netdomain;
+
+allow minetd minetd_exec:file { read getattr map execute open entrypoint };
+
+allow minetd property_socket:sock_file { write };
+
+allow minetd init:unix_stream_socket { connectto };
+
+allow minetd vendor_minetd_prop:property_service { set };
+
+allow minetd vendor_minetd_prop:file { read getattr map open };
+
+allow minetd self:netlink_generic_socket { read write create getattr bind setopt };
+
+allow minetd self:netlink_route_socket { nlmsg_write };
+
+allow minetd socket_device:dir { write remove_name };
+
+allow minetd self:capability { net_admin };
+
+allow minetd minetd_socket:sock_file { unlink };
+
+allow minetd socket_device:dir { add_name };
+
+allow minetd socket_device:sock_file { create setattr unlink };
+
+allow minetd vendor_shell_exec:file { execute_no_trans };
+
+allow minetd vendor_wlan_chip_prop:file { read getattr map open };
+
+allow minetd self:capability { net_raw };
+
+allow minetd self:packet_socket { read create bind setopt shutdown };
+
+allow minetd vendor_wlan_chip_prop:file { read getattr open };

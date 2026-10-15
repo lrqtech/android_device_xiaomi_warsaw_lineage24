@@ -1,0 +1,30 @@
+/dev/socket/tcm                                 u:object_r:vendor_dpmtcm_socket:s0
+
+/dev/socket/tcmd                                u:object_r:vendor_dpmtcm_socket:s0
+
+/(system_ext|system/system_ext)/bin/dpmd        u:object_r:vendor_dpmd_exec:s0
+
+/(system_ext|system/system_ext)/bin/imsvtdaemon u:object_r:vendor_imsvtdaemon_exec:s0
+
+/data/dpm(/.*)?                                 u:object_r:vendor_dpmd_data_file:s0
+
+/system/bin/mieed                               u:object_r:mieed_exec:s0
+
+/dev/cam_msger                                 u:object_r:cammsger_device:s0
+/dev/cam_intentaware_fsys                      u:object_r:camera_intentaware_filesys_driver:s0
+
+# Warsaw runtime AVC repairs (2026-10-13)
+# Activate the existing init transition for the product-side QVirt service.
+/(product|system/product)/bin/vendor\.qti\.qvirt-service_rs u:object_r:vendor_hal_qvirtservice_qti_exec:s0
+
+# OS4.0.0.15 OTA hardware labels, audited 2026-10-14.
+/system_ext/bin/qcrosvm u:object_r:vendor_qcrosvm_exec:s0
+
+# OS4.0.0.15 OTA hardware labels, audited 2026-10-14.
+/dev/miev u:object_r:miev_device:s0
+
+/dev/socket/dpmd u:object_r:vendor_dpmd_socket:s0
+/dev/socket/dpmwrapper u:object_r:vendor_dpmd_socket:s0
+
+# Match the OTA NFC credential/data directory label.
+/data/nfc(/.*)? u:object_r:nfc_data_file:s0

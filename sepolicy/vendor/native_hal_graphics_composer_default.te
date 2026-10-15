@@ -1,0 +1,173 @@
+typeattribute hal_graphics_composer_default binderservicedomain;
+
+typeattribute hal_graphics_composer_default dvs_aidl_client;
+
+typeattribute hal_graphics_composer_default hal_graphics_allocator_client;
+
+typeattribute hal_graphics_composer_default hal_graphics_composer;
+
+typeattribute hal_graphics_composer_default hal_graphics_composer_server;
+
+typeattribute hal_graphics_composer_default hal_thermal_client;
+
+typeattribute hal_graphics_composer_default hal_visdisplaysrv_client;
+
+typeattribute hal_graphics_composer_default halclientdomain;
+
+typeattribute hal_graphics_composer_default halserverdomain;
+
+typeattribute hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi;
+
+typeattribute hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_client;
+
+typeattribute hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_server;
+
+typeattribute hal_graphics_composer_default vendor_hal_display_aiqe;
+
+typeattribute hal_graphics_composer_default vendor_hal_display_aiqe_server;
+
+typeattribute hal_graphics_composer_default vendor_hal_display_demura_client;
+
+typeattribute hal_graphics_composer_default vendor_hal_displayfeature_xiaomi;
+
+typeattribute hal_graphics_composer_default vendor_hal_displayfeature_xiaomi_client;
+
+typeattribute hal_graphics_composer_default vendor_hal_displayfeature_xiaomi_server;
+
+typeattribute hal_graphics_composer_default vendor_hal_eid_client;
+
+typeattribute hal_graphics_composer_default vendor_hal_perf_client;
+
+vndbinder_use(hal_graphics_composer_default)
+
+allow hal_graphics_composer_default hal_visdisplaysrv_server:binder { call transfer };
+
+allow hal_graphics_composer_default hal_visdisplaysrv_server:fd { use };
+
+allow hal_graphics_composer_default nvt_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_graphics_composer_default hal_graphics_composer_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_graphics_composer_default hal_graphics_composer_server_tmpfs:file { read write getattr map };
+
+allow hal_graphics_composer_default fwk_sensor_service:service_manager { find };
+
+allow hal_graphics_composer_default vendor_hal_displayfeature_xiaomi_default:binder { call };
+
+allow hal_graphics_composer_default vendor_hal_displayfeature_xiaomi_service:service_manager { find };
+
+allow hal_graphics_composer_default vendor_hal_displayfeature_xiaomi_default:binder { call transfer };
+
+allow hal_graphics_composer_default vendor_hal_displayfeature_xiaomi_default:fd { use };
+
+allow hal_graphics_composer_default vendor_mistcdisplay_service:service_manager { add find };
+
+allow hal_graphics_composer_default vendor_mistcdisplay_service:service_manager { find };
+
+allow hal_graphics_composer_default property_socket:sock_file { write };
+
+allow hal_graphics_composer_default init:unix_stream_socket { connectto };
+
+allow hal_graphics_composer_default vendor_fp_prop:file { read getattr map open };
+
+allow hal_graphics_composer_default vendor_display_prop:property_service { set };
+
+allow hal_graphics_composer_default vendor_display_prop:file { read getattr map open };
+
+allow hal_graphics_composer_default vendor_displayfeature_prop:property_service { set };
+
+allow hal_graphics_composer_default vendor_displayfeature_prop:file { read getattr map open };
+
+allow hal_graphics_composer_default vendor_displayfeature_device:chr_file { ioctl read open };
+
+allow hal_graphics_composer_default vendor_sysfs_displayfeature:dir { read open search };
+
+allow hal_graphics_composer_default vendor_sysfs_displayfeature:file { read write open };
+
+allow hal_graphics_composer_default vendor_miclstc_service:service_manager { add find };
+
+allow hal_graphics_composer_default vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_graphics_composer_default vndservicemanager:binder { call transfer };
+
+allow hal_graphics_composer_default vendor_qdisplay_service:service_manager { add find };
+
+allow hal_graphics_composer_default vendor_persist_display_file:dir { search };
+
+allow hal_graphics_composer_default vendor_persist_display_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_persist_display_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_graphics_composer_default vendor_persist_display_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_graphics_composer_default mnt_vendor_file:dir { search };
+
+allow hal_graphics_composer_default hal_graphics_mapper_hwservice:hwservice_manager { find };
+
+allow hal_graphics_composer_default sysfs_leds:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_graphics_composer_default sysfs_leds:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default sysfs_leds:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default video_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_graphics_composer_default graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_qmcs_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_graphics_composer_default vendor_qmcs_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_graphics_composer_default self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_graphics_composer_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_vm_trusted_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_vm_cp_pixel_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_vm_hlos_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default sysfs_type:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_graphics_composer_default sysfs_type:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default sysfs_type:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_display_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_graphics_composer_default vendor_display_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_pps_socket:sock_file { write };
+
+allow hal_graphics_composer_default vendor_qdcmsocket_socket:sock_file { write };
+
+allow hal_graphics_composer_default vendor_qdcm-ss:unix_stream_socket { connectto };
+
+allow hal_graphics_composer_default vendor_sysfs_disp_boot_param:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_persist_feature_enabler_file:dir { search };
+
+allow hal_graphics_composer_default vendor_persist_feature_enabler_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_graphics_composer_default vendor_ssgtzd_socket:sock_file { write };
+
+allow hal_graphics_composer_default vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow hal_graphics_composer_default mediacodec:binder { transfer };
+
+allow hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_default:binder { call };
+
+allow hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_service:service_manager { find };
+
+allow hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_default:binder { call transfer };
+
+allow hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_default:fd { use };
+
+allow hal_graphics_composer_default rild:binder { transfer };
+
+allowxperm hal_graphics_composer_default vendor_dmabuf_system_heap_device:chr_file ioctl { 0x4800 };

@@ -1,0 +1,167 @@
+type mi_thermald, domain;
+
+domain_trans(init, mi_thermald_exec, mi_thermald)
+
+typeattribute mi_thermald mlstrustedsubject;
+
+allow mi_thermald mi_thermald_exec:file { read getattr map execute open entrypoint };
+
+allow mi_thermald sysfs_devices_system_cpu:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald self:capability { fsetid sys_boot };
+
+allow mi_thermald sysfs_thermal:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_thermal:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_thermal:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_block:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_mem_sleep:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_powercap:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_thunderbolt:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_typec:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_udc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_usb_pd:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_usbcore:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_block:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_mem_sleep:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_powercap:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_thunderbolt:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_typec:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_udc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_usb_pd:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_usbcore:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_leds:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_leds:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs_leds:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald sysfs:file { write lock append map open };
+
+allow mi_thermald sysfs_block:file { write lock append map open };
+
+allow mi_thermald sysfs_mem_sleep:file { write lock append map open };
+
+allow mi_thermald sysfs_powercap:file { write lock append map open };
+
+allow mi_thermald sysfs_thunderbolt:file { write lock append map open };
+
+allow mi_thermald sysfs_typec:file { write lock append map open };
+
+allow mi_thermald sysfs_udc:file { write lock append map open };
+
+allow mi_thermald sysfs_usb_pd:file { write lock append map open };
+
+allow mi_thermald sysfs_usbcore:file { write lock append map open };
+
+allow mi_thermald sysfs_thermal:file { write lock append map open };
+
+allow mi_thermald vendor_sysfs_kgsl:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald vendor_sysfs_kgsl:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_kgsl:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_battery_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_qcom_battery:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald vendor_sysfs_qcom_battery:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_qcom_battery:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_qcom_battery:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_xm_power:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald vendor_sysfs_xm_power:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_xm_power:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_xm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald vendor_sysfs_graphics:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_graphics:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_thermald property_socket:sock_file { write };
+
+allow mi_thermald init:unix_stream_socket { connectto };
+
+allow mi_thermald thermal_data_file:dir { read write watch add_name remove_name search };
+
+allow mi_thermald thermal_data_file:file { read write create getattr setattr unlink rename open };
+
+allow mi_thermald mi_thermald:capability { chown fowner };
+
+allow mi_thermald mi_thermald:capability2 { wake_alarm block_suspend };
+
+allow mi_thermald vendor_data_file:dir { read write watch add_name remove_name };
+
+allow mi_thermald vendor_data_file:file { read write create getattr setattr unlink rename open };
+
+allow mi_thermald sys_thermal_wifi_limit:file { read write open };
+
+allow mi_thermald sys_thermal_wifi_limit:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mi_thermald vendor_sysfs_displayfeature:dir { search };
+
+allow mi_thermald vendor_sysfs_displayfeature:file { read getattr open };
+
+allow mi_thermald sysfs_power_save:dir { read getattr open search };
+
+allow mi_thermald sysfs_power_save:file { read write getattr setattr open };
+
+allow mi_thermald sysfs_poweraware:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_thermald sysfs_poweraware:file { read getattr open };
+
+allow mi_thermald vendor_thermal_normal_prop:file { read getattr map open };
+
+allow mi_thermald vendor_thermal_normal_prop:property_service { set };

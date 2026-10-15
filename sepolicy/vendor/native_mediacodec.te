@@ -1,0 +1,131 @@
+typeattribute mediacodec dvs_aidl_client;
+
+typeattribute mediacodec hal_aidl_dms_client;
+
+typeattribute mediacodec hal_allocator_client;
+
+typeattribute mediacodec hal_audio_client;
+
+typeattribute mediacodec hal_codec2;
+
+typeattribute mediacodec hal_codec2_client;
+
+typeattribute mediacodec hal_codec2_server;
+
+typeattribute mediacodec hal_graphics_allocator_client;
+
+typeattribute mediacodec hal_graphics_composer_client;
+
+typeattribute mediacodec hal_omx;
+
+typeattribute mediacodec hal_omx_client;
+
+typeattribute mediacodec hal_omx_server;
+
+typeattribute mediacodec hal_videoservice_client;
+
+typeattribute mediacodec halclientdomain;
+
+typeattribute mediacodec halserverdomain;
+
+typeattribute mediacodec mlstrustedsubject;
+
+typeattribute mediacodec vendor_hal_capabilityconfigstore_qti_client;
+
+typeattribute mediacodec vendor_hal_dspmanager_client;
+
+typeattribute mediacodec vendor_hal_hexlp_client;
+
+typeattribute mediacodec vendor_hal_perf_client;
+
+typeattribute mediacodec vendor_hal_qconfig_client;
+
+typeattribute mediacodec vendor_hal_vpp_client;
+
+vndbinder_use(mediacodec)
+
+allow mediacodec mediacodec_exec:file { read getattr map execute open entrypoint };
+
+allow mediacodec vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mediacodec vndservicemanager:binder { call transfer };
+
+allow mediacodec gpu_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mediacodec gpu_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mediacodec ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mediacodec dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mediacodec video_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mediacodec video_device:dir { search };
+
+allow mediacodec anr_data_file:file { append };
+
+allow mediacodec dumpstate:fd { use };
+
+allow mediacodec incidentd:fd { use };
+
+allow mediacodec dumpstate:fifo_file { write append };
+
+allow mediacodec incidentd:fifo_file { write append };
+
+allow mediacodec system_server:fifo_file { write append };
+
+allow mediacodec tombstoned:unix_stream_socket { connectto };
+
+allow mediacodec tombstoned:fd { use };
+
+allow mediacodec tombstoned_crash_socket:sock_file { write };
+
+allow mediacodec tombstone_data_file:file { append };
+
+allow mediacodec aac_drc_prop:file { read getattr map open };
+
+allow mediacodec vendor_displayfeature_prop:file { read getattr map open };
+
+allow mediacodec vendor_mistcdisplay_service:service_manager { find };
+
+allow mediacodec cameraserver:binder { transfer };
+
+allow mediacodec system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mediacodec vendor_media_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow mediacodec vendor_media_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow mediacodec vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mediacodec vendor_adsprpc_prop:file { read getattr map open };
+
+allow mediacodec vendor_wfdnativemm_service:service_manager { find };
+
+allow mediacodec audio_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow mediacodec vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mediacodec vendor_vm_cp_bitstream_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mediacodec self:capability { sys_nice };
+
+allow mediacodec vendor_wifidisplayhalservice_qti:binder { call transfer };
+
+allow mediacodec vendor_wifidisplayhalservice_qti:fd { use };
+
+allow mediacodec vendor_video_prop:file { read getattr map open };
+
+allow mediacodec vendor_audio_prop:file { read getattr map open };
+
+allow mediacodec vendor_qdsp_device:chr_file { ioctl read };
+
+allow mediacodec vendor_wifidisplayhalservice_qti:binder { transfer };
+
+allow mediacodec hal_graphics_composer_default:binder { call transfer };
+
+allow mediacodec hal_graphics_composer_default:fd { use };
+
+allow mediacodec vendor_video_qcom_prop:file { read getattr map open };
+
+allow mediacodec graphics_config_prop:file { read getattr map open };

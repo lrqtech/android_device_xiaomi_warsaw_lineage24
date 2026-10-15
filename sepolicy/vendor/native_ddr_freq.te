@@ -1,0 +1,151 @@
+type ddr_freq, domain;
+
+domain_trans(init, ddr_freq_exec, ddr_freq)
+
+allow ddr_freq ddr_freq_exec:file { read getattr map execute open entrypoint };
+
+allow ddr_freq sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_block:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_mem_sleep:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_powercap:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_thunderbolt:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_typec:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_udc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_usb_pd:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_usbcore:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_block:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_mem_sleep:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_powercap:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_thunderbolt:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_typec:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_udc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_usb_pd:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_usbcore:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_devices_system_cpu:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq sysfs_devices_system_cpu:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_devices_system_cpu:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq vendor_ddr_freq_prop:property_service { set };
+
+allow ddr_freq property_socket:sock_file { write };
+
+allow ddr_freq init:unix_stream_socket { connectto };
+
+allow ddr_freq vendor_ddr_freq_prop:file { read getattr map open };
+
+allow ddr_freq sysfs:file { read getattr open };
+
+allow ddr_freq sysfs_block:file { read getattr open };
+
+allow ddr_freq sysfs_mem_sleep:file { read getattr open };
+
+allow ddr_freq sysfs_powercap:file { read getattr open };
+
+allow ddr_freq sysfs_thunderbolt:file { read getattr open };
+
+allow ddr_freq sysfs_typec:file { read getattr open };
+
+allow ddr_freq sysfs_udc:file { read getattr open };
+
+allow ddr_freq sysfs_usb_pd:file { read getattr open };
+
+allow ddr_freq sysfs_usbcore:file { read getattr open };
+
+allow ddr_freq rootfs:file { execute execute_no_trans };
+
+allow ddr_freq vendor_boot_ota_file:file { read execute_no_trans };
+
+allow ddr_freq vendor_file:file { read execute_no_trans };
+
+allow ddr_freq vendor_boot_ota_file:dir { read };
+
+allow ddr_freq vendor_file:dir { read };
+
+allow ddr_freq metadata_file:file { getattr };
+
+allow ddr_freq mnt_vendor_file:dir { getattr search };
+
+allow ddr_freq metadata_file:dir { getattr search };
+
+allow ddr_freq storage_file:dir { read getattr open search };
+
+allow ddr_freq storage_file:file { read write getattr open };
+
+allow ddr_freq system_data_file:dir { getattr };
+
+allow ddr_freq tmpfs:dir { search };
+
+allow ddr_freq vendor_shell_exec:file { read getattr execute open execute_no_trans };
+
+allow ddr_freq console_device:chr_file { read write getattr setattr open };
+
+allow ddr_freq self:capability { chown fowner fsetid };
+
+allow ddr_freq ddr_freq_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow ddr_freq ddr_freq_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow ddr_freq ddr_freq_data_file:blk_file { ioctl read write getattr setattr open };
+
+allow ddr_freq rootfs:lnk_file { getattr setattr };
+
+allow ddr_freq self:capability { chown fsetid };
+
+allow ddr_freq ddr_freq_exec:file { read getattr execute open entrypoint };
+
+allow ddr_freq mnt_user_file:dir { search };
+
+allow ddr_freq mnt_user_file:lnk_file { read };
+
+allow ddr_freq storage_file:lnk_file { read };
+
+allow ddr_freq vendor_toolbox_exec:file { read getattr execute open execute_no_trans };
+
+allow ddr_freq block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ddr_freq mem_partition:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow ddr_freq procfs_memory:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ddr_freq sysfs_devices_block:dir { search };
+
+allow ddr_freq same_process_hal_file:file { read getattr map execute open };

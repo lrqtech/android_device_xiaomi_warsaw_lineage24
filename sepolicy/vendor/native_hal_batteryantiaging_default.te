@@ -1,0 +1,123 @@
+type hal_batteryantiaging_default, domain;
+
+domain_trans(init, hal_batteryantiaging_default_exec, hal_batteryantiaging_default)
+
+typeattribute hal_batteryantiaging_default hal_batteryantiaging;
+
+typeattribute hal_batteryantiaging_default hal_batteryantiaging_client;
+
+typeattribute hal_batteryantiaging_default hal_batteryantiaging_server;
+
+typeattribute hal_batteryantiaging_default halclientdomain;
+
+typeattribute hal_batteryantiaging_default halserverdomain;
+
+binder_use(hal_batteryantiaging_default)
+
+allow hal_batteryantiaging_default hal_batteryantiaging_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_batteryantiaging_default servicemanager:binder { call transfer };
+
+allow hal_batteryantiaging_default self:netlink_kobject_uevent_socket { read create bind getopt setopt };
+
+allow hal_batteryantiaging_default kmsg_device:chr_file { read write getattr open };
+
+allow hal_batteryantiaging_default sysfs:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_block:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_mem_sleep:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_powercap:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_thunderbolt:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_typec:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_udc:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_usb_pd:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs_usbcore:dir { read getattr open search };
+
+allow hal_batteryantiaging_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_batteryantiaging_default vendor_sysfs_battery_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_battery_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_qcom_battery:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_batteryantiaging_default vendor_sysfs_qcom_battery:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_qcom_battery:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_qcom_battery:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_usb_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_batteryantiaging_default vendor_sysfs_usb_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_usb_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_usb_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default property_socket:sock_file { write };
+
+allow hal_batteryantiaging_default vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_batteryantiaging_default vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_batteryantiaging_default batteryantiaging_cfg_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_batteryantiaging_default batteryantiaging_cfg_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_batteryantiaging_default batteryantiaging_cache_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_batteryantiaging_default batteryantiaging_cache_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_xm_power:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_batteryantiaging_default vendor_sysfs_xm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default vendor_sysfs_xm_power:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_batteryantiaging_default init:unix_stream_socket { connectto };
+
+allow hal_batteryantiaging_default vendor_batteryantiaging_prop:property_service { set };
+
+allow hal_batteryantiaging_default vendor_batteryantiaging_prop:file { read getattr map open };
+
+allow hal_batteryantiaging_default batteryantiaging_persist_file:dir search;
+
+allow hal_batteryantiaging_default batteryantiaging_persist_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_batteryantiaging_default batteryantiaging_persist_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_batteryantiaging_default mnt_vendor_file:dir search;
+
+allow hal_batteryantiaging_default mnt_vendor_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_batteryantiaging_default mnt_vendor_file:dir add_name;
+
+allow hal_batteryantiaging_default mnt_vendor_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };

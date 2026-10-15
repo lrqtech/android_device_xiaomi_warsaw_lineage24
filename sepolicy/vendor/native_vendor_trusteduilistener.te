@@ -1,0 +1,45 @@
+type vendor_trusteduilistener, domain;
+
+domain_auto_trans(init, vendor_trusteduilistener_exec, vendor_trusteduilistener)
+
+typeattribute vendor_trusteduilistener hal_graphics_composer_client;
+
+typeattribute vendor_trusteduilistener halclientdomain;
+
+typeattribute vendor_trusteduilistener vendor_hal_systemhelper_client;
+
+allow vendor_trusteduilistener sysfs_touch_hostprocess:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_trusteduilistener vendor_trusteduilistener_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_trusteduilistener vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_trusteduilistener vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_trusteduilistener vendor_ssgtzd_opener_socket:sock_file { write };
+
+allow vendor_trusteduilistener sysfs_devices_system_cpu:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_trusteduilistener sysfs:dir { read open };
+
+allow vendor_trusteduilistener sysfs_block:dir { read open };
+
+allow vendor_trusteduilistener sysfs_mem_sleep:dir { read open };
+
+allow vendor_trusteduilistener sysfs_powercap:dir { read open };
+
+allow vendor_trusteduilistener sysfs_thunderbolt:dir { read open };
+
+allow vendor_trusteduilistener sysfs_typec:dir { read open };
+
+allow vendor_trusteduilistener sysfs_udc:dir { read open };
+
+allow vendor_trusteduilistener sysfs_usb_pd:dir { read open };
+
+allow vendor_trusteduilistener sysfs_usbcore:dir { read open };
+
+allow vendor_trusteduilistener vendor_sysfs_trusted_touch_enable:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_trusteduilistener vendor_sysfs_trusted_touch_event:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_trusteduilistener vendor_sysfs_trusted_touch_type:file { ioctl read write getattr lock append map open watch watch_reads };

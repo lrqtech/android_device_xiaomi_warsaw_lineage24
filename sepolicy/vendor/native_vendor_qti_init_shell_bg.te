@@ -1,0 +1,19 @@
+type vendor_qti_init_shell_bg, domain;
+
+domain_auto_trans(init, vendor_qti_init_shell_bg_exec, vendor_qti_init_shell_bg)
+
+allow vendor_qti_init_shell_bg vendor_qti_init_shell_bg_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qti_init_shell_bg vendor_qti_init_shell_bg_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans entrypoint };
+
+allow vendor_qti_init_shell_bg vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_qti_init_shell_bg vendor_sysfs_boot_adsp:file { write getattr lock append map open };
+
+allow vendor_qti_init_shell_bg vendor_sysfs_boot_cdsp:file { write getattr lock append map open };
+
+allow vendor_qti_init_shell_bg vendor_sysfs_boot_cvp:file { write getattr lock append map open };
+
+allow vendor_qti_init_shell_bg vendor_sysfs_slpi:dir { search };
+
+allow vendor_qti_init_shell_bg vendor_sysfs_slpi:file { write getattr lock append map open };

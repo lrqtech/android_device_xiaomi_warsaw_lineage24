@@ -1,0 +1,19 @@
+type wallpapercolor, domain;
+
+domain_auto_trans(init, wallpapercolor_exec, wallpapercolor)
+
+allow wallpapercolor wallpapercolor_exec:file { read getattr map execute open entrypoint };
+
+allow wallpapercolor property_socket:sock_file { read write };
+
+allow wallpapercolor init:unix_stream_socket { connectto };
+
+allow wallpapercolor mnt_vendor_file:dir { search };
+
+allow wallpapercolor mnt_vendor_file:file { read write open };
+
+allow wallpapercolor vendor_color_prop:file { read getattr map open };
+
+allow wallpapercolor property_socket:sock_file { write };
+
+allow wallpapercolor vendor_color_prop:property_service { set };

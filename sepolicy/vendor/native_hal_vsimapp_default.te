@@ -1,0 +1,31 @@
+type hal_vsimapp_default, domain;
+
+domain_auto_trans(init, hal_vsimapp_default_exec, hal_vsimapp_default)
+
+typeattribute hal_vsimapp_default hal_vsimapp;
+
+typeattribute hal_vsimapp_default hal_vsimapp_server;
+
+typeattribute hal_vsimapp_default halserverdomain;
+
+binder_use(hal_vsimapp_default)
+
+allow hal_vsimapp_default hal_vsimapp_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_vsimapp_default servicemanager:binder { call transfer };
+
+allow hal_vsimapp_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_vsimapp_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_vsimapp_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vsimapp_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_vsimapp_default vendor_hal_qteeconnector_hwservice:hwservice_manager { find };
+
+allow hal_vsimapp_default vendor_payment_security_prop:file { read getattr map open };
+
+allow hal_vsimapp_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_vsimapp_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };

@@ -1,0 +1,53 @@
+type hal_minetaidlservice_default, domain;
+
+domain_auto_trans(init, hal_minetaidlservice_default_exec, hal_minetaidlservice_default)
+
+typeattribute hal_minetaidlservice_default hal_minetaidlservice;
+
+typeattribute hal_minetaidlservice_default hal_minetaidlservice_server;
+
+typeattribute hal_minetaidlservice_default hal_miwillservice;
+
+typeattribute hal_minetaidlservice_default hal_miwillservice_server;
+
+typeattribute hal_minetaidlservice_default hal_slaaidlservice;
+
+typeattribute hal_minetaidlservice_default hal_slaaidlservice_server;
+
+typeattribute hal_minetaidlservice_default halserverdomain;
+
+allow hal_minetaidlservice_default hal_minetaidlservice_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_minetaidlservice_default property_socket:sock_file { write };
+
+allow hal_minetaidlservice_default init:unix_stream_socket { connectto };
+
+allow hal_minetaidlservice_default vendor_minetd_prop:property_service { set };
+
+allow hal_minetaidlservice_default vendor_minetd_prop:file { read getattr map open };
+
+allow hal_minetaidlservice_default slad_socket:sock_file { write };
+
+allow hal_minetaidlservice_default slad:unix_stream_socket { connectto };
+
+allow hal_minetaidlservice_default vendor_slad_prop:property_service { set };
+
+allow hal_minetaidlservice_default vendor_slad_prop:file { read getattr map open };
+
+allow hal_minetaidlservice_default minetd_socket:sock_file { read write getattr unlink };
+
+allow hal_minetaidlservice_default minetd:unix_stream_socket { connectto };
+
+allow hal_minetaidlservice_default socket_device:sock_file { write };
+
+allow hal_minetaidlservice_default vendor_minetd_prop:file { read };
+
+allow hal_minetaidlservice_default system_app:binder { call };
+
+allow hal_minetaidlservice_default system_server:binder { call };
+
+allow hal_minetaidlservice_default vendor_system_prop:file { read getattr map open };
+
+allow hal_minetaidlservice_default vendor_wlan_chip_prop:file { read getattr map open };
+
+allow hal_minetaidlservice_default vendor_shell_exec:file { read getattr map execute open };

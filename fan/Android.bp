@@ -1,0 +1,21 @@
+filegroup {
+    name: "warsaw-fan-settings-sources",
+    srcs: [
+        "src/org/lineageos/warsaw/fan/FanSettings.java",
+        "src/org/lineageos/warsaw/fan/FanEntryController.java",
+        "src/org/lineageos/warsaw/fan/FanBootReceiver.java",
+        "src/org/lineageos/warsaw/fan/FanService.java",
+        "src/org/lineageos/warsaw/fan/FanPwmController.java",
+        "src/org/lineageos/warsaw/fan/FanPreferences.java",
+    ],
+    visibility: ["//packages/apps/Settings"],
+}
+
+android_library {
+    name: "warsaw-fan-settings-resources",
+    manifest: "AndroidManifest.xml",
+    resource_dirs: ["res"],
+    platform_apis: true,
+    static_libs: ["androidx.preference_preference"],
+    visibility: ["//packages/apps/Settings"],
+}

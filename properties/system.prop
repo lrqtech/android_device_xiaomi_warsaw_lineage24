@@ -1,0 +1,8 @@
+ro.sf.lcd_density=520
+ro.surface_flinger.has_HDR_display=true
+ro.surface_flinger.has_wide_color_display=true
+ro.surface_flinger.protected_contents=true
+ro.surface_flinger.use_color_management=true
+
+# Exact OS4 market name; the regulatory model remains M332BF.
+ro.product.marketname=REDMI K90 Ultra

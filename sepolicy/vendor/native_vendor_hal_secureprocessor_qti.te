@@ -1,0 +1,33 @@
+type vendor_hal_secureprocessor_qti, domain;
+
+domain_auto_trans(init, vendor_hal_secureprocessor_qti_exec, vendor_hal_secureprocessor_qti)
+
+typeattribute vendor_hal_secureprocessor_qti hal_graphics_allocator_client;
+
+typeattribute vendor_hal_secureprocessor_qti halclientdomain;
+
+typeattribute vendor_hal_secureprocessor_qti halserverdomain;
+
+typeattribute vendor_hal_secureprocessor_qti vendor_hal_secureprocessor;
+
+typeattribute vendor_hal_secureprocessor_qti vendor_hal_secureprocessor_server;
+
+allow vendor_hal_secureprocessor_qti vendor_hal_secureprocessor_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_secureprocessor_qti tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti vendor_dmabuf_display_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_secureprocessor_qti vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti vendor_vm_trusted_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti vendor_vm_self_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_secureprocessor_qti vendor_vm_oem_device:chr_file { ioctl read getattr lock map open watch watch_reads };

@@ -1,0 +1,115 @@
+type vendor_dpmd_vndr, domain;
+
+domain_auto_trans(init, vendor_dpmd_vndr_exec, vendor_dpmd_vndr)
+
+typeattribute vendor_dpmd_vndr halclientdomain;
+
+typeattribute vendor_dpmd_vndr netdomain;
+
+typeattribute vendor_dpmd_vndr vendor_hal_dpmapiservice_qti;
+
+typeattribute vendor_dpmd_vndr vendor_hal_dpmapiservice_qti_server;
+
+typeattribute vendor_dpmd_vndr vendor_hal_dpmqmiservice_qti_client;
+
+typeattribute vendor_dpmd_vndr vendor_hal_mwqemadapter_qti_client;
+
+typeattribute vendor_dpmd_vndr vendor_halserverdomain;
+
+binder_use(vendor_dpmd_vndr)
+
+hwbinder_use(vendor_dpmd_vndr)
+
+vndbinder_use(vendor_dpmd_vndr)
+
+allow vendor_dpmd_vndr vendor_dpmd_vndr_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_dpmd_vndr netutils_wrapper_exec:file { read getattr map execute open };
+
+allow vendor_dpmd_vndr netutils_wrapper:process { transition };
+
+allow vendor_dpmd_vndr netutils_wrapper:process { siginh rlimitinh };
+
+allow vendor_dpmd_vndr property_socket:sock_file { write };
+
+allow vendor_dpmd_vndr init:unix_stream_socket { connectto };
+
+allow vendor_dpmd_vndr vendor_persist_dpm_prop:property_service { set };
+
+allow vendor_dpmd_vndr vendor_persist_dpm_prop:file { read getattr map open };
+
+allow vendor_dpmd_vndr vendor_persist_tcm_prop:property_service { set };
+
+allow vendor_dpmd_vndr vendor_persist_tcm_prop:file { read getattr map open };
+
+allow vendor_dpmd_vndr sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_dpmd_vndr self:capability2 { block_suspend };
+
+allow vendor_dpmd_vndr self:cap2_userns { block_suspend };
+
+allow vendor_dpmd_vndr system_suspend_server:binder { call transfer };
+
+allow vendor_dpmd_vndr system_suspend_server:fd { use };
+
+allow vendor_dpmd_vndr system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_dpmd_vndr hwservicemanager:binder { call transfer };
+
+allow vendor_dpmd_vndr hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_dpmd_vndr hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_dpmd_vndr hal_system_suspend_service:service_manager { find };
+
+allow vendor_dpmd_vndr servicemanager:binder { call transfer };
+
+allow vendor_dpmd_vndr vendor_sysfs_data:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd_vndr vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr vendor_sysfs_data:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd_vndr vendor_dpm_vndr_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_dpmd_vndr vendor_dpm_vndr_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_dpmd_vndr self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd_vndr proc_net:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd_vndr proc_net:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr proc_net:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr proc_net_tcp_udp:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd_vndr proc_net_tcp_udp:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr proc_net_tcp_udp:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr self:capability { setuid net_admin net_raw };
+
+allow vendor_dpmd_vndr netutils_wrapper:process { sigkill };
+
+allow vendor_dpmd_vndr self:capability2 { wake_alarm };
+
+allow vendor_dpmd_vndr appdomain:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd_vndr appdomain:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr appdomain:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd_vndr self:capability { kill };
+
+allow vendor_dpmd_vndr proc_net:file { write };
+
+allow vendor_dpmd_vndr self:netlink_netfilter_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_dpmd_vndr vendor_nwmgr_service:service_manager { add find };
+
+allow vendor_dpmd_vndr vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_dpmd_vndr vndservicemanager:binder { call transfer };

@@ -1,0 +1,13 @@
+domain_auto_trans(vendor_hal_qvirtservice_qti, vendor_qcrosvm_exec, vendor_qvirtmgr)
+
+typeattribute vendor_qvirtmgr coredomain;
+
+allow vendor_qvirtmgr vendor_qvirtmgr_service:service_manager { add find };
+
+allow vendor_qvirtmgr property_socket:sock_file { write };
+
+allow vendor_qvirtmgr init:unix_stream_socket { connectto };
+
+allow vendor_qvirtmgr mnt_product_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qvirtmgr mnt_product_file:dir { search };

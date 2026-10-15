@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/policy.xml">
+    <config name="opcode">
+
+        <item name="maxNumCores"          value="0x41004000:0x41004200" />
+        <item name="minNumCores"          value="0x41000000:0x41000200" />
+        <item name="cpuMaxFreq"           value="0x40804000:0x40804200" />
+        <item name="cpuMinFreq"           value="0x40800000:0x40800200" />
+        <item name="gpuMaxFreq"           value="0x42808000" />
+        <item name="gpuMinFreq"           value="0x42804000" />
+        <item name="schedUpMigrate"       value="0x40CE0200" />
+        <item name="schedDownMigrate"     value="0x40CE0200" />
+        <item name="schedHighSpeedLoad"   value="0x41440000:0x41440200" />
+        <item name="schedHighSpeedFreq"   value="0x4143C000:0x4143C200" />
+        <item name="schedBoost"           value="0x40C00000" />
+        <item name="kgslIdleTimer"        value="0X4282C000" />
+        <item name="schedFmaxCap"         value="0x43C1C000:0x43C1C200" />
+        <item name="rtgBoostFreq"         value="0x4144C000:0x4144C200" />
+        <item name="freqUpRateLimit"      value="0x41458000:0x41458200" />
+    </config>
+    <config name="thermalboost">
+        <item name="cluster_num" value="2"/>
+        <item name="cluster0_avaliable_freq_list" cluster="cpu0" value="/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies"/>
+        <item name="cluster1_avaliable_freq_list" cluster="cpu2" value="/sys/devices/system/cpu/cpu6/cpufreq/scaling_available_frequencies"/>
+        <item name="thermalboost_path" value="/sys/class/thermal/thermal_message/boost"/>
+    </config>
+</policy>

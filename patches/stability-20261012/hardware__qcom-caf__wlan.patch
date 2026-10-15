@@ -1,0 +1,16 @@
+diff --git a/qcwcn/config/Android.bp b/qcwcn/config/Android.bp
+index a0f4eb5..f4b4ed2 100644
+--- a/qcwcn/config/Android.bp
++++ b/qcwcn/config/Android.bp
+@@ -14,7 +14,10 @@
+ 
+ prebuilt_etc {
+     name: "wpa_supplicant.conf",
+-    src: ":wpa_supplicant_conf_gen",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_wifi_wpa_supplicant_conf",
++        default: ":wpa_supplicant_conf_gen",
++    }),
+     sub_dir: "wifi",
+     vendor: true,
+     licenses: [

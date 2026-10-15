@@ -1,0 +1,27 @@
+cc_library_static {
+    name: "warsaw-cameramind-unix-transport",
+    visibility: ["//frameworks/av/services/camera/libcameraservice:__pkg__"],
+    srcs: [
+        "transport/CameraMindFrameCodec.cpp",
+        "transport/AuthenticatedUnixChannel.cpp",
+    ],
+    export_include_dirs: ["transport"],
+    shared_libs: ["libselinux"],
+    cpp_std: "c++17",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}
+
+cc_test {
+    name: "warsaw-cameramind-unix-transport-test",
+    srcs: [
+        "transport/tests/*.cpp",
+        "control/CameraMindCommand.cpp",
+        "ExposureWire.cpp",
+    ],
+    static_libs: ["warsaw-cameramind-unix-transport"],
+    shared_libs: ["libselinux"],
+    local_include_dirs: ["."],
+    cpp_std: "c++17",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    test_suites: ["device-tests"],
+}

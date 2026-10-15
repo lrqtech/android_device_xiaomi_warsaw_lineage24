@@ -1,0 +1,231 @@
+type vendor_hal_perf_default, domain;
+
+domain_auto_trans(init, vendor_hal_perf_default_exec, vendor_hal_perf_default)
+
+typeattribute vendor_hal_perf_default hal_allocator_client;
+
+typeattribute vendor_hal_perf_default hal_graphics_composer_client;
+
+typeattribute vendor_hal_perf_default hal_thermal_client;
+
+typeattribute vendor_hal_perf_default halclientdomain;
+
+typeattribute vendor_hal_perf_default halserverdomain;
+
+typeattribute vendor_hal_perf_default mlstrustedsubject;
+
+typeattribute vendor_hal_perf_default vendor_hal_MemHal_client;
+
+typeattribute vendor_hal_perf_default vendor_hal_mem_pasrmanager_client;
+
+typeattribute vendor_hal_perf_default vendor_hal_perf;
+
+typeattribute vendor_hal_perf_default vendor_hal_perf_server;
+
+typeattribute vendor_hal_perf_default vendor_hal_poweroptservice_client;
+
+typeattribute vendor_hal_perf_default vendor_hal_qspmhal_client;
+
+typeattribute vendor_hal_perf_default vendor_hal_snapx_service_qti_client;
+
+typeattribute vendor_hal_perf_default vendor_hal_srvctracker_client;
+
+binder_use(vendor_hal_perf_default)
+
+hwbinder_use(vendor_hal_perf_default)
+
+allow vendor_hal_perf_default proc_sys_walt:file { read write open };
+
+allow vendor_hal_perf_default hwservicemanager:binder { call transfer };
+
+allow vendor_hal_perf_default system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf_default hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_hal_perf_default vendor_hal_displayfeature_xiaomi_default:dir { search };
+
+allow vendor_hal_perf_default vendor_hal_displayfeature_xiaomi_default:file { read };
+
+allow vendor_hal_perf_default surfaceflinger:dir { read open search };
+
+allow vendor_hal_perf_default surfaceflinger:file { read open };
+
+allow vendor_hal_perf_default vendor_hal_perf_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_perf_default servicemanager:binder { call transfer };
+
+allow vendor_hal_perf_default cgroup:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default proc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default proc_firmware_config:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default vendor_mpctl_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_perf_default vendor_mpctl_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_perf_default vendor_lm_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_perf_default vendor_lm_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_perf_default vendor_sysfs_lib:file { write lock append map open };
+
+allow vendor_hal_perf_default proc_meminfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_perf_default appdomain:process { getpgid };
+
+allow vendor_hal_perf_default appdomain:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf_default appdomain:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default appdomain:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default appdomain:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default configfs:dir { read open search };
+
+allow vendor_hal_perf_default configfs:file { read write open };
+
+allow vendor_hal_perf_default self:capability { kill };
+
+allow vendor_hal_perf_default property_socket:sock_file { write };
+
+allow vendor_hal_perf_default init:unix_stream_socket { connectto };
+
+allow vendor_hal_perf_default vendor_mpctl_prop:property_service { set };
+
+allow vendor_hal_perf_default vendor_mpctl_prop:file { read getattr map open };
+
+allow vendor_hal_perf_default vendor_wlc_public_prop:property_service { set };
+
+allow vendor_hal_perf_default vendor_wlc_public_prop:file { read getattr map open };
+
+allow vendor_hal_perf_default vendor_procomp_prop:property_service { set };
+
+allow vendor_hal_perf_default vendor_procomp_prop:file { read getattr map open };
+
+allow vendor_hal_perf_default vendor_qt_service:binder { call transfer };
+
+allow vendor_hal_perf_default vendor_qt_service:fd { use };
+
+allow vendor_hal_perf_default vendor_qms_service:service_manager { find };
+
+allow vendor_hal_perf_default vendor_qms:binder { call transfer };
+
+allow vendor_hal_perf_default vendor_qms:fd { use };
+
+allow vendor_hal_perf_default vendor_qms:binder { transfer };
+
+allow vendor_hal_perf_default vendor_thermal_socket:sock_file { write };
+
+allow vendor_hal_perf_default vendor_thermal-engine:unix_stream_socket { connectto };
+
+allow vendor_hal_perf_default vendor_qlm_socket:sock_file { write };
+
+allow vendor_hal_perf_default vendor_qlm_service:unix_stream_socket { connectto };
+
+allow vendor_hal_perf_default graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default block_device:dir { read open search };
+
+allow vendor_hal_perf_default proc_diskstats:file { read getattr open };
+
+allow vendor_hal_perf_default self:capability { setuid sys_admin sys_nice };
+
+allow vendor_hal_perf_default untrusted_app:binder { call transfer };
+
+allow vendor_hal_perf_default untrusted_app_34:binder { call transfer };
+
+allow vendor_hal_perf_default untrusted_app:fd { use };
+
+allow vendor_hal_perf_default untrusted_app_34:fd { use };
+
+allow vendor_hal_perf_default untrusted_app:binder { transfer };
+
+allow vendor_hal_perf_default untrusted_app_34:binder { transfer };
+
+allow vendor_hal_perf_default untrusted_app_32:binder { call transfer };
+
+allow vendor_hal_perf_default untrusted_app_32:fd { use };
+
+allow vendor_hal_perf_default untrusted_app_32:binder { transfer };
+
+allow vendor_hal_perf_default hal_graphics_composer_default:dir { search };
+
+allow vendor_hal_perf_default hal_graphics_composer_default:file { read open };
+
+allow vendor_hal_perf_default surfaceflinger:dir { search };
+
+allow vendor_hal_perf_default surfaceflinger:process { setsched };
+
+allow vendor_hal_perf_default hal_graphics_composer_default:process { setsched };
+
+allow vendor_hal_perf_default appdomain:process { setsched };
+
+allow vendor_hal_perf_default appdomain:process { getsched };
+
+allow vendor_hal_perf_default self:capability { sys_nice };
+
+allow vendor_hal_perf_default surfaceflinger:binder { call transfer };
+
+allow vendor_hal_perf_default surfaceflinger:fd { use };
+
+allow vendor_hal_perf_default appdomain:process { sigkill };
+
+allow vendor_hal_perf_default domain:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf_default domain:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default domain:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default vendor_proc_perflock_records:file { write lock append map open };
+
+allow vendor_hal_perf_default kernel:process { setsched };
+
+allow vendor_hal_perf_default sysfs_thermal:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_transparent_hugepage:file { write open };
+
+allow vendor_hal_perf_default sysfs_memory:dir { search };
+
+allow vendor_hal_perf_default sysfs_memory:file { write open };
+
+allow vendor_hal_perf_default vendor_proc_perflock_exception:file { write lock append map open };
+
+allow vendor_hal_perf_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_dmof:dir { search };
+
+allow vendor_hal_perf_default sysfs_dmof:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default sysfs_migt:dir { search };
+
+allow vendor_hal_perf_default sysfs_migt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf_default vendor_mfp-daemon:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf_default vendor_mfp-daemon:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf_default vendor_mfp-daemon:dir { search };
+
+allow vendor_hal_perf_default vendor_mfp-daemon:file { read };
+
+allow vendor_hal_perf_default hal_graphics_composer:dir { search };

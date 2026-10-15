@@ -1,0 +1,19 @@
+type vendor_per_proxy, domain;
+
+domain_auto_trans(init, vendor_per_proxy_exec, vendor_per_proxy)
+
+vndbinder_use(vendor_per_proxy)
+
+allow vendor_per_proxy vendor_per_proxy_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_per_proxy vendor_per_mgr_service:service_manager { find };
+
+allow vendor_per_proxy vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_per_proxy vndservicemanager:binder { call transfer };
+
+allow vendor_per_proxy vendor_per_mgr:binder { call transfer };
+
+allow vendor_per_proxy vendor_per_mgr:fd { use };
+
+allow vendor_per_proxy vendor_per_mgr:binder { transfer };

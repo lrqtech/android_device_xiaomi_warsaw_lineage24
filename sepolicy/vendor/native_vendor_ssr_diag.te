@@ -1,0 +1,5 @@
+type vendor_ssr_diag, domain;
+
+domain_auto_trans(init, vendor_ssr_diag_exec, vendor_ssr_diag)
+
+allow vendor_ssr_diag vendor_ssr_diag_exec:file { read getattr map execute open entrypoint };

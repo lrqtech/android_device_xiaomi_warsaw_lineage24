@@ -1,0 +1,9 @@
+cc_library_shared {
+    name: "libwarsaw_xtra_fwk",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["xtra_framework.c"],
+    stl: "none",
+    cflags: ["-Wall", "-Werror"],
+    sanitize: { cfi: true },
+}

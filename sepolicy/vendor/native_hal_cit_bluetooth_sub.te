@@ -1,0 +1,31 @@
+type hal_cit_bluetooth_sub, domain;
+
+domain_auto_trans(hal_cit_bluetooth_default, hal_cit_bluetooth_default_exec, hal_cit_bluetooth_sub)
+
+allow hal_cit_bluetooth_sub hal_cit_bluetooth_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_cit_bluetooth_sub hal_cit_bluetooth_default:process { sigchld };
+
+allow hal_cit_bluetooth_sub vendor_shell_exec:file { read getattr map execute open entrypoint };
+
+allow hal_cit_bluetooth_sub property_socket:sock_file { write };
+
+allow hal_cit_bluetooth_sub init:unix_stream_socket { connectto };
+
+allow hal_cit_bluetooth_sub vendor_cit_bluetooth_sub_prop:property_service { set };
+
+allow hal_cit_bluetooth_sub vendor_cit_bluetooth_sub_prop:file { read getattr map open };
+
+allow hal_cit_bluetooth_sub hal_cit_bluetooth_default:fd { use };
+
+allow hal_cit_bluetooth_sub hal_cit_bluetooth_default:fifo_file { write getattr };
+
+allow hal_cit_bluetooth_sub vendor_bluetooth_prop:file { read getattr map open };
+
+allow hal_cit_bluetooth_sub vendor_boot_ota_file:file { execute_no_trans };
+
+allow hal_cit_bluetooth_sub vendor_file:file { execute_no_trans };
+
+allow hal_cit_bluetooth_sub wdsdaemon:unix_stream_socket { connectto };
+
+allow hal_cit_bluetooth_sub hal_cit_bluetooth_default_exec:file { execute_no_trans };

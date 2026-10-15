@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+
+<library name="com.qti.location.sdk" file="/system_ext/framework/com.qti.location.sdk.jar"/>
+<library name="com.qti.location.sdk" file="/system/system_ext/framework/com.qti.location.sdk.jar"/>
+
+</permissions>

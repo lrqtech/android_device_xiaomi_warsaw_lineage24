@@ -1,0 +1,103 @@
+type vendor_qccvendor, domain;
+
+domain_auto_trans(init, vendor_qccvendor_exec, vendor_qccvendor)
+
+typeattribute vendor_qccvendor halclientdomain;
+
+typeattribute vendor_qccvendor halserverdomain;
+
+typeattribute vendor_qccvendor vendor_hal_qccvndhal;
+
+typeattribute vendor_qccvendor vendor_hal_qccvndhal_server;
+
+typeattribute vendor_qccvendor vendor_qccsyshal_client;
+
+binder_use(vendor_qccvendor)
+
+vndbinder_use(vendor_qccvendor)
+
+allow vendor_qccvendor hal_audio_default:binder { transfer };
+
+allow vendor_qccvendor hal_audio_default:binder { call transfer };
+
+allow vendor_qccvendor hal_audio_default:fd { use };
+
+allow vendor_qccvendor vendor_location_xtra_daemon:binder { transfer };
+
+allow vendor_qccvendor vendor_location_xtra_daemon:binder { call transfer };
+
+allow vendor_qccvendor vendor_location_xtra_daemon:fd { use };
+
+allow vendor_qccvendor vendor_qccvendor_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qccvendor vendor_qccvendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qccvendor vendor_qccvendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qccvendor property_socket:sock_file { write };
+
+allow vendor_qccvendor init:unix_stream_socket { connectto };
+
+allow vendor_qccvendor vendor_qcc_prop:property_service { set };
+
+allow vendor_qccvendor vendor_qcc_prop:file { read getattr map open };
+
+allow vendor_qccvendor vendor_qtr_prop:property_service { set };
+
+allow vendor_qccvendor vendor_qtr_prop:file { read getattr map open };
+
+allow vendor_qccvendor vendor_firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qccvendor vendor_firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qccvendor self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qccvendor logdr_socket:sock_file { write };
+
+allow vendor_qccvendor logd:unix_stream_socket { connectto };
+
+allow vendor_qccvendor vendor_qcc_trd_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qccvendor vendor_qcc_trd_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qccvendor vendor_qtrsdkservice_service:service_manager { add find };
+
+allow vendor_qccvendor vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qccvendor vndservicemanager:binder { call transfer };
+
+allow vendor_qccvendor anr_data_file:file { append };
+
+allow vendor_qccvendor dumpstate:fd { use };
+
+allow vendor_qccvendor incidentd:fd { use };
+
+allow vendor_qccvendor dumpstate:fifo_file { write append };
+
+allow vendor_qccvendor incidentd:fifo_file { write append };
+
+allow vendor_qccvendor system_server:fifo_file { write append };
+
+allow vendor_qccvendor tombstoned:unix_stream_socket { connectto };
+
+allow vendor_qccvendor tombstoned:fd { use };
+
+allow vendor_qccvendor tombstoned_crash_socket:sock_file { write };
+
+allow vendor_qccvendor tombstone_data_file:file { append };
+
+allow vendor_qccvendor servicemanager:binder { call transfer };
+
+allow vendor_qccvendor servicemanager:fd { use };
+
+allow vendor_qccvendor vendor_persist_qcc_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qccvendor vendor_persist_qcc_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qccvendor mnt_vendor_file:dir { search };
+
+allow vendor_qccvendor vendor_qms:binder { transfer };
+
+allow vendor_qccvendor vendor_qms:binder { call transfer };
+
+allow vendor_qccvendor vendor_qms:fd { use };

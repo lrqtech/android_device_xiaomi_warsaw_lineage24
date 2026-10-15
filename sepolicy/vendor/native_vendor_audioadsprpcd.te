@@ -1,0 +1,33 @@
+type vendor_audioadsprpcd, domain;
+
+domain_auto_trans(init, vendor_audioadsprpcd_exec, vendor_audioadsprpcd)
+
+allow vendor_audioadsprpcd vendor_audioadsprpcd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_audioadsprpcd ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd vendor_qdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd vendor_xdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd adsprpcd_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_audioadsprpcd adsprpcd_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd adsprpcd_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd vendor_adsprpc_prop:file { read getattr map open };
+
+allow vendor_audioadsprpcd mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_audioadsprpcd dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd vendor_dmabuf_adsp_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd vendor_audio_dsp_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_audioadsprpcd vendor_audio_dsp_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_audioadsprpcd device:dir { read watch };

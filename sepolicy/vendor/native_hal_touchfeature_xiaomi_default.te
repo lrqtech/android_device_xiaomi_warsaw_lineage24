@@ -1,0 +1,137 @@
+type hal_touchfeature_xiaomi_default, domain;
+
+domain_auto_trans(init, hal_touchfeature_xiaomi_default_exec, hal_touchfeature_xiaomi_default)
+
+typeattribute hal_touchfeature_xiaomi_default hal_touchfeature_xiaomi;
+
+typeattribute hal_touchfeature_xiaomi_default hal_touchfeature_xiaomi_server;
+
+typeattribute hal_touchfeature_xiaomi_default halclientdomain;
+
+typeattribute hal_touchfeature_xiaomi_default halserverdomain;
+
+typeattribute hal_touchfeature_xiaomi_default vendor_hal_perf_client;
+
+binder_use(hal_touchfeature_xiaomi_default)
+
+allow hal_touchfeature_xiaomi_default surfaceflinger:binder { transfer };
+
+allow hal_touchfeature_xiaomi_default bluetooth:binder { transfer };
+
+allow hal_touchfeature_xiaomi_default hal_touchfeature_xiaomi_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_touchfeature_xiaomi_default servicemanager:binder { call };
+
+allow hal_touchfeature_xiaomi_default servicemanager:binder { transfer };
+
+allow hal_touchfeature_xiaomi_default sysfs:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_block:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_mem_sleep:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_powercap:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_thunderbolt:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_typec:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_udc:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_usb_pd:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default sysfs_usbcore:file { read write getattr open };
+
+allow hal_touchfeature_xiaomi_default system_server:binder { call };
+
+allow hal_touchfeature_xiaomi_default vendor_touchfeature_prop:file { read getattr map open };
+
+allow hal_touchfeature_xiaomi_default property_socket:sock_file { write };
+
+allow hal_touchfeature_xiaomi_default init:unix_stream_socket { connectto };
+
+allow hal_touchfeature_xiaomi_default vendor_touchfeature_prop:property_service { set };
+
+allow hal_touchfeature_xiaomi_default vendor_touch_hostprocess_prop:file { read getattr map open };
+
+allow hal_touchfeature_xiaomi_default vendor_touch_hostprocess_prop:property_service { set };
+
+allow hal_touchfeature_xiaomi_default vendor_touchfeature_prop:file { read getattr open };
+
+allow hal_touchfeature_xiaomi_default fwk_sensor_hwservice:hwservice_manager { find };
+
+allow hal_touchfeature_xiaomi_default fwk_sensor_service:service_manager { find };
+
+allow hal_touchfeature_xiaomi_default touchfeature_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default touchfeature_device:file { read getattr map };
+
+allow hal_touchfeature_xiaomi_default uhid_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default sysfs_touch_hostprocess:file { read write open };
+
+allow hal_touchfeature_xiaomi_default sysfs_touch_hostprocess:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default sysfs_tp_virtual_prox:file { read write open };
+
+allow hal_touchfeature_xiaomi_default sysfs_tp_virtual_prox:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default sysfs_touch_suspend:file { read write open };
+
+allow hal_touchfeature_xiaomi_default sysfs_touch_suspend:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default input_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default input_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_touchfeature_xiaomi_default proc_tp_file:file { read write open };
+
+allow hal_touchfeature_xiaomi_default touchreport_exec:file { entrypoint };
+
+allow hal_touchfeature_xiaomi_default touchreport_data_file:file { read open };
+
+allow hal_touchfeature_xiaomi_default touchreport_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_touchfeature_xiaomi_default vendor_data_touchreport_file:dir { read write watch add_name remove_name search };
+
+allow hal_touchfeature_xiaomi_default vendor_data_touchreport_file:file { read write create getattr setattr unlink rename open };
+
+allow hal_touchfeature_xiaomi_default vendor_bsp_data_log_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_default vendor_bsp_data_log_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_touchfeature_xiaomi_default self:capability { sys_nice };
+
+allow hal_touchfeature_xiaomi_default self:cap_userns { sys_nice };
+
+allow hal_touchfeature_xiaomi_default vendor_hal_perf_hwservice:hwservice_manager { find };
+
+allow hal_touchfeature_xiaomi_default hal_touchfeature_xiaomi_service:service_manager { find };
+
+allow hal_touchfeature_xiaomi_default vendor_hal_perf2_service:service_manager { find };
+
+allow hal_touchfeature_xiaomi_default vendor_hal_perf_default:binder { call };
+
+allow hal_touchfeature_xiaomi_default surfaceflinger:binder { call };
+
+allow hal_touchfeature_xiaomi_default system_app:binder { call };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:dir { read getattr open search };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:file { read getattr open };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:file { setattr };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:file { write };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:dir { write };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:dir { add_name remove_name rmdir };
+
+allow hal_touchfeature_xiaomi_default mnt_vendor_file:file { create unlink };
+
+allow hal_touchfeature_xiaomi_default self:qipcrtr_socket { read write create getattr setopt };
+
+allow hal_touchfeature_xiaomi_default tpevent:unix_stream_socket { connectto };
+
+allow hal_touchfeature_xiaomi_default vendor_mfp-daemon:binder { transfer };

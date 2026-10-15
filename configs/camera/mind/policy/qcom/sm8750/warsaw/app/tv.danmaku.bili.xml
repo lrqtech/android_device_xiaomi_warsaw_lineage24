@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/tv.danmaku.bili.xml">
+
+    <app prio="100" name="tv.danmaku.bili" >
+        <profile name="normal">
+
+            <activity name="com.bilibili.bilibililive.ui.room.BlinkRoomActivityV2">
+                <macro name="thirdPartAppTempPolicyNoActivity" />
+            </activity>
+        </profile>
+    </app>
+</policy>

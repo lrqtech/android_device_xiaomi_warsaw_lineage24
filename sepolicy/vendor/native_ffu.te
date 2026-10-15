@@ -1,0 +1,167 @@
+type ffu, domain;
+
+domain_trans(init, ffu_exec, ffu)
+
+domain_auto_trans(init, ffu_exec, ffu)
+
+allow ffu ffu_exec:file { read getattr map execute open entrypoint };
+
+allow ffu sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_block:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_mem_sleep:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_powercap:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_thunderbolt:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_typec:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_udc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_usb_pd:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_usbcore:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_block:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_mem_sleep:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_powercap:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_thunderbolt:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_typec:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_udc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_usb_pd:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_usbcore:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_memory:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu sysfs_memory:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_memory:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu vendor_ffu_prop:property_service { set };
+
+allow ffu property_socket:sock_file { write };
+
+allow ffu init:unix_stream_socket { connectto };
+
+allow ffu vendor_ffu_prop:file { read getattr map open };
+
+allow ffu sysfs:file { read getattr open };
+
+allow ffu sysfs_block:file { read getattr open };
+
+allow ffu sysfs_mem_sleep:file { read getattr open };
+
+allow ffu sysfs_powercap:file { read getattr open };
+
+allow ffu sysfs_thunderbolt:file { read getattr open };
+
+allow ffu sysfs_typec:file { read getattr open };
+
+allow ffu sysfs_udc:file { read getattr open };
+
+allow ffu sysfs_usb_pd:file { read getattr open };
+
+allow ffu sysfs_usbcore:file { read getattr open };
+
+allow ffu rootfs:file { execute execute_no_trans };
+
+allow ffu vendor_boot_ota_file:file { execute_no_trans };
+
+allow ffu vendor_file:file { execute_no_trans };
+
+allow ffu metadata_file:file { getattr };
+
+allow ffu mnt_vendor_file:dir { getattr search };
+
+allow ffu metadata_file:dir { getattr search };
+
+allow ffu storage_file:dir { read getattr open search };
+
+allow ffu storage_file:file { read write getattr open };
+
+allow ffu system_data_file:dir { getattr };
+
+allow ffu tmpfs:dir { search };
+
+allow ffu vendor_shell_exec:file { read getattr execute open execute_no_trans };
+
+allow ffu console_device:chr_file { read write getattr setattr open };
+
+allow ffu self:capability { chown fowner fsetid };
+
+allow ffu ffu_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow ffu ffu_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow ffu ffu_data_file:blk_file { ioctl read write getattr setattr open };
+
+allow ffu rootfs:lnk_file { getattr setattr };
+
+allow ffu self:capability { chown fsetid };
+
+allow ffu ffu_exec:file { read getattr execute open entrypoint };
+
+allow ffu mnt_user_file:dir { search };
+
+allow ffu mnt_user_file:lnk_file { read };
+
+allow ffu storage_file:lnk_file { read };
+
+allow ffu vendor_toolbox_exec:file { read getattr execute open execute_no_trans };
+
+allow ffu block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow ffu ffu_partition:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow ffu procfs_memory:file { ioctl read getattr lock map open watch watch_reads };
+
+allow ffu sysfs_devices_block:dir { search };
+
+allow ffu self:capability { sys_module };
+
+allow ffu sysfs:dir { search };
+
+allow ffu sysfs_block:dir { search };
+
+allow ffu sysfs_mem_sleep:dir { search };
+
+allow ffu sysfs_powercap:dir { search };
+
+allow ffu sysfs_thunderbolt:dir { search };
+
+allow ffu sysfs_typec:dir { search };
+
+allow ffu sysfs_udc:dir { search };
+
+allow ffu sysfs_usb_pd:dir { search };
+
+allow ffu sysfs_usbcore:dir { search };

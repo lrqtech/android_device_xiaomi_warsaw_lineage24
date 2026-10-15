@@ -1,0 +1,51 @@
+type vendor_feature_enabler_client, domain;
+
+domain_auto_trans(init, vendor_feature_enabler_client_exec, vendor_feature_enabler_client)
+
+typeattribute vendor_feature_enabler_client hal_graphics_composer_client;
+
+typeattribute vendor_feature_enabler_client halclientdomain;
+
+vndbinder_use(vendor_feature_enabler_client)
+
+allow vendor_feature_enabler_client vendor_feature_enabler_client_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_feature_enabler_client tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_feature_enabler_client ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_feature_enabler_client vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_feature_enabler_client mnt_vendor_file:dir { search };
+
+allow vendor_feature_enabler_client vendor_persist_feature_enabler_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_feature_enabler_client vendor_persist_feature_enabler_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_persist_feature_enabler_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_persist_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_feature_enabler_client vendor_persist_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_persist_data_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_feature_enabler_client vndservicemanager:binder { call transfer };
+
+allow vendor_feature_enabler_client vendor_qfeatenab_client_service:service_manager { add find };
+
+allow vendor_feature_enabler_client vendor_qdisplay_service:service_manager { find };
+
+allow vendor_feature_enabler_client graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_dmabuf_user_contig_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_feature_enabler_client vendor_system_prop:file { read getattr map open };

@@ -1,0 +1,35 @@
+type vendor_cdsprpcd, domain;
+
+domain_auto_trans(init, vendor_cdsprpcd_exec, vendor_cdsprpcd)
+
+allow vendor_cdsprpcd vendor_cdsprpcd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_cdsprpcd adsprpcd_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cdsprpcd adsprpcd_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd adsprpcd_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd vendor_adsprpc_prop:file { read getattr map open };
+
+allow vendor_cdsprpcd vendor_qdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd vendor_xdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd vendor_sysfs_devfreq:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cdsprpcd vendor_sysfs_devfreq:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd vendor_sysfs_devfreq:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cdsprpcd vendor_sysfs_devfreq_l3cdsp:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cdsprpcd vendor_sysfs_devfreq_l3cdsp:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_cdsprpcd device:dir { read watch };

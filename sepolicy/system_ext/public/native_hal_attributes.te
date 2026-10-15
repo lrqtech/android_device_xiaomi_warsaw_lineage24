@@ -1,0 +1,467 @@
+attribute hal_aidl_dms;
+
+attribute hal_aidl_dms_server;
+
+attribute hal_aidl_dms_client;
+
+attribute hal_mediaeventgatherservice_client;
+
+attribute vendor_hal_perf_client;
+
+attribute hal_batteryantiaging;
+
+attribute hal_batteryantiaging_client;
+
+attribute hal_batteryantiaging_server;
+
+attribute vendor_hal_btconfigstore;
+
+attribute vendor_hal_btconfigstore_server;
+
+attribute vendor_hal_fm;
+
+attribute vendor_hal_fm_server;
+
+attribute vendor_hal_xpanprovider;
+
+attribute vendor_hal_xpanprovider_server;
+
+attribute hal_aidlbgservice;
+
+attribute hal_aidlbgservice_server;
+
+attribute hal_camera_aon;
+
+attribute hal_camera_aon_server;
+
+attribute hal_camera_observer_client;
+
+attribute hal_postprocservice;
+
+attribute hal_postprocservice_server;
+
+attribute hal_quickcamera;
+
+attribute hal_quickcamera_server;
+
+attribute vendor_hal_hexlp_client;
+
+attribute vendor_hal_tofsensorservice_xiaomi_client;
+
+attribute vendor_hal_vpp_client;
+
+attribute hal_cit_bluetooth;
+
+attribute hal_cit_bluetooth_server;
+
+attribute hal_cit_wifi;
+
+attribute hal_cit_wifi_server;
+
+attribute hal_cld;
+
+attribute hal_cld_client;
+
+attribute hal_cld_server;
+
+attribute vendor_hal_display_demura;
+
+attribute vendor_hal_display_demura_server;
+
+attribute hal_misys_vendor_client;
+
+attribute vendor_hal_eid;
+
+attribute vendor_hal_eid_server;
+
+attribute vendor_hal_qteeconnector_client;
+
+attribute hal_fbo;
+
+attribute hal_fbo_client;
+
+attribute hal_fbo_server;
+
+attribute vendor_hal_citsensorservice_xiaomi;
+
+attribute vendor_hal_citsensorservice_xiaomi_client;
+
+attribute vendor_hal_citsensorservice_xiaomi_server;
+
+attribute vendor_hal_display_aiqe;
+
+attribute vendor_hal_display_aiqe_server;
+
+attribute vendor_hal_display_demura_client;
+
+attribute vendor_hal_eid_client;
+
+attribute hal_idmanager;
+
+attribute hal_idmanager_server;
+
+attribute hal_misyscore_client;
+
+attribute hal_mediaeventgatherservice;
+
+attribute hal_mediaeventgatherservice_server;
+
+attribute hal_mfidoca;
+
+attribute hal_mfidoca_server;
+
+attribute hal_micrtk;
+
+attribute hal_micrtk_server;
+
+attribute hal_miface;
+
+attribute hal_miface_server;
+
+attribute hal_mikeybag;
+
+attribute hal_mikeybag_server;
+
+attribute hal_mimd;
+
+attribute hal_mimd_server;
+
+attribute hal_minetaidlservice;
+
+attribute hal_minetaidlservice_server;
+
+attribute hal_miwillservice;
+
+attribute hal_miwillservice_server;
+
+attribute hal_slaaidlservice;
+
+attribute hal_slaaidlservice_server;
+
+attribute hal_miperf;
+
+attribute hal_miperf_client;
+
+attribute hal_miperf_server;
+
+attribute hal_miqms;
+
+attribute hal_miqms_server;
+
+attribute hal_misecmedia;
+
+attribute hal_misecmedia_server;
+
+attribute hal_misys_vendor;
+
+attribute hal_misys_vendor_server;
+
+attribute hal_misyscore;
+
+attribute hal_misyscore_server;
+
+attribute hal_miweaver;
+
+attribute hal_miweaver_server;
+
+attribute hal_mlipay;
+
+attribute hal_mlipay_server;
+
+attribute hal_mrm;
+
+attribute hal_mrm_server;
+
+attribute hal_mseccam;
+
+attribute hal_mseccam_server;
+
+attribute hal_idmanager_client;
+
+attribute hal_mfidoca_client;
+
+attribute hal_mlipay_client;
+
+attribute hal_mtdservice;
+
+attribute hal_mtdservice_server;
+
+attribute hal_otrpagent;
+
+attribute hal_otrpagent_server;
+
+attribute hal_ozonotify;
+
+attribute hal_ozonotify_server;
+
+attribute hal_seaaudio;
+
+attribute hal_seaaudio_server;
+
+attribute hal_mtdservice_client;
+
+attribute vendor_hal_spu_client;
+
+attribute hal_swap;
+
+attribute hal_swap_client;
+
+attribute hal_swap_server;
+
+attribute hal_tidaservice;
+
+attribute hal_tidaservice_server;
+
+attribute hal_touchfeature_xiaomi;
+
+attribute hal_touchfeature_xiaomi_server;
+
+attribute hal_uniperf;
+
+attribute hal_uniperf_server;
+
+attribute hal_videoservice;
+
+attribute hal_videoservice_server;
+
+attribute hal_vsimapp;
+
+attribute hal_vsimapp_server;
+
+attribute hal_videoservice_client;
+
+attribute vendor_hal_capabilityconfigstore_qti_client;
+
+attribute vendor_hal_dspmanager_client;
+
+attribute vendor_hal_qconfig_client;
+
+attribute vendor_hal_dataconnection_qti;
+
+attribute vendor_hal_dataconnection_qti_server;
+
+attribute vendor_hal_imsfactory_client;
+
+attribute vendor_hal_iwlanservice_qti;
+
+attribute vendor_hal_iwlanservice_qti_server;
+
+attribute vendor_hal_qdutils_disp_client;
+
+attribute vendor_hal_qvirtservice_client;
+
+attribute vendor_hal_soter_client;
+
+attribute vendor_hal_datafactory_qti;
+
+attribute vendor_hal_datafactory_qti_server;
+
+attribute vendor_hal_mwqemadapter_qti;
+
+attribute vendor_hal_mwqemadapter_qti_server;
+
+attribute vendor_hal_qms_qti_client;
+
+attribute vendor_hal_diaghal;
+
+attribute vendor_hal_diaghal_server;
+
+attribute vendor_hal_dpmqmiservice_qti_client;
+
+attribute vendor_hal_dpmapiservice_qti;
+
+attribute vendor_hal_dpmapiservice_qti_server;
+
+attribute vendor_hal_mwqemadapter_qti_client;
+
+attribute vendor_hal_dspmanager;
+
+attribute vendor_hal_dspmanager_server;
+
+attribute vendor_hal_MemHal;
+
+attribute vendor_hal_MemHal_server;
+
+attribute vendor_hal_alarm_qti;
+
+attribute vendor_hal_alarm_qti_server;
+
+attribute vendor_hal_capabilityconfigstore_qti;
+
+attribute vendor_hal_capabilityconfigstore_qti_server;
+
+attribute vendor_hal_display_color;
+
+attribute vendor_hal_display_color_server;
+
+attribute vendor_hal_embmssl;
+
+attribute vendor_hal_embmssl_server;
+
+attribute vendor_hal_minkipcbinder;
+
+attribute vendor_hal_minkipcbinder_server;
+
+attribute vendor_hal_misensor_camera;
+
+attribute vendor_hal_misensor_camera_server;
+
+attribute vendor_hal_MemHal_client;
+
+attribute vendor_hal_mem_pasrmanager_client;
+
+attribute vendor_hal_perf;
+
+attribute vendor_hal_perf_server;
+
+attribute vendor_hal_poweroptservice_client;
+
+attribute vendor_hal_qspmhal_client;
+
+attribute vendor_hal_snapx_service_qti_client;
+
+attribute vendor_hal_srvctracker_client;
+
+attribute vendor_hal_poweroptservice;
+
+attribute vendor_hal_poweroptservice_server;
+
+attribute vendor_hal_qseecom;
+
+attribute vendor_hal_qseecom_server;
+
+attribute vendor_hal_qspa_qti;
+
+attribute vendor_hal_qspa_qti_server;
+
+attribute vendor_hal_qspmhal;
+
+attribute vendor_hal_qspmhal_server;
+
+attribute vendor_hal_qvirtservice;
+
+attribute vendor_hal_qvirtservice_server;
+
+attribute vendor_hal_qvirtvendor_client;
+
+attribute vendor_hal_secureprocessor;
+
+attribute vendor_hal_secureprocessor_server;
+
+attribute vendor_hal_sensorscalibrate_qti;
+
+attribute vendor_hal_sensorscalibrate_qti_server;
+
+attribute vendor_hal_snapx_service_qti;
+
+attribute vendor_hal_snapx_service_qti_server;
+
+attribute vendor_hal_soter;
+
+attribute vendor_hal_soter_server;
+
+attribute vendor_hal_srvctracker;
+
+attribute vendor_hal_srvctracker_server;
+
+attribute vendor_hal_systemhelper_client;
+
+attribute vendor_hal_trustedui;
+
+attribute vendor_hal_trustedui_server;
+
+attribute hal_miweaver_client;
+
+attribute vendor_hal_hexlp;
+
+attribute vendor_hal_hexlp_server;
+
+attribute vendor_hal_dcservice_qti;
+
+attribute vendor_hal_dcservice_qti_server;
+
+attribute vendor_hal_datafactory_qti_client;
+
+attribute vendor_hal_imsfactory;
+
+attribute vendor_hal_imsfactory_server;
+
+attribute vendor_hal_imsvthal;
+
+attribute vendor_hal_imsvthal_server;
+
+attribute vendor_hal_cacert_qti_client;
+
+attribute vendor_hal_cacertservice_qti_client;
+
+attribute hal_touchfeature_xiaomi_client;
+
+attribute vendor_hal_mem_pasrmanager;
+
+attribute vendor_hal_mem_pasrmanager_server;
+
+attribute vendor_hal_qccvndhal;
+
+attribute vendor_hal_qccvndhal_server;
+
+attribute vendor_hal_qms_qti;
+
+attribute vendor_hal_qms_qti_server;
+
+attribute vendor_hal_qvrservice_qti;
+
+attribute vendor_hal_qvrservice_qti_server;
+
+attribute vendor_hal_sxrservice_qti;
+
+attribute vendor_hal_sxrservice_qti_server;
+
+attribute vendor_hal_vpp;
+
+attribute vendor_hal_vpp_server;
+
+attribute vendor_hal_wifilearner;
+
+attribute vendor_hal_wifilearner_server;
+
+attribute vendor_hal_display_color_client;
+
+attribute vendor_hal_display_postproc_client;
+
+attribute vendor_hal_atfwd_client;
+
+attribute vendor_hal_imsvthal_client;
+
+attribute hal_cit_bluetooth_client;
+
+attribute hal_uniperf_client;
+
+attribute vendor_hal_dataconnection_qti_client;
+
+attribute vendor_hal_cacert_qti;
+
+attribute vendor_hal_cacert_qti_server;
+
+attribute vendor_hal_dcservice_qti_client;
+
+attribute vendor_hal_dpmapiservice_qti_client;
+
+attribute vendor_hal_embmssl_client;
+
+attribute vendor_hal_diaghal_client;
+
+attribute vendor_hal_alarm_qti_client;
+
+attribute vendor_hal_cacertservice_qti;
+
+attribute vendor_hal_cacertservice_qti_server;
+
+attribute vendor_hal_iwlanservice_qti_client;
+
+attribute hal_mitrustedui_client;
+
+attribute vendor_hal_systemhelper;
+
+attribute vendor_hal_systemhelper_server;
+
+attribute vendor_hal_xpanprovider_client;

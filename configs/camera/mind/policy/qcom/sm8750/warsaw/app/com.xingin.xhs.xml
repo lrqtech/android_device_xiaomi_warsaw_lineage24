@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.xingin.xhs.xml">
+
+    <app prio="100" name="com.xingin.xhs" >
+        <profile name="normal">
+
+            <activity name="com.xingin.alpha.emcee.AlphaEmceeActivity">
+                <macro name="thirdPartAppTempPolicyNoActivity" />
+            </activity>
+
+            <activity name="com.xingin.redscanner.scanner.QrCodeScannerActivityV2">
+            </activity>
+
+            <activity name="com.xingin.capa.lib.newcapa.capture.capturev2.CapaCaptureActivity">
+            </activity>
+
+            <activity name="com.xingin.capa.lib.entrance.CapaEntranceActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

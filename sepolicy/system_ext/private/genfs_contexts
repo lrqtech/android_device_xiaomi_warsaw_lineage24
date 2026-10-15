@@ -1,0 +1,5 @@
+genfscon sysfs /class/powercap u:object_r:sysfs_powercap:s0
+
+genfscon sysfs /devices/virtual/powercap u:object_r:sysfs_powercap:s0
+
+genfscon proc /cameramind/topn_process_info u:object_r:proc_camera_mind:s0

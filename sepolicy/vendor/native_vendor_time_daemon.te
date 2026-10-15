@@ -1,0 +1,31 @@
+type vendor_time_daemon, domain;
+
+domain_auto_trans(init, vendor_time_daemon_exec, vendor_time_daemon)
+
+typeattribute vendor_time_daemon mlstrustedsubject;
+
+allow vendor_time_daemon vendor_time_daemon_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_time_daemon vendor_smem_log_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_time_daemon rtc_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_time_daemon vendor_time_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_time_daemon vendor_time_data_file:dir { write lock open add_name remove_name search };
+
+allow vendor_time_daemon self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_time_daemon self:capability { sys_time };
+
+allow vendor_time_daemon vendor_persist_time_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_time_daemon vendor_persist_time_file:dir { write lock open add_name remove_name search };
+
+allow vendor_time_daemon mnt_vendor_file:dir { search };
+
+allow vendor_time_daemon vendor_sysfs_mhi:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_time_daemon vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_time_daemon vendor_time_service_prop:file { read getattr map open };

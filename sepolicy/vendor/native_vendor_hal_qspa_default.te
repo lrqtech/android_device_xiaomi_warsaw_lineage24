@@ -1,0 +1,21 @@
+type vendor_hal_qspa_default, domain;
+
+domain_auto_trans(init, vendor_hal_qspa_default_exec, vendor_hal_qspa_default)
+
+typeattribute vendor_hal_qspa_default halserverdomain;
+
+typeattribute vendor_hal_qspa_default vendor_hal_qspa_qti;
+
+typeattribute vendor_hal_qspa_default vendor_hal_qspa_qti_server;
+
+binder_use(vendor_hal_qspa_default)
+
+allow vendor_hal_qspa_default vendor_hal_qspa_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_qspa_default servicemanager:binder { call transfer };
+
+allow vendor_hal_qspa_default vendor_sysfs_devicetree_cpu:dir { read open search };
+
+allow vendor_hal_qspa_default vendor_sys_nonsp_comp:file { read getattr open };
+
+allow vendor_hal_qspa_default vendor_sys_sp_comp:file { read getattr open };

@@ -1,0 +1,107 @@
+type vendor_location_xtwifi_client, domain;
+
+domain_auto_trans(vendor_location, vendor_location_xtwifi_client_exec, vendor_location_xtwifi_client)
+
+typeattribute vendor_location_xtwifi_client netdomain;
+
+binder_use(vendor_location_xtwifi_client)
+
+hwbinder_use(vendor_location_xtwifi_client)
+
+allow vendor_location_xtwifi_client vendor_location_xtwifi_client_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_location_xtwifi_client vendor_location:process { sigchld };
+
+allow vendor_location_xtwifi_client vendor_location:fd { use };
+
+allow vendor_location_xtwifi_client vendor_location_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_location_xtwifi_client vendor_location_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_location_xtwifi_client vendor_location_socket:lnk_file { read getattr open };
+
+allow vendor_location_xtwifi_client vendor_location_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_location_xtwifi_client vendor_location_socket:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_location_xtwifi_client vendor_location:unix_dgram_socket { read write sendto };
+
+allow vendor_location_xtwifi_client vendor_hal_gnss_qti:unix_dgram_socket { sendto };
+
+allow vendor_location_xtwifi_client hwservicemanager:binder { call transfer };
+
+allow vendor_location_xtwifi_client hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_location_xtwifi_client system_server:binder { call transfer };
+
+allow vendor_location_xtwifi_client system_server:fd { use };
+
+allow vendor_location_xtwifi_client property_socket:sock_file { write };
+
+allow vendor_location_xtwifi_client init:unix_stream_socket { connectto };
+
+allow vendor_location_xtwifi_client vendor_location_prop:property_service { set };
+
+allow vendor_location_xtwifi_client vendor_location_prop:file { read getattr map open };
+
+allow vendor_location_xtwifi_client vendor_qms_prop:file { read getattr map open };
+
+allow vendor_location_xtwifi_client sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_location_xtwifi_client self:capability2 { block_suspend };
+
+allow vendor_location_xtwifi_client self:cap2_userns { block_suspend };
+
+allow vendor_location_xtwifi_client system_suspend_server:binder { call transfer };
+
+allow vendor_location_xtwifi_client system_suspend_server:fd { use };
+
+allow vendor_location_xtwifi_client system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_location_xtwifi_client hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_location_xtwifi_client hal_system_suspend_service:service_manager { find };
+
+allow vendor_location_xtwifi_client servicemanager:binder { call transfer };
+
+allow vendor_location_xtwifi_client mnt_vendor_file:dir { search };
+
+allow vendor_location_xtwifi_client self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_location_xtwifi_client vendor_location_lowi_server:unix_dgram_socket { sendto };
+
+allow vendor_location_xtwifi_client hal_wifi_default:unix_dgram_socket { sendto };
+
+allow vendor_location_xtwifi_client anr_data_file:file { append };
+
+allow vendor_location_xtwifi_client dumpstate:fd { use };
+
+allow vendor_location_xtwifi_client incidentd:fd { use };
+
+allow vendor_location_xtwifi_client dumpstate:fifo_file { write append };
+
+allow vendor_location_xtwifi_client incidentd:fifo_file { write append };
+
+allow vendor_location_xtwifi_client system_server:fifo_file { write append };
+
+allow vendor_location_xtwifi_client tombstoned:unix_stream_socket { connectto };
+
+allow vendor_location_xtwifi_client tombstoned:fd { use };
+
+allow vendor_location_xtwifi_client tombstoned_crash_socket:sock_file { write };
+
+allow vendor_location_xtwifi_client tombstone_data_file:file { append };
+
+allow vendor_location_xtwifi_client vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_location_xtwifi_client vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_location_xtwifi_client vendor_qms_service:service_manager { find };
+
+allow vendor_location_xtwifi_client vendor_qms:binder { call transfer };
+
+allow vendor_location_xtwifi_client vendor_qms:fd { use };
+
+allow vendor_location_xtwifi_client vendor_qms:binder { transfer };
+
+allow vendor_location_xtwifi_client system_server:binder { transfer };

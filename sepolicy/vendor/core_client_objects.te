@@ -1,0 +1,53 @@
+allow vendor_qvirtmgr vendor_qvirtmgr_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qvirtmgr vendor_qvirtmgr_prop:property_service { set };
+
+allow vendor_qvirtmgr vendor_qvirtmgr_prop:file { read getattr map open };
+
+allow vendor_qvirtmgr vendor_qcrosvm_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_qvirtmgr vendor_vm_qti_system_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qvirtmgr vendor_vm_qti_system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qvirtmgr vendor_qcrosvm_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qvirtmgr vendor_hal_qvirtservice_qti:process { sigchld };
+
+allow vendor_qvirtmgr vendor_hal_qvirtservice_qti:fd { use };
+
+allow vendor_qvirtmgr vendor_vm_qti_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qvirtmgr vendor_vm_qti_data_file:dir { getattr search };
+
+allow vendor_qvirtmgr vendor_vm_qti_system_file:dir { read };
+
+allow vendor_imsvtdaemon vendor_audio_prop:file { read getattr map open };
+
+allow vendor_imsvtdaemon vendor_hal_diaghal_service:service_manager { find };
+
+allow vendor_dpmd vendor_sysfs_data:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dpmd vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dpmd vendor_sysfs_data:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qvirtmgr vendor_gunyah_chr_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_dataservice_app vendor_cnd_prop:file { read getattr map open };
+
+allow vendor_dataservice_app vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_systemhelper_app vendor_hal_trustedui_qti:binder { transfer };
+
+allow vendor_systemhelper_app vendor_hal_trustedui_qti:binder { call transfer };
+
+allow vendor_systemhelper_app vendor_hal_trustedui_qti:fd { use };
+
+allow vendor_dataservice_app vendor_hal_slmadapter_hwservice:hwservice_manager { find };
+
+allow vendor_dataservice_app vendor_slm_prop:file { read getattr map open };
+
+allow vendor_dataservice_app vendor_mwqem_prop:file { read getattr map open };
+
+allow vendor_systemhelper_app hal_mitrustedui_service:service_manager { find };

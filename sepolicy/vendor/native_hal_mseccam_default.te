@@ -1,0 +1,79 @@
+type hal_mseccam_default, domain;
+
+domain_auto_trans(init, hal_mseccam_default_exec, hal_mseccam_default)
+
+typeattribute hal_mseccam_default hal_graphics_allocator;
+
+typeattribute hal_mseccam_default hal_graphics_allocator_server;
+
+typeattribute hal_mseccam_default hal_mseccam;
+
+typeattribute hal_mseccam_default hal_mseccam_server;
+
+typeattribute hal_mseccam_default halserverdomain;
+
+binder_use(hal_mseccam_default)
+
+allow hal_mseccam_default vendor_display_prop:file { read getattr map open };
+
+allow hal_mseccam_default hal_mseccam_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_mseccam_default servicemanager:binder { call transfer };
+
+allow hal_mseccam_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mseccam_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mseccam_default mitee_client_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mseccam_default vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mseccam_default selinuxfs:file { read open };
+
+allow hal_mseccam_default self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_mseccam_default camera_config_prop:file { read getattr map open };
+
+allow hal_mseccam_default cameraserver:binder { call transfer };
+
+allow hal_mseccam_default cameraserver:fd { use };
+
+allow hal_mseccam_default fwk_camera_service:service_manager { find };
+
+allow hal_mseccam_default fwk_camera_hwservice:hwservice_manager { find };
+
+allow hal_mseccam_default hal_graphics_allocator_service:service_manager { find };
+
+allow hal_mseccam_default hal_graphics_allocator_hwservice:hwservice_manager { find };
+
+allow hal_mseccam_default hal_graphics_allocator_default:binder { call transfer };
+
+allow hal_mseccam_default hal_graphics_allocator_default:fd { use };
+
+allow hal_mseccam_default hal_graphics_mapper_hwservice:hwservice_manager { find };
+
+allow hal_mseccam_default hal_graphics_mapper_service:service_manager { find };
+
+allow hal_mseccam_default hidl_token_hwservice:hwservice_manager { find };
+
+allow hal_mseccam_default fwk_sensor_hwservice:hwservice_manager { find };
+
+allow hal_mseccam_default untrusted_app_25:fd { use };
+
+allow hal_mseccam_default untrusted_app_27:fd { use };
+
+allow hal_mseccam_default untrusted_app_29:fd { use };
+
+allow hal_mseccam_default untrusted_app_30:fd { use };
+
+allow hal_mseccam_default untrusted_app_32:fd { use };
+
+allow hal_mseccam_default untrusted_app:fd { use };
+
+allow hal_mseccam_default untrusted_app_34:fd { use };
+
+allow hal_mseccam_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_mseccam_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };
+
+allowxperm hal_mseccam_default vendor_membuf_dev:chr_file ioctl { 0x4d05 };

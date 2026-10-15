@@ -1,0 +1,5 @@
+type vendor_dpmd, domain;
+
+type vendor_imsvtdaemon, domain;
+
+type vendor_qvirtmgr, domain;

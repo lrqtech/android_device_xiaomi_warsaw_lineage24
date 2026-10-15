@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="config_mainBuiltInDisplayCutout" translatable="false">M 0,0 H -35 V 152 H 35 V 0 H 0 Z</string>
+    <string name="config_mainBuiltInDisplayCutoutRectApproximation" translatable="false">@string/config_mainBuiltInDisplayCutout</string>
+    <bool name="config_fillMainBuiltInDisplayCutout">false</bool>
+    <bool name="config_maskMainBuiltInDisplayCutout">false</bool>
+    <dimen name="status_bar_height_default">152px</dimen>
+    <dimen name="status_bar_height_portrait">152px</dimen>
+    <dimen name="status_bar_height_landscape">152px</dimen>
+    <dimen name="rounded_corner_radius">158px</dimen>
+    <dimen name="rounded_corner_radius_top">158px</dimen>
+    <dimen name="rounded_corner_radius_bottom">158px</dimen>
+    <bool name="config_showNavigationBar">true</bool>
+    <bool name="config_automatic_brightness_available">true</bool>
+    <bool name="config_dozeAlwaysOnDisplayAvailable">true</bool>
+    <integer name="config_defaultRefreshRate">0</integer>
+    <integer name="config_defaultPeakRefreshRate">165</integer>
+    <item name="config_screenBrightnessSettingMinimumFloat" type="dimen" format="float">0.000244171</item>
+    <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">1.0</item>
+    <item name="config_screenBrightnessSettingDefaultFloat" type="dimen" format="float">0.057196923</item>
+</resources>

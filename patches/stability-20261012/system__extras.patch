@@ -1,0 +1,12 @@
+diff --git a/ext4_utils/Android.bp b/ext4_utils/Android.bp
+index 7195a855..7c6e2ca6 100644
+--- a/ext4_utils/Android.bp
++++ b/ext4_utils/Android.bp
+@@ -87,6 +87,7 @@ prebuilt_etc {
+     name: "mke2fs.conf.recovery",
+     recovery: true,
+     src: "mke2fs.conf",
++    filename: "mke2fs.conf",
+ }
+ 
+ // TODO(b/157625953): Can't embedded into the other package because of missing variant

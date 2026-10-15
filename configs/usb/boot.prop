@@ -1,0 +1,12 @@
+# Board USB parameters from the official OS4.0.0.15 vendor build.prop.
+vendor.usb.rndis.func.name=gsi
+vendor.usb.rmnet.func.name=gsi
+vendor.usb.rmnet.inst.name=rmnet
+vendor.usb.dpl.inst.name=dpl
+vendor.usb.controller=a600000.dwc3
+vendor.usb.qdss.inst.name=qdss_sw
+vendor.usb.diag.func.name=ffs
+vendor.usb.use_ffs_mtp=1
+sys.usb.mtp.batchcancel=1
+vendor.usb.use_gadget_hal=1
+ro.usb.uvc.enabled=false

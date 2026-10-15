@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.lemon.lv.xml">
+
+    <app prio="100" name="com.lemon.lv" >
+        <profile name="normal">
+
+            <activity name="com.vega.recorder.LvRecordActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

@@ -1,0 +1,1002 @@
+diff --git a/cmds/servicemanager/Android.bp b/cmds/servicemanager/Android.bp
+index e5d7b7456b..6ae8749200 100644
+--- a/cmds/servicemanager/Android.bp
++++ b/cmds/servicemanager/Android.bp
+@@ -80,7 +80,10 @@ cc_binary {
+ cc_binary {
+     name: "vndservicemanager",
+     defaults: ["servicemanager_defaults"],
+-    init_rc: ["vndservicemanager.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_vndservicemanager_rc"],
++        default: ["vndservicemanager.rc"],
++    }),
+     vendor: true,
+     cflags: [
+         "-DVENDORSERVICEMANAGER=1",
+diff --git a/libs/gui/SurfaceComposerClient.cpp b/libs/gui/SurfaceComposerClient.cpp
+index d10624df61..a38e42aed9 100644
+--- a/libs/gui/SurfaceComposerClient.cpp
++++ b/libs/gui/SurfaceComposerClient.cpp
+@@ -3562,4 +3562,21 @@ void ReleaseCallbackThread::threadMain() {
+     }
+ }
+ 
++#include "WarsawCameraFpsClient.inc"
++
++status_t SurfaceComposerClient::setWarsawGameFrameRateLease(
++        const sp<IBinder>& owner, uid_t uid, float fps) {
++    const auto service = ComposerServiceAIDL::getComposerService();
++    if (!service) return DEAD_OBJECT;
++    return statusTFromBinderStatus(service->setWarsawGameFrameRateLease(owner, uid, fps));
++}
++
++status_t SurfaceComposerClient::hasWarsawGameFrameRateLease(
++        const sp<IBinder>& owner, uid_t uid, float fps, bool* owned) {
++    if (!owned) return BAD_VALUE;
++    const auto service = ComposerServiceAIDL::getComposerService();
++    if (!service) return DEAD_OBJECT;
++    return statusTFromBinderStatus(service->hasWarsawGameFrameRateLease(owner, uid, fps, owned));
++}
++
+ } // namespace android
+diff --git a/libs/gui/aidl/android/gui/ISurfaceComposer.aidl b/libs/gui/aidl/android/gui/ISurfaceComposer.aidl
+index ce8091a915..b1da6575e2 100644
+--- a/libs/gui/aidl/android/gui/ISurfaceComposer.aidl
++++ b/libs/gui/aidl/android/gui/ISurfaceComposer.aidl
+@@ -33,6 +33,7 @@ import android.gui.DisplayStatInfo;
+ import android.gui.DynamicDisplayInfo;
+ import android.gui.FrameEvent;
+ import android.gui.FrameStats;
++import android.gui.FpsMonitorCmd;
+ import android.gui.HdrConversionCapability;
+ import android.gui.HdrConversionStrategy;
+ import android.gui.IActivePictureListener;
+@@ -683,4 +684,8 @@ interface ISurfaceComposer {
+      * Requires root
+      */
+      void resetForcedPacesetter();
++
++    FpsMonitorCmd sentWarsawFpsMonitorCmd(int command, String layerName, IBinder owner);
++    void setWarsawGameFrameRateLease(IBinder owner, int uid, float frameRate);
++    boolean hasWarsawGameFrameRateLease(IBinder owner, int uid, float frameRate);
+ }
+diff --git a/libs/gui/include/gui/SurfaceComposerClient.h b/libs/gui/include/gui/SurfaceComposerClient.h
+index 068c0804e2..d988737a53 100644
+--- a/libs/gui/include/gui/SurfaceComposerClient.h
++++ b/libs/gui/include/gui/SurfaceComposerClient.h
+@@ -47,6 +47,7 @@
+ 
+ #include <android/gui/BnJankListener.h>
+ #include <android/gui/ISurfaceComposerClient.h>
++#include <gui/FpsMonitorCmd.h>
+ #include <android/gui/RegionSamplingDescriptor.h>
+ #include <android/gui/TransactionBarrier.h>
+ 
+@@ -216,6 +217,10 @@ public:
+ 
+     // Sets the frame rate of a particular app (uid). This is currently called
+     // by GameManager.
++    static status_t sentFpsMonitorCmd(int command, const String16& layerName, FpsMonitorCmd* output);
++    static status_t setWarsawGameFrameRateLease(const sp<IBinder>& owner, uid_t uid, float fps);
++    static status_t hasWarsawGameFrameRateLease(const sp<IBinder>& owner, uid_t uid,
++                                               float fps, bool* owned);
+     static status_t setGameModeFrameRateOverride(uid_t uid, float frameRate);
+ 
+     // Sets the frame rate of a particular app (uid). This is currently called
+diff --git a/libs/gui/tests/Surface_test.cpp b/libs/gui/tests/Surface_test.cpp
+index 1b0e4faba7..7d1ae211c1 100644
+--- a/libs/gui/tests/Surface_test.cpp
++++ b/libs/gui/tests/Surface_test.cpp
+@@ -1057,6 +1057,28 @@ public:
+         return binder::Status::ok();
+     }
+ 
++    binder::Status sentWarsawFpsMonitorCmd(
++            int32_t /*command*/, const String16& /*layerName*/,
++            const sp<IBinder>& /*owner*/, gui::FpsMonitorCmd* result) override {
++        *result = {};
++        ADD_FAILURE() << "Unexpected FPS monitor request in the frame timestamp test";
++        return binder::Status::fromExceptionCode(binder::Status::EX_UNSUPPORTED_OPERATION);
++    }
++
++    binder::Status setWarsawGameFrameRateLease(
++            const sp<IBinder>& /*owner*/, int32_t /*uid*/, float /*frameRate*/) override {
++        ADD_FAILURE() << "Unexpected game frame-rate lease in the frame timestamp test";
++        return binder::Status::fromExceptionCode(binder::Status::EX_UNSUPPORTED_OPERATION);
++    }
++
++    binder::Status hasWarsawGameFrameRateLease(
++            const sp<IBinder>& /*owner*/, int32_t /*uid*/, float /*frameRate*/,
++            bool* owned) override {
++        *owned = false;
++        ADD_FAILURE() << "Unexpected game frame-rate lease query in the frame timestamp test";
++        return binder::Status::fromExceptionCode(binder::Status::EX_UNSUPPORTED_OPERATION);
++    }
++
+     binder::Status enableRefreshRateOverlay(bool /*active*/) override {
+         return binder::Status::ok();
+     }
+diff --git a/services/hidservice/hidservice.rc b/services/hidservice/hidservice.rc
+index 3e21db6440..ebe813e918 100644
+--- a/services/hidservice/hidservice.rc
++++ b/services/hidservice/hidservice.rc
+@@ -1,5 +1,5 @@
+ service hidservice /system/bin/hidservice
+-    interface aidl hidservice
++    interface aidl hid
+     disabled
+     oneshot
+     user system
+diff --git a/services/surfaceflinger/Layer.cpp b/services/surfaceflinger/Layer.cpp
+index 38b7c439be..9dc482dc84 100644
+--- a/services/surfaceflinger/Layer.cpp
++++ b/services/surfaceflinger/Layer.cpp
+@@ -1436,6 +1436,7 @@ void Layer::onCompositionPresented(const DisplayDevice* display,
+     // mFrameLatencyNeeded is true when a new frame was latched for the
+     // composition.
+     if (!mBufferInfo.mFrameLatencyNeeded) return;
++    mFlinger->recordWarsawCameraFrame(getName());
+ 
+     for (auto& handle : mDrawingState.callbackHandles) {
+         handle.gpuCompositionDoneFence = glDoneFence;
+diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
+index 9128394aa1..39f318ff87 100644
+--- a/services/surfaceflinger/SurfaceFlinger.cpp
++++ b/services/surfaceflinger/SurfaceFlinger.cpp
+@@ -611,7 +611,9 @@ LatchUnsignaledConfig SurfaceFlinger::getLatchUnsignaledConfig() {
+     return LatchUnsignaledConfig::Disabled;
+ }
+ 
+-SurfaceFlinger::~SurfaceFlinger() = default;
++SurfaceFlinger::~SurfaceFlinger() {
++    mWarsawFodDisplay.stop();
++}
+ 
+ void SurfaceFlinger::binderDied(const wp<IBinder>&) {
+     // the window manager died on us. prepare its eulogy.
+@@ -1032,6 +1034,14 @@ void SurfaceFlinger::init() FTL_FAKE_GUARD(kMainThreadContext) {
+     // of the DisplayDevice, hence the above commit of the primary display. Remove that special case
+     // by initializing the Scheduler after configureLocked, once decoupled from DisplayDevice.
+     initScheduler(display);
++    const auto weakFlinger = wp<SurfaceFlinger>::fromExisting(this);
++    mWarsawFodDisplay.setIdentityChangedCallback([this, weakFlinger] {
++        static_cast<void>(mScheduler->schedule([weakFlinger] {
++            if (const auto flinger = weakFlinger.promote()) {
++                flinger->scheduleRepaint();
++            }
++        }));
++    });
+ 
+     // Start listening after creating the Scheduler, since the listener calls into it.
+     mDisplayModeController.setActiveModeListener(
+@@ -2892,6 +2902,27 @@ bool SurfaceFlinger::updateLayerSnapshots(VsyncId vsyncId, nsecs_t frameTimeNs,
+         SFTRACE_NAME("LayerSnapshotBuilder:update");
+         mLayerSnapshotBuilder.update(args);
+     }
++    if (mWarsawFodDisplay.enabled()) {
++        bool udfpsInputVisible = false;
++        bool colorFadeVisible = false;
++        const auto primary = getFrontInternalDisplayLocked();
++        mLayerSnapshotBuilder.forEachInputSnapshot([&](const frontend::LayerSnapshot& snapshot) {
++            if (primary && mWarsawFodDisplay.acceptsInputLayer(
++                    snapshot.inputInfo.ownerUid.val(),
++                    snapshot.outputFilter.layerStack == primary->getLayerStack(),
++                    !snapshot.inputInfo.inputConfig.test(gui::WindowInfo::InputConfig::NOT_VISIBLE),
++                    snapshot.inputInfo.name)) {
++                udfpsInputVisible = true;
++            }
++        });
++        mLayerSnapshotBuilder.forEachVisibleSnapshot(
++                [&](std::unique_ptr<frontend::LayerSnapshot>& snapshot) {
++            if (primary && snapshot->outputFilter.layerStack == primary->getLayerStack()
++                    && snapshot->uid == gui::Uid{AID_SYSTEM}
++                    && snapshot->name.find("ColorFade") != std::string::npos) colorFadeVisible = true;
++        });
++        mWarsawFodDisplay.updateLayers(udfpsInputVisible, colorFadeVisible);
++    }
+ 
+     if (mLayerLifecycleManager.getGlobalChanges().any(Changes::Geometry | Changes::Input |
+                                                       Changes::Hierarchy | Changes::Visibility)) {
+@@ -6400,7 +6431,10 @@ void SurfaceFlinger::setPhysicalDisplayPowerMode(const sp<DisplayDevice>& displa
+ 
+ ftl::FinalizerStd SurfaceFlinger::makePowerModeAsyncFinalizer(PhysicalDisplayId displayId,
+                                                               hal::PowerMode mode) {
+-    return ftl::Finalizer([this, displayId, mode]() FTL_FAKE_GUARD(kMainThreadContext) {
++    const bool internal = (ftl::FakeGuard(mStateLock), mPhysicalDisplays.get(displayId))
++            .transform(&PhysicalDisplay::isInternal).value_or(false);
++    return ftl::Finalizer([this, displayId, mode, internal]() FTL_FAKE_GUARD(kMainThreadContext) {
++        if (internal) mWarsawFodDisplay.postPowerMode(static_cast<int32_t>(mode));
+         mPowerModeChangeInProgress = true;
+         if (displayId == mFrontInternalDisplayId) {
+             mTimeStats->setPowerMode(mode);
+@@ -6442,6 +6476,7 @@ SurfaceFlinger::setPhysicalDisplayPowerModeAsync(const sp<DisplayDevice>& displa
+ 
+     const bool isInternalDisplay =
+             physicalDisplayOpt.transform(&PhysicalDisplay::isInternal).value_or(false);
++    if (isInternalDisplay) mWarsawFodDisplay.prePowerMode(static_cast<int32_t>(mode));
+ 
+     mPowerModeChangeInProgress = true;
+ 
+@@ -9317,9 +9352,15 @@ const std::unordered_map<std::string, uint32_t>& SurfaceFlinger::getGenericLayer
+     return genericLayerMetadataKeyMap;
+ }
+ 
++void SurfaceFlinger::applyWarsawGameFrameRate(uid_t uid, float frameRate) {
++    static_cast<void>(mScheduler->schedule([this, uid, frameRate]()
++                                              FTL_FAKE_GUARD(kMainThreadContext) {
++        mScheduler->setGameModeFrameRateForUid(FrameRateOverride{uid, frameRate});
++    }));
++}
++
+ status_t SurfaceFlinger::setGameModeFrameRateOverride(uid_t uid, float frameRate) {
+-    mScheduler->setGameModeFrameRateForUid(FrameRateOverride{uid, frameRate});
+-    return NO_ERROR;
++    return mWarsawGameFrameRates->setBase(uid, frameRate);
+ }
+ 
+ status_t SurfaceFlinger::setGameDefaultFrameRateOverride(uid_t uid, float frameRate) {
+@@ -11135,6 +11176,30 @@ void SurfaceFlinger::updateHdrInfos(
+     }
+ }
+ 
++#include "WarsawCameraFps.inc"
++
++binder::Status SurfaceComposerAIDL::setWarsawGameFrameRateLease(
++        const sp<IBinder>& owner, int32_t uid, float frameRate) {
++    if (IPCThreadState::self()->getCallingUid() != AID_SYSTEM) {
++        return binderStatusFromStatusT(PERMISSION_DENIED);
++    }
++    return binderStatusFromStatusT(mFlinger->mWarsawGameFrameRates->setLease(
++            owner, static_cast<uid_t>(uid), frameRate));
++}
++
++binder::Status SurfaceComposerAIDL::hasWarsawGameFrameRateLease(
++        const sp<IBinder>& owner, int32_t uid, float frameRate, bool* owned) {
++    if (IPCThreadState::self()->getCallingUid() != AID_SYSTEM) {
++        return binderStatusFromStatusT(PERMISSION_DENIED);
++    }
++    if (!owned || !owner || uid < AID_APP_START || !std::isfinite(frameRate)) {
++        return binderStatusFromStatusT(BAD_VALUE);
++    }
++    *owned = mFlinger->mWarsawGameFrameRates->matches(owner,
++            static_cast<uid_t>(uid), frameRate);
++    return binder::Status::ok();
++}
++
+ } // namespace android
+ 
+ #if defined(__gl_h_)
+diff --git a/services/surfaceflinger/SurfaceFlinger.h b/services/surfaceflinger/SurfaceFlinger.h
+index 9d8ef03454..c1bd455c03 100644
+--- a/services/surfaceflinger/SurfaceFlinger.h
++++ b/services/surfaceflinger/SurfaceFlinger.h
+@@ -100,6 +100,9 @@
+ #include "Scheduler/Scheduler.h"
+ #include "ShaderRegistry.h"
+ #include "SurfaceFlingerFactory.h"
++#include "WarsawCameraFps.h"
++#include "WarsawFodDisplayState.h"
++#include "WarsawGameFrameRateLease.h"
+ #include "ThreadContext.h"
+ #include "Tracing/LayerTracing.h"
+ #include "Tracing/TransactionTracing.h"
+@@ -277,6 +280,10 @@ public:
+ 
+     // must be called before clients can connect
+     void init() ANDROID_API;
++    status_t sentWarsawFpsMonitorCmd(int32_t command, const String16& layerName,
++                                     const sp<IBinder>& owner, uid_t caller,
++                                     gui::FpsMonitorCmd* output);
++    void recordWarsawCameraFrame(std::string_view layerName);
+ 
+     // starts SurfaceFlinger main loop in the current thread
+     void run() ANDROID_API;
+@@ -627,6 +634,13 @@ private:
+     status_t setFrameTimelineInfo(const sp<Surface>& surface,
+                                   const gui::FrameTimelineInfo& frameTimelineInfo);
+ 
++    void applyWarsawGameFrameRate(uid_t uid, float frameRate);
++    sp<WarsawGameFrameRateLease> mWarsawGameFrameRates =
++            sp<WarsawGameFrameRateLease>::make([this](uid_t uid, float fps) {
++                applyWarsawGameFrameRate(uid, fps);
++            });
++    sp<WarsawCameraFps> mWarsawCameraFps = sp<WarsawCameraFps>::make();
++    WarsawFodDisplayState mWarsawFodDisplay;
+     status_t setGameModeFrameRateOverride(uid_t uid, float frameRate);
+ 
+     status_t setGameDefaultFrameRateOverride(uid_t uid, float frameRate);
+@@ -1896,6 +1910,13 @@ public:
+     binder::Status getDisplayDecorationSupport(
+             const sp<IBinder>& displayToken,
+             std::optional<gui::DisplayDecorationSupport>* outSupport) override;
++    binder::Status sentWarsawFpsMonitorCmd(int32_t command, const String16& layerName,
++                                           const sp<IBinder>& owner,
++                                           gui::FpsMonitorCmd* output) override;
++    binder::Status setWarsawGameFrameRateLease(const sp<IBinder>& owner, int32_t uid,
++                                              float frameRate) override;
++    binder::Status hasWarsawGameFrameRateLease(const sp<IBinder>& owner, int32_t uid,
++                                              float frameRate, bool* owned) override;
+     binder::Status setGameModeFrameRateOverride(int32_t uid, float frameRate) override;
+     binder::Status setGameDefaultFrameRateOverride(int32_t uid, float frameRate) override;
+     binder::Status enableRefreshRateOverlay(bool active) override;
+diff --git a/libs/gui/WarsawCameraFpsClient.inc b/libs/gui/WarsawCameraFpsClient.inc
+new file mode 100644
+index 0000000000..1741c4ae7b
+--- /dev/null
++++ b/libs/gui/WarsawCameraFpsClient.inc
+@@ -0,0 +1,18 @@
++status_t SurfaceComposerClient::sentFpsMonitorCmd(
++        int command, const String16& layerName, FpsMonitorCmd* output) {
++    if (!output) return BAD_VALUE;
++    static const sp<IBinder> owner = sp<BBinder>::make();
++    const auto service = ComposerServiceAIDL::getComposerService();
++    if (!service) return DEAD_OBJECT;
++    gui::FpsMonitorCmd result;
++    const auto status = service->sentWarsawFpsMonitorCmd(command, layerName, owner, &result);
++    const status_t error = statusTFromBinderStatus(status);
++    if (error != OK) return error;
++    output->fps = result.fps;
++    output->maxInterval = result.maxInterval;
++    output->minInterval = result.minInterval;
++    output->frameCount = result.frameCount;
++    output->variance = result.variance;
++    output->timestamps = std::move(result.timestamps);
++    return OK;
++}
+diff --git a/libs/gui/aidl/android/gui/FpsMonitorCmd.aidl b/libs/gui/aidl/android/gui/FpsMonitorCmd.aidl
+new file mode 100644
+index 0000000000..1d40fa6767
+--- /dev/null
++++ b/libs/gui/aidl/android/gui/FpsMonitorCmd.aidl
+@@ -0,0 +1,10 @@
++package android.gui;
++
++parcelable FpsMonitorCmd {
++    float fps;
++    float maxInterval;
++    float minInterval;
++    int frameCount;
++    double variance;
++    long[] timestamps;
++}
+diff --git a/libs/gui/include/gui/FpsMonitorCmd.h b/libs/gui/include/gui/FpsMonitorCmd.h
+new file mode 100644
+index 0000000000..a2dc92a8a1
+--- /dev/null
++++ b/libs/gui/include/gui/FpsMonitorCmd.h
+@@ -0,0 +1,25 @@
++#pragma once
++
++#include <cstddef>
++#include <cstdint>
++#include <vector>
++
++namespace android {
++struct FpsMonitorCmd {
++    float fps = 0;
++    float maxInterval = 0;
++    float minInterval = 0;
++    int32_t frameCount = 0;
++    double variance = 0;
++    std::vector<int64_t> timestamps;
++};
++static_assert(offsetof(FpsMonitorCmd, fps) == 0);
++static_assert(offsetof(FpsMonitorCmd, maxInterval) == 4);
++static_assert(offsetof(FpsMonitorCmd, minInterval) == 8);
++static_assert(offsetof(FpsMonitorCmd, frameCount) == 12);
++static_assert(offsetof(FpsMonitorCmd, variance) == 16);
++static_assert(offsetof(FpsMonitorCmd, timestamps) == 24);
++#if INTPTR_MAX == INT64_MAX
++static_assert(sizeof(FpsMonitorCmd) == 48);
++#endif
++}
+diff --git a/services/surfaceflinger/WarsawCameraFps.h b/services/surfaceflinger/WarsawCameraFps.h
+new file mode 100644
+index 0000000000..4c80e0f316
+--- /dev/null
++++ b/services/surfaceflinger/WarsawCameraFps.h
+@@ -0,0 +1,134 @@
++#pragma once
++
++#include "WarsawFpsStatistics.h"
++#include <android/gui/FpsMonitorCmd.h>
++#include <binder/IBinder.h>
++#include <utils/Errors.h>
++#include <utils/Timers.h>
++#include <chrono>
++#include <condition_variable>
++#include <functional>
++#include <memory>
++#include <mutex>
++#include <sys/types.h>
++#include <utility>
++
++namespace android {
++class WarsawCameraFps final : public IBinder::DeathRecipient {
++public:
++    using Result = gui::FpsMonitorCmd;
++    using Work = std::function<status_t(Result*)>;
++    using Schedule = std::function<void(std::function<void()>)>;
++    static constexpr size_t kMaxSamples = 4096;
++    static constexpr std::string_view kCameraLayer =
++            "SurfaceView[com.android.camera/com.android.camera.Camera](BLAST)";
++
++    status_t query(const Schedule& schedule, Work work, Result* output) {
++        auto request = std::make_shared<Request>();
++        {
++            std::lock_guard lock(mQueryMutex);
++            const auto now = std::chrono::steady_clock::now();
++            if (mBusy || now < mNextQuery) return WOULD_BLOCK;
++            mBusy = true;
++            mNextQuery = now + std::chrono::milliseconds(250);
++        }
++        const sp<WarsawCameraFps> self = sp<WarsawCameraFps>::fromExisting(this);
++        schedule([self, request, work = std::move(work)]() {
++            Result result;
++            const status_t status = work(&result);
++            {
++                std::lock_guard lock(request->mutex);
++                request->result = std::move(result);
++                request->status = status;
++                request->done = true;
++            }
++            {
++                std::lock_guard lock(self->mQueryMutex);
++                self->mBusy = false;
++            }
++            request->condition.notify_one();
++        });
++        std::unique_lock lock(request->mutex);
++        if (!request->condition.wait_for(lock, std::chrono::milliseconds(500),
++                                        [&] { return request->done; })) return TIMED_OUT;
++        if (request->status == OK) *output = std::move(request->result);
++        return request->status;
++    }
++
++    void presented(std::string_view name) {
++        if (name.find(kCameraLayer) == std::string_view::npos) return;
++        std::lock_guard lock(mCameraMutex);
++        if (!mOwner || mOverflow) return;
++        if (mCameraTimes.size() == kMaxSamples) {
++            mOverflow = true;
++            return;
++        }
++        mCameraTimes.push_back(systemTime(SYSTEM_TIME_MONOTONIC));
++    }
++
++    status_t cameraCommand(int32_t command, const sp<IBinder>& token, uid_t caller, Result* out) {
++        if (!token || !token->remoteBinder()) return BAD_VALUE;
++        std::lock_guard lock(mCameraMutex);
++        if (mOwner && (mOwner != token || mOwnerUid != caller)) return WOULD_BLOCK;
++        if (command == 6) {
++            if (!mOwner) {
++                const status_t linked = token->linkToDeath(
++                        sp<IBinder::DeathRecipient>::fromExisting(this));
++                if (linked != OK) return linked;
++                mOwner = token;
++                mOwnerUid = caller;
++            }
++            clearSamplesLocked();
++            return OK;
++        }
++        if (!mOwner) return INVALID_OPERATION;
++        if (command == 7) {
++            mOwner->unlinkToDeath(wp<IBinder::DeathRecipient>::fromExisting(this));
++            mOwner.clear();
++            clearSamplesLocked();
++            return OK;
++        }
++        if (command == 8) {
++            clearSamplesLocked();
++            return OK;
++        }
++        if (command != 5) return BAD_VALUE;
++        const auto stats = mOverflow ? std::nullopt : warsaw::intervalStatistics(mCameraTimes);
++        clearSamplesLocked();
++        if (!stats) return INVALID_OPERATION;
++        out->maxInterval = stats->maxMs;
++        out->minInterval = stats->minMs;
++        out->frameCount = stats->frameCount;
++        out->variance = stats->varianceMsSquared;
++        return OK;
++    }
++
++    void binderDied(const wp<IBinder>& who) override {
++        std::lock_guard lock(mCameraMutex);
++        if (wp<IBinder>(mOwner) != who) return;
++        mOwner.clear();
++        clearSamplesLocked();
++    }
++
++private:
++    struct Request {
++        std::mutex mutex;
++        std::condition_variable condition;
++        Result result;
++        status_t status = INVALID_OPERATION;
++        bool done = false;
++    };
++    void clearSamplesLocked() {
++        mCameraTimes.clear();
++        mOverflow = false;
++    }
++    std::mutex mQueryMutex;
++    bool mBusy = false;
++    std::chrono::steady_clock::time_point mNextQuery{};
++    std::mutex mCameraMutex;
++    sp<IBinder> mOwner;
++    uid_t mOwnerUid = 0;
++    std::vector<int64_t> mCameraTimes;
++    bool mOverflow = false;
++};
++}
+diff --git a/services/surfaceflinger/WarsawCameraFps.inc b/services/surfaceflinger/WarsawCameraFps.inc
+new file mode 100644
+index 0000000000..ddc56d0479
+--- /dev/null
++++ b/services/surfaceflinger/WarsawCameraFps.inc
+@@ -0,0 +1,64 @@
++status_t SurfaceFlinger::sentWarsawFpsMonitorCmd(
++        int32_t command, const String16& layerName, const sp<IBinder>& owner,
++        uid_t caller, gui::FpsMonitorCmd* output) {
++    if (!output || command < 1 || command > 8) return BAD_VALUE;
++    if (command >= 5) return mWarsawCameraFps->cameraCommand(command, owner, caller, output);
++
++    if (layerName.size() == 0 || layerName.size() > 1024) return BAD_VALUE;
++    const std::string requested = String8(layerName).c_str();
++    return mWarsawCameraFps->query(
++            [this](std::function<void()> task) {
++                static_cast<void>(mScheduler->schedule(std::move(task)));
++            },
++            [this, command, requested](gui::FpsMonitorCmd* result)
++                    FTL_FAKE_GUARD(mStateLock) FTL_FAKE_GUARD(kMainThreadContext) {
++                float bestFps = 0;
++                std::vector<int64_t> bestTimes;
++                bool oversized = false;
++                traverseLegacyLayers([&](Layer* layer) {
++                    if (!warsaw::matchesLayer(layer->getName(), requested)) return;
++                    FrameStats stats;
++                    layer->getFrameStats(&stats);
++                    const auto& actual = stats.actualPresentTimesNano;
++                    if (actual.size() > WarsawCameraFps::kMaxSamples) {
++                        oversized = true;
++                        return;
++                    }
++                    std::vector<int64_t> times;
++                    times.reserve(actual.size());
++                    for (size_t i = 0; i < actual.size(); ++i) times.push_back(actual[i]);
++                    const auto fps = warsaw::layerFps(times);
++                    if (fps && *fps >= bestFps) {
++                        bestFps = *fps;
++                        bestTimes = std::move(times);
++                    }
++                });
++                if (oversized) return NO_MEMORY;
++                if (bestFps <= 0) return INVALID_OPERATION;
++                if (command != 2) result->fps = bestFps;
++                if (command >= 2) {
++                    const auto stats = warsaw::intervalStatistics(bestTimes);
++                    if (!stats) return INVALID_OPERATION;
++                    result->variance = stats->varianceMsSquared;
++                }
++                if (command == 4) {
++                    std::sort(bestTimes.begin(), bestTimes.end());
++                    result->timestamps = std::move(bestTimes);
++                }
++                return OK;
++            }, output);
++}
++
++void SurfaceFlinger::recordWarsawCameraFrame(std::string_view layerName) {
++    mWarsawCameraFps->presented(layerName);
++}
++
++binder::Status SurfaceComposerAIDL::sentWarsawFpsMonitorCmd(
++        int32_t command, const String16& layerName, const sp<IBinder>& owner,
++        gui::FpsMonitorCmd* output) {
++    const status_t permission = checkAccessPermission();
++    if (permission != OK) return binderStatusFromStatusT(permission);
++    const uid_t caller = IPCThreadState::self()->getCallingUid();
++    return binderStatusFromStatusT(
++            mFlinger->sentWarsawFpsMonitorCmd(command, layerName, owner, caller, output));
++}
+diff --git a/services/surfaceflinger/WarsawFodDisplayState.h b/services/surfaceflinger/WarsawFodDisplayState.h
+new file mode 100644
+index 0000000000..bcc7ac1cad
+--- /dev/null
++++ b/services/surfaceflinger/WarsawFodDisplayState.h
+@@ -0,0 +1,226 @@
++#pragma once
++
++#include <android-base/properties.h>
++#include <binder/IBinder.h>
++#include <binder/IServiceManager.h>
++#include <binder/Parcel.h>
++#include <binder/PermissionController.h>
++#include <log/log.h>
++#include <utils/String16.h>
++#include <array>
++#include <atomic>
++#include <chrono>
++#include <condition_variable>
++#include <cstddef>
++#include <cstdint>
++#include <initializer_list>
++#include <functional>
++#include <mutex>
++#include <optional>
++#include <thread>
++#include <string_view>
++
++namespace android {
++
++class WarsawFodDisplayState final {
++public:
++    WarsawFodDisplayState()
++          : mEnabled(base::GetProperty("ro.product.device", "") == "warsaw" &&
++                     base::GetProperty("ro.hardware.fp.fod.touch.ctl.version", "") == "2.0") {
++        if (mEnabled) mWorker = std::thread([this] { run(); });
++    }
++    ~WarsawFodDisplayState() { stop(); }
++    void stop() {
++        {
++            std::lock_guard lock(mStateMutex);
++            mStopping = true;
++        }
++        mChanged.notify_one();
++        if (mWorker.joinable()) mWorker.join();
++    }
++    WarsawFodDisplayState(const WarsawFodDisplayState&) = delete;
++    WarsawFodDisplayState& operator=(const WarsawFodDisplayState&) = delete;
++
++    bool enabled() const { return mEnabled; }
++
++    bool acceptsInputLayer(uint32_t ownerUid, bool primaryDisplay, bool visible,
++                           std::string_view name) const {
++        const int32_t systemUiUid = mSystemUiUid.load();
++        return mEnabled && systemUiUid >= 0 && ownerUid == static_cast<uint32_t>(systemUiUid)
++                && primaryDisplay && visible
++                && name.find("WarsawUdfpsControllerOverlay") != std::string_view::npos;
++    }
++
++    // Install after Scheduler initialization. The callback only schedules SF main-thread work.
++    void setIdentityChangedCallback(std::function<void()> callback) {
++        std::function<void()> notify;
++        {
++            std::lock_guard lock(mStateMutex);
++            mIdentityChanged = std::move(callback);
++            if (mSystemUiUid.load() >= 0) notify = mIdentityChanged;
++        }
++        if (notify) notify();
++    }
++
++    void updateLayers(bool udfpsInputVisible, bool colorFadeVisible) {
++        if (!mEnabled) return;
++        {
++            std::lock_guard lock(mStateMutex);
++            const int32_t ui = udfpsInputVisible ? 1 : 0;
++            if (mWanted[0] == ui && mColorFade == colorFadeVisible) return;
++            mWanted[0] = ui;
++            mColorFade = colorFadeVisible;
++            updateColorFadeLocked();
++            mDirty = true;
++        }
++        mChanged.notify_one();
++    }
++
++    void prePowerMode(int32_t mode) {
++        if (!mEnabled || !isValidPowerMode(mode)) return;
++        {
++            std::lock_guard lock(mStateMutex);
++            mWanted[2] = mode;
++        }
++        std::lock_guard ioLock(mIoMutex);
++        transmitLatest();
++    }
++
++    void postPowerMode(int32_t mode) {
++        if (!mEnabled || !isValidPowerMode(mode)) return;
++        {
++            std::lock_guard lock(mStateMutex);
++            mPowerMode = mode;
++            updateColorFadeLocked();
++            mDirty = true;
++        }
++        mChanged.notify_one();
++    }
++
++private:
++    static constexpr char kDescriptor[] =
++            "vendor.xiaomi.hardware.fingerprintextension.IXiaomiFingerprint";
++    static constexpr char kService[] =
++            "vendor.xiaomi.hardware.fingerprintextension.IXiaomiFingerprint/default";
++    static constexpr uint32_t kExtCmd = IBinder::FIRST_CALL_TRANSACTION;
++    static bool isDoze(int32_t mode) { return mode == 1 || mode == 3; }
++    static bool isValidPowerMode(int32_t mode) {
++        if (mode >= 0 && mode <= 4) return true;
++        ALOGE("Warsaw FOD rejected unknown Composer PowerMode %d", mode);
++        return false;
++    }
++
++    void updateColorFadeLocked() {
++        mWanted[1] = (mColorFade || (mPowerMode && isDoze(*mPowerMode))) ? 1 : 0;
++    }
++
++    bool send(int32_t command, int32_t value) {
++        Parcel data, reply;
++        if (data.writeInterfaceToken(String16(kDescriptor)) != OK ||
++            data.writeInt32(command) != OK || data.writeInt32(value) != OK) return false;
++        const status_t status = mBinder->transact(kExtCmd, data, &reply, 0);
++        int32_t result = -1;
++        if (status != OK || reply.readExceptionCode() != 0 ||
++            reply.readInt32(&result) != OK || result != 0) {
++            if (!mReportedFailure) {
++                ALOGE("Warsaw FOD command %d rejected: binder=%d result=%d", command, status,
++                      result);
++                mReportedFailure = true;
++            }
++            return false;
++        }
++        return true;
++    }
++
++    void transmitLatest() {
++        const sp<IBinder> current = defaultServiceManager()->checkService(String16(kService));
++        if (current != mBinder) {
++            mBinder = current;
++            mSent = {};
++        }
++        if (!mBinder) {
++            if (!mReportedFailure) ALOGE("Warsaw FOD extension service is unavailable");
++            mReportedFailure = true;
++            return;
++        }
++        std::array<std::optional<int32_t>, 3> wanted;
++        {
++            std::lock_guard lock(mStateMutex);
++            wanted = mWanted;
++        }
++        for (const size_t index : {size_t{2}, size_t{1}, size_t{0}}) {
++            if (!wanted[index] || wanted[index] == mSent[index]) continue;
++            if (!send(static_cast<int32_t>(index + 1), *wanted[index])) {
++                mSent = {};
++                return;
++            }
++            mSent[index] = wanted[index];
++        }
++        mReportedFailure = false;
++    }
++
++    void refreshSystemUiIdentity() {
++        const auto now = std::chrono::steady_clock::now();
++        if (now < mNextIdentityCheck) return;
++        int32_t uid = -1;
++        // PackageManager Binder work is confined to this worker, outside all SF/state/I/O locks.
++        if (defaultServiceManager()->checkService(String16("permission")) != nullptr) {
++            PermissionController permissions;
++            const int candidate = permissions.getPackageUid(String16("com.android.systemui"),
++                                                            PermissionController::MATCH_SYSTEM_ONLY);
++            if (candidate >= 0 && permissions.checkPermission(
++                    String16("android.permission.STATUS_BAR_SERVICE"), -1, candidate)) {
++                uid = candidate;
++            }
++        }
++        mNextIdentityCheck = now + (uid >= 0 ? std::chrono::seconds(30)
++                                            : std::chrono::seconds(1));
++        if (uid < 0 && !mIdentityFailureReported) {
++            ALOGE("Warsaw FOD could not authenticate the system SystemUI UID; retrying");
++        }
++        mIdentityFailureReported = uid < 0;
++        if (mSystemUiUid.exchange(uid) == uid) return;
++        std::function<void()> notify;
++        {
++            std::lock_guard lock(mStateMutex);
++            if (!mStopping) notify = mIdentityChanged;
++        }
++        if (notify) notify();
++    }
++
++    void run() {
++        std::unique_lock stateLock(mStateMutex);
++        while (!mStopping) {
++            mChanged.wait_for(stateLock, std::chrono::seconds(1),
++                              [this] { return mStopping || mDirty; });
++            if (mStopping) break;
++            mDirty = false;
++            stateLock.unlock();
++            refreshSystemUiIdentity();
++            {
++                std::lock_guard ioLock(mIoMutex);
++                transmitLatest();
++            }
++            stateLock.lock();
++        }
++    }
++
++    const bool mEnabled;
++    std::atomic<int32_t> mSystemUiUid{-1};
++    std::function<void()> mIdentityChanged;
++    std::chrono::steady_clock::time_point mNextIdentityCheck{};
++    bool mIdentityFailureReported = false;
++    std::mutex mStateMutex;
++    std::mutex mIoMutex;
++    std::condition_variable mChanged;
++    std::thread mWorker;
++    bool mStopping = false;
++    bool mDirty = false;
++    bool mColorFade = false;
++    std::optional<int32_t> mPowerMode;
++    std::array<std::optional<int32_t>, 3> mWanted;
++    sp<IBinder> mBinder;
++    std::array<std::optional<int32_t>, 3> mSent;
++    bool mReportedFailure = false;
++};
++}
+diff --git a/services/surfaceflinger/WarsawFpsStatistics.h b/services/surfaceflinger/WarsawFpsStatistics.h
+new file mode 100644
+index 0000000000..1d38a224f0
+--- /dev/null
++++ b/services/surfaceflinger/WarsawFpsStatistics.h
+@@ -0,0 +1,76 @@
++#pragma once
++
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <limits>
++#include <optional>
++#include <string_view>
++#include <vector>
++
++namespace android::warsaw {
++inline constexpr int64_t kFpsWindowNs = 1'000'000'000;
++inline constexpr double kNsPerMs = 1'000'000.0;
++inline constexpr int64_t kPending = std::numeric_limits<int64_t>::max();
++
++inline bool matchesLayer(std::string_view name, std::string_view requested) {
++    return !requested.empty() && name.find(requested) != std::string_view::npos
++            && name.find("Bounds for") == std::string_view::npos
++            && name.find("Background for") == std::string_view::npos
++            && name.find("ActivityRecord") == std::string_view::npos;
++}
++
++inline std::optional<float> layerFps(const std::vector<int64_t>& times) {
++    if (times.size() < 2) return std::nullopt;
++    int64_t elapsed = 0;
++    size_t intervals = 0;
++    for (size_t i = times.size() - 1; i > 0; --i) {
++        if (times[i] == kPending) continue;
++        if (times[i - 1] <= 0 || times[i - 1] == kPending || times[i] <= times[i - 1]) {
++            return std::nullopt;
++        }
++        const int64_t delta = times[i] - times[i - 1];
++        if (delta > std::numeric_limits<int64_t>::max() - elapsed) return std::nullopt;
++        elapsed += delta;
++        ++intervals;
++        if (elapsed >= kFpsWindowNs) {
++            const float result = static_cast<float>(intervals)
++                    / (static_cast<float>(elapsed) / static_cast<float>(kFpsWindowNs));
++            return std::isfinite(result) && result > 0 ? std::optional<float>(result) : std::nullopt;
++        }
++    }
++    return std::nullopt;
++}
++
++struct IntervalStatistics {
++    float maxMs;
++    float minMs;
++    int32_t frameCount;
++    double varianceMsSquared;
++};
++
++inline std::optional<IntervalStatistics> intervalStatistics(const std::vector<int64_t>& times) {
++    size_t count = times.size();
++    while (count && times[count - 1] == kPending) --count;
++    if (count < 2 || count > static_cast<size_t>(std::numeric_limits<int32_t>::max())
++            || times[0] <= 0 || times[count - 1] <= times[0]) return std::nullopt;
++    const int64_t elapsed = times[count - 1] - times[0];
++    if (elapsed <= 0) return std::nullopt;
++    const float meanMs = static_cast<float>(static_cast<double>(elapsed) / kNsPerMs)
++            / static_cast<float>(count - 1);
++    float minMs = std::numeric_limits<float>::max();
++    float maxMs = 0;
++    double sum = 0;
++    for (size_t i = 1; i < count; ++i) {
++        if (times[i] == kPending || times[i] <= times[i - 1]) return std::nullopt;
++        const float intervalMs = static_cast<float>(static_cast<double>(times[i] - times[i - 1]) / kNsPerMs);
++        const double deviation = static_cast<double>(std::fabs(intervalMs - meanMs));
++        sum += deviation * deviation;
++        minMs = std::min(minMs, intervalMs);
++        maxMs = std::max(maxMs, intervalMs);
++    }
++    const double variance = sum / static_cast<double>(count - 1);
++    if (!std::isfinite(variance)) return std::nullopt;
++    return IntervalStatistics{maxMs, minMs, static_cast<int32_t>(count), variance};
++}
++}
+diff --git a/services/surfaceflinger/WarsawGameFrameRateLease.h b/services/surfaceflinger/WarsawGameFrameRateLease.h
+new file mode 100644
+index 0000000000..a06cd50b8a
+--- /dev/null
++++ b/services/surfaceflinger/WarsawGameFrameRateLease.h
+@@ -0,0 +1,79 @@
++#pragma once
++
++#include <binder/IBinder.h>
++#include <utils/Errors.h>
++#include <private/android_filesystem_config.h>
++#include <cmath>
++#include <functional>
++#include <map>
++#include <mutex>
++#include <utility>
++
++namespace android {
++
++class WarsawGameFrameRateLease final : public IBinder::DeathRecipient {
++public:
++    using Apply = std::function<void(uid_t, float)>;
++    explicit WarsawGameFrameRateLease(Apply apply) : mApply(std::move(apply)) {}
++
++    status_t setBase(uid_t uid, float fps) {
++        if (!valid(fps)) return BAD_VALUE;
++        std::lock_guard lock(mMutex);
++        if (fps == 0) mBase.erase(uid);
++        else mBase[uid] = fps;
++        if (mOwner == nullptr || mUid != uid) mApply(uid, fps);
++        return NO_ERROR;
++    }
++
++    status_t setLease(const sp<IBinder>& owner, uid_t uid, float fps) {
++        if (owner == nullptr || !valid(fps) || uid % AID_USER_OFFSET < AID_APP_START
++                || fps > 165.0f) return BAD_VALUE;
++        std::lock_guard lock(mMutex);
++        if (mOwner != nullptr && (owner != mOwner || uid != mUid)) return ALREADY_EXISTS;
++        if (fps == 0) {
++            if (mOwner != nullptr) releaseLocked(false);
++            return NO_ERROR;
++        }
++        if (mOwner == nullptr) {
++            status_t linked = owner->linkToDeath(sp<IBinder::DeathRecipient>::fromExisting(this));
++            if (linked != NO_ERROR) return linked;
++            mOwner = owner;
++            mUid = uid;
++        }
++        mFps = fps;
++        mApply(uid, fps);
++        return NO_ERROR;
++    }
++
++    bool matches(const sp<IBinder>& owner, uid_t uid, float fps) const {
++        std::lock_guard lock(mMutex);
++        return mOwner != nullptr && mOwner == owner && mUid == uid && mFps == fps;
++    }
++
++    void binderDied(const wp<IBinder>& who) override {
++        std::lock_guard lock(mMutex);
++        if (mOwner != nullptr && who == wp<IBinder>(mOwner)) releaseLocked(true);
++    }
++
++    ~WarsawGameFrameRateLease() override {
++        if (mOwner != nullptr) mOwner->unlinkToDeath(wp<IBinder::DeathRecipient>::fromExisting(this));
++    }
++
++private:
++    static bool valid(float fps) { return std::isfinite(fps) && (fps == 0 || fps >= 1); }
++    void releaseLocked(bool died) {
++        auto base = mBase.find(mUid);
++        mApply(mUid, base == mBase.end() ? 0.0f : base->second);
++        if (!died) mOwner->unlinkToDeath(wp<IBinder::DeathRecipient>::fromExisting(this));
++        mOwner.clear();
++        mUid = 0;
++        mFps = 0;
++    }
++    const Apply mApply;
++    mutable std::mutex mMutex;
++    std::map<uid_t, float> mBase;
++    sp<IBinder> mOwner;
++    uid_t mUid = 0;
++    float mFps = 0;
++};
++}

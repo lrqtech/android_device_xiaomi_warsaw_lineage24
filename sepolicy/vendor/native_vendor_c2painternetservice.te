@@ -1,0 +1,13 @@
+type vendor_c2painternetservice, domain;
+
+domain_auto_trans(init, vendor_c2painternetservice_exec, vendor_c2painternetservice)
+
+typeattribute vendor_c2painternetservice netdomain;
+
+allow vendor_c2painternetservice vendor_c2painternetservice_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_c2painternetservice vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_c2painternetservice vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_c2painternetservice vendor_ssgtzd_opener_socket:sock_file { write };

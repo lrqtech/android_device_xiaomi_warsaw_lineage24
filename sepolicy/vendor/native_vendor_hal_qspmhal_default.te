@@ -1,0 +1,23 @@
+type vendor_hal_qspmhal_default, domain;
+
+domain_auto_trans(init, vendor_hal_qspmhal_default_exec, vendor_hal_qspmhal_default)
+
+typeattribute vendor_hal_qspmhal_default hal_allocator_client;
+
+typeattribute vendor_hal_qspmhal_default halclientdomain;
+
+typeattribute vendor_hal_qspmhal_default halserverdomain;
+
+typeattribute vendor_hal_qspmhal_default vendor_hal_qspmhal;
+
+typeattribute vendor_hal_qspmhal_default vendor_hal_qspmhal_server;
+
+allow vendor_hal_qspmhal_default vendor_hal_qspmhal_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_qspmhal_default vendor_qspmhal_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_qspmhal_default vendor_qspmhal_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_qspmhal_default vendor_qspmhal_data_file:dir { read write create getattr unlink open add_name remove_name };
+
+allow vendor_hal_qspmhal_default vendor_qspmhal_data_file:file { write open };

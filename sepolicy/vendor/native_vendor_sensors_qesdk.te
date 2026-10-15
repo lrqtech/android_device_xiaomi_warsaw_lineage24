@@ -1,0 +1,37 @@
+type vendor_sensors_qesdk, domain;
+
+domain_auto_trans(init, vendor_sensors_qesdk_exec, vendor_sensors_qesdk)
+
+binder_use(vendor_sensors_qesdk)
+
+hwbinder_use(vendor_sensors_qesdk)
+
+allow vendor_sensors_qesdk vendor_sensors_qesdk_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_sensors_qesdk vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_sensors_qesdk vendor_qesd_socket:sock_file { write };
+
+allow vendor_sensors_qesdk self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_sensors_qesdk sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_sensors_qesdk self:capability2 { block_suspend };
+
+allow vendor_sensors_qesdk self:cap2_userns { block_suspend };
+
+allow vendor_sensors_qesdk system_suspend_server:binder { call transfer };
+
+allow vendor_sensors_qesdk system_suspend_server:fd { use };
+
+allow vendor_sensors_qesdk system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_sensors_qesdk hwservicemanager:binder { call transfer };
+
+allow vendor_sensors_qesdk hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_sensors_qesdk hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_sensors_qesdk hal_system_suspend_service:service_manager { find };
+
+allow vendor_sensors_qesdk servicemanager:binder { call transfer };

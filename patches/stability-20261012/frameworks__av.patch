@@ -1,0 +1,2206 @@
+diff --git a/camera/Android.bp b/camera/Android.bp
+index 12c722b28e..609c16ab5f 100644
+--- a/camera/Android.bp
++++ b/camera/Android.bp
+@@ -211,3 +211,13 @@ filegroup {
+     ],
+     path: "aidl",
+ }
++
++// Regression coverage for empty session metadata and authenticated vendor identity.
++cc_test_host {
++    name: "warsaw_camera_session_params_test",
++    srcs: ["tests/WarsawCameraSessionParamsTest.cpp", "CameraMetadata.cpp", "VendorTagDescriptor.cpp"],
++    shared_libs: ["libbase", "libbinder", "libcamera_metadata", "libcutils", "liblog", "libutils"],
++    include_dirs: ["system/media/private/camera/include", "frameworks/av/services/camera/libcameraservice"],
++    local_include_dirs: ["include"],
++    cflags: ["-Wall", "-Wextra", "-Werror"],
++}
+diff --git a/drm/mediadrm/plugins/clearkey/aidl/Android.bp b/drm/mediadrm/plugins/clearkey/aidl/Android.bp
+index d049b6e1ca..5e579ac1a2 100644
+--- a/drm/mediadrm/plugins/clearkey/aidl/Android.bp
++++ b/drm/mediadrm/plugins/clearkey/aidl/Android.bp
+@@ -85,7 +85,10 @@ cc_binary {
+         "aidl_clearkey_service_defaults-use-shared-deps",
+     ],
+     srcs: ["Service.cpp"],
+-    init_rc: ["android.hardware.drm-service.clearkey.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_drm_service_clearkey_rc"],
++        default: ["android.hardware.drm-service.clearkey.rc"],
++    }),
+     vintf_fragment_modules: ["android.hardware.drm-service.clearkey.xml_vintf"],
+ }
+ 
+diff --git a/media/audioaidlconversion/AidlConversionCppNdk.cpp b/media/audioaidlconversion/AidlConversionCppNdk.cpp
+index 09f29dcb8c..b4fbe6f563 100644
+--- a/media/audioaidlconversion/AidlConversionCppNdk.cpp
++++ b/media/audioaidlconversion/AidlConversionCppNdk.cpp
+@@ -98,6 +98,12 @@ using media::audio::common::PcmType;
+ // Converters
+ 
+ namespace {
++// OS4 warsaw's shipped AIDL HAL uses these private wire values. Keep the frozen
++// AIDL definitions intact and translate only the individually verified values.
++// Their legacy numbers differ from the AIDL output flag bit positions.
++constexpr auto kXiaomiVirtualDeepBuffer = static_cast<AudioOutputFlags>(19);
++constexpr auto kXiaomiBluetoothScoUsage = static_cast<AudioUsage>(19);
++
+ 
+ std::vector<std::string> splitString(const std::string& s, char separator) {
+     std::istringstream iss(s);
+@@ -486,6 +492,10 @@ const detail::AudioDevicePairs& getAudioDevicePairs() {
+                         AudioDeviceType::OUT_BROADCAST,
+                         GET_DEVICE_DESC_CONNECTION(BT_LE))
+             },
++            {
++                AUDIO_DEVICE_OUT_MULTIROUTE, make_AudioDeviceDescription(
++                        AudioDeviceType::OUT_DEVICE, "multiroute")
++            },
+             {
+                 AUDIO_DEVICE_OUT_MULTICHANNEL_GROUP, make_AudioDeviceDescription(
+                         AudioDeviceType::OUT_MULTICHANNEL_GROUP,
+@@ -800,6 +810,7 @@ const detail::AudioFormatPairs& getAudioFormatPairs() {
+              AUDIO_FORMAT_LHDC, make_AudioFormatDescription("audio/vnd.savitech.lhdc")},
+             {// Note: not in the IANA registry.
+              AUDIO_FORMAT_LHDC_LL, make_AudioFormatDescription("audio/vnd.savitech.lhdc.ll")},
++            {AUDIO_FORMAT_MIHC, make_AudioFormatDescription("audio/vnd.mi.mihc")},
+             {// Note: not in the IANA registry.
+              AUDIO_FORMAT_APTX_TWSP, make_AudioFormatDescription("audio/vnd.qcom.aptx.twsp")},
+             {// Note: not in the IANA registry.
+@@ -1488,6 +1499,9 @@ ConversionResult<AudioInputFlags> legacy2aidl_audio_input_flags_t_AudioInputFlag
+ 
+ ConversionResult<audio_output_flags_t> aidl2legacy_AudioOutputFlags_audio_output_flags_t(
+         AudioOutputFlags aidl) {
++    if (aidl == kXiaomiVirtualDeepBuffer) {
++        return AUDIO_OUTPUT_FLAG_VIRTUAL_DEEP_BUFFER;
++    }
+     switch (aidl) {
+         case AudioOutputFlags::DIRECT:
+             return AUDIO_OUTPUT_FLAG_DIRECT;
+@@ -1534,6 +1548,8 @@ ConversionResult<audio_output_flags_t> aidl2legacy_AudioOutputFlags_audio_output
+ ConversionResult<AudioOutputFlags> legacy2aidl_audio_output_flags_t_AudioOutputFlags(
+         audio_output_flags_t legacy) {
+     switch (legacy) {
++        case AUDIO_OUTPUT_FLAG_VIRTUAL_DEEP_BUFFER:
++            return kXiaomiVirtualDeepBuffer;
+         case AUDIO_OUTPUT_FLAG_NONE:
+             break; // shouldn't get here. must be listed  -Werror,-Wswitch
+         case AUDIO_OUTPUT_FLAG_DIRECT:
+@@ -1857,6 +1873,9 @@ legacy2aidl_audio_content_type_t_AudioContentType(audio_content_type_t legacy) {
+ 
+ ConversionResult<audio_usage_t>
+ aidl2legacy_AudioUsage_audio_usage_t(AudioUsage aidl) {
++    if (aidl == kXiaomiBluetoothScoUsage) {
++        return AUDIO_USAGE_BLUETOOTH_SCO;
++    }
+     switch (aidl) {
+         case AudioUsage::INVALID:
+             break;  // return error
+@@ -1917,6 +1936,8 @@ aidl2legacy_AudioUsage_audio_usage_t(AudioUsage aidl) {
+ ConversionResult<AudioUsage>
+ legacy2aidl_audio_usage_t_AudioUsage(audio_usage_t legacy) {
+     switch (legacy) {
++        case AUDIO_USAGE_BLUETOOTH_SCO:
++            return kXiaomiBluetoothScoUsage;
+         case AUDIO_USAGE_UNKNOWN:
+             return AudioUsage::UNKNOWN;
+         case AUDIO_USAGE_MEDIA:
+diff --git a/media/audioaidlconversion/tests/Android.bp b/media/audioaidlconversion/tests/Android.bp
+index bca4dd029b..6957eb1634 100644
+--- a/media/audioaidlconversion/tests/Android.bp
++++ b/media/audioaidlconversion/tests/Android.bp
+@@ -35,6 +35,7 @@ cc_test {
+         "libbinder",
+         "libcutils",
+         "liblog",
++        "libstagefright_foundation",
+         "libutils",
+     ],
+     static_libs: [
+diff --git a/media/audioaidlconversion/tests/audio_aidl_ndk_conversion_tests.cpp b/media/audioaidlconversion/tests/audio_aidl_ndk_conversion_tests.cpp
+index f78243e9db..0da52321bb 100644
+--- a/media/audioaidlconversion/tests/audio_aidl_ndk_conversion_tests.cpp
++++ b/media/audioaidlconversion/tests/audio_aidl_ndk_conversion_tests.cpp
+@@ -135,3 +135,80 @@ TEST(AudioTags, IllFormedAidlTag) {
+         }
+     }
+ }
++
++
++// These values come from the shipped warsaw HAL, not from the frozen AIDL API.
++TEST(XiaomiAudioExtensions, ObservedOutputMasksRoundTrip) {
++    const int32_t masks[] = {0, 6, 8, 32817, 1, 8193, 16384, 260, 4097, 65536, 524288};
++    for (int32_t mask : masks) {
++        SCOPED_TRACE(mask);
++        const auto legacy = aidl2legacy_int32_t_audio_output_flags_t_mask(mask);
++        ASSERT_TRUE(legacy.ok());
++        const auto restored = legacy2aidl_audio_output_flags_t_int32_t_mask(legacy.value());
++        ASSERT_TRUE(restored.ok());
++        EXPECT_EQ(mask, restored.value());
++    }
++    const auto virtualDeep = aidl2legacy_int32_t_audio_output_flags_t_mask(1 << 19);
++    ASSERT_TRUE(virtualDeep.ok());
++    EXPECT_EQ(0x40000000u, static_cast<uint32_t>(virtualDeep.value()));
++    EXPECT_NE(AUDIO_OUTPUT_FLAG_ULTRASOUND, virtualDeep.value());
++    const auto mixed = aidl2legacy_int32_t_audio_output_flags_t_mask((1 << 19) | (1 << 3));
++    ASSERT_TRUE(mixed.ok());
++    EXPECT_EQ(0x40000008u, static_cast<uint32_t>(mixed.value()));
++}
++
++TEST(XiaomiAudioExtensions, UnknownOutputFlagsRemainErrors) {
++    EXPECT_FALSE(aidl2legacy_int32_t_audio_output_flags_t_mask(1 << 20).ok());
++    EXPECT_FALSE(aidl2legacy_int32_t_audio_output_flags_t_mask((1 << 19) | (1 << 20)).ok());
++    EXPECT_FALSE(legacy2aidl_audio_output_flags_t_int32_t_mask(
++            static_cast<audio_output_flags_t>(0x10000000)).ok());
++}
++
++TEST(XiaomiAudioExtensions, BluetoothScoAttributesRoundTrip) {
++    using aidl::android::media::audio::common::AudioAttributes;
++    AudioAttributes initial;
++    initial.usage = static_cast<AudioUsage>(19);
++    initial.flags = AUDIO_FLAG_SCO;
++    const auto legacy = aidl2legacy_AudioAttributes_audio_attributes_t(initial);
++    ASSERT_TRUE(legacy.ok());
++    EXPECT_EQ(AUDIO_USAGE_BLUETOOTH_SCO, legacy.value().usage);
++    const auto restored = legacy2aidl_audio_attributes_t_AudioAttributes(legacy.value());
++    ASSERT_TRUE(restored.ok());
++    EXPECT_EQ(initial, restored.value());
++    EXPECT_FALSE(aidl2legacy_AudioUsage_audio_usage_t(static_cast<AudioUsage>(18)).ok());
++    EXPECT_FALSE(aidl2legacy_AudioUsage_audio_usage_t(static_cast<AudioUsage>(20)).ok());
++}
++
++TEST(XiaomiAudioExtensions, MultirouteDeviceRoundTrip) {
++    using aidl::android::media::audio::common::AudioDeviceDescription;
++    using aidl::android::media::audio::common::AudioDeviceType;
++    AudioDeviceDescription initial;
++    initial.type = AudioDeviceType::OUT_DEVICE;
++    initial.connection = "multiroute";
++    const auto legacy = aidl2legacy_AudioDeviceDescription_audio_devices_t(initial);
++    ASSERT_TRUE(legacy.ok());
++    EXPECT_EQ(0x20000010u, static_cast<uint32_t>(legacy.value()));
++    EXPECT_TRUE(audio_is_output_device(legacy.value()));
++    EXPECT_FALSE(audio_is_input_device(legacy.value()));
++    const auto restored = legacy2aidl_audio_devices_t_AudioDeviceDescription(legacy.value());
++    ASSERT_TRUE(restored.ok());
++    EXPECT_EQ(initial, restored.value());
++    initial.connection = "unknown-xiaomi-route";
++    EXPECT_FALSE(aidl2legacy_AudioDeviceDescription_audio_devices_t(initial).ok());
++}
++
++TEST(XiaomiAudioExtensions, MihcFormatRoundTrip) {
++    using aidl::android::media::audio::common::AudioFormatDescription;
++    AudioFormatDescription initial;
++    initial.encoding = "audio/vnd.mi.mihc";
++    const auto legacy = aidl2legacy_AudioFormatDescription_audio_format_t(initial);
++    ASSERT_TRUE(legacy.ok());
++    EXPECT_EQ(0x40000000u, static_cast<uint32_t>(legacy.value()));
++    EXPECT_TRUE(audio_is_valid_format(legacy.value()));
++    EXPECT_FALSE(audio_is_linear_pcm(legacy.value()));
++    const auto restored = legacy2aidl_audio_format_t_AudioFormatDescription(legacy.value());
++    ASSERT_TRUE(restored.ok());
++    EXPECT_EQ(initial, restored.value());
++    initial.encoding = "audio/vnd.mi.unknown";
++    EXPECT_FALSE(aidl2legacy_AudioFormatDescription_audio_format_t(initial).ok());
++}
+diff --git a/media/audioserver/Android.bp b/media/audioserver/Android.bp
+index 47a7625990..9084841136 100644
+--- a/media/audioserver/Android.bp
++++ b/media/audioserver/Android.bp
+@@ -26,6 +26,7 @@ cc_binary {
+         "libaaudioservice_dependencies",
+         "libaudioflinger_dependencies",
+         "libaudiopolicyservice_dependencies",
++        "warsaw_audio_adapter_defaults",
+     ],
+ 
+     static_libs: [
+@@ -40,3 +41,21 @@ cc_binary {
+ 
+     init_rc: ["audioserver.rc"],
+ }
++
++soong_config_module_type {
++    name: "warsaw_audio_adapter_cc_defaults",
++    module_type: "cc_defaults",
++    config_namespace: "warsaw_audio_adapter",
++    bool_variables: ["enabled"],
++    properties: ["cflags", "shared_libs"],
++}
++
++warsaw_audio_adapter_cc_defaults {
++    name: "warsaw_audio_adapter_defaults",
++    soong_config_variables: {
++        enabled: {
++            cflags: ["-DWARSAW_AUDIO_ADAPTER"],
++            shared_libs: ["av-audio-types-aidl-ndk", "libdl", "libbase", "libbinder_ndk"],
++        },
++    },
++}
+diff --git a/media/audioserver/main_audioserver.cpp b/media/audioserver/main_audioserver.cpp
+index c94fa8e45a..8296bb1478 100644
+--- a/media/audioserver/main_audioserver.cpp
++++ b/media/audioserver/main_audioserver.cpp
+@@ -36,6 +36,9 @@
+ #include <utils/Log.h>
+ 
+ // from include_dirs
++#ifdef WARSAW_AUDIO_ADAPTER
++#include "WarsawAudioVendorExtension.h"
++#endif
+ #include "AudioFlinger.h"
+ #include "AudioPolicyService.h"
+ #include "AAudioService.h"
+@@ -76,6 +79,9 @@ int main(int argc __unused, char **argv __unused)
+     // We create AudioFlinger and AudioPolicy locally then make it public to ServiceManager.
+     // This requires both AudioFlinger and AudioPolicy to be in-proc.
+     //
++#ifdef WARSAW_AUDIO_ADAPTER
++    warsaw::registerAudioVendorExtension();
++#endif
+     const auto af = sp<AudioFlinger>::make();
+     const auto afAdapter = sp<AudioFlingerServerAdapter>::make(af);
+     SLOGI("%s: AudioFlinger created", __func__);
+diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
+index eae3c1ed25..dc55269fdb 100644
+--- a/media/libmedia/MediaProfiles.cpp
++++ b/media/libmedia/MediaProfiles.cpp
+@@ -164,6 +164,7 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
+     {"timelapse4kdci", CAMCORDER_QUALITY_TIME_LAPSE_4KDCI},
+     {"timelapseqhd", CAMCORDER_QUALITY_TIME_LAPSE_QHD},
+     {"timelapse2k", CAMCORDER_QUALITY_TIME_LAPSE_2K},
++    {"timelapse8kuhd", CAMCORDER_QUALITY_TIME_LAPSE_8KUHD},
+ 
+     {"highspeedlow",  CAMCORDER_QUALITY_HIGH_SPEED_LOW},
+     {"highspeedhigh", CAMCORDER_QUALITY_HIGH_SPEED_HIGH},
+diff --git a/services/audiopolicy/common/include/Volume.h b/services/audiopolicy/common/include/Volume.h
+index 9a3a093ac9..45a3131e42 100644
+--- a/services/audiopolicy/common/include/Volume.h
++++ b/services/audiopolicy/common/include/Volume.h
+@@ -56,6 +56,15 @@ enum device_category {
+     DEVICE_CATEGORY_EARPIECE,
+     DEVICE_CATEGORY_EXT_MEDIA,
+     DEVICE_CATEGORY_HEARING_AID,
++    // OEM volume curves transported by the audio HAL. Keep standard values unchanged.
++    DEVICE_CATEGORY_HEADSET_CE,
++    DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE,
++    DEVICE_CATEGORY_A2DP,
++    DEVICE_CATEGORY_A2DP_CE,
++    DEVICE_CATEGORY_A2DP_SPATIALIZER_CE,
++    DEVICE_CATEGORY_USB,
++    DEVICE_CATEGORY_USB_CE,
++    DEVICE_CATEGORY_USB_SPATIALIZER_CE,
+     DEVICE_CATEGORY_CNT
+ };
+ 
+@@ -114,7 +123,8 @@ public:
+      *
+      * @return device category.
+      */
+-    static device_category getDeviceCategory(const android::DeviceTypeSet& deviceTypes)
++    static device_category getDeviceCategory(const android::DeviceTypeSet& deviceTypes,
++                                              bool useExtendedCategories = false)
+     {
+         switch(getDeviceForVolume(deviceTypes)) {
+         case AUDIO_DEVICE_OUT_EARPIECE:
+@@ -123,12 +133,14 @@ public:
+         case AUDIO_DEVICE_OUT_WIRED_HEADPHONE:
+         case AUDIO_DEVICE_OUT_BLUETOOTH_SCO:
+         case AUDIO_DEVICE_OUT_BLUETOOTH_SCO_HEADSET:
++            return DEVICE_CATEGORY_HEADSET;
+         case AUDIO_DEVICE_OUT_BLUETOOTH_A2DP:
+         case AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES:
+-        case AUDIO_DEVICE_OUT_USB_HEADSET:
+         case AUDIO_DEVICE_OUT_BLE_HEADSET:
+         case AUDIO_DEVICE_OUT_BLE_BROADCAST:
+-            return DEVICE_CATEGORY_HEADSET;
++            return useExtendedCategories ? DEVICE_CATEGORY_A2DP : DEVICE_CATEGORY_HEADSET;
++        case AUDIO_DEVICE_OUT_USB_HEADSET:
++            return useExtendedCategories ? DEVICE_CATEGORY_USB : DEVICE_CATEGORY_HEADSET;
+         case AUDIO_DEVICE_OUT_HEARING_AID:
+         case AUDIO_DEVICE_OUT_BLE_HEARING_AID:
+             return DEVICE_CATEGORY_HEARING_AID;
+diff --git a/services/audiopolicy/common/managerdefinitions/include/IVolumeCurves.h b/services/audiopolicy/common/managerdefinitions/include/IVolumeCurves.h
+index 47130966b9..c5f6ac240a 100644
+--- a/services/audiopolicy/common/managerdefinitions/include/IVolumeCurves.h
++++ b/services/audiopolicy/common/managerdefinitions/include/IVolumeCurves.h
+@@ -39,6 +39,12 @@ public:
+     virtual int getVolumeIndexMax() const = 0;
+     virtual int setVolumeIndexMax(int index) = 0;
+     virtual float volIndexToDb(device_category device, int indexInUi) const = 0;
++    virtual bool hasVolumeCurveForDeviceCategory(device_category) const { return false; }
++    device_category getDeviceCategory(const DeviceTypeSet& devices) const {
++        const auto extended = Volume::getDeviceCategory(devices, true);
++        return hasVolumeCurveForDeviceCategory(extended)
++                ? extended : Volume::getDeviceCategory(devices);
++    }
+     virtual bool hasVolumeIndexForDevice(audio_devices_t device) const = 0;
+     virtual status_t initVolume(int indexMin, int indexMax) = 0;
+     virtual std::vector<audio_attributes_t> getAttributes() const = 0;
+diff --git a/services/audiopolicy/common/managerdefinitions/src/TypeConverter.cpp b/services/audiopolicy/common/managerdefinitions/src/TypeConverter.cpp
+index 8a44547057..17d85bd207 100644
+--- a/services/audiopolicy/common/managerdefinitions/src/TypeConverter.cpp
++++ b/services/audiopolicy/common/managerdefinitions/src/TypeConverter.cpp
+@@ -30,6 +30,14 @@ const DeviceCategoryConverter::Table DeviceCategoryConverter::mTable[] = {
+     MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_EARPIECE),
+     MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_EXT_MEDIA),
+     MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_HEARING_AID),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_HEADSET_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_A2DP),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_A2DP_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_A2DP_SPATIALIZER_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_USB),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_USB_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_USB_SPATIALIZER_CE),
+     TERMINATOR
+ };
+ 
+diff --git a/services/audiopolicy/engine/common/include/VolumeCurve.h b/services/audiopolicy/engine/common/include/VolumeCurve.h
+index ea771fd77d..89043f1887 100644
+--- a/services/audiopolicy/engine/common/include/VolumeCurve.h
++++ b/services/audiopolicy/engine/common/include/VolumeCurve.h
+@@ -168,6 +168,11 @@ public:
+         return index;
+     }
+ 
++    bool hasVolumeCurveForDeviceCategory(device_category device) const override
++    {
++        return indexOfKey(device) >= 0;
++    }
++
+     virtual float volIndexToDb(device_category deviceCat, int indexInUi) const
+     {
+         sp<VolumeCurve> vc = getCurvesFor(deviceCat);
+diff --git a/services/audiopolicy/engine/config/src/EngineConfig.cpp b/services/audiopolicy/engine/config/src/EngineConfig.cpp
+index 2aa57b4b35..33c9445538 100644
+--- a/services/audiopolicy/engine/config/src/EngineConfig.cpp
++++ b/services/audiopolicy/engine/config/src/EngineConfig.cpp
+@@ -115,35 +115,61 @@ ConversionResult<std::string> legacy_device_category_to_string(device_category l
+ ConversionResult<std::string> aidl2legacy_DeviceCategory(
+         const media::audio::common::AudioHalVolumeCurve::DeviceCategory aidl) {
+     using DeviceCategory = media::audio::common::AudioHalVolumeCurve::DeviceCategory;
+-    switch (aidl) {
+-        case DeviceCategory::HEADSET:
++    switch (static_cast<int8_t>(aidl)) {
++        case static_cast<int8_t>(DeviceCategory::HEADSET):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_HEADSET);
+-        case DeviceCategory::SPEAKER:
++        case static_cast<int8_t>(DeviceCategory::SPEAKER):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_SPEAKER);
+-        case DeviceCategory::EARPIECE:
++        case static_cast<int8_t>(DeviceCategory::EARPIECE):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_EARPIECE);
+-        case DeviceCategory::EXT_MEDIA:
++        case static_cast<int8_t>(DeviceCategory::EXT_MEDIA):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_EXT_MEDIA);
+-        case DeviceCategory::HEARING_AID:
++        case static_cast<int8_t>(DeviceCategory::HEARING_AID):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_HEARING_AID);
++        // OEM AIDL values differ from its legacy enum (which includes SPEAKER_OLD).
++        case 5:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_HEADSET_CE);
++        case 6:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE);
++        case 7:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_A2DP);
++        case 8:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_A2DP_CE);
++        case 9:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_A2DP_SPATIALIZER_CE);
++        case 10:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_USB);
++        case 11:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_USB_CE);
++        case 12:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_USB_SPATIALIZER_CE);
+     }
+     return base::unexpected(BAD_VALUE);
+ }
+ 
+ ConversionResult<CurvePoint> aidl2legacy_AudioHalCurvePoint_CurvePoint(
+-        const media::audio::common::AudioHalVolumeCurve::CurvePoint& aidl) {
++        const media::audio::common::AudioHalVolumeCurve::CurvePoint& aidl,
++        bool extendedIndices) {
+     CurvePoint legacy;
+-    legacy.index = VALUE_OR_RETURN(convertIntegral<int>(aidl.index));
++    // These OEM groups encode the original XML 0..150 indices in an AIDL byte.
++    // Decode its bit pattern only for the explicitly supported extended groups.
++    const int index = extendedIndices ? static_cast<uint8_t>(aidl.index) : aidl.index;
++    if (index < 0 || index > (extendedIndices ? 150 : 100)) {
++        return base::unexpected(BAD_VALUE);
++    }
++    legacy.index = index;
+     legacy.attenuationInMb = aidl.attenuationMb;
+     return legacy;
+ }
+ 
+ ConversionResult<VolumeCurve> aidl2legacy_AudioHalVolumeCurve_VolumeCurve(
+-        const media::audio::common::AudioHalVolumeCurve& aidl) {
++        const media::audio::common::AudioHalVolumeCurve& aidl, bool extendedIndices) {
+     VolumeCurve legacy;
+     legacy.deviceCategory = VALUE_OR_RETURN(aidl2legacy_DeviceCategory(aidl.deviceCategory));
+     legacy.curvePoints = VALUE_OR_RETURN(convertContainer<CurvePoints>(
+-                    aidl.curvePoints, aidl2legacy_AudioHalCurvePoint_CurvePoint));
++                    aidl.curvePoints, [extendedIndices](const auto& point) {
++                        return aidl2legacy_AudioHalCurvePoint_CurvePoint(point, extendedIndices);
++                    }));
+     return legacy;
+ }
+ 
+@@ -153,8 +179,15 @@ ConversionResult<VolumeGroup> aidl2legacy_AudioHalVolumeGroup_VolumeGroup(
+     legacy.name = aidl.name;
+     legacy.indexMin = aidl.minIndex;
+     legacy.indexMax = aidl.maxIndex;
++    const bool extendedIndices = std::any_of(aidl.volumeCurves.begin(), aidl.volumeCurves.end(),
++            [](const auto& curve) {
++                const int category = static_cast<int8_t>(curve.deviceCategory);
++                return category >= 5 && category <= 12;
++            });
+     legacy.volumeCurves = VALUE_OR_RETURN(convertContainer<VolumeCurves>(
+-                    aidl.volumeCurves, aidl2legacy_AudioHalVolumeCurve_VolumeCurve));
++                    aidl.volumeCurves, [extendedIndices](const auto& curve) {
++                        return aidl2legacy_AudioHalVolumeCurve_VolumeCurve(curve, extendedIndices);
++                    }));
+     return legacy;
+ }
+ }  // namespace
+diff --git a/services/audiopolicy/engine/config/tests/Android.bp b/services/audiopolicy/engine/config/tests/Android.bp
+index 2df51d07eb..ab3127f23a 100644
+--- a/services/audiopolicy/engine/config/tests/Android.bp
++++ b/services/audiopolicy/engine/config/tests/Android.bp
+@@ -11,8 +11,13 @@ package {
+ cc_test {
+     name: "audiopolicy_engineconfig_tests",
+ 
++    defaults: ["latest_android_media_audio_common_types_cpp_shared"],
++
+     shared_libs: [
+         "libaudiopolicycomponents",
++        "libaudiofoundation",
++        "libaudio_aidl_conversion_common_cpp",
++        "libbinder",
+         "libbase",
+         "liblog",
+         "libmedia_helper",
+@@ -21,9 +26,12 @@ cc_test {
+     ],
+     static_libs: [
+         "libaudiopolicyengine_config",
++        "libaudiopolicyengine_common",
+     ],
+ 
+-    srcs: ["engineconfig_tests.cpp"],
++    srcs: ["engineconfig_tests.cpp", "engineconfig_vendor_volume_tests.cpp"],
++
++    header_libs: ["libaudiopolicyengine_interface_headers"],
+ 
+     data: [":audiopolicy_engineconfig_files"],
+ 
+diff --git a/services/audiopolicy/engine/config/tests/resources/Android.bp b/services/audiopolicy/engine/config/tests/resources/Android.bp
+index 99d62a3359..c990134555 100644
+--- a/services/audiopolicy/engine/config/tests/resources/Android.bp
++++ b/services/audiopolicy/engine/config/tests/resources/Android.bp
+@@ -12,6 +12,7 @@ filegroup {
+     name: "audiopolicy_engineconfig_files",
+     srcs: [
+         "test_apm_volume_tables.xml",
++        "test_warsaw_volume_engine.parcel",
+         "test_invalid_apm_volume_tables.xml",
+     ],
+ }
+diff --git a/services/audiopolicy/managerdefault/AudioPolicyManager.cpp b/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
+index 2b588eceec..33b7593ca7 100644
+--- a/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
++++ b/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
+@@ -9017,7 +9017,7 @@ float AudioPolicyManager::adjustDeviceAttenuationForAbsVolume(IVolumeCurves &cur
+                                                               const DeviceTypeSet &deviceTypes)
+ {
+     audio_devices_t volumeDevice = Volume::getDeviceForVolume(deviceTypes);
+-    device_category deviceCategory = Volume::getDeviceCategory({volumeDevice});
++    device_category deviceCategory = curves.getDeviceCategory({volumeDevice});
+     float volumeDb = curves.volIndexToDb(deviceCategory, index);
+ 
+     const auto it = mAbsoluteVolumeDrivingStreams.find(volumeDevice);
+@@ -9040,8 +9040,9 @@ float AudioPolicyManager::adjustDeviceAttenuationForAbsVolume(IVolumeCurves &cur
+         } else {
+             IVolumeCurves &curvesAbs = getVolumeCurves(vsToDriveAbs);
+             int indexAbs = curvesAbs.getVolumeIndex({volumeDevice});
+-            float volumeDbAbs = curvesAbs.volIndexToDb(deviceCategory, indexAbs);
+-            float volumeDbAbsMax = curvesAbs.volIndexToDb(deviceCategory,
++            const auto deviceCategoryAbs = curvesAbs.getDeviceCategory({volumeDevice});
++            float volumeDbAbs = curvesAbs.volIndexToDb(deviceCategoryAbs, indexAbs);
++            float volumeDbAbsMax = curvesAbs.volIndexToDb(deviceCategoryAbs,
+                                                           curvesAbs.getVolumeIndexMax());
+             float newVolumeDb = fminf(volumeDb + volumeDbAbsMax - volumeDbAbs, volumeDbMax);
+             ALOGV("%s: abs vol stream %d with attenuation %f is adjusting stream %d from "
+@@ -9064,7 +9065,7 @@ float AudioPolicyManager::computeVolume(IVolumeCurves &curves,
+     if (adjustAttenuation) {
+         volumeDb = adjustDeviceAttenuationForAbsVolume(curves, volumeSource, index, deviceTypes);
+     } else {
+-        volumeDb = curves.volIndexToDb(Volume::getDeviceCategory(deviceTypes), index);
++        volumeDb = curves.volIndexToDb(curves.getDeviceCategory(deviceTypes), index);
+     }
+     ALOGV("%s volume source %d, index %d,  devices %s, compute internal %b ", __func__,
+           volumeSource, index, dumpDeviceTypes(deviceTypes).c_str(), computeInternalInteraction);
+diff --git a/services/camera/libcameraservice/Android.bp b/services/camera/libcameraservice/Android.bp
+index 362a390b8f..8bd366143b 100644
+--- a/services/camera/libcameraservice/Android.bp
++++ b/services/camera/libcameraservice/Android.bp
+@@ -37,7 +37,10 @@ license {
+ 
+ cc_defaults {
+     name: "libcameraservice_deps",
+-    defaults: ["android.hardware.graphics.common-ndk_shared"],
++    defaults: [
++        "android.hardware.graphics.common-ndk_shared",
++        "warsaw_camera_exposure_deps",
++    ],
+     shared_libs: [
+         "libactivitymanager_aidl",
+         "libbase",
+@@ -133,6 +136,7 @@ cc_library {
+ 
+     defaults: [
+         "libcameraservice_deps",
++        "warsaw_camera_exposure_defaults",
+     ],
+     // Camera service source
+ 
+@@ -342,3 +346,43 @@ genrule {
+         "statslog_framework.cpp",
+     ],
+ }
++
++soong_config_module_type {
++    name: "warsaw_camera_exposure_cc_defaults",
++    module_type: "cc_defaults",
++    config_namespace: "warsaw_camera_exposure",
++    bool_variables: ["enabled"],
++    properties: [
++        "cflags",
++        "srcs",
++        "whole_static_libs",
++        "shared_libs",
++    ],
++}
++
++warsaw_camera_exposure_cc_defaults {
++    name: "warsaw_camera_exposure_defaults",
++    soong_config_variables: {
++        enabled: {
++            cflags: ["-DWARSAW_CAMERA_EXPOSURE"],
++            srcs: [
++                "device3/WarsawExposureRuntime.cpp",
++                "device3/CameraMindTransportOwner.cpp",
++            ],
++            whole_static_libs: [
++                "//device/xiaomi/warsaw:warsaw-cameramind-exposure-sampler",
++                "//device/xiaomi/warsaw:warsaw-cameramind-unix-transport",
++            ],
++        },
++    },
++}
++
++// Binary consumers of libcameraservice inherit its external shared dependencies.
++warsaw_camera_exposure_cc_defaults {
++    name: "warsaw_camera_exposure_deps",
++    soong_config_variables: {
++        enabled: {
++            shared_libs: ["libselinux"],
++        },
++    },
++}
+diff --git a/services/camera/libcameraservice/api2/CameraDeviceClient.cpp b/services/camera/libcameraservice/api2/CameraDeviceClient.cpp
+index 73d906d9d0..4a02d761ee 100644
+--- a/services/camera/libcameraservice/api2/CameraDeviceClient.cpp
++++ b/services/camera/libcameraservice/api2/CameraDeviceClient.cpp
+@@ -48,6 +48,7 @@
+ #include "HeicCompositeStream.h"
+ #include "JpegRCompositeStream.h"
+ #include "utils/Utils.h"
++#include "utils/WarsawCameraSessionParams.h"
+ 
+ // Convenience methods for constructing binder::Status objects for error returns
+ #define STATUS_ERROR(errorCode, errorString) \
+@@ -894,7 +895,14 @@ binder::Status CameraDeviceClient::endConfigureLocked(int operatingMode,
+         return res;
+     }
+ 
+-    status_t err = mDevice->configureStreams(sessionParams, operatingMode);
++    CameraMetadata clientSessionParams(sessionParams);
++    status_t err = warsawCameraSession::setClientIdentity(&clientSessionParams, mDevice->info(), getPackageName());
++    if (err != OK) {
++        return STATUS_ERROR_FMT(CameraService::ERROR_INVALID_OPERATION,
++                "Camera %s: Cannot set authenticated vendor client identity: %s (%d)",
++                mCameraIdStr.c_str(), strerror(-err), err);
++    }
++    err = mDevice->configureStreams(clientSessionParams, operatingMode);
+     if (err == BAD_VALUE) {
+         std::string msg = fmt::sprintf("Camera %s: Unsupported set of inputs/outputs provided",
+                 mCameraIdStr.c_str());
+diff --git a/services/camera/libcameraservice/device3/Camera3Device.cpp b/services/camera/libcameraservice/device3/Camera3Device.cpp
+index ca159874fb..eee6560546 100644
+--- a/services/camera/libcameraservice/device3/Camera3Device.cpp
++++ b/services/camera/libcameraservice/device3/Camera3Device.cpp
+@@ -79,6 +79,7 @@
+ #include "utils/SessionConfigurationUtils.h"
+ #include "utils/TraceHFR.h"
+ #include "utils/Utils.h"
++#include "utils/WarsawCameraSessionParams.h"
+ 
+ #include <algorithm>
+ #include <optional>
+@@ -145,6 +146,11 @@ Camera3Device::Camera3Device(std::shared_ptr<CameraServiceProxyWrapper>& cameraS
+     ATRACE_CALL();
+     ALOGV("%s: Created device for camera %s", __FUNCTION__, mId.c_str());
+     int callingUid = getCallingUid();
++#ifdef WARSAW_CAMERA_EXPOSURE
++    if (android::base::GetProperty("ro.product.device", "") == "warsaw") {
++        mWarsawExposure = std::make_unique<warsaw::cameramind::WarsawExposureRuntime>(mId);
++    }
++#endif
+     bool isCalledByNativeService = (callingUid == AID_MEDIA);
+     mIsNativeClient = isCalledByNativeService || isVendorClient;
+ }
+@@ -303,6 +309,9 @@ status_t Camera3Device::disconnect() {
+ status_t Camera3Device::disconnectImpl() {
+     ATRACE_CALL();
+     Mutex::Autolock il(mInterfaceLock);
++#ifdef WARSAW_CAMERA_EXPOSURE
++    if (mWarsawExposure) mWarsawExposure->close();
++#endif
+ 
+     ALOGV("%s: E", __FUNCTION__);
+ 
+@@ -564,6 +573,9 @@ ssize_t Camera3Device::getRawOpaqueBufferSize(const CameraMetadata &info, int32_
+ }
+ 
+ status_t Camera3Device::dump(int fd, [[maybe_unused]] const Vector<String16> &args) {
++#ifdef WARSAW_CAMERA_EXPOSURE
++    if (mWarsawExposure) mWarsawExposure->dump(fd);
++#endif
+     ATRACE_CALL();
+ 
+     // Try to lock, but continue in case of failure (to avoid blocking in
+@@ -1457,8 +1469,17 @@ status_t Camera3Device::configureStreams(const CameraMetadata& sessionParams, in
+ status_t Camera3Device::filterParamsAndConfigureLocked(const CameraMetadata& params,
+         int operatingMode) {
+     CameraMetadata filteredParams;
++    // OS4 adds the authenticated package after the application session filter.
++    // Keep that real vendor tag even when it is absent from the HAL's app keys.
++    std::vector<int32_t> platformSessionKeys;
++    if (warsawCameraSession::needsClientIdentity()) {
++        uint32_t clientTag;
++        status_t status = warsawCameraSession::getClientNameTag(mDeviceInfo, &clientTag);
++        if (status != OK) return status;
++        if (params.exists(clientTag)) platformSessionKeys.push_back(static_cast<int32_t>(clientTag));
++    }
+     SessionConfigurationUtils::filterParameters(params, mDeviceInfo,
+-            /*additionalKeys*/{}, mVendorTagId, filteredParams);
++            platformSessionKeys, mVendorTagId, filteredParams);
+ 
+     camera_metadata_entry_t availableSessionKeys = mDeviceInfo.find(
+             ANDROID_REQUEST_AVAILABLE_SESSION_KEYS);
+@@ -2899,7 +2920,9 @@ status_t Camera3Device::configureStreamsLocked(int operatingMode,
+               " injection camera has not been injected yet.", __FUNCTION__);
+         mInjectionMethods->storeInjectionConfig(config, bufferSizes);
+     }
+-
++#ifdef WARSAW_CAMERA_EXPOSURE
++    if (mWarsawExposure) mWarsawExposure->configured();
++#endif
+     return OK;
+ }
+ 
+diff --git a/services/camera/libcameraservice/device3/Camera3Device.h b/services/camera/libcameraservice/device3/Camera3Device.h
+index dcc1280d93..43dc341931 100644
+--- a/services/camera/libcameraservice/device3/Camera3Device.h
++++ b/services/camera/libcameraservice/device3/Camera3Device.h
+@@ -51,6 +51,9 @@
+ #include "device3/Camera3OutputInterface.h"
+ #include "device3/Camera3OfflineSession.h"
+ #include "device3/Camera3StreamInterface.h"
++#ifdef WARSAW_CAMERA_EXPOSURE
++#include "device3/WarsawExposureRuntime.h"
++#endif
+ #include "utils/AttributionAndPermissionUtils.h"
+ #include "utils/TagMonitor.h"
+ #include "utils/IPCTransport.h"
+@@ -467,6 +470,9 @@ class Camera3Device :
+ 
+     // Camera device ID
+     const std::string          mId;
++#ifdef WARSAW_CAMERA_EXPOSURE
++    std::unique_ptr<warsaw::cameramind::WarsawExposureRuntime> mWarsawExposure;
++#endif
+ 
+     // Legacy camera client flag
+     bool                       mLegacyClient;
+diff --git a/services/camera/libcameraservice/device3/Camera3OutputUtils.cpp b/services/camera/libcameraservice/device3/Camera3OutputUtils.cpp
+index 41c3266f25..3c5a18fd8f 100644
+--- a/services/camera/libcameraservice/device3/Camera3OutputUtils.cpp
++++ b/services/camera/libcameraservice/device3/Camera3OutputUtils.cpp
+@@ -411,6 +411,14 @@ void sendCaptureResult(
+         }
+     }
+ 
++#ifdef WARSAW_CAMERA_EXPOSURE
++    if (states.warsawExposure != nullptr) {
++        const camera_metadata_t* fullMetadata = captureResult.mMetadata.getAndLock();
++        states.warsawExposure->observe(states.warsawGeneration, frameNumber, fullMetadata);
++        captureResult.mMetadata.unlock(fullMetadata);
++    }
++#endif
++
+     // Fix up some result metadata to account for HAL-level distortion correction
+     status_t res = OK;
+     auto iter = states.distortionMappers.find(states.cameraId);
+diff --git a/services/camera/libcameraservice/device3/Camera3OutputUtils.h b/services/camera/libcameraservice/device3/Camera3OutputUtils.h
+index 4165a9e0e4..a2b7203057 100644
+--- a/services/camera/libcameraservice/device3/Camera3OutputUtils.h
++++ b/services/camera/libcameraservice/device3/Camera3OutputUtils.h
+@@ -36,6 +36,9 @@
+ #include "device3/Camera3OutputStreamInterface.h"
+ #include "utils/SessionStatsBuilder.h"
+ #include "utils/TagMonitor.h"
++#ifdef WARSAW_CAMERA_EXPOSURE
++#include "device3/WarsawExposureRuntime.h"
++#endif
+ 
+ namespace android {
+ 
+@@ -157,6 +160,10 @@ namespace camera3 {
+         bool& isFixedFps;
+         const content::res::CameraCompatibilityInfo& compatInfo;
+         std::string &activePhysicalId;
++#ifdef WARSAW_CAMERA_EXPOSURE
++        warsaw::cameramind::WarsawExposureRuntime* warsawExposure = nullptr;
++        uint64_t warsawGeneration = 0;
++#endif
+     };
+ 
+     void processCaptureResult(CaptureOutputStates& states, const camera_capture_result *result);
+diff --git a/services/camera/libcameraservice/device3/aidl/AidlCamera3Device.cpp b/services/camera/libcameraservice/device3/aidl/AidlCamera3Device.cpp
+index deca749a05..60915fc6a0 100644
+--- a/services/camera/libcameraservice/device3/aidl/AidlCamera3Device.cpp
++++ b/services/camera/libcameraservice/device3/aidl/AidlCamera3Device.cpp
+@@ -393,6 +393,9 @@ int32_t AidlCamera3Device::getCaptureResultFMQSize() {
+ 
+ ::ndk::ScopedAStatus AidlCamera3Device::processCaptureResult(
+             const std::vector<camera::device::CaptureResult>& results) {
++#ifdef WARSAW_CAMERA_EXPOSURE
++    const uint64_t warsawGeneration = mWarsawExposure ? mWarsawExposure->snapshotGeneration() : 0;
++#endif
+     // Ideally we should grab mLock, but that can lead to deadlock, and
+     // it's not super important to get up to date value of mStatus for this
+     // warning print, hence skipping the lock here
+@@ -436,7 +439,11 @@ int32_t AidlCamera3Device::getCaptureResultFMQSize() {
+         mDistortionMappers, mZoomRatioMappers, mRotateAndCropMappers,
+         mTagMonitor, mInputStream, mOutputStreams, mSessionStatsBuilder, listener, *this,
+         *this, *(mInterface), mLegacyClient, mMinExpectedDuration, mIsFixedFps,
+-        mCompatInfo, mActivePhysicalId}, mResultMetadataQueue
++        mCompatInfo, mActivePhysicalId
++#ifdef WARSAW_CAMERA_EXPOSURE
++        , mWarsawExposure.get(), warsawGeneration
++#endif
++        }, mResultMetadataQueue
+     };
+ 
+     for (const auto& result : results) {
+@@ -448,6 +455,9 @@ int32_t AidlCamera3Device::getCaptureResultFMQSize() {
+ 
+ ::ndk::ScopedAStatus AidlCamera3Device::notify(
+         const std::vector<camera::device::NotifyMsg>& msgs) {
++#ifdef WARSAW_CAMERA_EXPOSURE
++    const uint64_t warsawGeneration = mWarsawExposure ? mWarsawExposure->snapshotGeneration() : 0;
++#endif
+     // Ideally we should grab mLock, but that can lead to deadlock, and
+     // it's not super important to get up to date value of mStatus for this
+     // warning print, hence skipping the lock here
+@@ -478,7 +488,11 @@ int32_t AidlCamera3Device::getCaptureResultFMQSize() {
+         mDistortionMappers, mZoomRatioMappers, mRotateAndCropMappers,
+         mTagMonitor, mInputStream, mOutputStreams, mSessionStatsBuilder, listener, *this,
+         *this, *(mInterface), mLegacyClient, mMinExpectedDuration, mIsFixedFps,
+-        mCompatInfo, mActivePhysicalId}, mResultMetadataQueue
++        mCompatInfo, mActivePhysicalId
++#ifdef WARSAW_CAMERA_EXPOSURE
++        , mWarsawExposure.get(), warsawGeneration
++#endif
++        }, mResultMetadataQueue
+     };
+     for (const auto& msg : msgs) {
+         camera3::notify(states, msg, mSensorReadoutTimestampSupported,
+diff --git a/camera/tests/WarsawCameraSessionParamsTest.cpp b/camera/tests/WarsawCameraSessionParamsTest.cpp
+new file mode 100644
+index 0000000000..2c20e43ba4
+--- /dev/null
++++ b/camera/tests/WarsawCameraSessionParamsTest.cpp
+@@ -0,0 +1,93 @@
++#include "utils/WarsawCameraSessionParams.h"
++#include <gtest/gtest.h>
++#include <cstring>
++using namespace android;
++namespace {
++constexpr uint32_t kTag = 0x81da0001;
++constexpr metadata_vendor_id_t kVendor = 17;
++int tagType = TYPE_BYTE;
++int count(const vendor_tag_ops_t*) { return 1; }
++void tags(const vendor_tag_ops_t*, uint32_t* out) { *out = kTag; }
++const char* section(const vendor_tag_ops_t*, uint32_t) { return "com.xiaomi.sessionparams"; }
++const char* name(const vendor_tag_ops_t*, uint32_t) { return "clientName"; }
++int type(const vendor_tag_ops_t*, uint32_t) { return tagType; }
++class SessionIdentityTest : public ::testing::Test {
++ protected:
++  CameraMetadata device;
++  static void SetUpTestSuite() {
++    if (base::GetProperty("ro.product.device", "") != "warsaw")
++      ASSERT_TRUE(base::SetProperty("ro.product.device", "warsaw"));
++  }
++  void SetUp() override {
++    tagType = TYPE_BYTE;
++    installDescriptor();
++    device = metadata(kVendor);
++  }
++  void TearDown() override {
++    VendorTagDescriptor::clearGlobalVendorTagDescriptor();
++    VendorTagDescriptorCache::clearGlobalVendorTagCache();
++  }
++  void installDescriptor() {
++    VendorTagDescriptor::clearGlobalVendorTagDescriptor();
++    VendorTagDescriptorCache::clearGlobalVendorTagCache();
++    vendor_tag_ops_t ops{};
++    ops.get_tag_count=count; ops.get_all_tags=tags; ops.get_section_name=section;
++    ops.get_tag_name=name; ops.get_tag_type=type;
++    sp<VendorTagDescriptor> desc;
++    ASSERT_EQ(OK, VendorTagDescriptor::createDescriptorFromOps(&ops, desc));
++    auto cache=sp<VendorTagDescriptorCache>::make();
++    ASSERT_EQ(OK,cache->addVendorDescriptor(kVendor,desc));
++    ASSERT_EQ(OK,VendorTagDescriptorCache::setAsGlobalVendorTagCache(cache));
++  }
++  static CameraMetadata metadata(metadata_vendor_id_t id) {
++    auto* raw=allocate_camera_metadata(4,128);
++    set_camera_metadata_vendor_id(raw,id);
++    return CameraMetadata(raw);
++  }
++  static void expectIdentity(CameraMetadata& params) {
++    auto e=params.find(kTag);
++    ASSERT_EQ(TYPE_BYTE,e.type);
++    ASSERT_EQ(strlen("com.android.camera")+1,e.count);
++    EXPECT_STREQ("com.android.camera",reinterpret_cast<const char*>(e.data.u8));
++  }
++};
++TEST_F(SessionIdentityTest, EmptyUnconfigureMetadataBindsProviderBeforeVendorUpdate) {
++  CameraMetadata params;
++  EXPECT_EQ(CAMERA_METADATA_INVALID_VENDOR_ID,params.getVendorId());
++  ASSERT_EQ(OK,warsawCameraSession::setClientIdentity(&params,device,"com.android.camera"));
++  EXPECT_EQ(kVendor,params.getVendorId()); expectIdentity(params);
++}
++TEST_F(SessionIdentityTest, ExistingStandardParametersArePreserved) {
++  CameraMetadata params;
++  const uint8_t intent=ANDROID_CONTROL_CAPTURE_INTENT_PREVIEW;
++  ASSERT_EQ(OK,params.update(ANDROID_CONTROL_CAPTURE_INTENT,&intent,1));
++  ASSERT_EQ(OK,warsawCameraSession::setClientIdentity(&params,device,"com.android.camera"));
++  auto e=params.find(ANDROID_CONTROL_CAPTURE_INTENT);
++  ASSERT_EQ(1u,e.count); EXPECT_EQ(intent,e.data.u8[0]); expectIdentity(params);
++}
++TEST_F(SessionIdentityTest, ApplicationSuppliedNameIsOverwrittenWithServiceIdentity) {
++  auto params=metadata(kVendor);
++  ASSERT_EQ(OK,params.update(kTag,String8("spoofed.package")));
++  ASSERT_EQ(OK,warsawCameraSession::setClientIdentity(&params,device,"com.android.camera"));
++  expectIdentity(params);
++}
++TEST_F(SessionIdentityTest, ForeignVendorMetadataIsRejectedWithoutMutation) {
++  auto params=metadata(kVendor+1);
++  EXPECT_EQ(BAD_VALUE,warsawCameraSession::setClientIdentity(&params,device,"com.android.camera"));
++  EXPECT_EQ(kVendor+1,params.getVendorId()); EXPECT_TRUE(params.isEmpty());
++}
++TEST_F(SessionIdentityTest, UnknownDeviceVendorFailsClosed) {
++  CameraMetadata params;
++  auto unknown=metadata(kVendor+1);
++  EXPECT_NE(OK,warsawCameraSession::setClientIdentity(&params,unknown,"com.android.camera"));
++  EXPECT_TRUE(params.isEmpty());
++}
++TEST_F(SessionIdentityTest, WrongVendorTagTypeFailsClosed) {
++  tagType=TYPE_INT32; installDescriptor(); CameraMetadata params;
++  EXPECT_EQ(BAD_TYPE,warsawCameraSession::setClientIdentity(&params,device,"com.android.camera"));
++  EXPECT_TRUE(params.isEmpty());
++}
++TEST_F(SessionIdentityTest, NullParametersAreRejected) {
++  EXPECT_EQ(BAD_VALUE,warsawCameraSession::setClientIdentity(nullptr,device,"com.android.camera"));
++}
++}
+diff --git a/media/audioserver/WarsawAudioVendorExtension.h b/media/audioserver/WarsawAudioVendorExtension.h
+new file mode 100644
+index 0000000000..f2e9e93825
+--- /dev/null
++++ b/media/audioserver/WarsawAudioVendorExtension.h
+@@ -0,0 +1,54 @@
++#pragma once
++
++#include <android-base/properties.h>
++#include <aidl/android/media/audio/IHalAdapterVendorExtension.h>
++#include <android/binder_ibinder.h>
++#include <android/binder_manager.h>
++#include <dlfcn.h>
++#include <log/log.h>
++
++namespace warsaw {
++
++inline void registerAudioVendorExtension() {
++    if (!android::base::GetBoolProperty(
++                "ro.audio.ihaladaptervendorextension_enabled", false)) {
++        return;
++    }
++    static_assert(sizeof(void*) == 8, "warsaw has a captured 64-bit provider");
++    using Adapter = aidl::android::media::audio::IHalAdapterVendorExtension;
++    static_assert(sizeof(Adapter::ScopeType) == 1,
++                  "stock provider reads ScopeType as one byte");
++    static_assert(sizeof(Adapter::ParameterScope) == 32,
++                  "stock ParameterScope contains scope then string at +8");
++    constexpr char kService[] = "android.media.audio.IHalAdapterVendorExtension/default";
++    constexpr char kLibrary[] = "/system_ext/lib64/libaudiohalvendorextn.so";
++
++    AIBinder* existing = AServiceManager_checkService(kService);
++    if (existing != nullptr) {
++        AIBinder_decStrong(existing);
++        LOG_ALWAYS_FATAL("Warsaw audio vendor extension was registered before its startup hook");
++    }
++
++    void* handle = dlopen(kLibrary, RTLD_NOW | RTLD_NODELETE);
++    LOG_ALWAYS_FATAL_IF(handle == nullptr, "Cannot load warsaw audio vendor extension: %s",
++                        dlerror());
++    dlerror();
++    void* symbol = dlsym(handle, "registerInterface");
++    const char* error = dlerror();
++    LOG_ALWAYS_FATAL_IF(error != nullptr || symbol == nullptr,
++                        "Warsaw audio vendor extension has no registerInterface: %s",
++                        error != nullptr ? error : "null export");
++
++    using Registrar = void (*)();
++    reinterpret_cast<Registrar>(symbol)();
++
++    AIBinder* registered = AServiceManager_checkService(kService);
++    LOG_ALWAYS_FATAL_IF(registered == nullptr,
++                        "Warsaw audio vendor extension did not register its Binder service");
++    const bool remote = AIBinder_isRemote(registered);
++    AIBinder_decStrong(registered);
++    LOG_ALWAYS_FATAL_IF(remote,
++                        "Warsaw audio vendor extension was registered outside audioserver");
++}
++
++}
+diff --git a/services/audiopolicy/engine/config/tests/engineconfig_vendor_volume_tests.cpp b/services/audiopolicy/engine/config/tests/engineconfig_vendor_volume_tests.cpp
+new file mode 100644
+index 0000000000..4bfb9c5cd8
+--- /dev/null
++++ b/services/audiopolicy/engine/config/tests/engineconfig_vendor_volume_tests.cpp
+@@ -0,0 +1,162 @@
++/*
++ * Copyright (C) 2026 The LineageOS Project
++ * SPDX-License-Identifier: Apache-2.0
++ */
++#include <algorithm>
++#include <array>
++#include <cmath>
++#include <cstdint>
++#include <string>
++#include <android-base/file.h>
++#include <binder/Parcel.h>
++#include <gtest/gtest.h>
++#include "EngineConfig.h"
++#include "VolumeCurve.h"
++
++namespace android {
++namespace {
++using media::audio::common::AudioHalEngineConfig;
++using media::audio::common::AudioHalVolumeCurve;
++using Category = AudioHalVolumeCurve::DeviceCategory;
++
++// Captured from the unmodified official OS4 audio HAL getEngineConfig on Warsaw.
++// The Parcel contains configuration only, without user data or Binder objects.
++bool readOfficialConfig(AudioHalEngineConfig* config) {
++    std::string bytes;
++    if (!base::ReadFileToString(base::GetExecutableDirectory() +
++                               "/test_warsaw_volume_engine.parcel", &bytes)) return false;
++    Parcel parcel;
++    return parcel.setData(reinterpret_cast<const uint8_t*>(bytes.data()), bytes.size()) == OK
++            && config->readFromParcel(&parcel) == OK;
++}
++const std::array<const char*, 13> kCategoryNames = {
++    "DEVICE_CATEGORY_HEADSET", "DEVICE_CATEGORY_SPEAKER", "DEVICE_CATEGORY_EARPIECE",
++    "DEVICE_CATEGORY_EXT_MEDIA", "DEVICE_CATEGORY_HEARING_AID", "DEVICE_CATEGORY_HEADSET_CE",
++    "DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE", "DEVICE_CATEGORY_A2DP", "DEVICE_CATEGORY_A2DP_CE",
++    "DEVICE_CATEGORY_A2DP_SPATIALIZER_CE", "DEVICE_CATEGORY_USB", "DEVICE_CATEGORY_USB_CE",
++    "DEVICE_CATEGORY_USB_SPATIALIZER_CE"};
++
++TEST(EngineConfigVendorVolumesTest, PreservesCompleteOfficialConfiguration) {
++    AudioHalEngineConfig aidl;
++    ASSERT_TRUE(readOfficialConfig(&aidl));
++    ASSERT_EQ(8u, aidl.productStrategies.size());
++    ASSERT_EQ(12u, aidl.volumeGroups.size());
++    auto result = engineConfig::convert(aidl);
++    ASSERT_NE(nullptr, result.parsedConfig);
++    EXPECT_EQ(0u, result.nbSkippedElement);
++    ASSERT_EQ(aidl.productStrategies.size(), result.parsedConfig->productStrategies.size());
++    ASSERT_EQ(aidl.volumeGroups.size(), result.parsedConfig->volumeGroups.size());
++    for (size_t i = 0; i < aidl.volumeGroups.size(); ++i) {
++        const auto& input = aidl.volumeGroups[i];
++        const auto& output = result.parsedConfig->volumeGroups[i];
++        EXPECT_EQ(input.name, output.name);
++        EXPECT_EQ(input.minIndex, output.indexMin);
++        EXPECT_EQ(input.maxIndex, output.indexMax);
++        ASSERT_EQ(input.volumeCurves.size(), output.volumeCurves.size());
++        for (size_t j = 0; j < input.volumeCurves.size(); ++j) {
++            const auto& inCurve = input.volumeCurves[j];
++            const auto& outCurve = output.volumeCurves[j];
++            const auto category = static_cast<uint8_t>(inCurve.deviceCategory);
++            ASSERT_LT(category, kCategoryNames.size());
++            EXPECT_EQ(kCategoryNames[category], outCurve.deviceCategory);
++            ASSERT_EQ(inCurve.curvePoints.size(), outCurve.curvePoints.size());
++            for (size_t k = 0; k < inCurve.curvePoints.size(); ++k) {
++                EXPECT_EQ(static_cast<uint8_t>(inCurve.curvePoints[k].index),
++                          outCurve.curvePoints[k].index);
++                EXPECT_EQ(inCurve.curvePoints[k].attenuationMb,
++                          outCurve.curvePoints[k].attenuationInMb);
++            }
++        }
++    }
++}
++
++TEST(EngineConfigVendorVolumesTest, MusicCurveMutesAndAttenuatesAcrossOfficialUiRange) {
++    AudioHalEngineConfig aidl;
++    ASSERT_TRUE(readOfficialConfig(&aidl));
++    auto result = engineConfig::convert(aidl);
++    ASSERT_NE(nullptr, result.parsedConfig);
++    const auto& groups = result.parsedConfig->volumeGroups;
++    const auto music = std::find_if(groups.begin(), groups.end(),
++                                   [](const auto& group) { return group.name == "music"; });
++    ASSERT_NE(groups.end(), music);
++    const auto speaker = std::find_if(music->volumeCurves.begin(), music->volumeCurves.end(),
++                                     [](const auto& curve) {
++        return curve.deviceCategory == "DEVICE_CATEGORY_SPEAKER";
++    });
++    ASSERT_NE(music->volumeCurves.end(), speaker);
++    sp<VolumeCurve> curve = sp<VolumeCurve>::make(DEVICE_CATEGORY_SPEAKER);
++    for (const auto& point : speaker->curvePoints) curve->add({point.index, point.attenuationInMb});
++    // Official ro.config.media_vol_steps=150 supersedes the HAL UI range of 15.
++    EXPECT_FLOAT_EQ(VOLUME_MIN_DB, curve->volIndexToDb(0, 0, 150));
++    EXPECT_NEAR(-73.0f, curve->volIndexToDb(1, 0, 150), 0.001f);
++    EXPECT_NEAR(-56.0f, curve->volIndexToDb(10, 0, 150), 0.001f);
++    EXPECT_NEAR(-0.3f, curve->volIndexToDb(150, 0, 150), 0.001f);
++    float previous = VOLUME_MIN_DB;
++    for (int index = 0; index <= 150; ++index) {
++        const float db = curve->volIndexToDb(index, 0, 150);
++        ASSERT_TRUE(std::isfinite(db));
++        EXPECT_GE(db, previous);
++        EXPECT_LE(db, 0.0f);
++        previous = db;
++    }
++}
++
++TEST(EngineConfigVendorVolumesTest, UnknownCategoryStillRejectsWholeConfiguration) {
++    AudioHalEngineConfig aidl;
++    ASSERT_TRUE(readOfficialConfig(&aidl));
++    aidl.volumeGroups[0].volumeCurves[0].deviceCategory = static_cast<Category>(127);
++    EXPECT_EQ(nullptr, engineConfig::convert(aidl).parsedConfig);
++}
++
++TEST(EngineConfigVendorVolumesTest, RejectsInvalidCurveIndicesWithoutChangingStandardSemantics) {
++    AudioHalEngineConfig official;
++    ASSERT_TRUE(readOfficialConfig(&official));
++    for (int index : {-1, 101}) {
++        auto aidl = official;
++        aidl.productStrategies.clear();
++        aidl.volumeGroups.resize(1);
++        aidl.volumeGroups[0].volumeCurves.resize(1);
++        aidl.volumeGroups[0].volumeCurves[0].curvePoints[0].index = static_cast<int8_t>(index);
++        EXPECT_EQ(nullptr, engineConfig::convert(aidl).parsedConfig) << index;
++    }
++    for (int index : {151, 255}) {
++        auto aidl = official;
++        aidl.volumeGroups[0].volumeCurves[0].curvePoints[0].index = static_cast<int8_t>(index);
++        EXPECT_EQ(nullptr, engineConfig::convert(aidl).parsedConfig) << index;
++    }
++    auto standard = official;
++    standard.productStrategies.clear();
++    standard.volumeGroups.resize(1);
++    standard.volumeGroups[0].volumeCurves.resize(1);
++    ASSERT_NE(nullptr, engineConfig::convert(standard).parsedConfig);
++}
++
++TEST(EngineConfigVendorVolumesTest, UsesDedicatedCurvesOnlyWhenTheVolumeGroupSuppliesThem) {
++    VolumeCurves standard(0, 15);
++    for (auto category : {DEVICE_CATEGORY_HEADSET, DEVICE_CATEGORY_SPEAKER,
++                          DEVICE_CATEGORY_EARPIECE, DEVICE_CATEGORY_EXT_MEDIA,
++                          DEVICE_CATEGORY_HEARING_AID}) {
++        standard.add(sp<VolumeCurve>::make(category));
++    }
++    for (auto device : {AUDIO_DEVICE_OUT_USB_HEADSET, AUDIO_DEVICE_OUT_BLUETOOTH_A2DP,
++                        AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES, AUDIO_DEVICE_OUT_BLE_HEADSET,
++                        AUDIO_DEVICE_OUT_BLE_BROADCAST}) {
++        EXPECT_EQ(DEVICE_CATEGORY_HEADSET, standard.getDeviceCategory({device}));
++    }
++    VolumeCurves extended(0, 150);
++    extended.add(sp<VolumeCurve>::make(DEVICE_CATEGORY_USB));
++    extended.add(sp<VolumeCurve>::make(DEVICE_CATEGORY_A2DP));
++    EXPECT_EQ(DEVICE_CATEGORY_USB, extended.getDeviceCategory({AUDIO_DEVICE_OUT_USB_HEADSET}));
++    for (auto device : {AUDIO_DEVICE_OUT_BLUETOOTH_A2DP, AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES,
++                        AUDIO_DEVICE_OUT_BLE_HEADSET, AUDIO_DEVICE_OUT_BLE_BROADCAST}) {
++        EXPECT_EQ(DEVICE_CATEGORY_A2DP, extended.getDeviceCategory({device}));
++    }
++    EXPECT_EQ(DEVICE_CATEGORY_EXT_MEDIA, extended.getDeviceCategory({AUDIO_DEVICE_OUT_USB_DEVICE}));
++    EXPECT_EQ(DEVICE_CATEGORY_SPEAKER,
++              extended.getDeviceCategory({AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER}));
++    EXPECT_EQ(DEVICE_CATEGORY_HEARING_AID,
++              extended.getDeviceCategory({AUDIO_DEVICE_OUT_HEARING_AID}));
++    EXPECT_EQ(DEVICE_CATEGORY_EARPIECE, extended.getDeviceCategory({AUDIO_DEVICE_OUT_EARPIECE}));
++}
++} // namespace
++} // namespace android
+diff --git a/services/audiopolicy/engine/config/tests/resources/test_warsaw_volume_engine.parcel b/services/audiopolicy/engine/config/tests/resources/test_warsaw_volume_engine.parcel
+new file mode 100644
+index 0000000000000000000000000000000000000000..5f0a501012ebd4c44e4fac9e67ca07a7ec75b8a3
+GIT binary patch
+literal 11368
+zcmeI2Pl#1j9LHZZ{j;g0S_nlnAt7N9A>u+vWC$0tm>@z#Xhz@I3^*Fj6a_9sTC|X8
+z5z?ZC3l|a*1uZ08xO5>A5frVYq|B`Bzm;j<&*lE+d_BIIJM+$)wD3I6yZ3j_x!?Qy
+zeb4Xw&hOs$##gqga*MvNQ$122udk1TI#QOXzR=p)nrLlpjkTW9_h@UoJ`}E_E<;e^
+zS}*jqRc}(gU3H7DdtNBh!rQ6uap6q~ai{v?zJYbO+PwIEqP?#^q3>l?Fal>yea@I&
+z(tbzlS)E<3GrD;Ji)*>=MpdjG6~d&>>2p2e{%WoYeIu$|7h{KYezWRQ)iG(YP1f$J
+zxNOV%QSs51b}%!h5$U?%p=zw#qkp4Lz>Irr&^hx2$D_h#rl#}(cS6V$;`${UAK164
+z%?o(PRBuoX?87?8o_^IG)vQg(2E1WZs1s`0p`K)OU~`QZ@S+dhy?7t~=*9bP^$wkT
+zANG5pZ!KRcVb409V>39THA7RfVpKLvtBv7-$&oqpLfau#@UU-Evj@vtYdNl!SmAJt
+z;(d2SV}10#PWKGnm;*0<owsvN-`e_!k59=1uyw5R<V$T;cjY@Aqi{Wbg^zPiU8BnU
+z(AE~#q&$HV{h=rPc%gq#6+L3?DxEVAjGfkJ%K8FFO;rh>z<#dZtc#lB67v&lWT-+(
+zwgiuF{BZFic*p~)OMgxBddaW+ndG))3gf}!{=rQz@X)nac*lhmcEwRmt^0mX_MrcU
+zUy^*6<Y}}2Udac3Oa03wAOAhck4QduF3GDUFE_p(mpuGe>c^LMpHK3Wk`Miz<V})4
+zxsYV%8+(ZB@a*<H^-~(($)2^QKlVIo`eM)KKhpKs<MWL@@0<SEbHen;9@igxo-_Ti
+zXU)Zg@AeF-55MnI4SP6l{3eaRNAk$oB(s)X-y9Dt$CKFV*1rd(T&I`;=AEi=jlS4H
+z@%z&5el;NZGxICf)wuZ)b}XxT1utJ$rFi+eD#eTV2Tu57iM`<D{Q0^YP`|G;`15rI
+zf8mGl$2#dHUN?T~aU!2zbj$V2`SW#(z2P754ITyFu$MUBgtrj?BR}XB-moSEEYCkB
+zR%>Xky$RdiI+NBuK5*J%9h}S+3p%Z#61+}ps00uDa*p?B_C92>8hiUJ_O>Nc!Ush2
+zWq2j}{Tn{t{xHoivHs|ZBopgB_Pf0Yv<ULtQ^PBtBL9bze!f)5B`di;?*1~}10Ol|
+zb&}EHi0wc3OMds;)W1UV!S9m%m}K8y(0SjFss9Pddo14=mhAZj`(wTjyl!*OQ^ir+
+zpI?-G#`253+FLy??2|lb`NV$7GyAbfz}_Z4+8H0dAH&B`#>cvhk5!gW!pDjRK0GeL
+zM;<qQjl+lA4<Bwne7ODaF=M~R!pEDc;UBE&YkVX=*w?Q#AD*AHUi^6k|LDu|Cf_IV
+z5BC@R!}D4E!}D4E!}D4Eqd)RjISJ2ZSDKH*w&%geNsA}&;rtLImsq|JAFGWo_}F6c
+z1wLN2_yQjvSbTwxuj>4t_Xw;T-bq#KM@P!3PcO_oKho~;l|5<G$rKM+Z||K-GV$nv
+z(@7@&`kqC+*=F&C_<Ppk3GvtYAl~@%4)NFh1O7ao!k_yG{JDR?-$C1R;V<$`@-X=G
+z_yT|ayaRt<s8)RGi@d7IpI$S5;KTXpv>z=r{$5S%3l5w3SnU1iYFS_8E95jyd@Odp
+zlKaQo_I`x*;`=r0<>M^gT*%_h!xmpyFHc*1VZH3N_Y16-cVfMX51zjln~#saPw|KN
+zao*w$@x$|%VaX3#JcbYF3qCv^5kEXW6F)pY!H4I6@ZtF%d_=tBIj>WW@A(<=!gFTq
+z@%<3}C=rjy@fVxl|4M!gzkPMB_^Em7_8DcPCTq5L?1G-x^KZ9vi!Gg=e@pN>J^z;A
+z!7+S0*ClwpTpRG$&GYYUYpvJ5#XA-Diu`vu-b*r1aLPR?&M~s*R|Aqu-l>%0<vvx4
+zm-`fW+id^B-ja7JrTXPQ1zwZS=g-6OyxYmA!0R?%jmW3^b^TnwZ-U?CW6VJ>eXJBO
+z_pwquuJ<*C+)E!T)i3uk@OtTECHmoGyq}xvKM>$I`Iv^ZHpg?i&IeRanY>=|v~nk~
+z@aeWH1(|h|?~U}8;N?D6iie)=W8me#heTe8ec0>oF>-rF`(=2Zm%*Rsso>?$#cG=2
+z58ZP8O8D!>XJ^}M$7L)z?R@@cf=$dFHGG3Mw~hAvw;6v1f-BGA;XZz=>f~#sc)72Y
+z;&FX$Z|-YhPx#vZ?YFmX_ssZh%l`)=Ive9x>73>9s}%2=PxXF}?AE8YYch$4@qeJ)
+zpH|YKLQH4gS(B7KpI^G)h0J*TWg+A7hlPwsk9@qEX7nQ_QW%FmjLpY~zSzU~kQomj
+z3mH#5oA3A$4J0RN`p@8ea+0PzYqmXWNcYdzw3-_8wz=@~HC>9w-1$CHipTu)5--mo
+PO7%mxT)%GCG<y64;RA_Q
+
+literal 0
+HcmV?d00001
+
+diff --git a/services/camera/libcameraservice/device3/CameraMindTransportOwner.cpp b/services/camera/libcameraservice/device3/CameraMindTransportOwner.cpp
+new file mode 100644
+index 0000000000..efd69af100
+--- /dev/null
++++ b/services/camera/libcameraservice/device3/CameraMindTransportOwner.cpp
+@@ -0,0 +1,357 @@
++#include "CameraMindTransportOwner.h"
++
++#include "WarsawExposureRuntime.h"
++
++#include <AuthenticatedUnixChannel.h>
++#include <ExposureWire.h>
++#include <binder/PermissionController.h>
++#include <utils/String16.h>
++
++#include <algorithm>
++#include <chrono>
++#include <limits>
++#include <memory>
++#include <utility>
++
++namespace warsaw::cameramind {
++namespace {
++
++using Channel = AuthenticatedUnixChannel;
++using namespace std::chrono_literals;
++
++constexpr char kCameraMindPackage[] = "com.xiaomi.cameramind";
++constexpr char kCameraMindContext[] = "u:r:cameramind_app:s0";
++constexpr char kCameraServerProcess[] = "cameraserver";
++constexpr uint32_t kCounterLimit = static_cast<uint32_t>(INT32_MAX - 10);
++constexpr int64_t kSerialLimit = INT64_MAX - 10;
++
++int64_t wallMillis() {
++    return std::chrono::duration_cast<std::chrono::milliseconds>(
++            std::chrono::system_clock::now().time_since_epoch()).count();
++}
++
++bool completeServerEnvelope(const CameraMindReceivedFrame& frame) {
++    return frame.wireSessionId >= 1000 &&
++            frame.envelope.id && *frame.envelope.id >= 0 &&
++            frame.envelope.serial && *frame.envelope.serial >= 0 &&
++            frame.envelope.timeMillis && *frame.envelope.timeMillis >= 0 &&
++            frame.envelope.reply.has_value();
++}
++
++}
++
++CameraMindTransportOwner& CameraMindTransportOwner::instance() {
++    static CameraMindTransportOwner* const owner = new CameraMindTransportOwner();
++    return *owner;
++}
++
++CameraMindTransportOwner::~CameraMindTransportOwner() {
++    android::sp<Worker> worker;
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        mStop = true;
++        if (mActiveChannel != nullptr) mActiveChannel->cancel();
++        worker = mWorker;
++    }
++    mWake.notify_all();
++    if (worker != nullptr) worker->join();
++}
++
++bool CameraMindTransportOwner::registerRuntime(WarsawExposureRuntime* runtime) {
++    if (runtime == nullptr) return false;
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        if (mStop) return false;
++        const bool known = std::find(mRuntimes.begin(), mRuntimes.end(), runtime) != mRuntimes.end();
++        if (!known) {
++            mRuntimes.push_back(runtime);
++            if (mConnectedEpoch != 0 && !runtime->beginControlSource(mConnectedEpoch)) {
++                mRuntimes.pop_back();
++                ++mStats.sourceStartFailures;
++                mStats.registeredRuntimes = mRuntimes.size();
++                return false;
++            }
++        }
++        if (mWorker == nullptr) {
++            auto worker = android::sp<Worker>::make(this);
++            if (worker->run("WarsawMindIO") == android::OK) {
++                mWorker = std::move(worker);
++                mStats.workerStarted = true;
++            } else {
++                ++mStats.connectFailures;
++                if (!known) mRuntimes.pop_back();
++                mStats.registeredRuntimes = mRuntimes.size();
++                return false;
++            }
++        }
++        mStats.registeredRuntimes = mRuntimes.size();
++    }
++    mWake.notify_all();
++    return true;
++}
++
++void CameraMindTransportOwner::unregisterRuntime(WarsawExposureRuntime* runtime) {
++    if (runtime == nullptr) return;
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        auto item = std::find(mRuntimes.begin(), mRuntimes.end(), runtime);
++        if (item == mRuntimes.end()) return;
++        if (mConnectedEpoch != 0) runtime->endControlSource(mConnectedEpoch);
++        mRuntimes.erase(item);
++        mStats.registeredRuntimes = mRuntimes.size();
++        if (mRuntimes.empty() && mActiveChannel != nullptr) mActiveChannel->cancel();
++    }
++    mWake.notify_all();
++}
++
++CameraMindTransportOwner::PublishResult CameraMindTransportOwner::publishExposure(
++        const std::string& cameraId, const ExposureDamper::Report& report) {
++    if (cameraId.empty() || cameraId.size() > 128 || report.count == 0 ||
++            report.count > ExposureDamper::kMaxPending) return PublishResult::Invalid;
++    for (size_t i = 0; i < report.count; ++i) {
++        if (report.points[i].exposureNs <= 0) return PublishResult::Invalid;
++    }
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        if (mConnectedEpoch == 0 || mActiveChannel == nullptr) return PublishResult::Disconnected;
++        if (mReports.size() == kReportQueueCapacity) return PublishResult::Full;
++        mReports.push_back(PendingReport{mConnectedEpoch, cameraId, report});
++        mStats.queuedReports = mReports.size();
++    }
++    mWake.notify_all();
++    return PublishResult::Queued;
++}
++
++CameraMindTransportOwner::Snapshot CameraMindTransportOwner::snapshot() const {
++    std::lock_guard<std::mutex> lock(mLock);
++    Snapshot result = mStats;
++    result.connected = mConnectedEpoch != 0 && mActiveChannel != nullptr;
++    result.sourceEpoch = mConnectedEpoch;
++    result.registeredRuntimes = mRuntimes.size();
++    result.queuedReports = mReports.size();
++    return result;
++}
++
++bool CameraMindTransportOwner::Worker::threadLoop() { return mOwner->step(); }
++
++bool CameraMindTransportOwner::stopped() const {
++    std::lock_guard<std::mutex> lock(mLock);
++    return mStop;
++}
++
++bool CameraMindTransportOwner::waitForWork() {
++    std::unique_lock<std::mutex> lock(mLock);
++    mWake.wait(lock, [this] { return mStop || !mRuntimes.empty(); });
++    return !mStop;
++}
++
++bool CameraMindTransportOwner::waitBackoff(std::chrono::milliseconds delay) {
++    std::unique_lock<std::mutex> lock(mLock);
++    mWake.wait_for(lock, delay, [this] { return mStop || mRuntimes.empty(); });
++    return !mStop;
++}
++
++bool CameraMindTransportOwner::beginSourceLocked(uint64_t epoch) {
++    mConnectedEpoch = epoch;
++    size_t started = 0;
++    for (; started < mRuntimes.size(); ++started) {
++        if (!mRuntimes[started]->beginControlSource(epoch)) {
++            while (started != 0) mRuntimes[--started]->endControlSource(epoch);
++            mConnectedEpoch = 0;
++            return false;
++        }
++    }
++    return true;
++}
++
++void CameraMindTransportOwner::endSourceLocked(uint64_t epoch) {
++    if (epoch == 0 || epoch != mConnectedEpoch) return;
++    for (WarsawExposureRuntime* runtime : mRuntimes) runtime->endControlSource(epoch);
++    mStats.reportsDroppedAtBoundary += mReports.size();
++    mReports.clear();
++    mStats.queuedReports = 0;
++    mConnectedEpoch = 0;
++}
++
++bool CameraMindTransportOwner::takeReport(uint64_t epoch, PendingReport* out) {
++    std::lock_guard<std::mutex> lock(mLock);
++    while (!mReports.empty() && mReports.front().sourceEpoch != epoch) {
++        mReports.pop_front();
++        ++mStats.reportsDroppedAtBoundary;
++    }
++    mStats.queuedReports = mReports.size();
++    if (mReports.empty()) return false;
++    *out = std::move(mReports.front());
++    mReports.pop_front();
++    mStats.queuedReports = mReports.size();
++    return true;
++}
++
++void CameraMindTransportOwner::recordChannelResult(int status, int error) {
++    std::lock_guard<std::mutex> lock(mLock);
++    mStats.lastStatus = status;
++    mStats.lastError = error;
++}
++
++bool CameraMindTransportOwner::step() {
++    if (!waitForWork()) return false;
++
++    Channel::Result channelResult{Channel::Status::InvalidArgument};
++    // Resolve the installed system package on every reconnect; app IDs are
++    // allocated by PackageManager and are not the OEM private AID 6120.
++    // The exact SELinux domain additionally requires the platform signer.
++    android::PermissionController permissions;
++    const int uid = permissions.getPackageUid(android::String16(kCameraMindPackage),
++            android::PermissionController::MATCH_SYSTEM_ONLY);
++    if (uid <= 0) {
++        recordChannelResult(static_cast<int>(Channel::Status::Identity), 0);
++        {
++            std::lock_guard<std::mutex> lock(mLock);
++            ++mStats.identityFailures;
++        }
++        return waitBackoff(500ms);
++    }
++    const CameraMindPeerRequirement required{static_cast<uid_t>(uid), kCameraMindContext};
++    std::unique_ptr<Channel> channel = Channel::connect(required, &channelResult);
++    recordChannelResult(static_cast<int>(channelResult.status), channelResult.error);
++    if (channel == nullptr) {
++        {
++            std::lock_guard<std::mutex> lock(mLock);
++            ++mStats.connectFailures;
++            if (channelResult.status == Channel::Status::Identity) ++mStats.identityFailures;
++        }
++        return waitBackoff(500ms);
++    }
++
++    uint32_t handshakeSession;
++    int32_t handshakeId;
++    int64_t handshakeSerial;
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        mWireSession = mWireSession >= kCounterLimit ? 1000 : mWireSession + 1;
++        handshakeSession = mWireSession;
++        handshakeId = mMessageId;
++        mMessageId = static_cast<uint32_t>(mMessageId) >= kCounterLimit ? 0 : mMessageId + 1;
++        handshakeSerial = mIdentifySerial;
++        mIdentifySerial = mIdentifySerial > kSerialLimit ? 0 : mIdentifySerial + 1;
++    }
++    auto identity = encodeIdentityFrame(static_cast<int32_t>(handshakeSession), handshakeId,
++                                        handshakeSerial, wallMillis(), kCameraServerProcess);
++    if (!identity) {
++        std::lock_guard<std::mutex> lock(mLock);
++        ++mStats.identityFailures;
++        return !mStop;
++    }
++    channelResult = channel->sendFrame(std::string_view(
++            reinterpret_cast<const char*>(identity->data()), identity->size()));
++    recordChannelResult(static_cast<int>(channelResult.status), channelResult.error);
++    if (channelResult.status != Channel::Status::Ok) {
++        std::lock_guard<std::mutex> lock(mLock);
++        ++mStats.sendFailures;
++        return !mStop;
++    }
++
++    uint64_t epoch;
++    bool sourceReady;
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        if (mStop || mRuntimes.empty() || mNextSourceEpoch == UINT64_MAX) {
++            channel->cancel();
++            return !mStop;
++        }
++        epoch = ++mNextSourceEpoch;
++        mActiveChannel = channel.get();
++        sourceReady = beginSourceLocked(epoch);
++        if (!sourceReady) {
++            mActiveChannel = nullptr;
++            ++mStats.sourceStartFailures;
++        } else {
++            ++mStats.connects;
++        }
++    }
++
++    if (!sourceReady) {
++        channel->cancel();
++        return waitBackoff(500ms);
++    }
++
++    while (!stopped()) {
++        PendingReport pending;
++        if (takeReport(epoch, &pending)) {
++            uint32_t wireSession;
++            int32_t messageId;
++            int64_t serial;
++            {
++                std::lock_guard<std::mutex> lock(mLock);
++                if (mConnectedEpoch != epoch || mActiveChannel != channel.get()) break;
++                mWireSession = mWireSession >= kCounterLimit ? 1000 : mWireSession + 1;
++                wireSession = mWireSession;
++                messageId = mMessageId;
++                mMessageId = static_cast<uint32_t>(mMessageId) >= kCounterLimit ? 0 : mMessageId + 1;
++                serial = mExposureSerial;
++                mExposureSerial = mExposureSerial > kSerialLimit ? 0 : mExposureSerial + 1;
++            }
++            auto encoded = encodeExposureFrame(static_cast<int32_t>(wireSession), messageId,
++                    serial, wallMillis(), pending.cameraId, pending.report);
++            if (!encoded) {
++                std::lock_guard<std::mutex> lock(mLock);
++                ++mStats.malformedMessages;
++                continue;
++            }
++            channelResult = channel->sendFrame(std::string_view(
++                    reinterpret_cast<const char*>(encoded->data()), encoded->size()));
++            recordChannelResult(static_cast<int>(channelResult.status), channelResult.error);
++            if (channelResult.status != Channel::Status::Ok) {
++                std::lock_guard<std::mutex> lock(mLock);
++                ++mStats.sendFailures;
++                break;
++            }
++            {
++                std::lock_guard<std::mutex> lock(mLock);
++                ++mStats.reportsSent;
++            }
++            continue;
++        }
++
++        CameraMindReceivedFrame received;
++        channelResult = channel->readFrame(&received, 100ms);
++        if (channelResult.status == Channel::Status::Idle) continue;
++        recordChannelResult(static_cast<int>(channelResult.status), channelResult.error);
++        if (channelResult.status != Channel::Status::Ok) break;
++        if (!completeServerEnvelope(received)) {
++            std::lock_guard<std::mutex> lock(mLock);
++            ++mStats.malformedMessages;
++            break;
++        }
++        if (received.controlDisposition == CameraMindControlDisposition::UnknownWhat) {
++            std::lock_guard<std::mutex> lock(mLock);
++            ++mStats.unknownMessages;
++            continue;
++        }
++        if (received.controlDisposition != CameraMindControlDisposition::Decoded) {
++            std::lock_guard<std::mutex> lock(mLock);
++            ++mStats.controlsRejected;
++            continue;
++        }
++        std::lock_guard<std::mutex> lock(mLock);
++        if (mConnectedEpoch != epoch || mActiveChannel != channel.get()) break;
++        for (WarsawExposureRuntime* runtime : mRuntimes) {
++            const auto result = runtime->submitControl(epoch, received.rawJson);
++            if (result == WarsawExposureRuntime::ControlResult::Queued) ++mStats.controlsApplied;
++            else ++mStats.controlsRejected;
++        }
++    }
++
++    channel->cancel();
++    {
++        std::lock_guard<std::mutex> lock(mLock);
++        if (mActiveChannel == channel.get()) {
++            endSourceLocked(epoch);
++            mActiveChannel = nullptr;
++            ++mStats.disconnects;
++        }
++    }
++    return !stopped();
++}
++
++}
+diff --git a/services/camera/libcameraservice/device3/CameraMindTransportOwner.h b/services/camera/libcameraservice/device3/CameraMindTransportOwner.h
+new file mode 100644
+index 0000000000..d0f35f6ac1
+--- /dev/null
++++ b/services/camera/libcameraservice/device3/CameraMindTransportOwner.h
+@@ -0,0 +1,100 @@
++#pragma once
++
++#include <ExposureDamper.h>
++
++#include <android-base/thread_annotations.h>
++#include <chrono>
++#include <condition_variable>
++#include <cstdint>
++#include <deque>
++#include <mutex>
++#include <string>
++#include <utils/Thread.h>
++#include <vector>
++
++namespace warsaw::cameramind {
++
++class AuthenticatedUnixChannel;
++class WarsawExposureRuntime;
++
++class CameraMindTransportOwner final {
++public:
++    enum class PublishResult { Queued, Disconnected, Full, Invalid };
++
++    struct Snapshot {
++        bool workerStarted = false;
++        bool connected = false;
++        uint64_t sourceEpoch = 0;
++        size_t registeredRuntimes = 0;
++        size_t queuedReports = 0;
++        uint64_t connects = 0;
++        uint64_t connectFailures = 0;
++        uint64_t identityFailures = 0;
++        uint64_t sourceStartFailures = 0;
++        uint64_t disconnects = 0;
++        uint64_t controlsApplied = 0;
++        uint64_t controlsRejected = 0;
++        uint64_t unknownMessages = 0;
++        uint64_t malformedMessages = 0;
++        uint64_t reportsSent = 0;
++        uint64_t reportsDroppedAtBoundary = 0;
++        uint64_t sendFailures = 0;
++        int lastStatus = 0;
++        int lastError = 0;
++    };
++
++    static CameraMindTransportOwner& instance();
++
++    bool registerRuntime(WarsawExposureRuntime* runtime);
++    void unregisterRuntime(WarsawExposureRuntime* runtime);
++    PublishResult publishExposure(
++            const std::string& cameraId, const ExposureDamper::Report& report);
++    Snapshot snapshot() const;
++
++private:
++    static constexpr size_t kReportQueueCapacity = 128;
++    struct PendingReport {
++        uint64_t sourceEpoch = 0;
++        std::string cameraId;
++        ExposureDamper::Report report;
++    };
++    class Worker final : public android::Thread {
++    public:
++        explicit Worker(CameraMindTransportOwner* owner)
++              : android::Thread(false), mOwner(owner) {}
++    private:
++        bool threadLoop() override;
++        CameraMindTransportOwner* const mOwner;
++    };
++
++    CameraMindTransportOwner() = default;
++    ~CameraMindTransportOwner();
++    CameraMindTransportOwner(const CameraMindTransportOwner&) = delete;
++    CameraMindTransportOwner& operator=(const CameraMindTransportOwner&) = delete;
++
++    bool step();
++    bool stopped() const;
++    bool waitForWork();
++    bool waitBackoff(std::chrono::milliseconds delay);
++    bool beginSourceLocked(uint64_t epoch) REQUIRES(mLock);
++    void endSourceLocked(uint64_t epoch) REQUIRES(mLock);
++    bool takeReport(uint64_t epoch, PendingReport* out);
++    void recordChannelResult(int status, int error);
++
++    mutable std::mutex mLock;
++    std::condition_variable mWake;
++    std::vector<WarsawExposureRuntime*> mRuntimes GUARDED_BY(mLock);
++    std::deque<PendingReport> mReports GUARDED_BY(mLock);
++    android::sp<Worker> mWorker GUARDED_BY(mLock);
++    AuthenticatedUnixChannel* mActiveChannel GUARDED_BY(mLock) = nullptr;
++    bool mStop GUARDED_BY(mLock) = false;
++    uint64_t mNextSourceEpoch GUARDED_BY(mLock) = 0;
++    uint64_t mConnectedEpoch GUARDED_BY(mLock) = 0;
++    uint32_t mWireSession GUARDED_BY(mLock) = 1000;
++    int32_t mMessageId GUARDED_BY(mLock) = 0;
++    int64_t mIdentifySerial GUARDED_BY(mLock) = 0;
++    int64_t mExposureSerial GUARDED_BY(mLock) = 0;
++    Snapshot mStats GUARDED_BY(mLock);
++};
++
++}
+diff --git a/services/camera/libcameraservice/device3/WarsawExposureRuntime.cpp b/services/camera/libcameraservice/device3/WarsawExposureRuntime.cpp
+new file mode 100644
+index 0000000000..476424a24c
+--- /dev/null
++++ b/services/camera/libcameraservice/device3/WarsawExposureRuntime.cpp
+@@ -0,0 +1,339 @@
++#include "WarsawExposureRuntime.h"
++#include "CameraMindTransportOwner.h"
++
++#include <inttypes.h>
++#include <limits>
++#include <stdio.h>
++#include <utility>
++#include <utils/Errors.h>
++
++namespace warsaw::cameramind {
++
++WarsawExposureRuntime::WarsawExposureRuntime(const std::string& cameraId) : mCameraId(cameraId) {}
++
++WarsawExposureRuntime::~WarsawExposureRuntime() {
++    if (mTransportRegistered) CameraMindTransportOwner::instance().unregisterRuntime(this);
++    {
++        std::lock_guard<std::mutex> lock(mQueueLock);
++        mAccept = false;
++        mQuit = true;
++        mPublishedGeneration.store(0, std::memory_order_release);
++        mControlSourceEpoch = 0;
++    }
++    mReady.notify_one();
++    if (mWorker != nullptr) mWorker->join();
++}
++
++void WarsawExposureRuntime::pushControlLocked(Kind kind, uint64_t sourceEpoch) {
++    bool lost = false;
++    if (mCount == kQueueCapacity) {
++        mControlDrops.fetch_add(mCount, std::memory_order_relaxed);
++        mHead = 0;
++        mCount = 0;
++        mControlSourceEpoch = 0;
++        lost = true;
++    }
++    const uint64_t cameraGeneration = kind == Kind::Configure ? mGeneration :
++            (mAccept ? mGeneration : 0);
++    mQueue[(mHead + mCount++) % kQueueCapacity] = Event{kind, cameraGeneration, {}, lost, sourceEpoch, {}};
++}
++
++bool WarsawExposureRuntime::ensureWorkerLocked() {
++    if (mWorker != nullptr) return true;
++    auto worker = android::sp<Worker>::make(this);
++    if (worker->run("WarsawExposure") != android::OK) {
++        mStartFailures.fetch_add(1, std::memory_order_relaxed);
++        return false;
++    }
++    mWorker = std::move(worker);
++    return true;
++}
++
++void WarsawExposureRuntime::configured() {
++    if (!mTransportRegistered) {
++        mTransportRegistered = CameraMindTransportOwner::instance().registerRuntime(this);
++    }
++    {
++        std::lock_guard<std::mutex> lock(mQueueLock);
++        if (mQuit || mGeneration == std::numeric_limits<uint64_t>::max()) {
++            mAccept = false;
++            mPublishedGeneration.store(0, std::memory_order_release);
++            return;
++        }
++        if (!ensureWorkerLocked()) {
++            mAccept = false;
++            mPublishedGeneration.store(0, std::memory_order_release);
++            return;
++        }
++        ++mGeneration;
++        pushControlLocked(Kind::Configure);
++        mAccept = true;
++        mPublishedGeneration.store(mGeneration, std::memory_order_release);
++    }
++    mReady.notify_one();
++}
++
++bool WarsawExposureRuntime::beginControlSource(uint64_t sourceEpoch) {
++    {
++        std::lock_guard<std::mutex> lock(mQueueLock);
++        if (mQuit || sourceEpoch == 0 || sourceEpoch <= mLastControlSourceEpoch ||
++                !ensureWorkerLocked()) return false;
++        pushControlLocked(Kind::SourceBegin, sourceEpoch);
++        mLastControlSourceEpoch = sourceEpoch;
++        mControlSourceEpoch = sourceEpoch;
++    }
++    mReady.notify_one();
++    return true;
++}
++
++void WarsawExposureRuntime::endControlSource(uint64_t sourceEpoch) {
++    {
++        std::lock_guard<std::mutex> lock(mQueueLock);
++        if (mQuit || sourceEpoch == 0 || sourceEpoch != mControlSourceEpoch) return;
++        mControlSourceEpoch = 0;
++        pushControlLocked(Kind::SourceEnd, sourceEpoch);
++    }
++    mReady.notify_one();
++}
++
++WarsawExposureRuntime::ControlResult WarsawExposureRuntime::submitControl(
++        uint64_t sourceEpoch, std::string_view json) {
++    CameraMindCommand command;
++    CameraMindControlState::Snapshot snapshot;
++    if (!parseCameraMindCommand(json, &command) ||
++            !CameraMindControlState::copyCommand(command, &snapshot)) {
++        mInvalidControls.fetch_add(1, std::memory_order_relaxed);
++        return ControlResult::Invalid;
++    }
++    {
++        std::lock_guard<std::mutex> lock(mQueueLock);
++        if (mQuit) return ControlResult::Closed;
++        if (mControlSourceEpoch == 0) return ControlResult::NoSource;
++        if (sourceEpoch == 0 || sourceEpoch != mControlSourceEpoch) return ControlResult::StaleSource;
++        if (mCount >= kQueueCapacity - kControlReserve) {
++            mFullControls.fetch_add(1, std::memory_order_relaxed);
++            return ControlResult::Full;
++        }
++        Event event{Kind::Command, 0, {}, false, sourceEpoch, snapshot};
++        mQueue[(mHead + mCount++) % kQueueCapacity] = event;
++    }
++    mReady.notify_one();
++    return ControlResult::Queued;
++}
++
++void WarsawExposureRuntime::close() {
++    {
++        std::lock_guard<std::mutex> lock(mQueueLock);
++        mPublishedGeneration.store(0, std::memory_order_release);
++        if (!mAccept) return;
++        mAccept = false;
++        pushControlLocked(Kind::Close);
++    }
++    mReady.notify_one();
++}
++
++uint64_t WarsawExposureRuntime::snapshotGeneration() const noexcept {
++    return mPublishedGeneration.load(std::memory_order_acquire);
++}
++
++void WarsawExposureRuntime::observe(
++        uint64_t ticket, uint32_t frame, const camera_metadata_t* metadata) {
++    std::unique_lock<std::mutex> lock(mQueueLock, std::try_to_lock);
++    if (!lock.owns_lock()) {
++        mBusyDrops.fetch_add(1, std::memory_order_relaxed);
++        return;
++    }
++    if (!mAccept || mQuit || ticket == 0 || ticket != mGeneration) {
++        mStaleTicketDrops.fetch_add(1, std::memory_order_relaxed);
++        return;
++    }
++    Event event{Kind::Sample, mGeneration, {}, false, 0, {}};
++    const auto result = ExposureResultSampler::copyMetadata(mGeneration, frame, metadata, &event.sample);
++    if (result == ExposureResultSampler::Result::MissingExposure) return;
++    if (result != ExposureResultSampler::Result::Queued) {
++        mInvalidResults.fetch_add(1, std::memory_order_relaxed);
++        return;
++    }
++    if (mCount >= kQueueCapacity - kControlReserve) {
++        mFullDrops.fetch_add(1, std::memory_order_relaxed);
++        return;
++    }
++    mQueue[(mHead + mCount++) % kQueueCapacity] = event;
++    lock.unlock();
++    mReady.notify_one();
++}
++
++bool WarsawExposureRuntime::Worker::threadLoop() { return mOwner->step(); }
++
++void WarsawExposureRuntime::discardSourceHistory() {
++    const auto pending = mDamper.flush();
++    mDamper.reset();
++    if (pending) {
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        mSummary.sourceBoundaryDiscardedPoints += pending->count;
++    }
++}
++
++void WarsawExposureRuntime::recordReport(
++        const std::optional<ExposureDamper::Report>& report, bool flushed) {
++    if (!report) return;
++    const auto delivery = CameraMindTransportOwner::instance().publishExposure(mCameraId, *report);
++    std::lock_guard<std::mutex> lock(mSummaryLock);
++    ++mSummary.reports;
++    if (flushed) ++mSummary.flushedReports;
++    mSummary.reportSize = report->count;
++    switch (delivery) {
++        case CameraMindTransportOwner::PublishResult::Queued:
++            ++mSummary.reportsTransportQueued;
++            break;
++        case CameraMindTransportOwner::PublishResult::Disconnected:
++            ++mSummary.reportsTransportDisconnected;
++            break;
++        case CameraMindTransportOwner::PublishResult::Full:
++            ++mSummary.reportsTransportFull;
++            break;
++        case CameraMindTransportOwner::PublishResult::Invalid:
++            ++mSummary.reportsTransportInvalid;
++            break;
++    }
++}
++
++bool WarsawExposureRuntime::step() {
++    Event event;
++    {
++        std::unique_lock<std::mutex> lock(mQueueLock);
++        mReady.wait(lock, [this] { return mQuit || mCount != 0; });
++        if (mCount == 0) {
++            lock.unlock();
++            recordReport(mDamper.flush(), true);
++            return false;
++        }
++        event = mQueue[mHead];
++        mQueue[mHead] = Event{};
++        mHead = (mHead + 1) % kQueueCapacity;
++        --mCount;
++    }
++    if (event.resetAfterQueueLoss) {
++        discardSourceHistory();
++        mControl.resetFlags();
++        mWorkerSourceEpoch = 0;
++        mWorkerGeneration = event.generation;
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        mSummary.controlSourceEpoch = 0;
++        mSummary.reportFlags = {};
++        mSummary.generation = mWorkerGeneration;
++        mSummary.open = mWorkerGeneration != 0;
++        mSummary.known = false;
++        mSummary.exposureNs = 0;
++        mSummary.wallMillis = 0;
++    }
++    if (event.kind == Kind::SourceBegin || event.kind == Kind::SourceEnd) {
++        if (event.kind == Kind::SourceEnd && event.sourceEpoch != mWorkerSourceEpoch) return true;
++        discardSourceHistory();
++        mControl.resetFlags();
++        mWorkerSourceEpoch = event.kind == Kind::SourceBegin ? event.sourceEpoch : 0;
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        mSummary.controlSourceEpoch = mWorkerSourceEpoch;
++        mSummary.reportFlags = mControl.flags();
++        return true;
++    }
++    if (event.kind == Kind::Command) {
++        if (event.sourceEpoch == 0 || event.sourceEpoch != mWorkerSourceEpoch) {
++            std::lock_guard<std::mutex> lock(mSummaryLock);
++            ++mSummary.staleCommands;
++            return true;
++        }
++        if (!mControl.apply(event.command, mDamper)) {
++            mInvalidControls.fetch_add(1, std::memory_order_relaxed);
++            return true;
++        }
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        ++mSummary.commandsApplied;
++        mSummary.reportFlags = mControl.flags();
++        return true;
++    }
++    if (event.kind == Kind::Configure || event.kind == Kind::Close) {
++        recordReport(mDamper.flush(), true);
++        mDamper.reset();
++        mWorkerGeneration = event.kind == Kind::Configure ? event.generation : 0;
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        mSummary.generation = mWorkerGeneration;
++        mSummary.open = mWorkerGeneration != 0;
++        mSummary.known = false;
++        mSummary.exposureNs = 0;
++        mSummary.wallMillis = 0;
++        return true;
++    }
++    if (event.generation == 0 || event.generation != mWorkerGeneration) {
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        ++mSummary.staleSamples;
++        return true;
++    }
++    {
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        ++mSummary.samples;
++        mSummary.known = true;
++        mSummary.exposureNs = event.sample.exposureNs;
++        mSummary.wallMillis = event.sample.observedWallMillis;
++        if (!mControl.exposureEnabled()) {
++            ++mSummary.disabledSamples;
++            return true;
++        }
++    }
++    recordReport(mDamper.add(event.sample.exposureNs, event.sample.observedWallMillis), false);
++    return true;
++}
++
++void WarsawExposureRuntime::dump(int fd) const {
++    Summary summary;
++    {
++        std::lock_guard<std::mutex> lock(mSummaryLock);
++        summary = mSummary;
++    }
++    const auto transport = CameraMindTransportOwner::instance().snapshot();
++    dprintf(fd, "    Warsaw exposure producer: camera=%s generation=%" PRIu64
++            " open=%d known=%d transport=%s epoch=%" PRIu64 "\n", mCameraId.c_str(),
++            summary.generation, summary.open, summary.known,
++            transport.connected ? "CONNECTED" : "DISCONNECTED", transport.sourceEpoch);
++    dprintf(fd, "      samples=%" PRIu64 " reports=%" PRIu64 " flushed=%" PRIu64
++            " stale=%" PRIu64 " last_report_size=%zu\n", summary.samples, summary.reports,
++            summary.flushedReports, summary.staleSamples, summary.reportSize);
++    dprintf(fd, "      transport_queued=%" PRIu64 " disconnected=%" PRIu64
++            " full=%" PRIu64 " invalid=%" PRIu64 " process_sent=%" PRIu64
++            " process_boundary_drops=%" PRIu64 " queue=%zu\n",
++            summary.reportsTransportQueued, summary.reportsTransportDisconnected,
++            summary.reportsTransportFull, summary.reportsTransportInvalid,
++            transport.reportsSent, transport.reportsDroppedAtBoundary,
++            transport.queuedReports);
++    dprintf(fd, "      transport_connects=%" PRIu64 " failures=%" PRIu64
++            " identity_failures=%" PRIu64 " source_start_failures=%" PRIu64
++            " disconnects=%" PRIu64
++            " controls_applied=%" PRIu64 " controls_rejected=%" PRIu64
++            " malformed=%" PRIu64 " unknown=%" PRIu64 " last_status=%d last_errno=%d\n",
++            transport.connects, transport.connectFailures, transport.identityFailures,
++            transport.sourceStartFailures, transport.disconnects,
++            transport.controlsApplied, transport.controlsRejected,
++            transport.malformedMessages, transport.unknownMessages,
++            transport.lastStatus, transport.lastError);
++    dprintf(fd, "      busy_drops=%" PRIu64 " full_drops=%" PRIu64 " control_queue_losses=%" PRIu64
++            " invalid=%" PRIu64 " worker_start_failures=%" PRIu64
++            " stale_ticket_drops=%" PRIu64 "\n",
++            mBusyDrops.load(), mFullDrops.load(), mControlDrops.load(),
++            mInvalidResults.load(), mStartFailures.load(), mStaleTicketDrops.load());
++    dprintf(fd, "      control_source_epoch=%" PRIu64 " commands_applied=%" PRIu64
++            " stale_commands=%" PRIu64 " invalid_controls=%" PRIu64 " full_controls=%" PRIu64
++            " disabled_samples=%" PRIu64 " source_boundary_discarded_points=%" PRIu64 "\n",
++            summary.controlSourceEpoch, summary.commandsApplied, summary.staleCommands,
++            mInvalidControls.load(), mFullControls.load(), summary.disabledSamples,
++            summary.sourceBoundaryDiscardedPoints);
++    const auto& flags = summary.reportFlags;
++    dprintf(fd, "      flags preview_fps=%d exposure=%d frame_duration=%d flicker=%d motion=%d trace=%d\n",
++            flags.reportPreviewAvgFps, flags.reportExposureTime, flags.reportFrameDuration,
++            flags.reportFlickerScene, flags.reportMotionVelocity, flags.traceOn);
++    if (summary.known) {
++        dprintf(fd, "      observed_exposure_ns=%" PRId64 " observed_wall_ms=%" PRId64 "\n",
++                summary.exposureNs, summary.wallMillis);
++    }
++}
++
++}
+diff --git a/services/camera/libcameraservice/device3/WarsawExposureRuntime.h b/services/camera/libcameraservice/device3/WarsawExposureRuntime.h
+new file mode 100644
+index 0000000000..5cae2cf8c8
+--- /dev/null
++++ b/services/camera/libcameraservice/device3/WarsawExposureRuntime.h
+@@ -0,0 +1,114 @@
++#pragma once
++
++#include <ExposureDamper.h>
++#include <ExposureResultSampler.h>
++#include <control/CameraMindControlState.h>
++#include <array>
++#include <atomic>
++#include <condition_variable>
++#include <cstdint>
++#include <mutex>
++#include <string>
++#include <string_view>
++#include <utils/Thread.h>
++
++namespace warsaw::cameramind {
++
++class WarsawExposureRuntime final {
++public:
++    explicit WarsawExposureRuntime(const std::string& cameraId);
++    ~WarsawExposureRuntime();
++    WarsawExposureRuntime(const WarsawExposureRuntime&) = delete;
++    WarsawExposureRuntime& operator=(const WarsawExposureRuntime&) = delete;
++    void configured();
++    void close();
++    uint64_t snapshotGeneration() const noexcept;
++    void observe(uint64_t ticket, uint32_t frame, const camera_metadata_t* metadata);
++    void dump(int fd) const;
++    enum class ControlResult { Queued, Invalid, NoSource, StaleSource, Full, Closed };
++    bool beginControlSource(uint64_t sourceEpoch);
++    void endControlSource(uint64_t sourceEpoch);
++    ControlResult submitControl(uint64_t sourceEpoch, std::string_view json);
++
++private:
++    static constexpr size_t kQueueCapacity = 128;
++    static constexpr size_t kControlReserve = 2;
++    static_assert(std::atomic<uint64_t>::is_always_lock_free,
++                  "Result-entry generation snapshots must never acquire a lock");
++    enum class Kind { Configure, Close, Sample, SourceBegin, SourceEnd, Command };
++    struct Event {
++        Kind kind = Kind::Close;
++        uint64_t generation = 0;
++        ExposureResultSampler::Sample sample{};
++        bool resetAfterQueueLoss = false;
++        uint64_t sourceEpoch = 0;
++        CameraMindControlState::Snapshot command{};
++    };
++    static_assert(std::is_trivially_copyable_v<Event>,
++                  "Result callback queue slots must never own allocating command containers");
++    struct Summary {
++        uint64_t generation = 0;
++        uint64_t samples = 0;
++        uint64_t reports = 0;
++        uint64_t flushedReports = 0;
++        uint64_t staleSamples = 0;
++        bool open = false;
++        bool known = false;
++        int64_t exposureNs = 0;
++        int64_t wallMillis = 0;
++        size_t reportSize = 0;
++        uint64_t controlSourceEpoch = 0;
++        uint64_t commandsApplied = 0;
++        uint64_t staleCommands = 0;
++        uint64_t disabledSamples = 0;
++        uint64_t sourceBoundaryDiscardedPoints = 0;
++        uint64_t reportsTransportQueued = 0;
++        uint64_t reportsTransportDisconnected = 0;
++        uint64_t reportsTransportFull = 0;
++        uint64_t reportsTransportInvalid = 0;
++        CameraMindCommand::ReportFlags reportFlags{};
++    };
++    class Worker final : public android::Thread {
++    public:
++        explicit Worker(WarsawExposureRuntime* owner) : android::Thread(false), mOwner(owner) {}
++    private:
++        bool threadLoop() override;
++        WarsawExposureRuntime* const mOwner;
++    };
++    bool step();
++    void pushControlLocked(Kind kind, uint64_t sourceEpoch = 0);
++    bool ensureWorkerLocked();
++    void discardSourceHistory();
++    void recordReport(const std::optional<ExposureDamper::Report>& report, bool flushed);
++
++    const std::string mCameraId;
++    std::mutex mQueueLock;
++    std::condition_variable mReady;
++    std::array<Event, kQueueCapacity> mQueue{};
++    size_t mHead = 0;
++    size_t mCount = 0;
++    uint64_t mGeneration = 0;
++    std::atomic<uint64_t> mPublishedGeneration{0};
++    uint64_t mControlSourceEpoch = 0;
++    uint64_t mLastControlSourceEpoch = 0;
++    bool mAccept = false;
++    bool mQuit = false;
++    android::sp<Worker> mWorker;
++    ExposureDamper mDamper;
++    CameraMindControlState mControl;
++    uint64_t mWorkerSourceEpoch = 0;
++    uint64_t mWorkerGeneration = 0;
++    mutable std::mutex mSummaryLock;
++    Summary mSummary;
++    std::atomic<uint64_t> mBusyDrops{0};
++    std::atomic<uint64_t> mFullDrops{0};
++    std::atomic<uint64_t> mControlDrops{0};
++    std::atomic<uint64_t> mInvalidResults{0};
++    std::atomic<uint64_t> mStartFailures{0};
++    std::atomic<uint64_t> mStaleTicketDrops{0};
++    std::atomic<uint64_t> mInvalidControls{0};
++    std::atomic<uint64_t> mFullControls{0};
++    bool mTransportRegistered = false;
++};
++
++}
+diff --git a/services/camera/libcameraservice/utils/WarsawCameraSessionParams.h b/services/camera/libcameraservice/utils/WarsawCameraSessionParams.h
+new file mode 100644
+index 0000000000..06e7794c13
+--- /dev/null
++++ b/services/camera/libcameraservice/utils/WarsawCameraSessionParams.h
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (C) 2026 The LineageOS Project
++ * SPDX-License-Identifier: Apache-2.0
++ */
++#pragma once
++
++#include <android-base/properties.h>
++#include <camera/CameraMetadata.h>
++#include <camera/VendorTagDescriptor.h>
++#include <camera_metadata_hidden.h>
++#include <utils/String8.h>
++
++namespace android::warsawCameraSession {
++
++// OS4 CameraImpl::updateSessionParams supplies this tag from the authenticated
++// CameraService client identity. Applications must not choose another package.
++inline status_t getClientNameTag(const CameraMetadata& deviceInfo, uint32_t* tag) {
++    sp<VendorTagDescriptor> descriptor = VendorTagDescriptor::getGlobalVendorTagDescriptor();
++    if (descriptor == nullptr || descriptor->getTagCount() == 0) {
++        sp<VendorTagDescriptorCache> cache = VendorTagDescriptorCache::getGlobalVendorTagCache();
++        if (cache == nullptr) return NAME_NOT_FOUND;
++        status_t status = cache->getVendorTagDescriptor(deviceInfo.getVendorId(), &descriptor);
++        if (status != OK) return status;
++    }
++    status_t status = CameraMetadata::getTagFromName(
++            "com.xiaomi.sessionparams.clientName", descriptor.get(), tag);
++    if (status != OK) return status;
++    return descriptor->getTagType(*tag) == TYPE_BYTE ? OK : BAD_TYPE;
++}
++
++inline bool needsClientIdentity() {
++    return android::base::GetProperty("ro.product.device", "") == "warsaw";
++}
++
++inline status_t setClientIdentity(CameraMetadata* params, const CameraMetadata& deviceInfo,
++        const std::string& packageName) {
++    if (!needsClientIdentity()) return OK;
++    if (params == nullptr) return BAD_VALUE;
++    uint32_t tag;
++    status_t status = getClientNameTag(deviceInfo, &tag);
++    if (status != OK) return status;
++    const metadata_vendor_id_t vendorId = deviceInfo.getVendorId();
++    const metadata_vendor_id_t previousId = params->getVendorId();
++    if (previousId != CAMERA_METADATA_INVALID_VENDOR_ID && previousId != vendorId) {
++        return BAD_VALUE;
++    }
++    // endConfigure receives empty metadata when outputs are removed.
++    // Bind that buffer to the device provider before resolving vendor tags.
++    CameraMetadata authenticated(*params);
++    camera_metadata_t* buffer = authenticated.release();
++    if (buffer == nullptr) buffer = allocate_camera_metadata(1, packageName.size() + 1);
++    if (buffer == nullptr) return NO_MEMORY;
++    set_camera_metadata_vendor_id(buffer, vendorId);
++    authenticated.acquire(buffer);
++    status = authenticated.update(tag, String8(packageName.c_str()));
++    if (status == OK) params->swap(authenticated);
++    return status;
++}
++
++} // namespace android::warsawCameraSession

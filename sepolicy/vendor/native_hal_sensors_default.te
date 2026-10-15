@@ -1,0 +1,121 @@
+typeattribute hal_sensors_default hal_graphics_allocator_client;
+
+typeattribute hal_sensors_default hal_sensors;
+
+typeattribute hal_sensors_default hal_sensors_server;
+
+typeattribute hal_sensors_default halclientdomain;
+
+typeattribute hal_sensors_default halserverdomain;
+
+typeattribute hal_sensors_default vendor_hal_tofsensorservice_xiaomi_client;
+
+binder_use(hal_sensors_default)
+
+hwbinder_use(hal_sensors_default)
+
+allow hal_sensors_default hal_sensors_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_sensors_default fwk_scheduler_hwservice:hwservice_manager { find };
+
+allow hal_sensors_default input_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_sensors_default input_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default hal_graphics_allocator_default:fd { use };
+
+allow hal_sensors_default ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_sensors_default self:capability2 { block_suspend };
+
+allow hal_sensors_default self:cap2_userns { block_suspend };
+
+allow hal_sensors_default system_suspend_server:binder { call transfer };
+
+allow hal_sensors_default system_suspend_server:fd { use };
+
+allow hal_sensors_default system_suspend_hwservice:hwservice_manager { find };
+
+allow hal_sensors_default hwservicemanager:binder { call transfer };
+
+allow hal_sensors_default hwservicemanager_prop:file { read getattr map open };
+
+allow hal_sensors_default hidl_manager_hwservice:hwservice_manager { find };
+
+allow hal_sensors_default hal_system_suspend_service:service_manager { find };
+
+allow hal_sensors_default servicemanager:binder { call transfer };
+
+allow hal_sensors_default system_server:fd { use };
+
+allow hal_sensors_default mnt_vendor_file:dir { search };
+
+allow hal_sensors_default vendor_persist_sensors_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_sensors_default vendor_persist_sensors_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default vendor_persist_sensors_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default vendor_sensors_prop:file { read getattr map open };
+
+allow hal_sensors_default vendor_xdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default vendor_sysfs_slpi:dir { search };
+
+allow hal_sensors_default vendor_sysfs_slpi:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_sensors_default vendor_sysfs_adsp_ssr:file { write lock append map open };
+
+allow hal_sensors_default vendor_remoteproc_adsp_ssr:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_sensors_default vendor_persist_sensors_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_sensors_default vendor_persist_sensors_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_sensors_default mnt_vendor_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_sensors_default mnt_vendor_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_sensors_default vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_sensors_default self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_sensors_default system_server:binder { call transfer };
+
+allow hal_sensors_default vendor_adsprpc_prop:file { read getattr map open };
+
+allow hal_sensors_default vendor_dynamic_sensor_prop:file { read getattr map open };
+
+allow hal_sensors_default device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_sensors_default hidraw_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_sensors_default vendor_qvrd_vndr:fd { use };
+
+allow hal_sensors_default vendor_sensors_log_prop:file { read getattr map open };
+
+allow hal_sensors_default audio_socket:sock_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_sensors_default hal_audio_default:unix_stream_socket { connectto };
+
+allow hal_sensors_default sound_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_sensors_default vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_sensors_default vendor_sysfs_graphics:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors_default vendor_sysfs_slpi:file { read write getattr open };
+
+allow hal_sensors_default sysfs_tp_virtual_prox:file { read write open };
+
+allow hal_sensors_default stmvl53l5_device:chr_file { ioctl read write open };
+
+allowxperm hal_sensors_default self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm hal_sensors_default self:qipcrtr_socket ioctl { 0xc300-0xc305 };

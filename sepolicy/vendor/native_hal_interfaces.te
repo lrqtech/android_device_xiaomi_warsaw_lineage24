@@ -1,0 +1,2039 @@
+allow hal_postprocservice platform_app:binder { transfer };
+
+allow hal_postprocservice platform_app:binder { call transfer };
+
+allow hal_postprocservice platform_app:fd { use };
+
+allow hal_postprocservice priv_app:binder { transfer };
+
+allow hal_postprocservice priv_app:binder { call transfer };
+
+allow hal_postprocservice priv_app:fd { use };
+
+allow hal_postprocservice system_app:binder { transfer };
+
+allow hal_postprocservice system_app:binder { call transfer };
+
+allow hal_postprocservice system_app:fd { use };
+
+allow hal_postprocservice system_server:binder { transfer };
+
+allow hal_postprocservice system_server:binder { call transfer };
+
+allow hal_postprocservice system_server:fd { use };
+
+allow hal_camera_server hal_postprocservice_service:service_manager { add find };
+
+allow hal_visdisplaysrv_server hal_graphics_composer_default:binder { transfer };
+
+allow hal_visdisplaysrv_client hal_visdisplaysrv_server:binder { call transfer };
+
+allow hal_visdisplaysrv_server hal_visdisplaysrv_client:binder { transfer };
+
+allow hal_visdisplaysrv_client hal_visdisplaysrv_server:fd { use };
+
+allow hal_visdisplaysrv_server hal_visdisplaysrv_client:binder { call transfer };
+
+allow hal_visdisplaysrv_client hal_visdisplaysrv_server:binder { transfer };
+
+allow hal_visdisplaysrv_server hal_visdisplaysrv_client:fd { use };
+
+allow hal_visdisplaysrv_client hal_visdisplaysrv_service:service_manager { find };
+
+allow hal_visdisplaysrv_server hal_visdisplaysrv_service:service_manager { add find };
+
+allow hal_visdisplaysrv_server servicemanager:binder { call transfer };
+
+allow hal_visdisplaysrv_server servicemanager:fd { use };
+
+allow hal_graphics_composer hal_visdisplaysrv_default:binder { transfer };
+
+allow vendor_hal_dspmanager isolated_compute_app:memfd_file { read write getattr map };
+
+allow vendor_hal_qvirtservice_client vendor_hal_qvirt_service:service_manager { find };
+
+allow vendor_hal_qvirtservice_server vendor_hal_qvirt_service:service_manager { add find };
+
+allow vendor_hal_qvirtservice_server vendor_hal_qvirtservice_client:binder { call transfer };
+
+allow vendor_hal_qvirtservice_client vendor_hal_qvirtservice_server:binder { transfer };
+
+allow vendor_hal_qvirtservice_server vendor_hal_qvirtservice_client:fd { use };
+
+allow vendor_hal_qvirtservice_client vendor_hal_qvirtservice_server:binder { call transfer };
+
+allow vendor_hal_qvirtservice_server vendor_hal_qvirtservice_client:binder { transfer };
+
+allow vendor_hal_qvirtservice_client vendor_hal_qvirtservice_server:fd { use };
+
+allow vendor_hal_qvirtservice_client servicemanager:binder { call transfer };
+
+allow hal_wifi_supplicant cameraserver:memfd_file { read write getattr map };
+
+allow hal_audio_server property_socket:sock_file { write };
+
+allow hal_audio_server init:unix_stream_socket { connectto };
+
+allow hal_audio_server vendor_audio_powersave_prop:property_service { set };
+
+allow hal_audio_server vendor_audio_powersave_prop:file { read getattr map open };
+
+allow hal_secure_element priv_app:memfd_file { read write getattr map };
+
+allow hal_face cameraserver:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal cameraserver:memfd_file { read write getattr map };
+
+allow hal_camera vendor_persist_camera_prop:file { read getattr map open };
+
+allow vendor_qccsyshal_client vendor_qccsyshal_hwservice:hwservice_manager { find };
+
+allow vendor_qccsyshal_client vendor_qccsyshal_service:service_manager { find };
+
+allow vendor_hal_imsrtphal vendor_imsvtdaemon:memfd_file { read write getattr map };
+
+allow hal_codec2 vendor_imsvtdaemon:memfd_file { read write getattr map };
+
+allow hal_graphics_allocator vendor_imsvtdaemon:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal_client vendor_hal_imsvthal_server:binder { call transfer };
+
+allow vendor_hal_imsvthal_server vendor_hal_imsvthal_client:binder { transfer };
+
+allow vendor_hal_imsvthal_client vendor_hal_imsvthal_server:fd { use };
+
+allow vendor_hal_imsvthal_server vendor_hal_imsvthal_client:binder { call transfer };
+
+allow vendor_hal_imsvthal_client vendor_hal_imsvthal_server:binder { transfer };
+
+allow vendor_hal_imsvthal_server vendor_hal_imsvthal_client:fd { use };
+
+allow vendor_hal_imsvthal_client vendor_hal_imsvt_service:service_manager { find };
+
+allow vendor_hal_imsvthal_server vendor_hal_imsvt_service:service_manager { add find };
+
+allow vendor_hal_perf lmkd:memfd_file { read write getattr map };
+
+allow vendor_hal_perf mediaserver:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal mediaserver:memfd_file { read write getattr map };
+
+allow vendor_hal_perf platform_app:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal priv_app:memfd_file { read write getattr map };
+
+allow hal_telephony vendor_qtelephony:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal vendor_qtelephony:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal radio:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal surfaceflinger:memfd_file { read write getattr map };
+
+allow hal_face system_app:memfd_file { read write getattr map };
+
+allow vendor_hal_imsvthal system_server:memfd_file { read write getattr map };
+
+allow vendor_hal_systemhelper_client vendor_hal_systemhelper_hwservice:hwservice_manager { find };
+
+allow vendor_hal_systemhelper_client vendor_hal_systemhelper_aidl_service:service_manager { find };
+
+allow vendor_hal_dspmanager untrusted_app:memfd_file { read write getattr map };
+
+allow vendor_hal_snapx_service_qti untrusted_app:memfd_file { read write getattr map };
+
+allow vendor_hal_dspmanager untrusted_app_25:memfd_file { read write getattr map };
+
+allow vendor_hal_dspmanager untrusted_app_27:memfd_file { read write getattr map };
+
+allow vendor_hal_dspmanager untrusted_app_29:memfd_file { read write getattr map };
+
+allow vendor_hal_dspmanager untrusted_app_30:memfd_file { read write getattr map };
+
+allow vendor_hal_dspmanager untrusted_app_32:memfd_file { read write getattr map };
+
+allow vendor_hal_snapx_service_qti untrusted_app_32:memfd_file { read write getattr map };
+
+allow vendor_hal_dspmanager untrusted_app_34:memfd_file { read write getattr map };
+
+allow vendor_hal_snapx_service_qti untrusted_app_34:memfd_file { read write getattr map };
+
+allow vendor_hal_perf gmscore_app:memfd_file { read write getattr map };
+
+allow hal_videoservice vendor_imsvtdaemon:memfd_file { read write getattr map };
+
+allow hypsys_ssi_client hypsys_ssi_service:service_manager { find };
+
+allow hypsys_ssi_client mqsasd_service:service_manager { find };
+
+allow hal_telephony_client vendor_hal_telephony_service2:service_manager { find };
+
+allow hal_telephony_server vendor_hal_telephony_service2:service_manager { add find };
+
+allow hal_telephony_server servicemanager:fd { use };
+
+allow hal_keymint_client hal_secureclock_service:service_manager { find };
+
+allow hal_keymint_server hal_secureclock_service:service_manager { add find };
+
+allow hal_keymint_client hal_sharedsecret_service:service_manager { find };
+
+allow hal_keymint_server hal_sharedsecret_service:service_manager { add find };
+
+allow hal_mediaeventgatherservice_client hal_mediaeventgatherservice_service:service_manager { find };
+
+allow hal_mediaeventgatherservice_server hal_mediaeventgatherservice_service:service_manager { add find };
+
+allow hal_seaaudio_server hal_seaaudio_service:service_manager { add find };
+
+allow hal_aidl_dms_client hal_aidl_dms_server:binder { call transfer };
+
+allow hal_aidl_dms_server hal_aidl_dms_client:binder { transfer };
+
+allow hal_aidl_dms_client hal_aidl_dms_server:fd { use };
+
+allow hal_aidl_dms_server hal_aidl_dms_client:binder { call transfer };
+
+allow hal_aidl_dms_client hal_aidl_dms_server:binder { transfer };
+
+allow hal_aidl_dms_server hal_aidl_dms_client:fd { use };
+
+allow hal_aidl_dms_client hal_aidl_dms_service:service_manager { find };
+
+allow hal_aidl_dms_server hal_aidl_dms_service:service_manager { add find };
+
+allow hal_aidl_dms_server servicemanager:binder { call transfer };
+
+allow hal_mediaeventgatherservice_server dumpstate:fifo_file { write };
+
+allow hal_mediaeventgatherservice_server dumpstate:fd { use };
+
+allow hal_mediaeventgatherservice_client hal_mediaeventgatherservice_server:binder { call transfer };
+
+allow hal_mediaeventgatherservice_server hal_mediaeventgatherservice_client:binder { transfer };
+
+allow hal_mediaeventgatherservice_client hal_mediaeventgatherservice_server:fd { use };
+
+allow hal_mediaeventgatherservice_server hal_mediaeventgatherservice_client:binder { call transfer };
+
+allow hal_mediaeventgatherservice_client hal_mediaeventgatherservice_server:binder { transfer };
+
+allow hal_mediaeventgatherservice_server hal_mediaeventgatherservice_client:fd { use };
+
+allow hal_mediaeventgatherservice servicemanager:binder { call transfer };
+
+allow hal_mediaeventgatherservice servicemanager:fd { use };
+
+allow hal_mediaeventgatherservice system_app:binder { call transfer };
+
+allow hal_mediaeventgatherservice system_app:fd { use };
+
+allow hal_mediaeventgatherservice system_app:binder { transfer };
+
+allow hal_mimd_server servicemanager:binder { call transfer };
+
+allow hal_mimd_server servicemanager:fd { use };
+
+allow hal_mimd_server hal_mimd_service:service_manager { add find };
+
+allow hal_uniperf_client hal_uniperf_service:service_manager { find };
+
+allow hal_uniperf_server hal_uniperf_service:service_manager { add find };
+
+allow hal_uniperf_client hal_uniperf_server:binder { call transfer };
+
+allow hal_uniperf_server hal_uniperf_client:binder { transfer };
+
+allow hal_uniperf_client hal_uniperf_server:fd { use };
+
+allow hal_uniperf_server hal_uniperf_client:binder { call transfer };
+
+allow hal_uniperf_client hal_uniperf_server:binder { transfer };
+
+allow hal_uniperf_server hal_uniperf_client:fd { use };
+
+allow hal_uniperf_server servicemanager:binder { call transfer };
+
+allow hal_uniperf_server servicemanager:fd { use };
+
+allow dvs_aidl_client dvs_aidl_server:binder { call transfer };
+
+allow dvs_aidl_server dvs_aidl_client:binder { transfer };
+
+allow dvs_aidl_client dvs_aidl_server:fd { use };
+
+allow dvs_aidl_server dvs_aidl_client:binder { call transfer };
+
+allow dvs_aidl_client dvs_aidl_server:binder { transfer };
+
+allow dvs_aidl_server dvs_aidl_client:fd { use };
+
+allow dvs_aidl_server property_socket:sock_file { write };
+
+allow dvs_aidl_server init:unix_stream_socket { connectto };
+
+allow dvs_aidl_server vendor_dolbyv_prop:property_service { set };
+
+allow dvs_aidl_server vendor_dolbyv_prop:file { read getattr map open };
+
+allow dvs_aidl_client dvs_aidl_service:service_manager { find };
+
+allow hal_seaaudio_server dumpstate:fifo_file { write };
+
+allow hal_seaaudio_server dumpstate:fd { use };
+
+allow hal_seaaudio_server servicemanager:binder { call transfer };
+
+allow hal_seaaudio_server servicemanager:fd { use };
+
+allow hal_seaaudio servicemanager:binder { call transfer };
+
+allow hal_seaaudio servicemanager:fd { use };
+
+allow hal_seaaudio system_app:binder { call transfer };
+
+allow hal_seaaudio system_app:fd { use };
+
+allow hal_seaaudio system_app:binder { transfer };
+
+allow hal_seaaudio mediaserver:binder { transfer };
+
+allow hal_seaaudio hal_audio_default:binder { transfer };
+
+allow hal_seaaudio hal_audio_default:binder { call transfer };
+
+allow hal_seaaudio hal_audio_default:fd { use };
+
+allow hal_ozonotify_server dumpstate:fifo_file { write };
+
+allow hal_ozonotify_server dumpstate:fd { use };
+
+allow hal_ozonotify_server hal_ozonotify_hwservice:hwservice_manager { add find };
+
+allow hal_ozonotify_server hidl_base_hwservice:hwservice_manager { add };
+
+allow hal_ozonotify_server hal_ozonotify_service:service_manager { add find };
+
+allow hal_ozonotify servicemanager:binder { call transfer };
+
+allow hal_ozonotify servicemanager:fd { use };
+
+allow hal_ozonotify platform_app:binder { call transfer };
+
+allow hal_ozonotify platform_app:fd { use };
+
+allow hal_ozonotify platform_app:binder { transfer };
+
+allow hal_ozonotify mediaserver:binder { transfer };
+
+allow hal_ozonotify hal_audio_default:binder { transfer };
+
+allow hal_ozonotify hal_audio_default:binder { call transfer };
+
+allow hal_ozonotify hal_audio_default:fd { use };
+
+allow hal_ozonotify untrusted_app:binder { call transfer };
+
+allow hal_ozonotify untrusted_app_34:binder { call transfer };
+
+allow hal_ozonotify untrusted_app:fd { use };
+
+allow hal_ozonotify untrusted_app_34:fd { use };
+
+allow hal_ozonotify untrusted_app_30:binder { call transfer };
+
+allow hal_ozonotify untrusted_app_30:fd { use };
+
+allow hal_ozonotify untrusted_app_32:binder { call transfer };
+
+allow hal_ozonotify untrusted_app_32:fd { use };
+
+allow hal_ozonotify untrusted_app_all:binder { call transfer };
+
+allow hal_ozonotify untrusted_app_all:fd { use };
+
+allow hal_ozonotify untrusted_app:binder { transfer };
+
+allow hal_ozonotify untrusted_app_34:binder { transfer };
+
+allow hal_ozonotify untrusted_app_30:binder { transfer };
+
+allow hal_ozonotify untrusted_app_32:binder { transfer };
+
+allow hal_ozonotify untrusted_app_all:binder { transfer };
+
+allow vendor_hal_displayfeature_xiaomi vendor_displaylog_device:chr_file { ioctl read write open };
+
+allow vendor_hal_displayfeature_xiaomi vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_displayfeature_xiaomi vendor_sysfs_graphics:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_displayfeature_xiaomi vendor_sysfs_graphics:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_displayfeature_xiaomi vendor_sysfs_graphics:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_displayfeature_xiaomi_client vendor_hal_displayfeature_xiaomi_server:binder { call transfer };
+
+allow vendor_hal_displayfeature_xiaomi_server vendor_hal_displayfeature_xiaomi_client:binder { transfer };
+
+allow vendor_hal_displayfeature_xiaomi_client vendor_hal_displayfeature_xiaomi_server:fd { use };
+
+allow vendor_hal_displayfeature_xiaomi_server vendor_hal_displayfeature_xiaomi_service:service_manager { add find };
+
+allow vendor_hal_displayfeature_xiaomi_client vendor_hal_displayfeature_xiaomi_service:service_manager { find };
+
+allow vendor_hal_displayfeature_xiaomi vendor_qdisplay_service:service_manager { find };
+
+allow vendor_hal_displayfeature_xiaomi vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_displayfeature_xiaomi vndservicemanager:binder { call transfer };
+
+allow vendor_hal_displayfeature_xiaomi hal_graphics_composer:binder { call transfer };
+
+allow hal_graphics_composer vendor_hal_displayfeature_xiaomi:binder { transfer };
+
+allow vendor_hal_displayfeature_xiaomi hal_graphics_composer:fd { use };
+
+allow vendor_hal_displayfeature_xiaomi graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_displayfeature_xiaomi graphics_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_graphics_composer vendor_hal_displayfeature_xiaomi_default:binder { transfer };
+
+allow vendor_hal_displayfeature_xiaomi_client vendor_hal_framecapturemanager_xiaomi_service:service_manager { find };
+
+allow vendor_hal_displayfeature_xiaomi_server vendor_hal_framecapturemanager_xiaomi_service:service_manager { add find };
+
+allow vendor_hal_displayfeature_xiaomi_client vendor_hal_framemaster_xiaomi_service:service_manager { find };
+
+allow vendor_hal_displayfeature_xiaomi_server vendor_hal_framemaster_xiaomi_service:service_manager { add find };
+
+allow hal_graphics_composer vendor_display_prop:file { read getattr map open };
+
+allow hal_graphics_composer vendor_displayfeature_prop:file { read getattr map open };
+
+allow hal_graphics_composer_client vendor_hal_hwcextension_xiaomi_service:service_manager { find };
+
+allow hal_graphics_composer_server vendor_hal_hwcextension_xiaomi_service:service_manager { add find };
+
+allow hal_graphics_composer migt_dev:chr_file { ioctl read write open };
+
+allow hal_graphics_composer vendor_turbosched_prop:file { read getattr map open };
+
+allow hal_touchfeature_xiaomi touchfeature_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi_client hal_touchfeature_xiaomi_server:binder { call transfer };
+
+allow hal_touchfeature_xiaomi_server hal_touchfeature_xiaomi_client:binder { transfer };
+
+allow hal_touchfeature_xiaomi_client hal_touchfeature_xiaomi_server:fd { use };
+
+allow hal_touchfeature_xiaomi_server hal_touchfeature_xiaomi_service:service_manager { add find };
+
+allow hal_touchfeature_xiaomi_client hal_touchfeature_xiaomi_service:service_manager { find };
+
+allow hal_touchfeature_xiaomi vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_touchfeature_xiaomi vndservicemanager:binder { call transfer };
+
+allow hal_touchfeature_xiaomi_server servicemanager:binder { call transfer };
+
+allow vendor_hal_cacert_qti_client vendor_hal_cacert_aidlservice:service_manager { find };
+
+allow vendor_hal_datafactory_qti_client vendor_hal_datafactory_qti_server:binder { call transfer };
+
+allow vendor_hal_datafactory_qti_server vendor_hal_datafactory_qti_client:binder { transfer };
+
+allow vendor_hal_datafactory_qti_client vendor_hal_datafactory_qti_server:fd { use };
+
+allow vendor_hal_datafactory_qti_server vendor_hal_datafactory_qti_client:binder { call transfer };
+
+allow vendor_hal_datafactory_qti_client vendor_hal_datafactory_qti_server:binder { transfer };
+
+allow vendor_hal_datafactory_qti_server vendor_hal_datafactory_qti_client:fd { use };
+
+allow vendor_hal_datafactory_qti_client vendor_hal_datafactory_hwservice:hwservice_manager { find };
+
+allow vendor_hal_datafactory_qti_server vendor_hal_datafactory_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_datafactory_qti_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_datafactory_qti_client vendor_hal_factory_aidlservice:service_manager { find };
+
+allow vendor_hal_datafactory_qti_server vendor_hal_factory_aidlservice:service_manager { add find };
+
+allow vendor_hal_diaghal_server vendor_hal_diaghal_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_diaghal_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_diaghal_server vendor_hal_diaghal_service:service_manager { add find };
+
+allow vendor_hal_diaghal_server servicemanager:binder { call transfer };
+
+allow vendor_hal_diaghal_server servicemanager:fd { use };
+
+allow vendor_hal_dspmanager_client vendor_hal_dspmanager_server:binder { call transfer };
+
+allow vendor_hal_dspmanager_server vendor_hal_dspmanager_client:binder { transfer };
+
+allow vendor_hal_dspmanager_client vendor_hal_dspmanager_server:fd { use };
+
+allow vendor_hal_dspmanager_server vendor_hal_dspmanager_client:binder { call transfer };
+
+allow vendor_hal_dspmanager_client vendor_hal_dspmanager_server:binder { transfer };
+
+allow vendor_hal_dspmanager_server vendor_hal_dspmanager_client:fd { use };
+
+allow vendor_hal_dspmanager_client vendor_hal_dspmanager_aidlservice:service_manager { find };
+
+allow vendor_hal_dspmanager_server vendor_hal_dspmanager_aidlservice:service_manager { add find };
+
+allow vendor_hal_dspmanager_server servicemanager:binder { call transfer };
+
+allow vendor_hal_dspmanager_server servicemanager:fd { use };
+
+allow vendor_hal_alarm_qti_server vendor_hal_alarm_qti_aidl_service:service_manager { add find };
+
+allow vendor_hal_alarm_qti_server servicemanager:binder { call transfer };
+
+allow vendor_hal_alarm_qti_server servicemanager:fd { use };
+
+allow vendor_hal_atfwd_client vendor_hal_atfwd_service:service_manager { find };
+
+allow hal_audio vendor_adsp_sleepmon_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_audio firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_audio firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_audio vendor_proc_audiod:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_audio vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_audio vndservicemanager:binder { call transfer };
+
+allow hal_audio sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_audio self:capability2 { block_suspend };
+
+allow hal_audio self:cap2_userns { block_suspend };
+
+allow hal_audio system_suspend_server:binder { call transfer };
+
+allow hal_audio system_suspend_server:fd { use };
+
+allow hal_audio system_suspend_hwservice:hwservice_manager { find };
+
+allow hal_audio hwservicemanager:binder { call transfer };
+
+allow hal_audio hwservicemanager_prop:file { read getattr map open };
+
+allow hal_audio hidl_manager_hwservice:hwservice_manager { find };
+
+allow hal_audio hal_system_suspend_service:service_manager { find };
+
+allow hal_audio servicemanager:binder { call transfer };
+
+allow hal_audio vendor_sysfs_audio:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_audio vendor_sysfs_audio:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_audio vendor_sysfs_sndcard:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_audio vendor_audio_prop:file { read getattr map open };
+
+allow hal_audio property_socket:sock_file { write };
+
+allow hal_audio init:unix_stream_socket { connectto };
+
+allow hal_audio vendor_audio_ssr_prop:property_service { set };
+
+allow hal_audio vendor_audio_ssr_prop:file { read getattr map open };
+
+allow hal_audio vendor_bluetooth_prop:file { read getattr map open };
+
+allow hal_audio adsprpcd_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_audio adsprpcd_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_audio adsprpcd_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_audio vendor_adsprpc_prop:file { read getattr map open };
+
+allow hal_bluetooth fwk_scheduler_hwservice:hwservice_manager { find };
+
+allow hal_bluetooth system_server:binder { call };
+
+allow hal_bluetooth property_socket:sock_file { write };
+
+allow hal_bluetooth init:unix_stream_socket { connectto };
+
+allow hal_bluetooth vendor_bluetooth_wifi_prop:property_service { set };
+
+allow hal_bluetooth vendor_bluetooth_wifi_prop:file { read getattr map open };
+
+allow hal_bluetooth vendor_bluetooth_prop:property_service { set };
+
+allow hal_bluetooth vendor_bluetooth_prop:file { read getattr map open };
+
+allow hal_bluetooth vendor_bluetooth_btadvaudio_prop:property_service { set };
+
+allow hal_bluetooth vendor_bluetooth_btadvaudio_prop:file { read getattr map open };
+
+allow hal_bluetooth wifi_hal_prop:file { read getattr map open };
+
+allow hal_bluetooth vendor_sysfs_diag:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_bluetooth vendor_sysfs_diag:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bluetooth vendor_sysfs_diag:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bluetooth vendor_diag_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_bootctl device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_bootctl vendor_gpt_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl root_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl boot_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl vendor_ab_block_device:blk_file { getattr };
+
+allow hal_bootctl vendor_xbl_block_device:blk_file { getattr };
+
+allow hal_bootctl vendor_modem_block_device:blk_file { getattr };
+
+allow hal_bootctl system_block_device:blk_file { getattr };
+
+allow hal_bootctl vendor_custom_ab_block_device:blk_file { getattr };
+
+allow hal_bootctl recovery_block_device:blk_file { getattr };
+
+allow hal_bootctl vendor_mdtp_device:blk_file { getattr };
+
+allow hal_bootctl_server misc_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl vendor_sg_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl vendor_bsg_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl_server self:capability { sys_rawio };
+
+allow hal_bootctl vendor_sysfs_scsi_target:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_bootctl vendor_xbl_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl sysfs_dt_firmware_android:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_camera self:capability { sys_nice };
+
+allow hal_camera property_socket:sock_file { write };
+
+allow hal_camera init:unix_stream_socket { connectto };
+
+allow hal_camera vendor_camera_prop:property_service { set };
+
+allow hal_camera vendor_camera_prop:file { read getattr map open };
+
+allow hal_camera vendor_camera_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_camera vendor_camera_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_camera vendor_thermal_socket:sock_file { write };
+
+allow hal_camera vendor_thermal-engine:unix_stream_socket { connectto };
+
+allow hal_camera vendor_synx_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_camera vendor_ubwcp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_camera adsprpcd_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_camera adsprpcd_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_camera adsprpcd_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_camera vendor_adsprpc_prop:file { read getattr map open };
+
+allow hal_camera_server vendor_hal_camera_postproc_hwservice:hwservice_manager { add find };
+
+allow hal_camera_server hidl_base_hwservice:hwservice_manager { add };
+
+allow hal_camera_server vendor_hal_camera_aon_hwservice:hwservice_manager { add find };
+
+allow hal_camera_server vendor_hal_offlinecamera_service:service_manager { add find };
+
+allow hal_camera_server vendor_hal_camera_aon_service:service_manager { add find };
+
+allow vendor_hal_display_color_client vendor_hal_display_color_server:binder { call transfer };
+
+allow vendor_hal_display_color_server vendor_hal_display_color_client:binder { transfer };
+
+allow vendor_hal_display_color_client vendor_hal_display_color_server:fd { use };
+
+allow vendor_hal_display_color_server platform_app:binder { transfer };
+
+allow vendor_hal_display_color vendor_pps_socket:sock_file { write };
+
+allow vendor_hal_display_color hal_graphics_composer_default:unix_stream_socket { connectto };
+
+allow vendor_hal_display_color vendor_qdisplay_service:service_manager { find };
+
+allow vendor_hal_display_color vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_display_color vndservicemanager:binder { call transfer };
+
+allow vendor_hal_display_color hal_graphics_composer:binder { call transfer };
+
+allow hal_graphics_composer vendor_hal_display_color:binder { transfer };
+
+allow vendor_hal_display_color hal_graphics_composer:fd { use };
+
+allow vendor_hal_display_color property_socket:sock_file { write };
+
+allow vendor_hal_display_color init:unix_stream_socket { connectto };
+
+allow vendor_hal_display_color vendor_qdcmss_prop:property_service { set };
+
+allow vendor_hal_display_color vendor_qdcmss_prop:file { read getattr map open };
+
+allow vendor_hal_display_color_client vendor_hal_display_color_aidl_service:service_manager { find };
+
+allow vendor_hal_display_color_server vendor_hal_display_color_aidl_service:service_manager { add find };
+
+allow vendor_hal_display_color_server servicemanager:binder { call transfer };
+
+allow vendor_hal_display_color_server servicemanager:fd { use };
+
+allow vendor_hal_display_aiqe_server vendor_hal_display_aiqe_aidl_service:service_manager { add find };
+
+allow vendor_hal_embmssl_server vendor_hal_embmsslaidl_service:service_manager { add find };
+
+allow hal_graphics_composer vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_graphics_composer vendor_sysfs_graphics:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_graphics_composer oemfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_graphics_composer vendor_display_notch_prop:file { read getattr map open };
+
+allow hal_graphics_composer fwk_sensor_hwservice:hwservice_manager { find };
+
+allow hal_graphics_composer system_server:binder { call transfer };
+
+allow hal_graphics_composer system_server:fd { use };
+
+allow hal_graphics_composer fwk_sensor_service:service_manager { find };
+
+allow hal_graphics_composer_server vendor_hal_display_config_hwservice:hwservice_manager { add find };
+
+allow hal_graphics_composer_server hidl_base_hwservice:hwservice_manager { add };
+
+allow hal_graphics_composer_client vendor_hal_display_config_hwservice:hwservice_manager { find };
+
+allow hal_graphics_composer_client vendor_hal_vnddisplayconfig_service:service_manager { find };
+
+allow hal_graphics_composer self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_graphics_composer_client vendor_hal_displayconfig_service:service_manager { find };
+
+allow hal_graphics_composer_server vendor_hal_displayconfig_service:service_manager { add find };
+
+allow hal_graphics_composer_server vendor_hal_vnddisplayconfig_service:service_manager { add find };
+
+allow hal_graphics_composer servicemanager:binder { call transfer };
+
+allow hal_graphics_composer servicemanager:fd { use };
+
+allow hal_health vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_health vendor_sysfs_battery_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_health vendor_sysfs_battery_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_health vendor_sysfs_usb_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_health vendor_sysfs_usb_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_health vendor_sysfs_usb_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_health hal_health_default:dir { search };
+
+allow hal_health vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_health vendor_sysfs_usb_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_imsrtphal servicemanager:binder { call transfer };
+
+allow vendor_hal_imsrtphal_client vendor_hal_imsrtphal_server:binder { call transfer };
+
+allow vendor_hal_imsrtphal_server vendor_hal_imsrtphal_client:binder { transfer };
+
+allow vendor_hal_imsrtphal_client vendor_hal_imsrtphal_server:fd { use };
+
+allow vendor_hal_imsrtphal_client vendor_hal_imsrtp_service:service_manager { find };
+
+allow vendor_hal_imsrtphal_server vendor_hal_imsrtp_service:service_manager { add find };
+
+allow hal_light vendor_sysfs_graphics:dir { search };
+
+allow hal_light vendor_sysfs_graphics:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_qdutils_disp_client vendor_hal_qdutils_disp_hwservice:hwservice_manager { find };
+
+allow hal_sensors vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_sensors vendor_sysfs_sensors:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_sensors vendor_sysfs_sensors:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_sensors vendor_sysfs_sensors:lnk_file { read };
+
+allow hal_telephony_server property_socket:sock_file { write };
+
+allow hal_telephony_server init:unix_stream_socket { connectto };
+
+allow hal_telephony_server vendor_radio_prop:property_service { set };
+
+allow hal_telephony_server vendor_radio_prop:file { read getattr map open };
+
+allow hal_telephony_client vendor_hal_telephony_service:service_manager { find };
+
+allow hal_telephony_server vendor_hal_telephony_service:service_manager { add find };
+
+allow hal_telephony_server servicemanager:binder { call transfer };
+
+allow vendor_hal_trustedui_server vendor_hal_trustedui_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_trustedui_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_trustedui_server vendor_hal_trustedui_aidl_service:service_manager { add find };
+
+allow hal_wifi vendor_location_socket:sock_file { write };
+
+allow hal_wifi vendor_location:unix_stream_socket { connectto };
+
+allow hal_wifi vendor_location_lowi_server:unix_stream_socket { connectto };
+
+allow hal_wifi_server vendor_bluetooth_wifi_prop:file { read getattr map open };
+
+allow hal_wifi proc_net:file { write };
+
+allow hal_wifi_server vendor_tombstone_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_wifi_server vendor_tombstone_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi vendor_wlan_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_dcservice_qti_server vendor_hal_imsdc_service:service_manager { add find };
+
+allow vendor_hal_dcservice_qti_server servicemanager:binder { call transfer };
+
+allow vendor_hal_dcservice_qti_server servicemanager:fd { use };
+
+allow vendor_hal_imsfactory_client vendor_hal_imsfactory_server:binder { call transfer };
+
+allow vendor_hal_imsfactory_server vendor_hal_imsfactory_client:binder { transfer };
+
+allow vendor_hal_imsfactory_client vendor_hal_imsfactory_server:fd { use };
+
+allow vendor_hal_imsfactory_server vendor_hal_imsfactory_client:binder { call transfer };
+
+allow vendor_hal_imsfactory_client vendor_hal_imsfactory_server:binder { transfer };
+
+allow vendor_hal_imsfactory_server vendor_hal_imsfactory_client:fd { use };
+
+allow vendor_hal_imsfactory_client vendor_aidl_imsfactory_service:service_manager { find };
+
+allow vendor_hal_imsfactory_server vendor_aidl_imsfactory_service:service_manager { add find };
+
+allow vendor_hal_imsfactory_client vendor_aidl_rcsservice:service_manager { find };
+
+allow vendor_hal_imsfactory_server vendor_aidl_rcsservice:service_manager { add find };
+
+allow hal_tetheroffload vendor_ipa_dev:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_tetheroffload self:udp_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_tetheroffload self:netlink_route_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown nlmsg_read nlmsg_readpriv };
+
+allow hal_tetheroffload self:netlink_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_tetheroffload self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_tetheroffload vendor_ipa_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_tetheroffload vendor_ipa_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_gnss vendor_per_mgr:binder { transfer };
+
+allow vendor_hal_cacertservice_qti_client vendor_hal_cacert_hwservice:hwservice_manager { find };
+
+allow vendor_hal_iwlanservice_qti_server vendor_hal_iwlan_service:service_manager { add find };
+
+allow hal_graphics_composer system_server:binder { transfer };
+
+allow vendor_hal_capabilityconfigstore_qti_client vendor_hal_capabilityconfigstore_qti_server:binder { call transfer };
+
+allow vendor_hal_capabilityconfigstore_qti_server vendor_hal_capabilityconfigstore_qti_client:binder { transfer };
+
+allow vendor_hal_capabilityconfigstore_qti_client vendor_hal_capabilityconfigstore_qti_server:fd { use };
+
+allow vendor_hal_capabilityconfigstore_qti_server vendor_hal_capabilityconfigstore_qti_client:binder { call transfer };
+
+allow vendor_hal_capabilityconfigstore_qti_client vendor_hal_capabilityconfigstore_qti_server:binder { transfer };
+
+allow vendor_hal_capabilityconfigstore_qti_server vendor_hal_capabilityconfigstore_qti_client:fd { use };
+
+allow vendor_hal_capabilityconfigstore_qti_client vendor_hal_capabilityconfigstore_qti_hwservice:hwservice_manager { find };
+
+allow vendor_hal_capabilityconfigstore_qti_server vendor_hal_capabilityconfigstore_qti_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_capabilityconfigstore_qti_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_capabilityconfigstore_qti_client vendor_hal_capabilityconfigstore_service:service_manager { find };
+
+allow vendor_hal_capabilityconfigstore_qti_server vendor_hal_capabilityconfigstore_service:service_manager { add find };
+
+allow vendor_hal_capabilityconfigstore_qti_server servicemanager:binder { call transfer };
+
+allow vendor_hal_capabilityconfigstore_qti_server servicemanager:fd { use };
+
+allow vendor_hal_dataconnection_qti_client vendor_hal_dataconnection_qti_server:binder { call transfer };
+
+allow vendor_hal_dataconnection_qti_server vendor_hal_dataconnection_qti_client:binder { transfer };
+
+allow vendor_hal_dataconnection_qti_client vendor_hal_dataconnection_qti_server:fd { use };
+
+allow vendor_hal_dataconnection_qti_server vendor_hal_dataconnection_qti_client:binder { call transfer };
+
+allow vendor_hal_dataconnection_qti_client vendor_hal_dataconnection_qti_server:binder { transfer };
+
+allow vendor_hal_dataconnection_qti_server vendor_hal_dataconnection_qti_client:fd { use };
+
+allow vendor_hal_dataconnection_qti_client vendor_hal_dataconnection_service:service_manager { find };
+
+allow vendor_hal_dataconnection_qti_server vendor_hal_dataconnection_service:service_manager { add find };
+
+allow vendor_hal_dataconnection_qti_client vendor_hal_dataconnection_aidl_service:service_manager { find };
+
+allow vendor_hal_dataconnection_qti_server vendor_hal_dataconnection_aidl_service:service_manager { add find };
+
+allow vendor_hal_mwqemadapter_qti_client vendor_hal_mwqemadapter_qti_server:binder { call transfer };
+
+allow vendor_hal_mwqemadapter_qti_server vendor_hal_mwqemadapter_qti_client:binder { transfer };
+
+allow vendor_hal_mwqemadapter_qti_client vendor_hal_mwqemadapter_qti_server:fd { use };
+
+allow vendor_hal_mwqemadapter_qti_server vendor_hal_mwqemadapter_qti_client:binder { call transfer };
+
+allow vendor_hal_mwqemadapter_qti_client vendor_hal_mwqemadapter_qti_server:binder { transfer };
+
+allow vendor_hal_mwqemadapter_qti_server vendor_hal_mwqemadapter_qti_client:fd { use };
+
+allow vendor_hal_mwqemadapter_qti_client vendor_hal_mwqemadapter_hwservice:hwservice_manager { find };
+
+allow vendor_hal_mwqemadapter_qti_server vendor_hal_mwqemadapter_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_mwqemadapter_qti_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_mwqemadapter_qti_client vendor_hal_mwqemadapter_aidlservice:service_manager { find };
+
+allow vendor_hal_mwqemadapter_qti_server vendor_hal_mwqemadapter_aidlservice:service_manager { add find };
+
+allow vendor_hal_dpmapiservice_qti_server vendor_hal_dpmapi_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_dpmapiservice_qti_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_dpmapiservice_qti_server vendor_hal_dpmaidl_service:service_manager { add find };
+
+allow vendor_hal_MemHal_client vendor_hal_MemHal_server:binder { call transfer };
+
+allow vendor_hal_MemHal_server vendor_hal_MemHal_client:binder { transfer };
+
+allow vendor_hal_MemHal_client vendor_hal_MemHal_server:fd { use };
+
+allow vendor_hal_MemHal_server servicemanager:binder { call transfer };
+
+allow vendor_hal_MemHal_server servicemanager:fd { use };
+
+allow vendor_hal_MemHal_client vendor_hal_MemHal_service:service_manager { find };
+
+allow vendor_hal_MemHal_server vendor_hal_MemHal_service:service_manager { add find };
+
+allow vendor_hal_alarm_qti_server vendor_hal_alarm_qti_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_alarm_qti_server hidl_base_hwservice:hwservice_manager { add };
+
+allow hal_audio bluetooth:binder { call transfer };
+
+allow hal_audio bluetooth:fd { use };
+
+allow hal_bluetooth_client vendor_hal_bluetooth_sar_service:service_manager { find };
+
+allow hal_bluetooth_server vendor_hal_bluetooth_sar_service:service_manager { add find };
+
+allow hal_bluetooth_client vendor_hal_bttpi_service:service_manager { find };
+
+allow hal_bluetooth_server vendor_hal_bttpi_service:service_manager { add find };
+
+allow hal_bluetooth servicemanager:binder { call transfer };
+
+allow hal_bluetooth servicemanager:fd { use };
+
+allow vendor_hal_btconfigstore_server vendor_hal_btconfigstore_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_btconfigstore_server hidl_base_hwservice:hwservice_manager { add };
+
+allow hal_camera self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_camera gpu_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_camera vendor_sysfs_jpeg:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_camera vendor_sysfs_ddr:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_camera vendor_qdisplay_service:service_manager { find };
+
+allow vendor_hal_fm_server vendor_hal_fm_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_fm_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_fm_server vendor_hal_fm_aidl_service:service_manager { add find };
+
+allow hal_gnss self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_health vendor_display_prop:file { read getattr map open };
+
+allow vendor_hal_minkipcbinder_server vendor_hal_minkipcbinder_service:service_manager { add find };
+
+allow vendor_hal_minkipcbinder_server servicemanager:binder { call transfer };
+
+allow vendor_hal_minkipcbinder_server servicemanager:fd { use };
+
+allow vendor_hal_mem_pasrmanager_client vendor_hal_mem_pasrmanager_server:binder { call transfer };
+
+allow vendor_hal_mem_pasrmanager_server vendor_hal_mem_pasrmanager_client:binder { transfer };
+
+allow vendor_hal_mem_pasrmanager_client vendor_hal_mem_pasrmanager_server:fd { use };
+
+allow vendor_hal_mem_pasrmanager_client vendor_aidl_hal_pasrmanager_memory_service:service_manager { find };
+
+allow vendor_hal_mem_pasrmanager_server vendor_aidl_hal_pasrmanager_memory_service:service_manager { add find };
+
+allow vendor_hal_mem_pasrmanager_server servicemanager:binder { call transfer };
+
+allow vendor_hal_mem_pasrmanager_server servicemanager:fd { use };
+
+allow vendor_hal_perf_client vendor_hal_perf_server:binder { call transfer };
+
+allow vendor_hal_perf_server vendor_hal_perf_client:binder { transfer };
+
+allow vendor_hal_perf_client vendor_hal_perf_server:fd { use };
+
+allow vendor_hal_perf_client vendor_hal_perf2_service:service_manager { find };
+
+allow vendor_hal_perf_server vendor_hal_perf2_service:service_manager { add find };
+
+allow vendor_hal_perf_server servicemanager:binder { call transfer };
+
+allow vendor_hal_perf_server servicemanager:fd { use };
+
+allow vendor_hal_perf_server vendor_hal_perf_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_perf_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_perf_client vendor_hal_perf_hwservice:hwservice_manager { find };
+
+allow vendor_hal_perf vendor_latency_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_freq_prop:file { read getattr map open };
+
+allow vendor_hal_perf vendor_mpctl_prop:file { read getattr map open };
+
+allow vendor_hal_perf proc_stat:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf proc_uptime:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf sysfs_leds:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf sysfs_suspend_stats:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf sysfs_devices_system_cpu:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_cpu_boost:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_devfreq:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_kgsl:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_kgsl_proc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_mmc_host:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_msm_perf:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_msm_power:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_scsi_host:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_sched_penalty:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_memory:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_process_reclaim:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_mpctl:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_qfprom:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf vendor_sysfs_ufs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_perf proc_stat:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf proc_uptime:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf sysfs_dm:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf sysfs_devices_system_cpu:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_cpu_boost:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_devfreq:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_graphics:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_kgsl:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_kgsl_proc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_mmc_host:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_msm_perf:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_msm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_scsi_host:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_sched_penalty:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_memory:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_process_reclaim:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_mpctl:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_qfprom:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_ufs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf sysfs_leds:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_devfreq:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_graphics:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_kgsl:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_mmc_host:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_scsi_host:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_sysfs_ufs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf sysfs_suspend_stats:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_perf vendor_qdisplay_service:service_manager { find };
+
+allow vendor_hal_perf vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_perf vndservicemanager:binder { call transfer };
+
+allow vendor_hal_qseecom_server vendor_hal_qseecom_service:service_manager { add find };
+
+allow vendor_hal_qseecom_server servicemanager:binder { call transfer };
+
+allow vendor_hal_qseecom_server servicemanager:fd { use };
+
+allow vendor_hal_qspa_qti_server vendor_hal_qspa_service:service_manager { add find };
+
+allow vendor_hal_qteeconnector_client vendor_hal_qteeconnector_hwservice:hwservice_manager { find };
+
+allow vendor_hal_secureprocessor_server vendor_hal_secureprocessor_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_secureprocessor_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_secureprocessor_server vendor_hal_secureprocessor_aidl_service:service_manager { add find };
+
+allow vendor_hal_sensorscalibrate_qti vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_sensorscalibrate_qti self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_sensorscalibrate_qti self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_sensorscalibrate_qti_server vendor_hal_sensorscalibrateaidl_service:service_manager { add find };
+
+allow vendor_hal_sensorscalibrate_qti servicemanager:binder { call transfer };
+
+allow vendor_hal_sensorscalibrate_qti servicemanager:fd { use };
+
+allow vendor_hal_soter_client vendor_hal_soter_server:binder { call transfer };
+
+allow vendor_hal_soter_server vendor_hal_soter_client:binder { transfer };
+
+allow vendor_hal_soter_client vendor_hal_soter_server:fd { use };
+
+allow vendor_hal_soter_server vendor_hal_soter_client:binder { call transfer };
+
+allow vendor_hal_soter_client vendor_hal_soter_server:binder { transfer };
+
+allow vendor_hal_soter_server vendor_hal_soter_client:fd { use };
+
+allow vendor_hal_soter_server vendor_hal_soter_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_soter_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_soter_client vendor_hal_soter_hwservice:hwservice_manager { find };
+
+allow vendor_hal_soter_client vendor_hal_soteraidl_service:service_manager { find };
+
+allow vendor_hal_soter_server vendor_hal_soteraidl_service:service_manager { add find };
+
+allow vendor_hal_spu_client vendor_hal_spu_hwservice:hwservice_manager { find };
+
+allow vendor_hal_spu_client vendor_hal_spu_service:service_manager { find };
+
+allow vendor_hal_spu_client servicemanager:binder { call transfer };
+
+allow vendor_hal_spu_client servicemanager:fd { use };
+
+allow vendor_hal_srvctracker_client vendor_hal_srvctracker_server:binder { call transfer };
+
+allow vendor_hal_srvctracker_server vendor_hal_srvctracker_client:binder { transfer };
+
+allow vendor_hal_srvctracker_client vendor_hal_srvctracker_server:fd { use };
+
+allow vendor_hal_srvctracker_server vendor_hal_srvctracker_client:binder { call transfer };
+
+allow vendor_hal_srvctracker_client vendor_hal_srvctracker_server:binder { transfer };
+
+allow vendor_hal_srvctracker_server vendor_hal_srvctracker_client:fd { use };
+
+allow vendor_hal_srvctracker vendor_hal_srvctracker_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_srvctracker hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_srvctracker_client vendor_hal_servicetrackeraidl_service:service_manager { find };
+
+allow vendor_hal_srvctracker_server vendor_hal_servicetrackeraidl_service:service_manager { add find };
+
+allow vendor_hal_srvctracker_server servicemanager:binder { call transfer };
+
+allow vendor_hal_srvctracker_server servicemanager:fd { use };
+
+allow vendor_hal_srvctracker_client vendor_hal_srvctracker_hwservice:hwservice_manager { find };
+
+allow vendor_hal_srvctracker hwservicemanager:binder { call };
+
+allow hal_vibrator sysfs_leds:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_vibrator sysfs_leds:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator sysfs_leds:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_vibrator input_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_vibrator input_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_vibrator vendor_soc_id_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant vendor_wifi_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_wifi_supplicant vendor_wifi_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_supplicant vendor_wifi_vendor_wpa_socket:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_wifi_supplicant vendor_wifi_vendor_wpa_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_supplicant vendor_wigig_vendor_wpa_socket:sock_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_xpanprovider_server vendor_hal_xpanprovider_service:service_manager { add find };
+
+allow vendor_hal_hexlp_client vendor_hal_hexlp_service:service_manager { find };
+
+allow vendor_hal_hexlp_server vendor_hal_hexlp_service:service_manager { add find };
+
+allow vendor_hal_hexlp_client vendor_hal_hexlp_server:binder { call transfer };
+
+allow vendor_hal_hexlp_server vendor_hal_hexlp_client:binder { transfer };
+
+allow vendor_hal_hexlp_client vendor_hal_hexlp_server:fd { use };
+
+allow vendor_hal_hexlp_server vendor_hal_hexlp_client:binder { call transfer };
+
+allow vendor_hal_hexlp_client vendor_hal_hexlp_server:binder { transfer };
+
+allow vendor_hal_hexlp_server vendor_hal_hexlp_client:fd { use };
+
+allow vendor_hal_qccvndhal_server vendor_hal_qccvndhal_service:service_manager { add find };
+
+allow vendor_hal_qconfig_client vendor_hal_qconfig_service:service_manager { find };
+
+allow hal_fingerprint_server vendor_hal_qfpextendedfingerprint_service:service_manager { add find };
+
+allow vendor_hal_qms_qti_client vendor_hal_qms_service:service_manager { find };
+
+allow vendor_hal_qms_qti_server vendor_hal_qms_service:service_manager { add find };
+
+allow vendor_hal_qms_qti_server servicemanager:binder { call transfer };
+
+allow vendor_hal_qms_qti_server servicemanager:fd { use };
+
+allow vendor_hal_qms_qti_client vendor_hal_qms_qti_server:binder { call transfer };
+
+allow vendor_hal_qms_qti_server vendor_hal_qms_qti_client:binder { transfer };
+
+allow vendor_hal_qms_qti_client vendor_hal_qms_qti_server:fd { use };
+
+allow vendor_hal_qms_qti_server vendor_hal_qms_qti_client:binder { call transfer };
+
+allow vendor_hal_qms_qti_client vendor_hal_qms_qti_server:binder { transfer };
+
+allow vendor_hal_qms_qti_server vendor_hal_qms_qti_client:fd { use };
+
+allow vendor_hal_qspmhal_client vendor_hal_qspmhal_server:binder { call transfer };
+
+allow vendor_hal_qspmhal_server vendor_hal_qspmhal_client:binder { transfer };
+
+allow vendor_hal_qspmhal_client vendor_hal_qspmhal_server:fd { use };
+
+allow vendor_hal_qspmhal_server vendor_hal_qspmhal_client:binder { call transfer };
+
+allow vendor_hal_qspmhal_client vendor_hal_qspmhal_server:binder { transfer };
+
+allow vendor_hal_qspmhal_server vendor_hal_qspmhal_client:fd { use };
+
+allow vendor_hal_qspmhal_client vendor_hal_qspmhal_service:service_manager { find };
+
+allow vendor_hal_qspmhal_server vendor_hal_qspmhal_service:service_manager { add find };
+
+allow vendor_hal_qspmhal_server servicemanager:binder { call transfer };
+
+allow vendor_hal_qspmhal_server servicemanager:fd { use };
+
+allow vendor_hal_qspmhal_client vendor_hal_qspmhal_hwservice:hwservice_manager { find };
+
+allow vendor_hal_qspmhal_server vendor_hal_qspmhal_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_qspmhal_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_qvirtvendor_client vendor_hal_qvirtvendor_service:service_manager { find };
+
+allow vendor_hal_qvrservice_qti_server vendor_hal_qvrd_service:service_manager { add find };
+
+allow vendor_hal_snapx_service_qti_client vendor_hal_snapx_service_qti_server:binder { call transfer };
+
+allow vendor_hal_snapx_service_qti_server vendor_hal_snapx_service_qti_client:binder { transfer };
+
+allow vendor_hal_snapx_service_qti_client vendor_hal_snapx_service_qti_server:fd { use };
+
+allow vendor_hal_snapx_service_qti_server vendor_hal_snapx_service_qti_client:binder { call transfer };
+
+allow vendor_hal_snapx_service_qti_client vendor_hal_snapx_service_qti_server:binder { transfer };
+
+allow vendor_hal_snapx_service_qti_server vendor_hal_snapx_service_qti_client:fd { use };
+
+allow vendor_hal_snapx_service_qti_client vendor_hal_snapx_service:service_manager { find };
+
+allow vendor_hal_snapx_service_qti_server vendor_hal_snapx_service:service_manager { add find };
+
+allow vendor_hal_sxrservice_qti_server vendor_hal_sxrd_service:service_manager { add find };
+
+allow vendor_syshealthmon_client vendor_syshealthmon_server:binder { call transfer };
+
+allow vendor_syshealthmon_server vendor_syshealthmon_client:binder { transfer };
+
+allow vendor_syshealthmon_client vendor_syshealthmon_server:fd { use };
+
+allow vendor_syshealthmon_server vendor_syshealthmon_client:binder { call transfer };
+
+allow vendor_syshealthmon_client vendor_syshealthmon_server:binder { transfer };
+
+allow vendor_syshealthmon_server vendor_syshealthmon_client:fd { use };
+
+allow vendor_syshealthmon_client vendor_syshealthmon_service:service_manager { find };
+
+allow vendor_syshealthmon_server vendor_syshealthmon_service:service_manager { add find };
+
+allow vendor_syshealthmon self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_syshealthmon vendor_sysfs_ssr:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_syshealthmon vendor_sysfs_rproc_state:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_vpp_client vendor_hal_vpp_service:service_manager { find };
+
+allow vendor_hal_vpp_server vendor_hal_vpp_service:service_manager { add find };
+
+allow vendor_hal_vpp_client vendor_hal_vpp_server:binder { call transfer };
+
+allow vendor_hal_vpp_server vendor_hal_vpp_client:binder { transfer };
+
+allow vendor_hal_vpp_client vendor_hal_vpp_server:fd { use };
+
+allow vendor_hal_vpp_server vendor_hal_vpp_client:binder { call transfer };
+
+allow vendor_hal_vpp_client vendor_hal_vpp_server:binder { transfer };
+
+allow vendor_hal_vpp_server vendor_hal_vpp_client:fd { use };
+
+allow vendor_wifidisplayhalservice vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_wifidisplayhalservice vndservicemanager:binder { call transfer };
+
+allow vendor_wifidisplayhalservice_server hal_wifidisplaysession_service:service_manager { add find };
+
+allow vendor_wifidisplayhalservice_server hal_wifidisplayvideo_service:service_manager { add find };
+
+allow vendor_wifidisplayhalservice_server hal_wifidisplayaudio_service:service_manager { add find };
+
+allow vendor_wifidisplayhalservice_server hal_wifidisplayimage_service:service_manager { add find };
+
+allow vendor_hal_wifilearner_server vendor_hal_wifilearner_service:service_manager { add find };
+
+allow vendor_hal_wifilearner servicemanager:binder { call transfer };
+
+allow vendor_hal_wifilearner servicemanager:fd { use };
+
+allow vendor_hal_wifilearner self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_display_demura_client vendor_hal_display_demura_server:binder { call transfer };
+
+allow vendor_hal_display_demura_server vendor_hal_display_demura_client:binder { transfer };
+
+allow vendor_hal_display_demura_client vendor_hal_display_demura_server:fd { use };
+
+allow vendor_hal_display_demura_server vendor_hal_display_demura_client:binder { call transfer };
+
+allow vendor_hal_display_demura_client vendor_hal_display_demura_server:binder { transfer };
+
+allow vendor_hal_display_demura_server vendor_hal_display_demura_client:fd { use };
+
+allow vendor_hal_display_demura vendor_qdisplay_service:service_manager { find };
+
+allow vendor_hal_display_demura vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_display_demura vndservicemanager:binder { call transfer };
+
+allow vendor_hal_display_demura_client vendor_hal_display_demura_aidl_service:service_manager { find };
+
+allow vendor_hal_display_demura_server vendor_hal_display_demura_aidl_service:service_manager { add find };
+
+allow vendor_hal_display_demura_server servicemanager:binder { call transfer };
+
+allow vendor_hal_display_demura_server servicemanager:fd { use };
+
+allow vendor_hal_poweroptservice_client vendor_hal_poweroptservice_server:binder { call transfer };
+
+allow vendor_hal_poweroptservice_server vendor_hal_poweroptservice_client:binder { transfer };
+
+allow vendor_hal_poweroptservice_client vendor_hal_poweroptservice_server:fd { use };
+
+allow vendor_hal_poweroptservice_server vendor_hal_poweroptservice_client:binder { call transfer };
+
+allow vendor_hal_poweroptservice_client vendor_hal_poweroptservice_server:binder { transfer };
+
+allow vendor_hal_poweroptservice_server vendor_hal_poweroptservice_client:fd { use };
+
+allow vendor_hal_poweroptservice_client vendor_hal_poweroptservice_hwservice:hwservice_manager { find };
+
+allow vendor_hal_poweroptservice_server vendor_hal_poweroptservice_hwservice:hwservice_manager { add find };
+
+allow vendor_hal_poweroptservice_server hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_hal_poweroptservice_client vendor_hal_poweroptservice_service:service_manager { find };
+
+allow vendor_hal_poweroptservice_server vendor_hal_poweroptservice_service:service_manager { add find };
+
+allow hal_camera vendor_camera_sensor_prop:property_service { set };
+
+allow hal_camera vendor_camera_sensor_prop:file { read getattr map open };
+
+allow hal_camera_server hal_camera_aon_service:service_manager { add find };
+
+allow hal_camera fwk_sensor_hwservice:hwservice_manager { find };
+
+allow hal_camera system_server:binder { call transfer };
+
+allow hal_camera system_server:fd { use };
+
+allow vendor_hal_imsrtphal_server vendor_hal_imsrtphal_client:binder { call transfer };
+
+allow vendor_hal_imsrtphal_client vendor_hal_imsrtphal_server:binder { transfer };
+
+allow vendor_hal_imsrtphal_server vendor_hal_imsrtphal_client:fd { use };
+
+allow hal_camera_aon system_app:binder { transfer };
+
+allow hal_camera_aon system_app:binder { call transfer };
+
+allow hal_camera_aon system_app:fd { use };
+
+allow hal_audio bluetooth:binder { transfer };
+
+allow hal_bluetooth serial_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bluetooth vendor_smd_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bluetooth bt_firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_bluetooth bt_firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bluetooth bt_firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bluetooth self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_bluetooth vendor_bt_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bluetooth system_app:binder { transfer };
+
+allow hal_bluetooth system_app:binder { call transfer };
+
+allow hal_bluetooth system_app:fd { use };
+
+allow hal_misys_vendor_server cameraserver:binder { transfer };
+
+allow hal_misys_vendor_server dumpstate:fifo_file { write };
+
+allow hal_misys_vendor_server dumpstate:fd { use };
+
+allow hal_misys_vendor_client hal_misys_vendor_server:binder { call transfer };
+
+allow hal_misys_vendor_server hal_misys_vendor_client:binder { transfer };
+
+allow hal_misys_vendor_client hal_misys_vendor_server:fd { use };
+
+allow hal_misys_vendor_server hal_misys_vendor_client:binder { call transfer };
+
+allow hal_misys_vendor_client hal_misys_vendor_server:binder { transfer };
+
+allow hal_misys_vendor_server hal_misys_vendor_client:fd { use };
+
+allow hal_misys_vendor_server servicemanager:binder { call transfer };
+
+allow hal_misys_vendor_server servicemanager:fd { use };
+
+allow hal_misys_vendor_client hal_misys_vendor_service:service_manager { find };
+
+allow hal_misys_vendor_server hal_misys_vendor_service:service_manager { add find };
+
+allow hal_misyscore_server dumpstate:fifo_file { write };
+
+allow hal_misyscore_server dumpstate:fd { use };
+
+allow hal_misyscore_client hal_misyscore_server:binder { call transfer };
+
+allow hal_misyscore_server hal_misyscore_client:binder { transfer };
+
+allow hal_misyscore_client hal_misyscore_server:fd { use };
+
+allow hal_misyscore_server hal_misyscore_client:binder { call transfer };
+
+allow hal_misyscore_client hal_misyscore_server:binder { transfer };
+
+allow hal_misyscore_server hal_misyscore_client:fd { use };
+
+allow hal_misyscore_server servicemanager:binder { call transfer };
+
+allow hal_misyscore_server servicemanager:fd { use };
+
+allow hal_misyscore_client hal_misyscore_service:service_manager { find };
+
+allow hal_misyscore_server hal_misyscore_service:service_manager { add find };
+
+allow vendor_hal_citsensorservice_xiaomi_client vendor_hal_citsensorservice_xiaomi_server:binder { call transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_server vendor_hal_citsensorservice_xiaomi_client:binder { transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_client vendor_hal_citsensorservice_xiaomi_server:fd { use };
+
+allow vendor_hal_citsensorservice_xiaomi_server vendor_hal_citsensorservice_xiaomi_client:binder { call transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_client vendor_hal_citsensorservice_xiaomi_server:binder { transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_server vendor_hal_citsensorservice_xiaomi_client:fd { use };
+
+allow vendor_hal_citsensorservice_xiaomi_server servicemanager:binder { call transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_server servicemanager:fd { use };
+
+allow vendor_hal_citsensorservice_xiaomi_client vendor_hal_citsensorservice_xiaomi_service:service_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_server vendor_hal_citsensorservice_xiaomi_service:service_manager { add find };
+
+allow hal_graphics_composer vendor_hal_citsensorservice_xiaomi_default:binder { transfer };
+
+allow vendor_hal_citsensorservice_xiaomi vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi vndservicemanager:binder { call transfer };
+
+allow vendor_hal_tofsensorservice_xiaomi_client vendor_hal_tofsensorservice_xiaomi_service:service_manager { find };
+
+allow vendor_hal_misensor_camera_server servicemanager:binder { call transfer };
+
+allow vendor_hal_misensor_camera_server servicemanager:fd { use };
+
+allow vendor_hal_misensor_camera_server vendor_hal_misensor_camera_service:service_manager { add find };
+
+allow hal_cit_wifi_server servicemanager:binder { call transfer };
+
+allow hal_cit_wifi_server servicemanager:fd { use };
+
+allow hal_cit_wifi_server hal_cit_wifi_service:service_manager { add find };
+
+allow hal_cit_bluetooth_client hal_cit_bluetooth_server:binder { call transfer };
+
+allow hal_cit_bluetooth_server hal_cit_bluetooth_client:binder { transfer };
+
+allow hal_cit_bluetooth_client hal_cit_bluetooth_server:fd { use };
+
+allow hal_cit_bluetooth_server hal_cit_bluetooth_client:binder { call transfer };
+
+allow hal_cit_bluetooth_client hal_cit_bluetooth_server:binder { transfer };
+
+allow hal_cit_bluetooth_server hal_cit_bluetooth_client:fd { use };
+
+allow hal_cit_bluetooth_server servicemanager:binder { call transfer };
+
+allow hal_cit_bluetooth_server servicemanager:fd { use };
+
+allow hal_cit_bluetooth_client hal_cit_bluetooth_service:service_manager { find };
+
+allow hal_cit_bluetooth_server hal_cit_bluetooth_service:service_manager { add find };
+
+allow hal_miqms_server servicemanager:binder { call transfer };
+
+allow hal_miqms_server servicemanager:fd { use };
+
+allow hal_miqms_server hal_miqms_service:service_manager { add find };
+
+allow hal_aidlbgservice platform_app:binder { transfer };
+
+allow hal_aidlbgservice platform_app:binder { call transfer };
+
+allow hal_aidlbgservice platform_app:fd { use };
+
+allow hal_aidlbgservice priv_app:binder { transfer };
+
+allow hal_aidlbgservice priv_app:binder { call transfer };
+
+allow hal_aidlbgservice priv_app:fd { use };
+
+allow hal_aidlbgservice system_app:binder { transfer };
+
+allow hal_aidlbgservice system_app:binder { call transfer };
+
+allow hal_aidlbgservice system_app:fd { use };
+
+allow hal_aidlbgservice system_server:binder { transfer };
+
+allow hal_aidlbgservice system_server:binder { call transfer };
+
+allow hal_aidlbgservice system_server:fd { use };
+
+allow hal_camera_server hal_aidlbgservice_service:service_manager { add find };
+
+allow hal_cld_client hal_cld_server:binder { call transfer };
+
+allow hal_cld_server hal_cld_client:binder { transfer };
+
+allow hal_cld_client hal_cld_server:fd { use };
+
+allow hal_cld_server hal_cld_client:binder { call transfer };
+
+allow hal_cld_client hal_cld_server:binder { transfer };
+
+allow hal_cld_server hal_cld_client:fd { use };
+
+allow hal_cld_client hal_cld_service:service_manager { find };
+
+allow hal_cld_server hal_cld_service:service_manager { add find };
+
+allow hal_swap_client hal_swap_server:binder { call transfer };
+
+allow hal_swap_server hal_swap_client:binder { transfer };
+
+allow hal_swap_client hal_swap_server:fd { use };
+
+allow hal_swap_server hal_swap_client:binder { call transfer };
+
+allow hal_swap_client hal_swap_server:binder { transfer };
+
+allow hal_swap_server hal_swap_client:fd { use };
+
+allow hal_swap_client hal_swap_service:service_manager { find };
+
+allow hal_swap_server hal_swap_service:service_manager { add find };
+
+allow hal_fbo_client hal_fbo_server:binder { call transfer };
+
+allow hal_fbo_server hal_fbo_client:binder { transfer };
+
+allow hal_fbo_client hal_fbo_server:fd { use };
+
+allow hal_fbo_server hal_fbo_client:binder { call transfer };
+
+allow hal_fbo_client hal_fbo_server:binder { transfer };
+
+allow hal_fbo_server hal_fbo_client:fd { use };
+
+allow hal_fbo_client hal_fbo_service:service_manager { find };
+
+allow hal_fbo_server hal_fbo_service:service_manager { add find };
+
+allow hal_quickcamera platform_app:binder { transfer };
+
+allow hal_quickcamera platform_app:binder { call transfer };
+
+allow hal_quickcamera platform_app:fd { use };
+
+allow hal_quickcamera priv_app:binder { transfer };
+
+allow hal_quickcamera priv_app:binder { call transfer };
+
+allow hal_quickcamera priv_app:fd { use };
+
+allow hal_quickcamera system_app:binder { transfer };
+
+allow hal_quickcamera system_app:binder { call transfer };
+
+allow hal_quickcamera system_app:fd { use };
+
+allow hal_quickcamera system_server:binder { transfer };
+
+allow hal_quickcamera system_server:binder { call transfer };
+
+allow hal_quickcamera system_server:fd { use };
+
+allow hal_camera_server hal_quickcamera_service:service_manager { add find };
+
+allow hal_quickcamera_server hal_quickcamera_service:service_manager { add find };
+
+allow hal_health vendor_sysfs_xm_power:dir { search };
+
+allow hal_health vendor_sysfs_xm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_health vendor_sysfs_xm_power:file { read write open };
+
+allow hal_micharge_client hal_micharge_server:binder { call transfer };
+
+allow hal_micharge_server hal_micharge_client:binder { transfer };
+
+allow hal_micharge_client hal_micharge_server:fd { use };
+
+allow hal_micharge_server hal_micharge_client:binder { call transfer };
+
+allow hal_micharge_client hal_micharge_server:binder { transfer };
+
+allow hal_micharge_server hal_micharge_client:fd { use };
+
+allow hal_micharge_client hal_micharge_service:service_manager { find };
+
+allow hal_micharge_server hal_micharge_service:service_manager { add find };
+
+allow hal_miperf_client hal_miperf_server:binder { call transfer };
+
+allow hal_miperf_server hal_miperf_client:binder { transfer };
+
+allow hal_miperf_client hal_miperf_server:fd { use };
+
+allow hal_miperf_server hal_miperf_client:binder { call transfer };
+
+allow hal_miperf_client hal_miperf_server:binder { transfer };
+
+allow hal_miperf_server hal_miperf_client:fd { use };
+
+allow hal_miperf_client hal_miperf_service:service_manager { find };
+
+allow hal_miperf_server hal_miperf_service:service_manager { add find };
+
+allow hal_miperf_server servicemanager:binder { call transfer };
+
+allow hal_batteryantiaging_client hal_batteryantiaging_server:binder { call transfer };
+
+allow hal_batteryantiaging_server hal_batteryantiaging_client:binder { transfer };
+
+allow hal_batteryantiaging_client hal_batteryantiaging_server:fd { use };
+
+allow hal_batteryantiaging_server hal_batteryantiaging_client:binder { call transfer };
+
+allow hal_batteryantiaging_client hal_batteryantiaging_server:binder { transfer };
+
+allow hal_batteryantiaging_server hal_batteryantiaging_client:fd { use };
+
+allow hal_batteryantiaging_client hal_batteryantiaging_service:service_manager { find };
+
+allow hal_batteryantiaging_server hal_batteryantiaging_service:service_manager { add find };
+
+allow hal_mfidoca_client hal_mfidoca_server:binder { call transfer };
+
+allow hal_mfidoca_server hal_mfidoca_client:binder { transfer };
+
+allow hal_mfidoca_client hal_mfidoca_server:fd { use };
+
+allow hal_mfidoca_server hal_mfidoca_client:binder { call transfer };
+
+allow hal_mfidoca_client hal_mfidoca_server:binder { transfer };
+
+allow hal_mfidoca_server hal_mfidoca_client:fd { use };
+
+allow hal_mfidoca_server servicemanager:binder { call transfer };
+
+allow hal_mfidoca_server servicemanager:fd { use };
+
+allow hal_mfidoca_client hal_mfidoca_service:service_manager { find };
+
+allow hal_mfidoca_server hal_mfidoca_service:service_manager { add find };
+
+allow hal_mlipay_client hal_mlipay_server:binder { call transfer };
+
+allow hal_mlipay_server hal_mlipay_client:binder { transfer };
+
+allow hal_mlipay_client hal_mlipay_server:fd { use };
+
+allow hal_mlipay_server hal_mlipay_client:binder { call transfer };
+
+allow hal_mlipay_client hal_mlipay_server:binder { transfer };
+
+allow hal_mlipay_server hal_mlipay_client:fd { use };
+
+allow hal_mlipay_server servicemanager:binder { call transfer };
+
+allow hal_mlipay_server servicemanager:fd { use };
+
+allow hal_mlipay_client hal_mlipay_service:service_manager { find };
+
+allow hal_mlipay_server hal_mlipay_service:service_manager { add find };
+
+allow hal_mtdservice_client hal_mtdservice_server:binder { call transfer };
+
+allow hal_mtdservice_server hal_mtdservice_client:binder { transfer };
+
+allow hal_mtdservice_client hal_mtdservice_server:fd { use };
+
+allow hal_mtdservice_server hal_mtdservice_client:binder { call transfer };
+
+allow hal_mtdservice_client hal_mtdservice_server:binder { transfer };
+
+allow hal_mtdservice_server hal_mtdservice_client:fd { use };
+
+allow hal_mtdservice_server servicemanager:binder { call transfer };
+
+allow hal_mtdservice_server servicemanager:fd { use };
+
+allow hal_mtdservice_client hal_mtdservice_service:service_manager { find };
+
+allow hal_mtdservice_server hal_mtdservice_service:service_manager { add find };
+
+allow hal_tidaservice_server servicemanager:binder { call transfer };
+
+allow hal_tidaservice_server servicemanager:fd { use };
+
+allow hal_tidaservice_server hal_tidaservice_service:service_manager { add find };
+
+allow hal_vsimapp_server servicemanager:binder { call transfer };
+
+allow hal_vsimapp_server servicemanager:fd { use };
+
+allow hal_vsimapp_server hal_vsimapp_service:service_manager { add find };
+
+allow hal_otrpagent_server servicemanager:binder { call transfer };
+
+allow hal_otrpagent_server servicemanager:fd { use };
+
+allow hal_otrpagent_server hal_otrpagent_service:service_manager { add find };
+
+allow vendor_hal_eid_client vendor_hal_eid_server:binder { call transfer };
+
+allow vendor_hal_eid_server vendor_hal_eid_client:binder { transfer };
+
+allow vendor_hal_eid_client vendor_hal_eid_server:fd { use };
+
+allow vendor_hal_eid_server vendor_hal_eid_client:binder { call transfer };
+
+allow vendor_hal_eid_client vendor_hal_eid_server:binder { transfer };
+
+allow vendor_hal_eid_server vendor_hal_eid_client:fd { use };
+
+allow vendor_hal_eid_server servicemanager:binder { call transfer };
+
+allow vendor_hal_eid_server servicemanager:fd { use };
+
+allow vendor_hal_eid_client vendor_hal_eid_service:service_manager { find };
+
+allow vendor_hal_eid_server vendor_hal_eid_service:service_manager { add find };
+
+allow hal_mrm_server dumpstate:fifo_file { write };
+
+allow hal_mrm_server dumpstate:fd { use };
+
+allow hal_mrm_server servicemanager:binder { call transfer };
+
+allow hal_mrm_server servicemanager:fd { use };
+
+allow hal_mrm_server hal_mrm_service:service_manager { add find };
+
+allow hal_micrtk_server dumpstate:fifo_file { write };
+
+allow hal_micrtk_server dumpstate:fd { use };
+
+allow hal_micrtk_server servicemanager:binder { call transfer };
+
+allow hal_micrtk_server servicemanager:fd { use };
+
+allow hal_micrtk_server hal_micrtk_service:service_manager { add find };
+
+allow hal_misecmedia_server dumpstate:fifo_file { write };
+
+allow hal_misecmedia_server dumpstate:fd { use };
+
+allow hal_misecmedia_server servicemanager:binder { call transfer };
+
+allow hal_misecmedia_server servicemanager:fd { use };
+
+allow hal_misecmedia_server hal_misecmedia_service:service_manager { add find };
+
+allow hal_mseccam_server dumpstate:fifo_file { write };
+
+allow hal_mseccam_server dumpstate:fd { use };
+
+allow hal_mseccam_server servicemanager:binder { call transfer };
+
+allow hal_mseccam_server servicemanager:fd { use };
+
+allow hal_mseccam_server hal_mseccam_service:service_manager { add find };
+
+allow hal_miface_server dumpstate:fifo_file { write };
+
+allow hal_miface_server dumpstate:fd { use };
+
+allow hal_miface_server servicemanager:binder { call transfer };
+
+allow hal_miface_server servicemanager:fd { use };
+
+allow hal_miface_server hal_miface_service:service_manager { add find };
+
+allow hal_miface system_app:binder { transfer };
+
+allow hal_miface system_app:binder { call transfer };
+
+allow hal_miface system_app:fd { use };
+
+allow hal_idmanager_client hal_idmanager_server:binder { call transfer };
+
+allow hal_idmanager_server hal_idmanager_client:binder { transfer };
+
+allow hal_idmanager_client hal_idmanager_server:fd { use };
+
+allow hal_idmanager_client hal_idmanager_service:service_manager { find };
+
+allow hal_idmanager_server hal_idmanager_service:service_manager { add find };
+
+allow hal_idmanager_server servicemanager:binder { call transfer };
+
+allow hal_idmanager_server servicemanager:fd { use };
+
+allow hal_mikeybag_server servicemanager:binder { call transfer };
+
+allow hal_mikeybag_server servicemanager:fd { use };
+
+allow hal_mikeybag_server hal_mikeybag_service:service_manager { add find };
+
+allow hal_videoservice_client hal_videoservice_service:service_manager { find };
+
+allow hal_videoservice_server hal_videoservice_service:service_manager { add find };
+
+allow hal_videoservice_client hal_videoservice_server:binder { call transfer };
+
+allow hal_videoservice_server hal_videoservice_client:binder { transfer };
+
+allow hal_videoservice_client hal_videoservice_server:fd { use };
+
+allow hal_videoservice_server hal_videoservice_client:binder { call transfer };
+
+allow hal_videoservice_client hal_videoservice_server:binder { transfer };
+
+allow hal_videoservice_server hal_videoservice_client:fd { use };
+
+allow hal_slaaidlservice_server servicemanager:binder { call transfer };
+
+allow hal_slaaidlservice_server servicemanager:fd { use };
+
+allow hal_slaaidlservice_server hal_slaaidlservice_service:service_manager { add find };
+
+allow hal_miwillservice_server servicemanager:binder { call transfer };
+
+allow hal_miwillservice_server servicemanager:fd { use };
+
+allow hal_miwillservice_server hal_miwillservice_service:service_manager { add find };
+
+allow hal_minetaidlservice_server servicemanager:binder { call transfer };
+
+allow hal_minetaidlservice_server servicemanager:fd { use };
+
+allow hal_minetaidlservice_server hal_minetaidlservice_service:service_manager { add find };
+
+allow hal_camera_server hal_dynamic_camera_service:service_manager { add find };
+
+allow hal_camera_observer_client hal_camera_observer_service:service_manager { find };
+
+allow hal_miweaver_client hal_miweaver_server:binder { call transfer };
+
+allow hal_miweaver_server hal_miweaver_client:binder { transfer };
+
+allow hal_miweaver_client hal_miweaver_server:fd { use };
+
+allow hal_miweaver_server hal_miweaver_client:binder { call transfer };
+
+allow hal_miweaver_client hal_miweaver_server:binder { transfer };
+
+allow hal_miweaver_server hal_miweaver_client:fd { use };
+
+allow hal_miweaver_server servicemanager:binder { call transfer };
+
+allow hal_miweaver_server servicemanager:fd { use };
+
+allow hal_miweaver_client hal_miweaver_service:service_manager { find };
+
+allow hal_miweaver_server hal_miweaver_service:service_manager { add find };
+
+allowxperm hal_camera self:qipcrtr_socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_hal_sensorscalibrate_qti self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_hal_sensorscalibrate_qti self:qipcrtr_socket ioctl { 0xc300-0xc305 };
+
+allowxperm hal_bluetooth self:socket ioctl { 0xc300-0xc305 };
+
+allow hal_gnss vendor_location_app:memfd_file { read write getattr map };
+
+allow vendor_hal_embmssl vendor_qti_embmssl_app:memfd_file { read write getattr map };
+
+allow vendor_hal_perf vendor_qti_embmssl_app:memfd_file { read write getattr map };
+
+allow vendor_hal_alarm_qti vendor_qti_poweroffalarm_app:memfd_file { read write getattr map };
+
+allow vendor_hal_perf vendor_qti_poweroffalarm_app:memfd_file { read write getattr map };
+
+allow vendor_hal_xpanprovider vendor_xpanprovider_app:memfd_file { read write getattr map };
+
+allow vendor_hal_perf vendor_xpanprovider_app:memfd_file { read write getattr map };

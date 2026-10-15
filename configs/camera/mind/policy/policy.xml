@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="policy.xml">
+    <config name="system_configuration">
+        <item name="skinTemp" path="/sys/class/thermal/thermal_message/board_sensor_temp" intervalTime="6000"/>
+        <item name="batteryTemp" path="/sys/class/power_supply/battery/temp" intervalTime="6000"/>
+        <item name="system_server" allowedNotifyWindowTypes="2038" allowedNotifyProcessUids="-1:10000000" />
+        <item name="dumpxml" value="-dumpxmltree" />
+        <item name="snapshotPerfTimeout" value="5000" />
+        <item name="PROTOCOL_XML_VERSION" value="1" />
+    </config>
+    <config name="camera_id_name">
+        <item name="front"          value="[1]" />
+        <item name="rear"          value="[2][3][4][5][6][7][8][9][10]" />
+    </config>
+    <config name="camMode">
+
+        <item name="unspecified" value="0xA0"/>
+        <item name="fun" value="0xA1"/>
+        <item name="record_video" value="0xA2"/>
+        <item name="capture" value="0xA3"/>
+        <item name="cinemaster" value="0xA4"/>
+        <item name="panorama" value="0xA6"/>
+        <item name="pro_photo" value="0xA7"/>
+        <item name="fast_motion" value="0xA9"/>
+        <item name="video_hfr" value="0xAA"/>
+        <item name="portrait" value="0xAB"/>
+        <item name="new_slow_motion" value="0xAC"/>
+        <item name="super_night" value="0xAD"/>
+        <item name="live" value="0xAE"/>
+        <item name="pixel" value="0xAF"/>
+
+        <item name="wide_selfie" value="0xB0"/>
+        <item name="standalone_macro" value="0xB2"/>
+        <item name="live_vv" value="0xB3"/>
+        <item name="pro_video" value="0xB4"/>
+        <item name="id_card" value="0xB6"/>
+        <item name="mi_live" value="0xB7"/>
+        <item name="mimoji" value="0xB8"/>
+        <item name="clone" value="0xB9"/>
+        <item name="doc" value="0xBA"/>
+        <item name="pro_ambilight" value="0xBB"/>
+        <item name="super_moon" value="0xBC"/>
+        <item name="film_dolly_zoom" value="0xBD"/>
+
+        <item name="dual_video" value="0xCC"/>
+        <item name="ai_watermark" value="0xCD"/>
+        <item name="film_slowshutter" value="0xCF"/>
+
+        <item name="film_exposuredelay" value="0xD0"/>
+        <item name="dummy_vv" value="0xD1"/>
+        <item name="dummy_clone" value="0xD2"/>
+        <item name="dummy_film" value="0xD3"/>
+        <item name="film_paralleldream" value="0xD4"/>
+        <item name="film_time_freeze" value="0xD5"/>
+        <item name="super_night_video" value="0xD6"/>
+        <item name="quick_snap" value="0xD8"/>
+        <item name="film_time_backflow" value="0xD9"/>
+        <item name="vlog_pro" value="0xDB"/>
+        <item name="dummy_micro_film" value="0xDC"/>
+
+        <item name="cosmetic_mirror" value="0xE0"/>
+        <item name="street" value="0xE1"/>
+        <item name="friend_display" value="0xE2"/>
+        <item name="cinematic" value="0xE3"/>
+        <item name="photo_booth" value="0xE6"/>
+        <item name="live_motion" value="0xE7"/>
+
+        <item name="uninstalled" value="0xFD"/>
+        <item name="more" value="0xFE"/>
+        <item name="edit" value="0xFF"/>
+        <item name="legend" value="0x100"/>
+    </config>
+    <config name="inhibit_sysapp_list">
+         <item name="com.lbe.security.miui" />
+         <item name="com.mi.health"/>
+         <item name="com.milink.service"/>
+         <item name="com.miui.analytics"/>
+         <item name="com.miui.daemon"/>
+         <item name="com.miui.mishare.connectivity"/>
+         <item name="com.miui.securitycenter"/>
+         <item name="com.miui.voiceassist"/>
+         <item name="com.qualcomm.qti.workloadclassifier"/>
+         <item name="com.xiaomi.bluetooth" />
+         <item name="com.miui.newhome:launcher" />
+         <item name="com.xiaomi.smarthome:plugin0"/>
+         <item name="com.xiaomi.smarthome"/>
+         <item name="com.android.quicksearchbox"/>
+         <item name="com.xiaomi.misettings"/>
+         <item name="com.android.settings:remote"/>
+    </config>
+    <config name="inhibit_app_list">
+         <item name="com.google.android.providers.media.module" />
+         <item name="com.sohu.inputmethod.sogou.xiaomi"/>
+         <item name="com.zhihu.android"/>
+         <item name="com.smile.gifmaker"/>
+         <item name="com.tencent.mm"/>
+         <item name="com.luna.music"/>
+         <item name="com.ss.android.ugc.aweme.lite"/>
+         <item name="com.ss.android.ugc.aweme"/>
+         <item name="com.tencent.tmgp.sgame"/>
+         <item name="com.tencent.lolm"/>
+         <item name="com.tencent.qqlive"/>
+         <item name="com.tencent.mobileqq"/>
+         <item name="com.qiyi.video.lite"/>
+         <item name="com.ss.android.article.lite"/>
+         <item name="tv.danmaku.bili"/>
+         <item name="com.taobao.idlefish"/>
+         <item name="com.mycompany.app.soulbrowser"/>
+         <item name="com.jingdong.app.mall"/>
+         <item name="com.xunmeng.pinduoduo"/>
+         <item name="com.kuaishou.nebula"/>
+         <item name="com.taobao.taobao"/>
+         <item name="com.xiaomi.shop"/>
+    </config>
+    <config name="inhibit_native_list">
+         <item name="logd" />
+         <item name="diag-router" />
+         <item name="cnss_diag" />
+         <item name="dex2oat64" />
+         <item name="dex2oat" />
+         <item name="mrmd" />
+         <item name="perfinsight" />
+         <item name="tango_pretranslator" />
+    </config>
+    <config name="actionAlias">
+        <item name="halConfig" value="andoidLogCtl"/>
+        <item name="halConfig" value="halTraceCtl"/>
+        <item name="halConfig" value="halInfoCollect"/>
+        <item name="halConfig" value="offineLogCtl"/>
+        <item name="halConfig" value="algoPolicy"/>
+        <item name="halConfig" value="algoPriority"/>
+        <item name="halConfig" value="algoAffinity"/>
+        <item name="tripod"    value="dsacTripod"/>
+
+
+        <item name="algoBypass"  value="algoBypass_HDR" />
+        <item name="algoBypass"  value="algoBypass_HDR_LL" />
+        <item name="algoBypass"  value="algoBypass_HDR_F" />
+
+        <item name="algoBypass"  value="algoBypass_SR" />
+
+        <item name="algoBypass"  value="algoBypass_SN" />
+        <item name="algoBypass"  value="algoBypass_SN_F" />
+        <item name="algoBypass"  value="algoBypass_MMFPLUS" />
+
+        <item name="algoBypass"  value="algoBypass_SE" />
+
+        <item name="algoBypass"  value="algoBypass_ELL" />
+        <item name="algoBypass"  value="algoBypass_SNSC" />
+        <item name="algoBypass"  value="algoBypass_EDOF" />
+        <item name="algoBypass"  value="algoBypass_SDSR" />
+        <item name="algoBypass"  value="algoBypass_AINR" />
+        <item name="algoBypass"  value="algoBypass_SMARTAE" />
+
+        <item name="algoBypass"  value="algoBypass_FUSION" />
+        <item name="algoBypass"  value="algoBypass_PANSHOTTRACKAF" />
+        <item name="algoBypass"  value="algoBypass_SOT" />
+        <item name="algoBypass"  value="algoBypass_AICAMERA" />
+        <item name="algoBypass"  value="algoBypass_FD" />
+        <item name="algoBypass"  value="algoBypass_LOCALAWB" />
+        <item name="algoBypass"  value="algoBypass_BEAUTY" />
+        <item name="algoBypass"  value="algoBypass_PORTRAIT_HD" />
+        <item name="algoBypass"  value="algoBypass_DSAC" />
+        <item name="algoBypass"  value="algoBypass_HDSR" />
+        <item name="algoBypass"  value="algoBypass_HDRSR" />
+        <item name="algoBypass"  value="algoBypass_SRSE" />
+        <item name="algoBypass"  value="algoBypass_DXG" />
+        <item name="algoBypass"  value="algoBypass_EISV2" />
+        <item name="algoBypass"  value="algoBypass_EISV3" />
+        <item name="algoBypass"  value="algoBypass_FD" />
+        <item name="algoBypass"  value="algoBypass_HQQS" />
+        <item name="algoBypass"  value="algoBypass_VIDEO_BOKEH" />
+        <item name="algoBypass"  value="algoBypass_VIDEO_BOKEH_LITE" />
+        <item name="algoBypass"  value="algoBypass_PREVIEW_BOKEH" />
+        <item name="algoBypass"  value="algoBypass_AINR_DAY" />
+        <item name="algoBypass"  value="algoBypass_AINR_LL" />
+        <item name="algoBypass"  value="algoBypass_GESTURE_EFFECTS" />
+        <item name="algoBypass"  value="algoBypass_PREVIEW_HDR_DISABLE" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_LOFIC_DISABLE" />
+        <item name="algoBypass"  value="algoBypass_PREVIEW_CMS_DISABLE" />
+        <item name="algoBypass"  value="algoBypass_PREVIEW_ISZ_DISABLE" />
+        <item name="algoBypass"  value="algoBypass_DSAC_LITE" />
+        <item name="algoBypass"  value="algoBypass_DSAC_ALL" />
+
+        <item name="algoBypass"  value="algoBypass_BURST" />
+
+        <item name="algoBypass"  value="algoBypass_VIDEO_AINR" />
+        <item name="algoBypass"  value="algoBypass_AISFNR" />
+
+        <item name="algoBypass"  value="algoBypass_CAPTURE_SOUND" />
+
+        <item name="algoBypass"  value="algoBypass_ZOOM_TOGGLE_VIBRATION" />
+
+        <item name="algoBypass"  value="algoBypass_FLASH" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_BEAUTY" />
+        <item name="algoBypass"  value="algoBypass_CAPTURE_BEAUTY" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_LDC" />
+        <item name="algoBypass"  value="algoBypass_CAPTURE_LDC" />
+
+        <item name="algoBypass"  value="algoBypass_CAPTURE_DEPURPLE" />
+
+        <item name="algoBypass"  value="algoBypass_FLICKER" />
+
+        <item name="algoBypass"  value="algoBypass_LIVEPHOTO_EIS" />
+
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_DOL2_DISABLE" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_LBMF_DISABLE" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_DXGCOM_DISABLE" />
+
+
+        <item name="algoBypass"  value="algoBypass_AUX_MODE" />
+
+        <item name="algoBypass"  value="algoBypass_AINR_LL" />
+        <item name="algoBypass"  value="algoBypass_AINR_DAY" />
+
+        <item name="algoBypass"  value="algoBypass_VIDEO_AIUL" />
+        <item name="algoBypass"  value="algoBypass_VIDEO_VIULL" />
+
+        <item name="algoBypass"  value="algoBypass_LIVP_HAND_RAISE_DETECT" />
+
+        <item name="algoBypass"  value="algoBypass_DIS" />
+
+        <item name="algoBypass"  value="algoBypass_SENSOR_OIS" />
+
+        <item name="algoBypass"  value="algoBypass_ZOOMBYPASS" />
+
+        <item name="algoBypass"  value="algoBypass_REMOSAICTRIGGER" />
+
+        <item name="algoBypass"  value="algoBypass_BOKEHLIVEPHOTO_UI" />
+
+        <item name="algoBypass"  value="algoBypass_LEGEND_STYLETRANS" />
+
+        <item name="algoBypass"  value="algoBypass_MONOPAN" />
+
+        <item name="algoBypass"  value="algoBypass_LEGEND_FILTER_PREVIEW" />
+
+        <item name="algoBypass"  value="algoBypass_LEGEND_FILTER_SNAPSHOT" />
+
+        <item name="algoBypass"  value="algoBypass_TRACKER" />
+
+        <item name="algoBypass"  value="algoBypass_AIAWB" />
+
+        <item name="algoBypass"  value="algoBypass_V2_DIS" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_FUSION" />
+
+        <item name="algoBypass"  value="algoBypass_HDSMARTAE" />
+
+        <item name="algoBypass"  value="algoBypass_HDMFNR" />
+
+        <item name="algoBypass"  value="algoBypass_PREVIEW_MOTION" />
+
+        <item name="algoBypass"  value="algoBypass_BeautyPreview" />
+
+        <item name="algoBypass"  value="algoBypass_BeautyCapture" />
+
+        <item name="algoBypass"  value="algoBypass_SAT_ALIGNMENT" />
+
+        <item name="algoBypass"  value="algoBypass_BINNING" />
+
+    </config>
+    <app prio="100" name="__DEFAULT__" >
+        <profile name="normal">
+            <activity name="__DEFAULT__">
+
+                <action name="selfLog" value="3" />
+                <action name ="skinTempMonitorSetting" enable="0" />
+                <action name ="memoryInfoMonitorSetting" enable="0" />
+                <action name ="cpuLoadingMonitorSetting" enable="0" />
+                <action name ="motionStateMonitorSetting" enable="0" />
+                <action name="layerFpsSetting" enable="0" />
+                <action name="gcSetting" enable="1" interval="3000" />
+                <action name="cpuIsolation" cpuMask="0x0"/>
+                <action name="driverSwitches" switches="SCD|PID|BID" value="0:0:0"/>
+                <action name="halConfig" androidLog="1" offlineLog="1" halTrace="1" snapshotInfoCollectEnable="enabled" algoSchedPolicy="-1" algoSchedPriority="-1" algoSchedAffinity="-1"/>
+                <action name="inhibit" cpushare="__DEFAULT__" />
+                <action name="viptask"  value="-1" />
+                <action name="memWaterMark"  value="-1" />
+
+            </activity>
+        </profile>
+    </app>
+</policy>

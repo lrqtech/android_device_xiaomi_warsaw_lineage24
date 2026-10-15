@@ -1,0 +1,7 @@
+java_library {
+    name: "warsaw-cameramind-wire-regression",
+    srcs: ["FrameCodecRegression.java"],
+    static_libs: ["warsaw-cameramind-wire"],
+    installable: true,
+    compile_dex: true,
+}

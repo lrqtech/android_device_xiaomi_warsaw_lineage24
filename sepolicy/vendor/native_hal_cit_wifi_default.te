@@ -1,0 +1,43 @@
+type hal_cit_wifi_default, domain;
+
+domain_auto_trans(init, hal_cit_wifi_default_exec, hal_cit_wifi_default)
+
+typeattribute hal_cit_wifi_default hal_cit_wifi;
+
+typeattribute hal_cit_wifi_default hal_cit_wifi_server;
+
+typeattribute hal_cit_wifi_default halserverdomain;
+
+binder_use(hal_cit_wifi_default)
+
+allow hal_cit_wifi_default hal_cit_wifi_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_cit_wifi_default servicemanager:binder { call transfer };
+
+allow hal_cit_wifi_default vendor_cit_wifi_prop:file { read getattr map open };
+
+allow hal_cit_wifi_default vendor_wlan_chip_prop:file { read getattr map open };
+
+allow hal_cit_wifi_default sysfs:file { read write open };
+
+allow hal_cit_wifi_default sysfs_block:file { read write open };
+
+allow hal_cit_wifi_default sysfs_mem_sleep:file { read write open };
+
+allow hal_cit_wifi_default sysfs_powercap:file { read write open };
+
+allow hal_cit_wifi_default sysfs_thunderbolt:file { read write open };
+
+allow hal_cit_wifi_default sysfs_typec:file { read write open };
+
+allow hal_cit_wifi_default sysfs_udc:file { read write open };
+
+allow hal_cit_wifi_default sysfs_usb_pd:file { read write open };
+
+allow hal_cit_wifi_default sysfs_usbcore:file { read write open };
+
+allow hal_cit_wifi_default sysfs_net:file { read write open };
+
+allow hal_cit_wifi_default hal_cit_wifi_service:service_manager { add };
+
+allow hal_cit_wifi_default vendor_shell_exec:file { read getattr map execute open };

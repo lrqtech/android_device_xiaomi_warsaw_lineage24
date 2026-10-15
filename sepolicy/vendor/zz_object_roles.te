@@ -1,0 +1,69 @@
+typeattribute hal_camera_observer_service vendor_service;
+
+typeattribute hal_micrtk_service vendor_service;
+
+typeattribute hal_misecmedia_service vendor_service;
+
+typeattribute hal_mseccam_service vendor_service;
+
+typeattribute hal_ozonotify_service vendor_service;
+
+typeattribute hal_seaaudio_service vendor_service;
+
+typeattribute hal_visdisplaysrv_service vendor_service;
+
+typeattribute camera_persist_file vendor_persist_type;
+
+typeattribute mitee_sfs_file vendor_persist_type;
+
+typeattribute mnt_vendor_file vendor_persist_type;
+
+typeattribute vendor_mitrustedui_persist_file vendor_persist_type;
+
+typeattribute vendor_persist_alarm_file vendor_persist_type;
+
+typeattribute vendor_persist_audio_file vendor_persist_type;
+
+typeattribute vendor_persist_bluetooth_file vendor_persist_type;
+
+typeattribute vendor_persist_data_file vendor_persist_type;
+
+typeattribute vendor_persist_drm_file vendor_persist_type;
+
+typeattribute vendor_persist_elabel_file vendor_persist_type;
+
+typeattribute vendor_persist_feature_enabler_file vendor_persist_type;
+
+typeattribute vendor_persist_file vendor_persist_type;
+
+typeattribute vendor_persist_haptics_file vendor_persist_type;
+
+typeattribute vendor_persist_hexlp_file vendor_persist_type;
+
+typeattribute vendor_persist_hvdcp_file vendor_persist_type;
+
+typeattribute vendor_persist_iar_db_file vendor_persist_type;
+
+typeattribute vendor_persist_mmi_file vendor_persist_type;
+
+typeattribute vendor_persist_qcc_file vendor_persist_type;
+
+typeattribute vendor_persist_qti_fp_file vendor_persist_type;
+
+typeattribute vendor_persist_rfs_file vendor_persist_type;
+
+typeattribute vendor_persist_rfs_shared_hlos_file vendor_persist_type;
+
+typeattribute vendor_persist_secnvm_file vendor_persist_type;
+
+typeattribute vendor_persist_sensors_file vendor_persist_type;
+
+typeattribute vendor_persist_spudc_file vendor_persist_type;
+
+typeattribute vendor_persist_time_file vendor_persist_type;
+
+typeattribute vendor_persist_uwb_file vendor_persist_type;
+
+typeattribute vendor_persist_vpp_file vendor_persist_type;
+
+typeattribute vendor_qmcs_file vendor_qmcs_file_type;

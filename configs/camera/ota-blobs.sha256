@@ -1,0 +1,6 @@
+# Unmodified OS4.0.0.15.XHPCNXM ODM inputs; paths below proprietary/.
+75eeeee01cfeaa7e3dd6469fdc76b7a119a5cdb8c04bd4f2647b6df2432cdb01  odm/lib64/libmlremosaicengine.so
+d1e70d88e9f8f8fd05a45cda5cc186a30433ef964e3591415a9eebbd2361b189  odm/lib64/libmmfp.so
+02ef1594f09f5ca7ee2ac8070b358956150ea19b9210f08a3eaa2c4609892bba  odm/lib64/libqll.so
+325cb8feaf12e2006744453a54cbf253e64b13c2dde61f64fe969d3db8f341c7  odm/lib64/libqllengine.so
+1887c405fea9523995d8566eef8459716a9903ee5bee8c20e0828c01c9304c3b  vendor/framework/androidx.camera.extensions.impl.jar

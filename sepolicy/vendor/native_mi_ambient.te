@@ -1,0 +1,67 @@
+type mi_ambient, domain;
+
+domain_auto_trans(init, mi_ambient_exec, mi_ambient)
+
+typeattribute mi_ambient mlstrustedsubject;
+
+allow mi_ambient mi_ambient_exec:file { read getattr map execute open entrypoint };
+
+allow mi_ambient sysfs_thermal:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ambient sysfs_thermal:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ambient sysfs_thermal:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ambient vendor_sysfs_battery_supply:dir { read getattr open search };
+
+allow mi_ambient vendor_sysfs_battery_supply:file { read getattr open watch };
+
+allow mi_ambient sysfs:dir { read getattr open search };
+
+allow mi_ambient sysfs_block:dir { read getattr open search };
+
+allow mi_ambient sysfs_mem_sleep:dir { read getattr open search };
+
+allow mi_ambient sysfs_powercap:dir { read getattr open search };
+
+allow mi_ambient sysfs_thunderbolt:dir { read getattr open search };
+
+allow mi_ambient sysfs_typec:dir { read getattr open search };
+
+allow mi_ambient sysfs_udc:dir { read getattr open search };
+
+allow mi_ambient sysfs_usb_pd:dir { read getattr open search };
+
+allow mi_ambient sysfs_usbcore:dir { read getattr open search };
+
+allow mi_ambient vendor_sysfs_usb_supply:dir { read getattr open search };
+
+allow mi_ambient vendor_sysfs_usb_supply:file { read getattr open };
+
+allow mi_ambient sysfs:file { write lock append map open };
+
+allow mi_ambient sysfs_block:file { write lock append map open };
+
+allow mi_ambient sysfs_mem_sleep:file { write lock append map open };
+
+allow mi_ambient sysfs_powercap:file { write lock append map open };
+
+allow mi_ambient sysfs_thunderbolt:file { write lock append map open };
+
+allow mi_ambient sysfs_typec:file { write lock append map open };
+
+allow mi_ambient sysfs_udc:file { write lock append map open };
+
+allow mi_ambient sysfs_usb_pd:file { write lock append map open };
+
+allow mi_ambient sysfs_usbcore:file { write lock append map open };
+
+allow mi_ambient sysfs_thermal:file { write lock append map open };
+
+allow mi_ambient vendor_sysfs_xm_power:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ambient vendor_sysfs_xm_power:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ambient vendor_sysfs_xm_power:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ambient vendor_sysfs_xm_power:file { ioctl read write getattr lock append map open watch watch_reads };

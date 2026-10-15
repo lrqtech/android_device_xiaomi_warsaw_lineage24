@@ -1,0 +1,465 @@
+--- a/services/audiopolicy/common/include/Volume.h
++++ b/services/audiopolicy/common/include/Volume.h
+@@ -56,6 +56,15 @@
+     DEVICE_CATEGORY_EARPIECE,
+     DEVICE_CATEGORY_EXT_MEDIA,
+     DEVICE_CATEGORY_HEARING_AID,
++    // OEM volume curves transported by the audio HAL. Keep standard values unchanged.
++    DEVICE_CATEGORY_HEADSET_CE,
++    DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE,
++    DEVICE_CATEGORY_A2DP,
++    DEVICE_CATEGORY_A2DP_CE,
++    DEVICE_CATEGORY_A2DP_SPATIALIZER_CE,
++    DEVICE_CATEGORY_USB,
++    DEVICE_CATEGORY_USB_CE,
++    DEVICE_CATEGORY_USB_SPATIALIZER_CE,
+     DEVICE_CATEGORY_CNT
+ };
+ 
+@@ -114,7 +123,8 @@
+      *
+      * @return device category.
+      */
+-    static device_category getDeviceCategory(const android::DeviceTypeSet& deviceTypes)
++    static device_category getDeviceCategory(const android::DeviceTypeSet& deviceTypes,
++                                              bool useExtendedCategories = false)
+     {
+         switch(getDeviceForVolume(deviceTypes)) {
+         case AUDIO_DEVICE_OUT_EARPIECE:
+@@ -123,12 +133,14 @@
+         case AUDIO_DEVICE_OUT_WIRED_HEADPHONE:
+         case AUDIO_DEVICE_OUT_BLUETOOTH_SCO:
+         case AUDIO_DEVICE_OUT_BLUETOOTH_SCO_HEADSET:
++            return DEVICE_CATEGORY_HEADSET;
+         case AUDIO_DEVICE_OUT_BLUETOOTH_A2DP:
+         case AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES:
+-        case AUDIO_DEVICE_OUT_USB_HEADSET:
+         case AUDIO_DEVICE_OUT_BLE_HEADSET:
+         case AUDIO_DEVICE_OUT_BLE_BROADCAST:
+-            return DEVICE_CATEGORY_HEADSET;
++            return useExtendedCategories ? DEVICE_CATEGORY_A2DP : DEVICE_CATEGORY_HEADSET;
++        case AUDIO_DEVICE_OUT_USB_HEADSET:
++            return useExtendedCategories ? DEVICE_CATEGORY_USB : DEVICE_CATEGORY_HEADSET;
+         case AUDIO_DEVICE_OUT_HEARING_AID:
+         case AUDIO_DEVICE_OUT_BLE_HEARING_AID:
+             return DEVICE_CATEGORY_HEARING_AID;
+--- a/services/audiopolicy/common/managerdefinitions/include/IVolumeCurves.h
++++ b/services/audiopolicy/common/managerdefinitions/include/IVolumeCurves.h
+@@ -39,6 +39,12 @@
+     virtual int getVolumeIndexMax() const = 0;
+     virtual int setVolumeIndexMax(int index) = 0;
+     virtual float volIndexToDb(device_category device, int indexInUi) const = 0;
++    virtual bool hasVolumeCurveForDeviceCategory(device_category) const { return false; }
++    device_category getDeviceCategory(const DeviceTypeSet& devices) const {
++        const auto extended = Volume::getDeviceCategory(devices, true);
++        return hasVolumeCurveForDeviceCategory(extended)
++                ? extended : Volume::getDeviceCategory(devices);
++    }
+     virtual bool hasVolumeIndexForDevice(audio_devices_t device) const = 0;
+     virtual status_t initVolume(int indexMin, int indexMax) = 0;
+     virtual std::vector<audio_attributes_t> getAttributes() const = 0;
+--- a/services/audiopolicy/common/managerdefinitions/src/TypeConverter.cpp
++++ b/services/audiopolicy/common/managerdefinitions/src/TypeConverter.cpp
+@@ -30,6 +30,14 @@
+     MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_EARPIECE),
+     MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_EXT_MEDIA),
+     MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_HEARING_AID),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_HEADSET_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_A2DP),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_A2DP_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_A2DP_SPATIALIZER_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_USB),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_USB_CE),
++    MAKE_STRING_FROM_ENUM(DEVICE_CATEGORY_USB_SPATIALIZER_CE),
+     TERMINATOR
+ };
+ 
+--- a/services/audiopolicy/engine/common/include/VolumeCurve.h
++++ b/services/audiopolicy/engine/common/include/VolumeCurve.h
+@@ -168,6 +168,11 @@
+         return index;
+     }
+ 
++    bool hasVolumeCurveForDeviceCategory(device_category device) const override
++    {
++        return indexOfKey(device) >= 0;
++    }
++
+     virtual float volIndexToDb(device_category deviceCat, int indexInUi) const
+     {
+         sp<VolumeCurve> vc = getCurvesFor(deviceCat);
+--- a/services/audiopolicy/engine/config/src/EngineConfig.cpp
++++ b/services/audiopolicy/engine/config/src/EngineConfig.cpp
+@@ -115,35 +115,61 @@
+ ConversionResult<std::string> aidl2legacy_DeviceCategory(
+         const media::audio::common::AudioHalVolumeCurve::DeviceCategory aidl) {
+     using DeviceCategory = media::audio::common::AudioHalVolumeCurve::DeviceCategory;
+-    switch (aidl) {
+-        case DeviceCategory::HEADSET:
++    switch (static_cast<int8_t>(aidl)) {
++        case static_cast<int8_t>(DeviceCategory::HEADSET):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_HEADSET);
+-        case DeviceCategory::SPEAKER:
++        case static_cast<int8_t>(DeviceCategory::SPEAKER):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_SPEAKER);
+-        case DeviceCategory::EARPIECE:
++        case static_cast<int8_t>(DeviceCategory::EARPIECE):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_EARPIECE);
+-        case DeviceCategory::EXT_MEDIA:
++        case static_cast<int8_t>(DeviceCategory::EXT_MEDIA):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_EXT_MEDIA);
+-        case DeviceCategory::HEARING_AID:
++        case static_cast<int8_t>(DeviceCategory::HEARING_AID):
+             return legacy_device_category_to_string(DEVICE_CATEGORY_HEARING_AID);
++        // OEM AIDL values differ from its legacy enum (which includes SPEAKER_OLD).
++        case 5:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_HEADSET_CE);
++        case 6:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE);
++        case 7:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_A2DP);
++        case 8:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_A2DP_CE);
++        case 9:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_A2DP_SPATIALIZER_CE);
++        case 10:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_USB);
++        case 11:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_USB_CE);
++        case 12:
++            return legacy_device_category_to_string(DEVICE_CATEGORY_USB_SPATIALIZER_CE);
+     }
+     return base::unexpected(BAD_VALUE);
+ }
+ 
+ ConversionResult<CurvePoint> aidl2legacy_AudioHalCurvePoint_CurvePoint(
+-        const media::audio::common::AudioHalVolumeCurve::CurvePoint& aidl) {
++        const media::audio::common::AudioHalVolumeCurve::CurvePoint& aidl,
++        bool extendedIndices) {
+     CurvePoint legacy;
+-    legacy.index = VALUE_OR_RETURN(convertIntegral<int>(aidl.index));
++    // These OEM groups encode the original XML 0..150 indices in an AIDL byte.
++    // Decode its bit pattern only for the explicitly supported extended groups.
++    const int index = extendedIndices ? static_cast<uint8_t>(aidl.index) : aidl.index;
++    if (index < 0 || index > (extendedIndices ? 150 : 100)) {
++        return base::unexpected(BAD_VALUE);
++    }
++    legacy.index = index;
+     legacy.attenuationInMb = aidl.attenuationMb;
+     return legacy;
+ }
+ 
+ ConversionResult<VolumeCurve> aidl2legacy_AudioHalVolumeCurve_VolumeCurve(
+-        const media::audio::common::AudioHalVolumeCurve& aidl) {
++        const media::audio::common::AudioHalVolumeCurve& aidl, bool extendedIndices) {
+     VolumeCurve legacy;
+     legacy.deviceCategory = VALUE_OR_RETURN(aidl2legacy_DeviceCategory(aidl.deviceCategory));
+     legacy.curvePoints = VALUE_OR_RETURN(convertContainer<CurvePoints>(
+-                    aidl.curvePoints, aidl2legacy_AudioHalCurvePoint_CurvePoint));
++                    aidl.curvePoints, [extendedIndices](const auto& point) {
++                        return aidl2legacy_AudioHalCurvePoint_CurvePoint(point, extendedIndices);
++                    }));
+     return legacy;
+ }
+ 
+@@ -153,8 +179,15 @@
+     legacy.name = aidl.name;
+     legacy.indexMin = aidl.minIndex;
+     legacy.indexMax = aidl.maxIndex;
++    const bool extendedIndices = std::any_of(aidl.volumeCurves.begin(), aidl.volumeCurves.end(),
++            [](const auto& curve) {
++                const int category = static_cast<int8_t>(curve.deviceCategory);
++                return category >= 5 && category <= 12;
++            });
+     legacy.volumeCurves = VALUE_OR_RETURN(convertContainer<VolumeCurves>(
+-                    aidl.volumeCurves, aidl2legacy_AudioHalVolumeCurve_VolumeCurve));
++                    aidl.volumeCurves, [extendedIndices](const auto& curve) {
++                        return aidl2legacy_AudioHalVolumeCurve_VolumeCurve(curve, extendedIndices);
++                    }));
+     return legacy;
+ }
+ }  // namespace
+--- a/services/audiopolicy/engine/config/tests/Android.bp
++++ b/services/audiopolicy/engine/config/tests/Android.bp
+@@ -11,8 +11,13 @@
+ cc_test {
+     name: "audiopolicy_engineconfig_tests",
+ 
++    defaults: ["latest_android_media_audio_common_types_cpp_shared"],
++
+     shared_libs: [
+         "libaudiopolicycomponents",
++        "libaudiofoundation",
++        "libaudio_aidl_conversion_common_cpp",
++        "libbinder",
+         "libbase",
+         "liblog",
+         "libmedia_helper",
+@@ -21,9 +26,12 @@
+     ],
+     static_libs: [
+         "libaudiopolicyengine_config",
++        "libaudiopolicyengine_common",
+     ],
+ 
+-    srcs: ["engineconfig_tests.cpp"],
++    srcs: ["engineconfig_tests.cpp", "engineconfig_vendor_volume_tests.cpp"],
++
++    header_libs: ["libaudiopolicyengine_interface_headers"],
+ 
+     data: [":audiopolicy_engineconfig_files"],
+ 
+--- a/services/audiopolicy/engine/config/tests/resources/Android.bp
++++ b/services/audiopolicy/engine/config/tests/resources/Android.bp
+@@ -12,6 +12,7 @@
+     name: "audiopolicy_engineconfig_files",
+     srcs: [
+         "test_apm_volume_tables.xml",
++        "test_warsaw_volume_engine.parcel",
+         "test_invalid_apm_volume_tables.xml",
+     ],
+ }
+--- a/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
++++ b/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
+@@ -9016,7 +9016,7 @@
+                                                               const DeviceTypeSet &deviceTypes)
+ {
+     audio_devices_t volumeDevice = Volume::getDeviceForVolume(deviceTypes);
+-    device_category deviceCategory = Volume::getDeviceCategory({volumeDevice});
++    device_category deviceCategory = curves.getDeviceCategory({volumeDevice});
+     float volumeDb = curves.volIndexToDb(deviceCategory, index);
+ 
+     const auto it = mAbsoluteVolumeDrivingStreams.find(volumeDevice);
+@@ -9039,8 +9039,9 @@
+         } else {
+             IVolumeCurves &curvesAbs = getVolumeCurves(vsToDriveAbs);
+             int indexAbs = curvesAbs.getVolumeIndex({volumeDevice});
+-            float volumeDbAbs = curvesAbs.volIndexToDb(deviceCategory, indexAbs);
+-            float volumeDbAbsMax = curvesAbs.volIndexToDb(deviceCategory,
++            const auto deviceCategoryAbs = curvesAbs.getDeviceCategory({volumeDevice});
++            float volumeDbAbs = curvesAbs.volIndexToDb(deviceCategoryAbs, indexAbs);
++            float volumeDbAbsMax = curvesAbs.volIndexToDb(deviceCategoryAbs,
+                                                           curvesAbs.getVolumeIndexMax());
+             float newVolumeDb = fminf(volumeDb + volumeDbAbsMax - volumeDbAbs, volumeDbMax);
+             ALOGV("%s: abs vol stream %d with attenuation %f is adjusting stream %d from "
+@@ -9063,7 +9064,7 @@
+     if (adjustAttenuation) {
+         volumeDb = adjustDeviceAttenuationForAbsVolume(curves, volumeSource, index, deviceTypes);
+     } else {
+-        volumeDb = curves.volIndexToDb(Volume::getDeviceCategory(deviceTypes), index);
++        volumeDb = curves.volIndexToDb(curves.getDeviceCategory(deviceTypes), index);
+     }
+     ALOGV("%s volume source %d, index %d,  devices %s, compute internal %b ", __func__,
+           volumeSource, index, dumpDeviceTypes(deviceTypes).c_str(), computeInternalInteraction);
+--- /dev/null
++++ b/services/audiopolicy/engine/config/tests/engineconfig_vendor_volume_tests.cpp
+@@ -0,0 +1,162 @@
++/*
++ * Copyright (C) 2026 The LineageOS Project
++ * SPDX-License-Identifier: Apache-2.0
++ */
++#include <algorithm>
++#include <array>
++#include <cmath>
++#include <cstdint>
++#include <string>
++#include <android-base/file.h>
++#include <binder/Parcel.h>
++#include <gtest/gtest.h>
++#include "EngineConfig.h"
++#include "VolumeCurve.h"
++
++namespace android {
++namespace {
++using media::audio::common::AudioHalEngineConfig;
++using media::audio::common::AudioHalVolumeCurve;
++using Category = AudioHalVolumeCurve::DeviceCategory;
++
++// Captured from the unmodified official OS4 audio HAL getEngineConfig on Warsaw.
++// The Parcel contains configuration only, without user data or Binder objects.
++bool readOfficialConfig(AudioHalEngineConfig* config) {
++    std::string bytes;
++    if (!base::ReadFileToString(base::GetExecutableDirectory() +
++                               "/test_warsaw_volume_engine.parcel", &bytes)) return false;
++    Parcel parcel;
++    return parcel.setData(reinterpret_cast<const uint8_t*>(bytes.data()), bytes.size()) == OK
++            && config->readFromParcel(&parcel) == OK;
++}
++const std::array<const char*, 13> kCategoryNames = {
++    "DEVICE_CATEGORY_HEADSET", "DEVICE_CATEGORY_SPEAKER", "DEVICE_CATEGORY_EARPIECE",
++    "DEVICE_CATEGORY_EXT_MEDIA", "DEVICE_CATEGORY_HEARING_AID", "DEVICE_CATEGORY_HEADSET_CE",
++    "DEVICE_CATEGORY_HEADSET_SPATIALIZER_CE", "DEVICE_CATEGORY_A2DP", "DEVICE_CATEGORY_A2DP_CE",
++    "DEVICE_CATEGORY_A2DP_SPATIALIZER_CE", "DEVICE_CATEGORY_USB", "DEVICE_CATEGORY_USB_CE",
++    "DEVICE_CATEGORY_USB_SPATIALIZER_CE"};
++
++TEST(EngineConfigVendorVolumesTest, PreservesCompleteOfficialConfiguration) {
++    AudioHalEngineConfig aidl;
++    ASSERT_TRUE(readOfficialConfig(&aidl));
++    ASSERT_EQ(8u, aidl.productStrategies.size());
++    ASSERT_EQ(12u, aidl.volumeGroups.size());
++    auto result = engineConfig::convert(aidl);
++    ASSERT_NE(nullptr, result.parsedConfig);
++    EXPECT_EQ(0u, result.nbSkippedElement);
++    ASSERT_EQ(aidl.productStrategies.size(), result.parsedConfig->productStrategies.size());
++    ASSERT_EQ(aidl.volumeGroups.size(), result.parsedConfig->volumeGroups.size());
++    for (size_t i = 0; i < aidl.volumeGroups.size(); ++i) {
++        const auto& input = aidl.volumeGroups[i];
++        const auto& output = result.parsedConfig->volumeGroups[i];
++        EXPECT_EQ(input.name, output.name);
++        EXPECT_EQ(input.minIndex, output.indexMin);
++        EXPECT_EQ(input.maxIndex, output.indexMax);
++        ASSERT_EQ(input.volumeCurves.size(), output.volumeCurves.size());
++        for (size_t j = 0; j < input.volumeCurves.size(); ++j) {
++            const auto& inCurve = input.volumeCurves[j];
++            const auto& outCurve = output.volumeCurves[j];
++            const auto category = static_cast<uint8_t>(inCurve.deviceCategory);
++            ASSERT_LT(category, kCategoryNames.size());
++            EXPECT_EQ(kCategoryNames[category], outCurve.deviceCategory);
++            ASSERT_EQ(inCurve.curvePoints.size(), outCurve.curvePoints.size());
++            for (size_t k = 0; k < inCurve.curvePoints.size(); ++k) {
++                EXPECT_EQ(static_cast<uint8_t>(inCurve.curvePoints[k].index),
++                          outCurve.curvePoints[k].index);
++                EXPECT_EQ(inCurve.curvePoints[k].attenuationMb,
++                          outCurve.curvePoints[k].attenuationInMb);
++            }
++        }
++    }
++}
++
++TEST(EngineConfigVendorVolumesTest, MusicCurveMutesAndAttenuatesAcrossOfficialUiRange) {
++    AudioHalEngineConfig aidl;
++    ASSERT_TRUE(readOfficialConfig(&aidl));
++    auto result = engineConfig::convert(aidl);
++    ASSERT_NE(nullptr, result.parsedConfig);
++    const auto& groups = result.parsedConfig->volumeGroups;
++    const auto music = std::find_if(groups.begin(), groups.end(),
++                                   [](const auto& group) { return group.name == "music"; });
++    ASSERT_NE(groups.end(), music);
++    const auto speaker = std::find_if(music->volumeCurves.begin(), music->volumeCurves.end(),
++                                     [](const auto& curve) {
++        return curve.deviceCategory == "DEVICE_CATEGORY_SPEAKER";
++    });
++    ASSERT_NE(music->volumeCurves.end(), speaker);
++    sp<VolumeCurve> curve = sp<VolumeCurve>::make(DEVICE_CATEGORY_SPEAKER);
++    for (const auto& point : speaker->curvePoints) curve->add({point.index, point.attenuationInMb});
++    // Official ro.config.media_vol_steps=150 supersedes the HAL UI range of 15.
++    EXPECT_FLOAT_EQ(VOLUME_MIN_DB, curve->volIndexToDb(0, 0, 150));
++    EXPECT_NEAR(-73.0f, curve->volIndexToDb(1, 0, 150), 0.001f);
++    EXPECT_NEAR(-56.0f, curve->volIndexToDb(10, 0, 150), 0.001f);
++    EXPECT_NEAR(-0.3f, curve->volIndexToDb(150, 0, 150), 0.001f);
++    float previous = VOLUME_MIN_DB;
++    for (int index = 0; index <= 150; ++index) {
++        const float db = curve->volIndexToDb(index, 0, 150);
++        ASSERT_TRUE(std::isfinite(db));
++        EXPECT_GE(db, previous);
++        EXPECT_LE(db, 0.0f);
++        previous = db;
++    }
++}
++
++TEST(EngineConfigVendorVolumesTest, UnknownCategoryStillRejectsWholeConfiguration) {
++    AudioHalEngineConfig aidl;
++    ASSERT_TRUE(readOfficialConfig(&aidl));
++    aidl.volumeGroups[0].volumeCurves[0].deviceCategory = static_cast<Category>(127);
++    EXPECT_EQ(nullptr, engineConfig::convert(aidl).parsedConfig);
++}
++
++TEST(EngineConfigVendorVolumesTest, RejectsInvalidCurveIndicesWithoutChangingStandardSemantics) {
++    AudioHalEngineConfig official;
++    ASSERT_TRUE(readOfficialConfig(&official));
++    for (int index : {-1, 101}) {
++        auto aidl = official;
++        aidl.productStrategies.clear();
++        aidl.volumeGroups.resize(1);
++        aidl.volumeGroups[0].volumeCurves.resize(1);
++        aidl.volumeGroups[0].volumeCurves[0].curvePoints[0].index = static_cast<int8_t>(index);
++        EXPECT_EQ(nullptr, engineConfig::convert(aidl).parsedConfig) << index;
++    }
++    for (int index : {151, 255}) {
++        auto aidl = official;
++        aidl.volumeGroups[0].volumeCurves[0].curvePoints[0].index = static_cast<int8_t>(index);
++        EXPECT_EQ(nullptr, engineConfig::convert(aidl).parsedConfig) << index;
++    }
++    auto standard = official;
++    standard.productStrategies.clear();
++    standard.volumeGroups.resize(1);
++    standard.volumeGroups[0].volumeCurves.resize(1);
++    ASSERT_NE(nullptr, engineConfig::convert(standard).parsedConfig);
++}
++
++TEST(EngineConfigVendorVolumesTest, UsesDedicatedCurvesOnlyWhenTheVolumeGroupSuppliesThem) {
++    VolumeCurves standard(0, 15);
++    for (auto category : {DEVICE_CATEGORY_HEADSET, DEVICE_CATEGORY_SPEAKER,
++                          DEVICE_CATEGORY_EARPIECE, DEVICE_CATEGORY_EXT_MEDIA,
++                          DEVICE_CATEGORY_HEARING_AID}) {
++        standard.add(sp<VolumeCurve>::make(category));
++    }
++    for (auto device : {AUDIO_DEVICE_OUT_USB_HEADSET, AUDIO_DEVICE_OUT_BLUETOOTH_A2DP,
++                        AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES, AUDIO_DEVICE_OUT_BLE_HEADSET,
++                        AUDIO_DEVICE_OUT_BLE_BROADCAST}) {
++        EXPECT_EQ(DEVICE_CATEGORY_HEADSET, standard.getDeviceCategory({device}));
++    }
++    VolumeCurves extended(0, 150);
++    extended.add(sp<VolumeCurve>::make(DEVICE_CATEGORY_USB));
++    extended.add(sp<VolumeCurve>::make(DEVICE_CATEGORY_A2DP));
++    EXPECT_EQ(DEVICE_CATEGORY_USB, extended.getDeviceCategory({AUDIO_DEVICE_OUT_USB_HEADSET}));
++    for (auto device : {AUDIO_DEVICE_OUT_BLUETOOTH_A2DP, AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES,
++                        AUDIO_DEVICE_OUT_BLE_HEADSET, AUDIO_DEVICE_OUT_BLE_BROADCAST}) {
++        EXPECT_EQ(DEVICE_CATEGORY_A2DP, extended.getDeviceCategory({device}));
++    }
++    EXPECT_EQ(DEVICE_CATEGORY_EXT_MEDIA, extended.getDeviceCategory({AUDIO_DEVICE_OUT_USB_DEVICE}));
++    EXPECT_EQ(DEVICE_CATEGORY_SPEAKER,
++              extended.getDeviceCategory({AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER}));
++    EXPECT_EQ(DEVICE_CATEGORY_HEARING_AID,
++              extended.getDeviceCategory({AUDIO_DEVICE_OUT_HEARING_AID}));
++    EXPECT_EQ(DEVICE_CATEGORY_EARPIECE, extended.getDeviceCategory({AUDIO_DEVICE_OUT_EARPIECE}));
++}
++} // namespace
++} // namespace android
+diff --git a/services/audiopolicy/engine/config/tests/resources/test_warsaw_volume_engine.parcel b/services/audiopolicy/engine/config/tests/resources/test_warsaw_volume_engine.parcel
+new file mode 100644
+index 0000000000000000000000000000000000000000..5f0a501012ebd4c44e4fac9e67ca07a7ec75b8a3
+GIT binary patch
+literal 11368
+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
+PO7%mxT)%GCG<y64;RA_Q
+
+literal 0
+HcmV?d00001
+

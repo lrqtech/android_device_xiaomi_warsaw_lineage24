@@ -1,0 +1,221 @@
+--- a/frameworks/av/media/audioaidlconversion/AidlConversionCppNdk.cpp
++++ b/frameworks/av/media/audioaidlconversion/AidlConversionCppNdk.cpp
+@@ -98,6 +98,12 @@
+ // Converters
+ 
+ namespace {
++// OS4 warsaw's shipped AIDL HAL uses these private wire values. Keep the frozen
++// AIDL definitions intact and translate only the individually verified values.
++// Their legacy numbers differ from the AIDL output flag bit positions.
++constexpr auto kXiaomiVirtualDeepBuffer = static_cast<AudioOutputFlags>(19);
++constexpr auto kXiaomiBluetoothScoUsage = static_cast<AudioUsage>(19);
++
+ 
+ std::vector<std::string> splitString(const std::string& s, char separator) {
+     std::istringstream iss(s);
+@@ -487,6 +493,10 @@
+                         GET_DEVICE_DESC_CONNECTION(BT_LE))
+             },
+             {
++                AUDIO_DEVICE_OUT_MULTIROUTE, make_AudioDeviceDescription(
++                        AudioDeviceType::OUT_DEVICE, "multiroute")
++            },
++            {
+                 AUDIO_DEVICE_OUT_MULTICHANNEL_GROUP, make_AudioDeviceDescription(
+                         AudioDeviceType::OUT_MULTICHANNEL_GROUP,
+                         GET_DEVICE_DESC_CONNECTION(VIRTUAL))
+@@ -800,6 +810,7 @@
+              AUDIO_FORMAT_LHDC, make_AudioFormatDescription("audio/vnd.savitech.lhdc")},
+             {// Note: not in the IANA registry.
+              AUDIO_FORMAT_LHDC_LL, make_AudioFormatDescription("audio/vnd.savitech.lhdc.ll")},
++            {AUDIO_FORMAT_MIHC, make_AudioFormatDescription("audio/vnd.mi.mihc")},
+             {// Note: not in the IANA registry.
+              AUDIO_FORMAT_APTX_TWSP, make_AudioFormatDescription("audio/vnd.qcom.aptx.twsp")},
+             {// Note: not in the IANA registry.
+@@ -1488,6 +1499,9 @@
+ 
+ ConversionResult<audio_output_flags_t> aidl2legacy_AudioOutputFlags_audio_output_flags_t(
+         AudioOutputFlags aidl) {
++    if (aidl == kXiaomiVirtualDeepBuffer) {
++        return AUDIO_OUTPUT_FLAG_VIRTUAL_DEEP_BUFFER;
++    }
+     switch (aidl) {
+         case AudioOutputFlags::DIRECT:
+             return AUDIO_OUTPUT_FLAG_DIRECT;
+@@ -1534,6 +1548,8 @@
+ ConversionResult<AudioOutputFlags> legacy2aidl_audio_output_flags_t_AudioOutputFlags(
+         audio_output_flags_t legacy) {
+     switch (legacy) {
++        case AUDIO_OUTPUT_FLAG_VIRTUAL_DEEP_BUFFER:
++            return kXiaomiVirtualDeepBuffer;
+         case AUDIO_OUTPUT_FLAG_NONE:
+             break; // shouldn't get here. must be listed  -Werror,-Wswitch
+         case AUDIO_OUTPUT_FLAG_DIRECT:
+@@ -1857,6 +1873,9 @@
+ 
+ ConversionResult<audio_usage_t>
+ aidl2legacy_AudioUsage_audio_usage_t(AudioUsage aidl) {
++    if (aidl == kXiaomiBluetoothScoUsage) {
++        return AUDIO_USAGE_BLUETOOTH_SCO;
++    }
+     switch (aidl) {
+         case AudioUsage::INVALID:
+             break;  // return error
+@@ -1917,6 +1936,8 @@
+ ConversionResult<AudioUsage>
+ legacy2aidl_audio_usage_t_AudioUsage(audio_usage_t legacy) {
+     switch (legacy) {
++        case AUDIO_USAGE_BLUETOOTH_SCO:
++            return kXiaomiBluetoothScoUsage;
+         case AUDIO_USAGE_UNKNOWN:
+             return AudioUsage::UNKNOWN;
+         case AUDIO_USAGE_MEDIA:
+--- a/frameworks/av/media/audioaidlconversion/tests/Android.bp
++++ b/frameworks/av/media/audioaidlconversion/tests/Android.bp
+@@ -35,6 +35,7 @@
+         "libbinder",
+         "libcutils",
+         "liblog",
++        "libstagefright_foundation",
+         "libutils",
+     ],
+     static_libs: [
+--- a/frameworks/av/media/audioaidlconversion/tests/audio_aidl_ndk_conversion_tests.cpp
++++ b/frameworks/av/media/audioaidlconversion/tests/audio_aidl_ndk_conversion_tests.cpp
+@@ -135,3 +135,80 @@
+         }
+     }
+ }
++
++
++// These values come from the shipped warsaw HAL, not from the frozen AIDL API.
++TEST(XiaomiAudioExtensions, ObservedOutputMasksRoundTrip) {
++    const int32_t masks[] = {0, 6, 8, 32817, 1, 8193, 16384, 260, 4097, 65536, 524288};
++    for (int32_t mask : masks) {
++        SCOPED_TRACE(mask);
++        const auto legacy = aidl2legacy_int32_t_audio_output_flags_t_mask(mask);
++        ASSERT_TRUE(legacy.ok());
++        const auto restored = legacy2aidl_audio_output_flags_t_int32_t_mask(legacy.value());
++        ASSERT_TRUE(restored.ok());
++        EXPECT_EQ(mask, restored.value());
++    }
++    const auto virtualDeep = aidl2legacy_int32_t_audio_output_flags_t_mask(1 << 19);
++    ASSERT_TRUE(virtualDeep.ok());
++    EXPECT_EQ(0x40000000u, static_cast<uint32_t>(virtualDeep.value()));
++    EXPECT_NE(AUDIO_OUTPUT_FLAG_ULTRASOUND, virtualDeep.value());
++    const auto mixed = aidl2legacy_int32_t_audio_output_flags_t_mask((1 << 19) | (1 << 3));
++    ASSERT_TRUE(mixed.ok());
++    EXPECT_EQ(0x40000008u, static_cast<uint32_t>(mixed.value()));
++}
++
++TEST(XiaomiAudioExtensions, UnknownOutputFlagsRemainErrors) {
++    EXPECT_FALSE(aidl2legacy_int32_t_audio_output_flags_t_mask(1 << 20).ok());
++    EXPECT_FALSE(aidl2legacy_int32_t_audio_output_flags_t_mask((1 << 19) | (1 << 20)).ok());
++    EXPECT_FALSE(legacy2aidl_audio_output_flags_t_int32_t_mask(
++            static_cast<audio_output_flags_t>(0x10000000)).ok());
++}
++
++TEST(XiaomiAudioExtensions, BluetoothScoAttributesRoundTrip) {
++    using aidl::android::media::audio::common::AudioAttributes;
++    AudioAttributes initial;
++    initial.usage = static_cast<AudioUsage>(19);
++    initial.flags = AUDIO_FLAG_SCO;
++    const auto legacy = aidl2legacy_AudioAttributes_audio_attributes_t(initial);
++    ASSERT_TRUE(legacy.ok());
++    EXPECT_EQ(AUDIO_USAGE_BLUETOOTH_SCO, legacy.value().usage);
++    const auto restored = legacy2aidl_audio_attributes_t_AudioAttributes(legacy.value());
++    ASSERT_TRUE(restored.ok());
++    EXPECT_EQ(initial, restored.value());
++    EXPECT_FALSE(aidl2legacy_AudioUsage_audio_usage_t(static_cast<AudioUsage>(18)).ok());
++    EXPECT_FALSE(aidl2legacy_AudioUsage_audio_usage_t(static_cast<AudioUsage>(20)).ok());
++}
++
++TEST(XiaomiAudioExtensions, MultirouteDeviceRoundTrip) {
++    using aidl::android::media::audio::common::AudioDeviceDescription;
++    using aidl::android::media::audio::common::AudioDeviceType;
++    AudioDeviceDescription initial;
++    initial.type = AudioDeviceType::OUT_DEVICE;
++    initial.connection = "multiroute";
++    const auto legacy = aidl2legacy_AudioDeviceDescription_audio_devices_t(initial);
++    ASSERT_TRUE(legacy.ok());
++    EXPECT_EQ(0x20000010u, static_cast<uint32_t>(legacy.value()));
++    EXPECT_TRUE(audio_is_output_device(legacy.value()));
++    EXPECT_FALSE(audio_is_input_device(legacy.value()));
++    const auto restored = legacy2aidl_audio_devices_t_AudioDeviceDescription(legacy.value());
++    ASSERT_TRUE(restored.ok());
++    EXPECT_EQ(initial, restored.value());
++    initial.connection = "unknown-xiaomi-route";
++    EXPECT_FALSE(aidl2legacy_AudioDeviceDescription_audio_devices_t(initial).ok());
++}
++
++TEST(XiaomiAudioExtensions, MihcFormatRoundTrip) {
++    using aidl::android::media::audio::common::AudioFormatDescription;
++    AudioFormatDescription initial;
++    initial.encoding = "audio/vnd.mi.mihc";
++    const auto legacy = aidl2legacy_AudioFormatDescription_audio_format_t(initial);
++    ASSERT_TRUE(legacy.ok());
++    EXPECT_EQ(0x40000000u, static_cast<uint32_t>(legacy.value()));
++    EXPECT_TRUE(audio_is_valid_format(legacy.value()));
++    EXPECT_FALSE(audio_is_linear_pcm(legacy.value()));
++    const auto restored = legacy2aidl_audio_format_t_AudioFormatDescription(legacy.value());
++    ASSERT_TRUE(restored.ok());
++    EXPECT_EQ(initial, restored.value());
++    initial.encoding = "audio/vnd.mi.unknown";
++    EXPECT_FALSE(aidl2legacy_AudioFormatDescription_audio_format_t(initial).ok());
++}
+--- a/system/media/audio/include/system/audio-base-utils.h
++++ b/system/media/audio/include/system/audio-base-utils.h
+@@ -190,6 +190,7 @@
+     AUDIO_DEVICE_OUT_BLE_BROADCAST,             // 0x20000002u
+     AUDIO_DEVICE_OUT_BLE_HEARING_AID,           // 0x20000004u
+     AUDIO_DEVICE_OUT_BLE_CENTRAL,               // 0x20000008u
++    AUDIO_DEVICE_OUT_MULTIROUTE,                // 0x20000010u, Xiaomi virtual route
+     AUDIO_DEVICE_OUT_DEFAULT,                   // 0x40000000u, BIT_DEFAULT
+ };
+ 
+--- a/system/media/audio/include/system/audio-hal-enums.h
++++ b/system/media/audio/include/system/audio-hal-enums.h
+@@ -430,6 +430,7 @@
+     V(AUDIO_DEVICE_OUT_BLE_BROADCAST, 0x20000002u) \
+     V(AUDIO_DEVICE_OUT_BLE_HEARING_AID, 0x20000004u) \
+     V(AUDIO_DEVICE_OUT_BLE_CENTRAL, 0x20000008u) \
++    V(AUDIO_DEVICE_OUT_MULTIROUTE, 0x20000010u) \
+     V(AUDIO_DEVICE_OUT_DEFAULT, AUDIO_DEVICE_BIT_DEFAULT) \
+     V(AUDIO_DEVICE_IN_COMMUNICATION, AUDIO_DEVICE_BIT_IN | 0x1u) \
+     V(AUDIO_DEVICE_IN_AMBIENT, AUDIO_DEVICE_BIT_IN | 0x2u) \
+@@ -513,7 +514,8 @@
+     V(AUDIO_OUTPUT_FLAG_GAPLESS_OFFLOAD, 0x20000) \
+     V(AUDIO_OUTPUT_FLAG_SPATIALIZER, 0x40000) \
+     V(AUDIO_OUTPUT_FLAG_ULTRASOUND, 0x80000) \
+-    V(AUDIO_OUTPUT_FLAG_BIT_PERFECT, 0x100000)
++    V(AUDIO_OUTPUT_FLAG_BIT_PERFECT, 0x100000) \
++    V(AUDIO_OUTPUT_FLAG_VIRTUAL_DEEP_BUFFER, 0x40000000)
+ 
+ typedef enum : uint32_t {
+     AUDIO_OUTPUT_FLAG_LIST_DEF(AUDIO_DEFINE_ENUM_SYMBOL_V)
+@@ -701,6 +703,7 @@
+     V(AUDIO_FORMAT_APTX_ADAPTIVE, 0x27000000u) \
+     V(AUDIO_FORMAT_LHDC, 0x28000000u) \
+     V(AUDIO_FORMAT_LHDC_LL, 0x29000000u) \
++    V(AUDIO_FORMAT_MIHC, 0x40000000u) \
+     V(AUDIO_FORMAT_APTX_TWSP, 0x2A000000u) \
+     V(AUDIO_FORMAT_LC3, 0x2B000000u) \
+     V(AUDIO_FORMAT_MPEGH, 0x2C000000u) \
+@@ -883,6 +886,7 @@
+     V(AUDIO_USAGE_VIRTUAL_SOURCE, 15) \
+     V(AUDIO_USAGE_ASSISTANT, 16) \
+     V(AUDIO_USAGE_CALL_ASSISTANT, 17) \
++    V(AUDIO_USAGE_BLUETOOTH_SCO, 19) \
+     V(AUDIO_USAGE_EMERGENCY, 1000) \
+     V(AUDIO_USAGE_SAFETY, 1001) \
+     V(AUDIO_USAGE_VEHICLE_STATUS, 1002) \
+--- a/system/media/audio/include/system/audio.h
++++ b/system/media/audio/include/system/audio.h
+@@ -1992,6 +1992,7 @@
+     case AUDIO_FORMAT_APTX_ADAPTIVE:
+     case AUDIO_FORMAT_LHDC:
+     case AUDIO_FORMAT_LHDC_LL:
++    case AUDIO_FORMAT_MIHC:
+     case AUDIO_FORMAT_APTX_TWSP:
+     case AUDIO_FORMAT_LC3:
+     case AUDIO_FORMAT_APTX_ADAPTIVE_QLEA:

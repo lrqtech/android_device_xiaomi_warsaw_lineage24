@@ -1,0 +1,47 @@
+# Platform-private clients of shared OEM hardware labels.
+allow system_suspend sysfs_flashlight:dir { getattr search };
+
+allow system_suspend sysfs_flashlight:filesystem { getattr };
+
+allow system_suspend sysfs_led_torch:dir { getattr search };
+
+allow system_suspend sysfs_led_torch:filesystem { getattr };
+
+allow system_suspend vendor_avtimer_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_dmabuf_cma_secure_cdsp_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_dmabuf_secure_non_pixel:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_dmabuf_secure_sp_modem_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_dmabuf_sp_hlos_heap_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_q2spiuwb_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_qg_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_sysfs_public:dir { getattr ioctl lock open read search watch watch_reads };
+
+allow system_suspend vendor_sysfs_public:file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_sysfs_public:filesystem { getattr };
+
+allow system_suspend vendor_sysfs_public:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_vm_cp_spss_hlos_shared_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_vm_cp_spss_sp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_vm_cp_spss_sp_shared_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_vm_cp_touch_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+
+allow system_suspend vendor_cryptoapp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_dsp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_hbtp_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_npu_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_sp_keymaster_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_sp_nvm_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_spdaemon_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow system_suspend vendor_spu_hal_ssr_device:lnk_file { getattr ioctl lock map open read watch watch_reads };

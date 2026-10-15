@@ -1,0 +1,3 @@
+# The stock native HTTPS downloader reads Android's maintained trust store.
+# No network-validation, certificate-verification or location-permission bypass.
+r_dir_file(vendor_location_xtra_daemon, system_security_cacerts_file)

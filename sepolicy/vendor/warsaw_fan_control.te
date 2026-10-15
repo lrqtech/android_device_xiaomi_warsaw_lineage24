@@ -1,0 +1,7 @@
+# Preserve the stock hardware service and init access after narrowing the labels.
+allow hal_micharge_default warsaw_fan_control:file rw_file_perms;
+allow vendor_init warsaw_fan_control:file { getattr setattr open read write };
+allow init warsaw_fan_control:file { getattr setattr open read write };
+
+# The parent directory type is vendor-private; keep this rule in vendor policy.
+allow system_app vendor_sysfs_xm_power:dir search;

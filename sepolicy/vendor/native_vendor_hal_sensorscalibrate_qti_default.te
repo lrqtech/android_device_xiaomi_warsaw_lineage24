@@ -1,0 +1,17 @@
+type vendor_hal_sensorscalibrate_qti_default, domain;
+
+domain_auto_trans(init, vendor_hal_sensorscalibrate_qti_default_exec, vendor_hal_sensorscalibrate_qti_default)
+
+typeattribute vendor_hal_sensorscalibrate_qti_default halserverdomain;
+
+typeattribute vendor_hal_sensorscalibrate_qti_default vendor_hal_sensorscalibrate_qti;
+
+typeattribute vendor_hal_sensorscalibrate_qti_default vendor_hal_sensorscalibrate_qti_server;
+
+allow vendor_hal_sensorscalibrate_qti_default vendor_hal_sensorscalibrate_qti_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_sensorscalibrate_qti_default mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_sensorscalibrate_qti_default mnt_vendor_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_sensorscalibrate_qti_default mnt_vendor_file:lnk_file { ioctl read getattr lock map open watch watch_reads };

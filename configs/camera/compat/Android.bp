@@ -1,0 +1,12 @@
+java_library {
+    name: "miui-cameraopt",
+    stem: "warsaw-cameramind-compat",
+    srcs: ["src/**/*.java"],
+    system_ext_specific: true,
+    use_generic_config: true,
+    platform_apis: true,
+    installable: true,
+    static_libs: ["warsaw-cameramind-client-component"],
+    provides_uses_lib: "miui-cameraopt",
+    compile_dex: true,
+}

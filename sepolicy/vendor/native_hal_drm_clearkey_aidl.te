@@ -1,0 +1,9 @@
+typeattribute hal_drm_clearkey_aidl hal_drm;
+
+typeattribute hal_drm_clearkey_aidl hal_drm_server;
+
+typeattribute hal_drm_clearkey_aidl halserverdomain;
+
+allow hal_drm_clearkey_aidl hal_drm_clearkey_aidl_exec:file { read getattr map execute open entrypoint };
+
+allow hal_drm_clearkey_aidl mediacodec:fd { use };

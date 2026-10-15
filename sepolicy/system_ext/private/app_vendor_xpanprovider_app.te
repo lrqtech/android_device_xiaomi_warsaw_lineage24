@@ -1,0 +1,23 @@
+typeattribute vendor_xpanprovider_app coredomain;
+
+app_domain(vendor_xpanprovider_app)
+
+typeattribute vendor_xpanprovider_app hal_audio_client;
+
+typeattribute vendor_xpanprovider_app halclientdomain;
+
+typeattribute vendor_xpanprovider_app vendor_hal_perf_client;
+
+typeattribute vendor_xpanprovider_app vendor_hal_xpanprovider_client;
+
+allow vendor_xpanprovider_app appdomain_tmpfs:file { read write getattr map execute };
+
+allow vendor_xpanprovider_app appdomain:memfd_file { read write getattr map execute };
+
+allow vendor_xpanprovider_app vendor_hal_xpanprovider:memfd_file { read write getattr map };
+
+allow vendor_xpanprovider_app app_api_service:service_manager { find };
+
+allow vendor_xpanprovider_app vendor_hal_perf:memfd_file { read write getattr map };
+
+type_transition vendor_xpanprovider_app tmpfs:file appdomain_tmpfs;

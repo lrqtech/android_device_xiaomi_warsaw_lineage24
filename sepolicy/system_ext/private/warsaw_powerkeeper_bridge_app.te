@@ -1,0 +1,5 @@
+type warsaw_powerkeeper_bridge_app, domain, coredomain;
+app_domain(warsaw_powerkeeper_bridge_app)
+binder_use(warsaw_powerkeeper_bridge_app)
+allow warsaw_powerkeeper_bridge_app activity_service:service_manager { find };
+allow warsaw_powerkeeper_bridge_app package_service:service_manager { find };

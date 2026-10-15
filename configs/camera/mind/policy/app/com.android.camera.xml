@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="app/com.android.camera.xml">
+    <app prio="100" name="com.android.camera" >
+        <profile name="normal">
+            <activity name="__DEFAULT__">
+
+            </activity>
+        </profile>
+        <break />
+    </app>
+</policy>

@@ -1,0 +1,115 @@
+type vendor_hal_citsensorservice_xiaomi_default, domain;
+
+domain_auto_trans(init, vendor_hal_citsensorservice_xiaomi_default_exec, vendor_hal_citsensorservice_xiaomi_default)
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default hal_graphics_allocator_client;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer_client;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer_server;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default halclientdomain;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default halserverdomain;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default hypsys_ssi_client;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default vendor_hal_citsensorservice_xiaomi;
+
+typeattribute vendor_hal_citsensorservice_xiaomi_default vendor_hal_citsensorservice_xiaomi_server;
+
+binder_use(vendor_hal_citsensorservice_xiaomi_default)
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_hal_citsensorservice_xiaomi_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_citsensorservice_xiaomi_default servicemanager:binder { call transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_default input_device:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_citsensorservice_xiaomi_default input_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi_default self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_citsensorservice_xiaomi_default self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_citsensorservice_xiaomi_default mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_citsensorservice_xiaomi_default mnt_vendor_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi_default mnt_vendor_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_sysfs_graphics:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_sysfs_graphics:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_persist_sensors_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_persist_sensors_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_citsensorservice_xiaomi_default fwk_sensor_hwservice:hwservice_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_default fwk_sensor_service:service_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_default system_server:binder { call };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_sysfs_displayfeature:dir { search };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_sysfs_displayfeature:file { read getattr open };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_displayfeature_device:chr_file { ioctl read write open };
+
+allow vendor_hal_citsensorservice_xiaomi_default system_server:binder { transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_cct_prop:file { read getattr map open };
+
+allow vendor_hal_citsensorservice_xiaomi_default property_socket:sock_file { write };
+
+allow vendor_hal_citsensorservice_xiaomi_default init:unix_stream_socket { connectto };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_cct_prop:property_service { set };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_displayfeature_prop:file { read getattr map open };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_parsedalgo_prop:file { read getattr map open };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_usedframebuffer_prop:file { read getattr map open };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_usedframebuffer_prop:property_service { set };
+
+allow vendor_hal_citsensorservice_xiaomi_default hal_graphics_mapper_hwservice:hwservice_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_hal_display_config_hwservice:hwservice_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer_server:fd { use };
+
+allow vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer:binder { call transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer:fd { use };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_qdisplay_service:service_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_hal_vnddisplayconfig_service:service_manager { find };
+
+allow vendor_hal_citsensorservice_xiaomi_default hal_graphics_composer_default:binder { transfer };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_mischeck_prop:file { read getattr map open };
+
+allow vendor_hal_citsensorservice_xiaomi_default vendor_mischeck_prop:property_service { set };
+
+allow vendor_hal_citsensorservice_xiaomi_default self:capability { sys_nice };
+
+allow vendor_hal_citsensorservice_xiaomi_default self:cap_userns { sys_nice };
+
+allow vendor_hal_citsensorservice_xiaomi_default sysfs_tp_fodstatus:file { read open };
+
+allow vendor_hal_citsensorservice_xiaomi_default xiaomi_hall_device:chr_file { ioctl read write open };
+
+allowxperm vendor_hal_citsensorservice_xiaomi_default self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_hal_citsensorservice_xiaomi_default self:qipcrtr_socket ioctl { 0xc300-0xc305 };

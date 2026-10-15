@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/app/com.tencent.mm.xml" >
+    <app prio="100" name="com.tencent.mm" >
+        <profile name="normal">
+            <activity name="__DEFAULT__">
+
+            </activity>
+        </profile>
+        <break />
+    </app>
+</policy>

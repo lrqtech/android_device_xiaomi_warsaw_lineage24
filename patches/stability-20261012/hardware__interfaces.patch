@@ -1,0 +1,208 @@
+diff --git a/bluetooth/audio/utils/Android.bp b/bluetooth/audio/utils/Android.bp
+index 7f7d600c23..e90ac65df6 100644
+--- a/bluetooth/audio/utils/Android.bp
++++ b/bluetooth/audio/utils/Android.bp
+@@ -220,7 +220,10 @@ genrule {
+ // Add to prebuilt etc
+ prebuilt_etc {
+     name: "aidl_audio_set_scenarios_bfbs",
+-    src: ":AIDLLeAudioSetScenariosSchema_bfbs",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_aidl_le_audio_aidl_audio_set_scenarios_bfbs",
++        default: ":AIDLLeAudioSetScenariosSchema_bfbs",
++    }),
+     filename: "aidl_audio_set_scenarios.bfbs",
+     sub_dir: "aidl/le_audio",
+     vendor: true,
+@@ -236,7 +239,10 @@ prebuilt_etc {
+ 
+ prebuilt_etc {
+     name: "hfp_codec_capabilities_xml",
+-    src: "hfp_codec_capabilities/hfp_codec_capabilities.xml",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_aidl_hfp_hfp_codec_capabilities_xml",
++        default: "hfp_codec_capabilities/hfp_codec_capabilities.xml",
++    }),
+     filename: "hfp_codec_capabilities.xml",
+     sub_dir: "aidl/hfp",
+     vendor: true,
+@@ -244,7 +250,10 @@ prebuilt_etc {
+ 
+ prebuilt_etc {
+     name: "aidl_audio_set_configurations_bfbs",
+-    src: ":AIDLLeAudioSetConfigsSchema_bfbs",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_aidl_le_audio_aidl_audio_set_configurations_bfbs",
++        default: ":AIDLLeAudioSetConfigsSchema_bfbs",
++    }),
+     filename: "aidl_audio_set_configurations.bfbs",
+     sub_dir: "aidl/le_audio",
+     vendor: true,
+diff --git a/camera/provider/default/Android.bp b/camera/provider/default/Android.bp
+index 9d70c92051..7253e5120a 100644
+--- a/camera/provider/default/Android.bp
++++ b/camera/provider/default/Android.bp
+@@ -93,7 +93,10 @@ cc_defaults {
+ cc_binary {
+     name: "android.hardware.camera.provider-V1-external-service",
+     defaults: ["camera_external_service_defaults"],
+-    init_rc: ["android.hardware.camera.provider-V1-external-service.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_camera_provider_V1_external_service_rc"],
++        default: ["android.hardware.camera.provider-V1-external-service.rc"],
++    }),
+ }
+ 
+ cc_binary {
+diff --git a/ir/aidl/default/Android.bp b/ir/aidl/default/Android.bp
+index 4006554cd2..4731bd2833 100644
+--- a/ir/aidl/default/Android.bp
++++ b/ir/aidl/default/Android.bp
+@@ -25,7 +25,10 @@ package {
+ cc_binary {
+     name: "android.hardware.ir-service.example",
+     relative_install_path: "hw",
+-    init_rc: ["android.hardware.ir-service.example.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_ir_service_example_rc"],
++        default: ["android.hardware.ir-service.example.rc"],
++    }),
+     vendor: true,
+     vintf_fragments: ["android.hardware.ir-service.example.xml"],
+ 
+diff --git a/ir/aidl/default/main.cpp b/ir/aidl/default/main.cpp
+index 92376fc6c3..eaca8aa756 100644
+--- a/ir/aidl/default/main.cpp
++++ b/ir/aidl/default/main.cpp
+@@ -21,7 +21,7 @@
+ #include <android/binder_manager.h>
+ #include <android/binder_process.h>
+ #include <hardware/consumerir.h>
+-#include <numeric>
++#include <vector>
+ 
+ #include <log/log.h>
+ 
+@@ -43,13 +43,13 @@ ConsumerIr::ConsumerIr() {
+     const hw_module_t *hw_module = NULL;
+ 
+     int ret = hw_get_module(CONSUMERIR_HARDWARE_MODULE_ID, &hw_module);
+-    if (ret != 0) {
++    if (ret != 0 || hw_module == nullptr || hw_module->methods == nullptr
++            || hw_module->methods->open == nullptr) {
+         ALOGE("hw_get_module %s failed: %d", CONSUMERIR_HARDWARE_MODULE_ID, ret);
+         return;
+     }
+     ret = hw_module->methods->open(hw_module, CONSUMERIR_TRANSMITTER, (hw_device_t **) &mDevice);
+     if (ret < 0) {
+-        // note - may want to make this a fatal error - otherwise the service will crash when it's used
+         ALOGE("Can't open consumer IR transmitter, error: %d", ret);
+         // in case it's modified
+         mDevice = nullptr;
+@@ -57,35 +57,46 @@ ConsumerIr::ConsumerIr() {
+ }
+ 
+ ::ndk::ScopedAStatus ConsumerIr::getCarrierFreqs(std::vector<ConsumerIrFreqRange>* _aidl_return) {
+-    int32_t len = mDevice->get_num_carrier_freqs(mDevice);
++    _aidl_return->clear();
++    if (mDevice == nullptr || mDevice->get_num_carrier_freqs == nullptr
++            || mDevice->get_carrier_freqs == nullptr) {
++        return ::ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
++    }
++
++    const int32_t len = mDevice->get_num_carrier_freqs(mDevice);
+     if (len < 0) {
+-        (*_aidl_return).clear();
+-        return ::ndk::ScopedAStatus::ok();
++        return ::ndk::ScopedAStatus::fromServiceSpecificError(-len);
+     }
++    if (len == 0) return ::ndk::ScopedAStatus::ok();
+ 
+-    consumerir_freq_range_t *rangeAr = new consumerir_freq_range_t[len];
+-    bool success = (mDevice->get_carrier_freqs(mDevice, len, rangeAr) >= 0);
+-    if (!success) {
+-        (*_aidl_return).clear();
+-        return ::ndk::ScopedAStatus::ok();
++    std::vector<consumerir_freq_range_t> ranges(len);
++    const int32_t count = mDevice->get_carrier_freqs(mDevice, ranges.size(), ranges.data());
++    if (count < 0) {
++        return ::ndk::ScopedAStatus::fromServiceSpecificError(-count);
++    }
++    if (count > len) {
++        return ::ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_STATE);
+     }
+ 
+-    (*_aidl_return).resize(len);
+-    for (int32_t i = 0; i < len; i++) {
+-        (*_aidl_return)[i].minHz = static_cast<uint32_t>(rangeAr[i].min);
+-        (*_aidl_return)[i].maxHz = static_cast<uint32_t>(rangeAr[i].max);
++    _aidl_return->resize(count);
++    for (int32_t i = 0; i < count; i++) {
++        (*_aidl_return)[i].minHz = ranges[i].min;
++        (*_aidl_return)[i].maxHz = ranges[i].max;
+     }
+     return ::ndk::ScopedAStatus::ok();
+ }
+ 
+ ::ndk::ScopedAStatus ConsumerIr::transmit(int32_t in_carrierFreqHz,
+                                           const std::vector<int32_t>& in_pattern) {
+-    if (in_carrierFreqHz > 0) {
+-        mDevice->transmit(mDevice, in_carrierFreqHz, in_pattern.data(), in_pattern.size());
+-        return ::ndk::ScopedAStatus::ok();
+-    } else {
++    if (in_carrierFreqHz <= 0 || mDevice == nullptr || mDevice->transmit == nullptr) {
+         return ::ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+     }
++    const int result = mDevice->transmit(mDevice, in_carrierFreqHz,
++                                       in_pattern.data(), in_pattern.size());
++    if (result < 0) {
++        return ::ndk::ScopedAStatus::fromServiceSpecificError(-result);
++    }
++    return ::ndk::ScopedAStatus::ok();
+ }
+ 
+ }  // namespace aidl::android::hardware::ir
+diff --git a/sensors/aidl/multihal/Android.bp b/sensors/aidl/multihal/Android.bp
+index ef8fa05291..08341ff97e 100644
+--- a/sensors/aidl/multihal/Android.bp
++++ b/sensors/aidl/multihal/Android.bp
+@@ -41,7 +41,10 @@ cc_binary {
+         "android.hardware.sensors@2.X-multihal.header",
+         "android.hardware.sensors@2.X-shared-utils",
+     ],
+-    init_rc: ["android.hardware.sensors-service-multihal.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_sensors_service_multihal_rc"],
++        default: ["android.hardware.sensors-service-multihal.rc"],
++    }),
+     vintf_fragment_modules: ["android.hardware.sensors-multihal.xml"],
+     shared_libs: [
+         "android.hardware.sensors@2.0-ScopedWakelock",
+diff --git a/wifi/aidl/default/Android.bp b/wifi/aidl/default/Android.bp
+index ee2eb82eae..2b2d66eaba 100644
+--- a/wifi/aidl/default/Android.bp
++++ b/wifi/aidl/default/Android.bp
+@@ -145,7 +145,10 @@ cc_binary {
+         "android.hardware.wifi-V4-ndk",
+     ],
+     static_libs: ["android.hardware.wifi-service-lib"],
+-    init_rc: ["android.hardware.wifi-service.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_wifi_service_rc"],
++        default: ["android.hardware.wifi-service.rc"],
++    }),
+     vintf_fragment_modules: ["android.hardware.wifi-service.xml"],
+ }
+ 
+@@ -221,7 +224,10 @@ cc_test {
+ 
+ filegroup {
+     name: "default-android.hardware.wifi-service.rc",
+-    srcs: ["android.hardware.wifi-service.rc"],
++    srcs: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_wifi_service_rc"],
++        default: ["android.hardware.wifi-service.rc"],
++    }),
+ }
+ 
+ filegroup {

@@ -1,0 +1,25 @@
+type hal_miqms_default, domain;
+
+domain_auto_trans(init, hal_miqms_default_exec, hal_miqms_default)
+
+typeattribute hal_miqms_default hal_miqms;
+
+typeattribute hal_miqms_default hal_miqms_server;
+
+typeattribute hal_miqms_default halserverdomain;
+
+binder_use(hal_miqms_default)
+
+vndbinder_use(hal_miqms_default)
+
+allow hal_miqms_default hal_miqms_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_miqms_default vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miqms_default vndservicemanager:binder { call transfer };
+
+allow hal_miqms_default vendor_qms_service:service_manager { find };
+
+allow hal_miqms_default vendor_qms:binder { call transfer };
+
+allow hal_miqms_default servicemanager:binder { call transfer };

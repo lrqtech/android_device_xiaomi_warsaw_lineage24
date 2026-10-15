@@ -1,0 +1,31 @@
+type wdsdaemon, domain;
+
+domain_auto_trans(init, wdsdaemon_exec, wdsdaemon)
+
+typeattribute wdsdaemon hal_bluetooth_client;
+
+typeattribute wdsdaemon halclientdomain;
+
+binder_use(wdsdaemon)
+
+hwbinder_use(wdsdaemon)
+
+allow wdsdaemon wdsdaemon_exec:file { read getattr map execute open entrypoint };
+
+allow wdsdaemon servicemanager:binder { call };
+
+allow wdsdaemon hwservicemanager:binder { call };
+
+allow wdsdaemon hwservicemanager_prop:file { read getattr open };
+
+allow wdsdaemon hwservicemanager_prop:file { map };
+
+allow wdsdaemon init:unix_stream_socket { connectto };
+
+allow wdsdaemon property_socket:sock_file { write };
+
+allow wdsdaemon hal_bluetooth_default:binder { call transfer };
+
+allow wdsdaemon vendor_bluetooth_prop:file { read getattr map open };
+
+allow wdsdaemon hal_bluetooth_hwservice:hwservice_manager { find };

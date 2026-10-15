@@ -1,0 +1,15 @@
+type vendor_hal_capabilityconfigstore_qti_default, domain;
+
+domain_auto_trans(init, vendor_hal_capabilityconfigstore_qti_default_exec, vendor_hal_capabilityconfigstore_qti_default)
+
+typeattribute vendor_hal_capabilityconfigstore_qti_default halserverdomain;
+
+typeattribute vendor_hal_capabilityconfigstore_qti_default vendor_hal_capabilityconfigstore_qti;
+
+typeattribute vendor_hal_capabilityconfigstore_qti_default vendor_hal_capabilityconfigstore_qti_server;
+
+allow vendor_hal_capabilityconfigstore_qti_default vendor_hal_capabilityconfigstore_qti_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_capabilityconfigstore_qti_default vendor_capabilityconfigstore_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_capabilityconfigstore_qti_default vendor_capabilityconfigstore_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };

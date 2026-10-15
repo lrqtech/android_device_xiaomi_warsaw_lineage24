@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OS4.0.0.15 WHPCNXM uses these static endpoints for this China SKU.
+         Keep standard HTTP portal detection and HTTPS certificate validation. -->
+    <string name="config_captive_portal_http_url" translatable="false">http://connect.rom.miui.com/generate_204</string>
+    <string name="config_captive_portal_https_url" translatable="false">https://connect.rom.miui.com/generate_204</string>
+</resources>

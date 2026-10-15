@@ -1,0 +1,23 @@
+hal_client_domain(hal_micharge_default, hal_micharge)
+
+hal_client_domain(vendor_hal_displayfeature_xiaomi_default, hal_visdisplaysrv)
+
+hal_client_domain(vendor_displayfeature, vendor_hal_displayfeature_xiaomi)
+
+hal_client_domain(hal_visdisplaysrv_default, vendor_hal_displayfeature_xiaomi)
+
+hal_client_domain(hal_graphics_composer_default, vendor_hal_displayfeature_xiaomi)
+
+hal_client_domain(hal_graphics_composer_default, hal_visdisplaysrv)
+
+hal_client_domain(hal_visdisplaysrv_default, hal_graphics_allocator)
+
+hal_client_domain(hal_visdisplaysrv_default, hal_graphics_composer)
+
+hal_client_domain(vendor_hal_displayfeature_xiaomi_default, hal_graphics_allocator)
+
+hal_client_domain(vendor_hal_displayfeature_xiaomi_default, hal_graphics_composer)
+
+hal_client_domain(vendor_displayfeature, hal_graphics_composer)
+
+hal_client_domain(vendor_displayfeature, hal_light)

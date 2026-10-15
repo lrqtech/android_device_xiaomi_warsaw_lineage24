@@ -1,0 +1,10 @@
+# Original camera APK uses the original QuickCamera AIDL camera-provider service.
+allow platform_app hal_quickcamera_service:service_manager find;
+allow platform_app hal_camera_default:binder call;
+
+# MiuiCamera targets SDK 36 and runs in the separate platform_app_36 domain.
+allow platform_app_36 hal_quickcamera_service:service_manager find;
+allow platform_app_36 hal_camera_default:binder call;
+
+# Real perf_lock_acq/rel calls carry integers/arrays and no Binder objects or FDs.
+allow platform_app_36 vendor_hal_perf_default:binder call;

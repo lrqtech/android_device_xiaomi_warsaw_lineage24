@@ -1,0 +1,39 @@
+type hal_mfidoca_default, domain;
+
+domain_auto_trans(init, hal_mfidoca_default_exec, hal_mfidoca_default)
+
+typeattribute hal_mfidoca_default hal_mfidoca;
+
+typeattribute hal_mfidoca_default hal_mfidoca_server;
+
+typeattribute hal_mfidoca_default halserverdomain;
+
+binder_use(hal_mfidoca_default)
+
+allow hal_mfidoca_default hal_mfidoca_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_mfidoca_default servicemanager:binder { call transfer };
+
+allow hal_mfidoca_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mfidoca_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_mfidoca_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mfidoca_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mfidoca_default property_socket:sock_file { write };
+
+allow hal_mfidoca_default init:unix_stream_socket { connectto };
+
+allow hal_mfidoca_default vendor_payment_security_prop:property_service { set };
+
+allow hal_mfidoca_default vendor_payment_security_prop:file { read getattr map open };
+
+allow hal_mfidoca_default vendor_fp_prop:file { read getattr map open };
+
+allow hal_mfidoca_default vendor_system_prop:file { read getattr map open };
+
+allow hal_mfidoca_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_mfidoca_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };

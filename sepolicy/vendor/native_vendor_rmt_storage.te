@@ -1,0 +1,85 @@
+type vendor_rmt_storage, domain;
+
+domain_auto_trans(init, vendor_rmt_storage_exec, vendor_rmt_storage)
+
+binder_use(vendor_rmt_storage)
+
+hwbinder_use(vendor_rmt_storage)
+
+allow vendor_rmt_storage vendor_rmt_storage_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_rmt_storage sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_rmt_storage self:capability2 { block_suspend };
+
+allow vendor_rmt_storage self:cap2_userns { block_suspend };
+
+allow vendor_rmt_storage system_suspend_server:binder { call transfer };
+
+allow vendor_rmt_storage system_suspend_server:fd { use };
+
+allow vendor_rmt_storage system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_rmt_storage hwservicemanager:binder { call transfer };
+
+allow vendor_rmt_storage hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_rmt_storage hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_rmt_storage hal_system_suspend_service:service_manager { find };
+
+allow vendor_rmt_storage servicemanager:binder { call transfer };
+
+allow vendor_rmt_storage self:capability { setgid setuid setpcap net_bind_service };
+
+allow vendor_rmt_storage property_socket:sock_file { write };
+
+allow vendor_rmt_storage init:unix_stream_socket { connectto };
+
+allow vendor_rmt_storage vendor_ctl_vendor_rmt_storage_prop:property_service { set };
+
+allow vendor_rmt_storage vendor_ctl_vendor_rmt_storage_prop:file { read getattr map open };
+
+allow vendor_rmt_storage cgroup:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_rmt_storage uio_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_rmt_storage self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_rmt_storage self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_rmt_storage kmsg_device:chr_file { write lock append map open };
+
+allow vendor_rmt_storage sysfs_uio:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_rmt_storage sysfs_uio:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage sysfs_uio:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_sysfs_uio_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_rmt_storage vendor_sysfs_uio_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_sysfs_uio_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_rmt_storage vendor_modem_efs_partition_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_ssd_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_sysfs_ssr:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_rmt_storage vendor_sysfs_ssr:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_sysfs_ssr:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_sysfs_data:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_rmt_storage vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_rmt_storage vendor_sysfs_data:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allowxperm vendor_rmt_storage self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_rmt_storage self:qipcrtr_socket ioctl { 0xc300-0xc305 };

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.kwai.videoeditor.xml">
+
+    <app prio="100" name="com.kwai.videoeditor" >
+        <profile name="normal">
+
+            <activity name="com.kwai.videoeditor.support.album.StartCreateActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+ <library name="qti-telephony-hidl-wrapper"
+         file="/system_ext/framework/qti-telephony-hidl-wrapper.jar"/>
+</permissions>

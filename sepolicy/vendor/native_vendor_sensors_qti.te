@@ -1,0 +1,51 @@
+type vendor_sensors_qti, domain;
+
+domain_auto_trans(init, vendor_sensors_qti_exec, vendor_sensors_qti)
+
+binder_use(vendor_sensors_qti)
+
+hwbinder_use(vendor_sensors_qti)
+
+vndbinder_use(vendor_sensors_qti)
+
+allow vendor_sensors_qti vendor_sensors_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_sensors_qti vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_sensors_qti self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_sensors_qti self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_sensors_qti mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_sensors_qti vendor_sysfs_slpi:dir { search };
+
+allow vendor_sensors_qti vendor_sysfs_slpi:file { getattr };
+
+allow vendor_sensors_qti vendor_diag_device:chr_file { ioctl read write open };
+
+allow vendor_sensors_qti vendor_shell_exec:file { execute_no_trans };
+
+allow vendor_sensors_qti vendor_qlogd_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_sensors_qti vendor_toolbox_exec:file { execute_no_trans };
+
+allow vendor_sensors_qti vendor_sensors_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_sensors_qti vendor_sensors_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_sensors_qti vendor_sensors_vendor_data_file:fifo_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_sensors_qti servicemanager:file { read };
+
+allow vendor_sensors_qti hwservicemanager:file { read };
+
+allow vendor_sensors_qti vndservicemanager:file { read };
+
+allow vendor_sensors_qti vendor_hal_keymint_qti:file { read };
+
+allow vendor_sensors_qti vendor_hal_qseecom_default:file { read };
+
+allowxperm vendor_sensors_qti self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_sensors_qti self:qipcrtr_socket ioctl { 0xc300-0xc305 };

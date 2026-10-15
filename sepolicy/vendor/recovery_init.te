@@ -1,0 +1,5 @@
+# The recovery init script switches the QCOM USB controller to peripheral mode.
+# /sys/devices/platform/soc/a600000.ssusb/mode has this vendor genfs label.
+recovery_only(`
+allow init vendor_sysfs_usb_device:file { open write };
+')

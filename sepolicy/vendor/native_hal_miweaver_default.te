@@ -1,0 +1,49 @@
+type hal_miweaver_default, domain;
+
+domain_auto_trans(init, hal_miweaver_default_exec, hal_miweaver_default)
+
+typeattribute hal_miweaver_default hal_miweaver;
+
+typeattribute hal_miweaver_default hal_miweaver_server;
+
+typeattribute hal_miweaver_default hal_weaver;
+
+typeattribute hal_miweaver_default hal_weaver_server;
+
+typeattribute hal_miweaver_default halclientdomain;
+
+typeattribute hal_miweaver_default halserverdomain;
+
+typeattribute hal_miweaver_default vendor_hal_qteeconnector_client;
+
+binder_use(hal_miweaver_default)
+
+allow hal_miweaver_default hal_miweaver_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_miweaver_default servicemanager:binder { call transfer };
+
+allow hal_miweaver_default system_app:binder { call transfer };
+
+allow hal_miweaver_default system_app:fd { use };
+
+allow hal_miweaver_default system_app:binder { transfer };
+
+allow hal_miweaver_default system_server:binder { call transfer };
+
+allow hal_miweaver_default system_server:fd { use };
+
+allow hal_miweaver_default system_server:binder { transfer };
+
+allow hal_miweaver_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miweaver_default mitee_client_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miweaver_default vendor_persist_stability:file { read getattr map open };
+
+allow hal_miweaver_default property_socket:sock_file { write };
+
+allow hal_miweaver_default init:unix_stream_socket { connectto };
+
+allow hal_miweaver_default vendor_payment_security_prop:property_service { set };
+
+allow hal_miweaver_default vendor_payment_security_prop:file { read getattr map open };

@@ -1,0 +1,125 @@
+type hal_mtdservice_default, domain;
+
+domain_auto_trans(init, hal_mtdservice_default_exec, hal_mtdservice_default)
+
+typeattribute hal_mtdservice_default hal_idmanager_client;
+
+typeattribute hal_mtdservice_default hal_mfidoca_client;
+
+typeattribute hal_mtdservice_default hal_mlipay_client;
+
+typeattribute hal_mtdservice_default hal_mtdservice;
+
+typeattribute hal_mtdservice_default hal_mtdservice_server;
+
+typeattribute hal_mtdservice_default halclientdomain;
+
+typeattribute hal_mtdservice_default halserverdomain;
+
+binder_use(hal_mtdservice_default)
+
+allow hal_mtdservice_default hal_mtdservice_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_mtdservice_default servicemanager:binder { call transfer };
+
+allow hal_mtdservice_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_mtdservice_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mtdservice_default init:unix_stream_socket { connectto };
+
+allow hal_mtdservice_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mtdservice_default vendor_persist_drm_file:dir { ioctl read write create getattr setattr lock relabelto rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_mtdservice_default vendor_persist_drm_file:file { ioctl read write create getattr setattr lock relabelto append map unlink rename open watch watch_reads };
+
+allow hal_mtdservice_default vendor_persist_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_mtdservice_default mnt_vendor_file:dir { ioctl read write create getattr setattr lock relabelfrom rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_mtdservice_default proc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mtdservice_default proc_firmware_config:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_mtdservice_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mtdservice_default system_data_file:dir { getattr };
+
+allow hal_mtdservice_default property_socket:sock_file { write };
+
+allow hal_mtdservice_default vendor_payment_security_prop:property_service { set };
+
+allow hal_mtdservice_default vendor_payment_security_prop:file { read getattr map open };
+
+allow hal_mtdservice_default vendor_system_prop:file { read getattr map open };
+
+allow hal_mtdservice_default vendor_cpuid_prop:file { read getattr map open };
+
+allow hal_mtdservice_default ta_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_mtdservice_default ta_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_mtdservice_default sysfs:dir { read open };
+
+allow hal_mtdservice_default sysfs_block:dir { read open };
+
+allow hal_mtdservice_default sysfs_mem_sleep:dir { read open };
+
+allow hal_mtdservice_default sysfs_powercap:dir { read open };
+
+allow hal_mtdservice_default sysfs_thunderbolt:dir { read open };
+
+allow hal_mtdservice_default sysfs_typec:dir { read open };
+
+allow hal_mtdservice_default sysfs_udc:dir { read open };
+
+allow hal_mtdservice_default sysfs_usb_pd:dir { read open };
+
+allow hal_mtdservice_default sysfs_usbcore:dir { read open };
+
+allow hal_mtdservice_default sysfs:file { read write open };
+
+allow hal_mtdservice_default sysfs_block:file { read write open };
+
+allow hal_mtdservice_default sysfs_mem_sleep:file { read write open };
+
+allow hal_mtdservice_default sysfs_powercap:file { read write open };
+
+allow hal_mtdservice_default sysfs_thunderbolt:file { read write open };
+
+allow hal_mtdservice_default sysfs_typec:file { read write open };
+
+allow hal_mtdservice_default sysfs_udc:file { read write open };
+
+allow hal_mtdservice_default sysfs_usb_pd:file { read write open };
+
+allow hal_mtdservice_default sysfs_usbcore:file { read write open };
+
+allow hal_mtdservice_default vendor_qce_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mtdservice_default vendor_sg_device:chr_file { read open };
+
+allow hal_mtdservice_default vendor_persist_data_file:dir { getattr };
+
+allow hal_mtdservice_default vendor_smcinvoke_device:chr_file { ioctl read write open };
+
+allow hal_mtdservice_default block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_mtdservice_default vendor_sg_device:chr_file { ioctl write };
+
+allow hal_mtdservice_default nfc_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mtdservice_default self:qipcrtr_socket { read write create getattr setopt };
+
+allow hal_mtdservice_default vendor_ese_gpio_device:chr_file { ioctl read write open };
+
+allow hal_mtdservice_default vendor_tee_listener_prop:file { read getattr map open };
+
+allow hal_mtdservice_default vendor_deviceid_prop:file { read getattr map open };
+
+allow hal_mtdservice_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_mtdservice_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };
+
+allow hal_mtdservice_default hal_tidaservice_default:binder { transfer };

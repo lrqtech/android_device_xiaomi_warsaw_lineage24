@@ -1,0 +1,80 @@
+typeattribute cameramind_app coredomain;
+typeattribute cameramind_app mlstrustedsubject;
+app_domain(cameramind_app)
+net_domain(cameramind_app)
+binder_use(cameramind_app)
+
+allow { cameraserver platform_app system_app system_server } cameramind_app:
+    unix_stream_socket { read write getattr connectto };
+allow cameramind_app system_server:unix_stream_socket { read write getattr connectto };
+
+binder_call(cameramind_app, system_server)
+binder_call(cameramind_app, surfaceflinger)
+allow cameramind_app surfaceflinger_service:service_manager find;
+
+allow cameramind_app {
+    activity_service
+    activity_task_service
+    connectivity_service
+    content_capture_service
+    content_service
+    display_service
+    game_service
+    netstats_service
+    network_management_service
+    permission_checker_service
+    radio_service
+    sensorservice_service
+    thermal_service
+    uimode_service
+}:service_manager find;
+
+allow cameramind_app camera_mind_data_file:dir create_dir_perms;
+allow cameramind_app camera_mind_data_file:file create_file_perms;
+allow system_app camera_mind_data_file:file r_file_perms;
+
+allow cameramind_app vendor_configs_file:dir r_dir_perms;
+allow cameramind_app vendor_configs_file:file r_file_perms;
+
+allow cameramind_app proc_camera_mind:dir r_dir_perms;
+allow cameramind_app proc_camera_mind:file rw_file_perms;
+allow cameramind_app { proc_stat proc_pressure_cpu proc_pressure_io proc_pressure_mem
+    proc_zoneinfo proc_uid_cputime_showstat }:file r_file_perms;
+allow cameramind_app sysfs_thermal:dir r_dir_perms;
+allow cameramind_app sysfs_thermal:file rw_file_perms;
+allow cameramind_app cgroup:dir r_dir_perms;
+allow cameramind_app cgroup:file rw_file_perms;
+allow cameramind_app cgroup_v2:file r_file_perms;
+
+allow {
+    cameramind_app
+    cameraserver
+    platform_app
+    surfaceflinger
+    system_app
+    system_server
+} cammsger_device:chr_file rw_file_perms;
+
+allow {
+    cameramind_app
+    cameraserver
+    platform_app
+    surfaceflinger
+    system_app
+    system_server
+} camera_intentaware_filesys_driver:chr_file rw_file_perms;
+
+set_prop(cameramind_app, warsaw_cameramind_prop)
+
+type media_asset_proc_service, system_api_service, service_manager_type;
+type media_asset_service, app_api_service, system_api_service, service_manager_type;
+allow cameramind_app { media_asset_proc_service media_asset_service }:
+    service_manager { add find };
+allow platform_app { media_asset_proc_service media_asset_service }:
+    service_manager find;
+allow untrusted_app media_asset_service:service_manager find;
+
+get_prop({ cameraserver platform_app system_app system_server }, warsaw_cameramind_prop)
+
+# The dedicated camera domain reads the CameraMind enablement property.
+get_prop(warsaw_camera_app, warsaw_cameramind_prop)

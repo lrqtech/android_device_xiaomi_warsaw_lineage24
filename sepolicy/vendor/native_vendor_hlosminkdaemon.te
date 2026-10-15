@@ -1,0 +1,15 @@
+type vendor_hlosminkdaemon, domain;
+
+domain_auto_trans(init, vendor_hlosminkdaemon_exec, vendor_hlosminkdaemon)
+
+typeattribute vendor_hlosminkdaemon mlstrustedsubject;
+
+allow vendor_hlosminkdaemon vendor_hlosminkdaemon_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hlosminkdaemon self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hlosminkdaemon self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allowxperm vendor_hlosminkdaemon self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_hlosminkdaemon self:qipcrtr_socket ioctl { 0xc300-0xc305 };

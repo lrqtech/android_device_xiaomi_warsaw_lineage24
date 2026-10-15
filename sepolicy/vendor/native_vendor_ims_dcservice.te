@@ -1,0 +1,31 @@
+type vendor_ims_dcservice, domain;
+
+domain_auto_trans(init, vendor_ims_dcservice_exec, vendor_ims_dcservice)
+
+typeattribute vendor_ims_dcservice netdomain;
+
+typeattribute vendor_ims_dcservice vendor_hal_dcservice_qti;
+
+typeattribute vendor_ims_dcservice vendor_hal_dcservice_qti_server;
+
+typeattribute vendor_ims_dcservice vendor_halserverdomain;
+
+hwbinder_use(vendor_ims_dcservice)
+
+allow vendor_ims_dcservice vendor_ims_dcservice_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_ims_dcservice vendor_ims_prop:file { read getattr map open };
+
+allow vendor_ims_dcservice hwservicemanager:binder { call transfer };
+
+allow vendor_ims_dcservice system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_ims_dcservice hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_ims_dcservice vendor_ims_service_socket:sock_file { write };
+
+allow vendor_ims_dcservice vendor_ims_service:unix_stream_socket { connectto };
+
+allow vendor_ims_dcservice vendor_imsdc_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allowxperm vendor_ims_dcservice self:udp_socket ioctl { 0x89fd };

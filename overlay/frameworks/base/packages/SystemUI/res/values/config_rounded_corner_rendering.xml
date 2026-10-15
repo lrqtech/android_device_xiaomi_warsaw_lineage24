@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OS4 DevicesOverlay sets support_round_corner=false. The panel supplies
+         the rounded edge; framework insets retain the official 158 px radius. -->
+    <bool name="config_enableRoundedCornerRendering">false</bool>
+</resources>

@@ -1,0 +1,28 @@
+warsaw.camera.display u:object_r:warsaw_camera_display_service:s0
+
+warsaw.udfps.ui u:object_r:warsaw_udfps_ui_service:s0
+
+miui.mqsas.IMQSNative u:object_r:mqsasd_service:s0
+
+vendor.qti.qccsyshal_aidl.IQccsyshal/default   u:object_r:vendor_qccsyshal_service:s0
+
+vendor.qvirtmgr                                u:object_r:vendor_qvirtmgr_service:s0
+
+vendor.qti.qvirt.IVirtualizationService/default   u:object_r:vendor_hal_qvirt_service:s0
+
+vendor.qti.hardware.systemhelperaidl.ISystemEvent/default     u:object_r:vendor_hal_systemhelper_aidl_service:s0
+
+vendor.qti.hardware.systemhelperaidl.ISystemResource/default  u:object_r:vendor_hal_systemhelper_aidl_service:s0
+
+vendor.qti.ImsVtService.IImsVtRequest/ImsVtService                    u:object_r:vendor_hal_imsvt_service:s0
+
+xiaomi.system.hypsys.common.IHypSysSsi/default       u:object_r:hypsys_ssi_service:s0
+
+xiaomi.system.hypsys.common.IHypSysSsiIntl/default       u:object_r:hypsys_ssi_service:s0
+
+xiaomi.joyose                                  u:object_r:system_app_service:s0
+
+android.system.mieed.IMieed/default            u:object_r:mieed_service:s0
+
+mediaassetproc                                  u:object_r:media_asset_proc_service:s0
+mediaasset                                      u:object_r:media_asset_service:s0

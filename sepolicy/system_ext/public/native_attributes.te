@@ -1,0 +1,29 @@
+attribute dvs_aidl;
+
+attribute dvs_aidl_server;
+
+attribute vendor_qccsyshal_client;
+
+attribute dvs_aidl_client;
+
+attribute hypsys_ssi_client;
+
+attribute vendor_syshealthmon_client;
+
+attribute vendor_sys_sxrauxservice_qti_socket_client;
+
+attribute vendor_syshealthmon;
+
+attribute vendor_syshealthmon_server;
+
+attribute vendor_wifidisplayhalservice;
+
+attribute vendor_wifidisplayhalservice_server;
+
+attribute vendor_service;
+
+attribute vendor_persist_type;
+
+attribute vendor_qmcs_file_type;
+
+attribute system_halserverdomain;

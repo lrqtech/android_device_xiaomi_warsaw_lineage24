@@ -1,0 +1,9 @@
+typeattribute system_server hal_cit_bluetooth_client;
+
+typeattribute audioserver hal_uniperf_client;
+
+typeattribute surfaceflinger hal_uniperf_client;
+
+typeattribute system_server hal_uniperf_client;
+
+typeattribute system_server vendor_hal_dataconnection_qti_client;

@@ -1,0 +1,161 @@
+type vendor_wcnss_service, domain;
+
+domain_auto_trans(init, vendor_wcnss_service_exec, vendor_wcnss_service)
+
+typeattribute vendor_wcnss_service netdomain;
+
+vndbinder_use(vendor_wcnss_service)
+
+allow vendor_wcnss_service vendor_per_mgr:binder { transfer };
+
+allow vendor_wcnss_service vendor_wcnss_service_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_wcnss_service vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_wcnss_service vndservicemanager:binder { call transfer };
+
+allow vendor_wcnss_service vendor_per_mgr:binder { call transfer };
+
+allow vendor_wcnss_service vendor_per_mgr:fd { use };
+
+allow vendor_wcnss_service vendor_per_mgr_service:service_manager { find };
+
+allow vendor_wcnss_service vendor_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_wcnss_service vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_wcnss_service vendor_wifi_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_wcnss_service vendor_wifi_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_wcnss_service proc_net:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_wcnss_service self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_wcnss_service self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_wcnss_service self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_wcnss_service self:netlink_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_wcnss_service firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_wcnss_service firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_wcnss_service sysfs_net:dir { search };
+
+allow vendor_wcnss_service sysfs_net:file { write getattr open };
+
+allow vendor_wcnss_service wpa_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_wcnss_service wpa_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_wcnss_service proc_net:file { getattr };
+
+allow vendor_wcnss_service vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_wcnss_service vendor_wigignpt_socket:sock_file { write };
+
+allow vendor_wcnss_service self:capability { net_admin };
+
+allow vendor_wcnss_service kmsg_device:chr_file { write open };
+
+allow vendor_wcnss_service proc_net:file { read };
+
+allow vendor_wcnss_service vendor_sysfs_max_chipset_log_size:file { read getattr open watch };
+
+allow vendor_wcnss_service vendor_wifi_vendor_wpa_socket:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_wcnss_service vendor_wifi_vendor_wpa_socket:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_wcnss_service vendor_wifi_vendor_wpa_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_wcnss_service vendor_wifi_vendor_wpa_socket:sock_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_wcnss_service vendor_wifi_vendor_wpa_socket:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_wcnss_service vendor_wifi_vendor_wpa_socket:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_wcnss_service vendor_sysfs_dump_in_progress:file { read write getattr open watch };
+
+allow vendor_wcnss_service vendor_sysfs_dump_in_progress:dir { search };
+
+allow vendor_wcnss_service vendor_wifihal_socket:dir { write add_name remove_name search };
+
+allow vendor_wcnss_service vendor_wifihal_socket:sock_file { create setattr unlink };
+
+allow vendor_wcnss_service wpa_data_file:sock_file { write };
+
+allow vendor_wcnss_service hal_wifi_supplicant_default:unix_dgram_socket { sendto };
+
+allow vendor_wcnss_service self:capability { setgid setuid net_raw };
+
+allow vendor_wcnss_service self:packet_socket { ioctl read create map bind getopt setopt };
+
+allow vendor_wcnss_service self:packet_socket { write };
+
+allow vendor_wcnss_service mnt_vendor_file:dir { read write create add_name search };
+
+allow vendor_wcnss_service mnt_vendor_file:file { read write create setattr open };
+
+allow vendor_wcnss_service vendor_diag_device:chr_file { ioctl read write create open };
+
+allow vendor_wcnss_service vendor_sysfs_diag:dir { search };
+
+allow vendor_wcnss_service vendor_sysfs_diag:file { read open };
+
+allow vendor_wcnss_service vendor_wifi_vendor_log_data_file:dir { read write getattr setattr open add_name remove_name search };
+
+allow vendor_wcnss_service vendor_wifi_vendor_log_data_file:file { read write create getattr setattr append unlink rename open };
+
+allow vendor_wcnss_service vendor_proc_wifi_dbg:file { read write create getattr setattr open };
+
+allow vendor_wcnss_service sysfs_net:file { read };
+
+allow vendor_wcnss_service self:netlink_generic_socket { ioctl };
+
+allow vendor_wcnss_service vendor_data_file:dir { read write getattr setattr open add_name remove_name search };
+
+allow vendor_wcnss_service vendor_data_file:file { read write create getattr setattr append unlink rename open };
+
+allow vendor_wcnss_service fuse:dir { read write getattr setattr open add_name remove_name search };
+
+allow vendor_wcnss_service fuse:file { read write create getattr setattr append unlink rename open };
+
+allow vendor_wcnss_service vendor_mac_vendor_data_file:dir { read write setattr open add_name search };
+
+allow vendor_wcnss_service vendor_mac_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_wcnss_service vendor_mac_vendor_data_file:file { read write create getattr setattr open };
+
+allow vendor_wcnss_service vendor_persist_bluetooth_file:file { read getattr setattr open };
+
+allow vendor_wcnss_service vendor_persist_bluetooth_file:dir { read getattr setattr open search };
+
+allow vendor_wcnss_service vendor_modem_data_file:dir { read write getattr setattr open add_name remove_name search };
+
+allow vendor_wcnss_service vendor_modem_data_file:file { read write create getattr setattr append unlink rename open };
+
+allowxperm vendor_wcnss_service self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_wcnss_service self:qipcrtr_socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_wcnss_service self:udp_socket ioctl { 0x8914 };
+
+allowxperm vendor_wcnss_service self:udp_socket ioctl { 0x8be5 };
+
+allowxperm vendor_wcnss_service self:socket ioctl { 0x8946 };
+
+allowxperm vendor_wcnss_service self:unix_dgram_socket ioctl { 0x8946 };
+
+allowxperm vendor_wcnss_service self:udp_socket ioctl { 0x8913-0x8914 0x8943 0x8946 0x8990-0x8991 };
+
+allowxperm vendor_wcnss_service self:packet_socket ioctl { 0x5401-0x5404 0x540b 0x540e-0x5411 0x5413-0x5414 0x5450-0x5451 };
+
+allowxperm vendor_wcnss_service self:packet_socket ioctl { 0x6900 0x6902 };
+
+allowxperm vendor_wcnss_service self:packet_socket ioctl { 0x8906-0x8907 0x890b-0x890d 0x8910-0x8927 0x8929 0x8930-0x8939 0x8940-0x8943 0x8946-0x894b 0x8953-0x8955 0x8960-0x8962 0x8970-0x8971 0x8980-0x8983 0x8990-0x8995 0x89a0-0x89a3 0x89b0 0x89e0-0x89ff };
+
+allowxperm vendor_wcnss_service self:packet_socket ioctl { 0x8b00-0x8b02 0x8b04-0x8b1d 0x8b20-0x8b2d 0x8b30-0x8b36 0x8be0-0x8bff };
+
+allowxperm vendor_wcnss_service self:netlink_generic_socket ioctl { 0x8910 0x8946 };

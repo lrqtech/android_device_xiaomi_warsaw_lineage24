@@ -1,0 +1,47 @@
+typeattribute hal_contexthub_default hal_contexthub;
+
+typeattribute hal_contexthub_default hal_contexthub_server;
+
+typeattribute hal_contexthub_default halserverdomain;
+
+binder_use(hal_contexthub_default)
+
+hwbinder_use(hal_contexthub_default)
+
+allow hal_contexthub_default hal_contexthub_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_contexthub_default fwk_stats_service:service_manager { find };
+
+allow hal_contexthub_default stats_service_server:binder { call transfer };
+
+allow hal_contexthub_default stats_service_server:fd { use };
+
+allow hal_contexthub_default self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_contexthub_default vendor_xdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_contexthub_default vendor_adsprpc_prop:file { read getattr map open };
+
+allow hal_contexthub_default dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_contexthub_default sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_contexthub_default self:capability2 { block_suspend };
+
+allow hal_contexthub_default self:cap2_userns { block_suspend };
+
+allow hal_contexthub_default system_suspend_server:binder { call transfer };
+
+allow hal_contexthub_default system_suspend_server:fd { use };
+
+allow hal_contexthub_default system_suspend_hwservice:hwservice_manager { find };
+
+allow hal_contexthub_default hwservicemanager:binder { call transfer };
+
+allow hal_contexthub_default hwservicemanager_prop:file { read getattr map open };
+
+allow hal_contexthub_default hidl_manager_hwservice:hwservice_manager { find };
+
+allow hal_contexthub_default hal_system_suspend_service:service_manager { find };
+
+allow hal_contexthub_default servicemanager:binder { call transfer };

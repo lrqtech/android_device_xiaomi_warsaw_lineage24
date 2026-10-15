@@ -1,0 +1,65 @@
+type hal_idmanager_default, domain;
+
+domain_auto_trans(init, hal_idmanager_default_exec, hal_idmanager_default)
+
+typeattribute hal_idmanager_default hal_idmanager;
+
+typeattribute hal_idmanager_default hal_idmanager_server;
+
+typeattribute hal_idmanager_default hal_keymint_client;
+
+typeattribute hal_idmanager_default hal_misyscore_client;
+
+typeattribute hal_idmanager_default hal_secure_element_client;
+
+typeattribute hal_idmanager_default halclientdomain;
+
+typeattribute hal_idmanager_default halserverdomain;
+
+binder_use(hal_idmanager_default)
+
+allow hal_idmanager_default hal_idmanager_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_idmanager_default servicemanager:binder { call transfer };
+
+allow hal_idmanager_default vendor_custom_ab_block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_idmanager_default vendor_deviceid_prop:file { read getattr map open };
+
+allow hal_idmanager_default vendor_cpuid_prop:file { read getattr map open };
+
+allow hal_idmanager_default vendor_tee_listener_prop:file { read getattr map open };
+
+allow hal_idmanager_default property_socket:sock_file { write };
+
+allow hal_idmanager_default init:unix_stream_socket { connectto };
+
+allow hal_idmanager_default vendor_payment_security_prop:property_service { set };
+
+allow hal_idmanager_default vendor_payment_security_prop:file { read getattr map open };
+
+allow hal_idmanager_default vendor_system_prop:file { read getattr map open };
+
+allow hal_idmanager_default vendor_ese_prop:file { read getattr map open };
+
+allow hal_idmanager_default vendor_ese_prop:property_service { set };
+
+allow hal_idmanager_default boot_status_prop:file { read getattr map open };
+
+allow hal_idmanager_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_idmanager_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_idmanager_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };
+
+allow hal_idmanager_default vendor_ese_gpio_device:chr_file { ioctl read write open };
+
+allow hal_idmanager_default block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_idmanager_default hal_misyscore_default:binder { call };
+
+allow hal_idmanager_default hal_misyscore_service:service_manager { find };
+
+allow hal_idmanager_default secinfo_block_device:dir { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_idmanager_default secinfo_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };

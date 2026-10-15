@@ -1,0 +1,95 @@
+type hal_miface_default, domain;
+
+domain_auto_trans(init, hal_miface_default_exec, hal_miface_default)
+
+typeattribute hal_miface_default binderservicedomain;
+
+typeattribute hal_miface_default hal_face;
+
+typeattribute hal_miface_default hal_face_server;
+
+typeattribute hal_miface_default hal_graphics_allocator;
+
+typeattribute hal_miface_default hal_graphics_allocator_server;
+
+typeattribute hal_miface_default hal_miface;
+
+typeattribute hal_miface_default hal_miface_server;
+
+typeattribute hal_miface_default halserverdomain;
+
+binder_use(hal_miface_default)
+
+hwbinder_use(hal_miface_default)
+
+allow hal_miface_default hal_miface_service:service_manager { add find };
+
+allow hal_miface_default hal_miface_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_miface_default servicemanager:binder { call transfer };
+
+allow hal_miface_default hwservicemanager:binder { call transfer };
+
+allow hal_miface_default face_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_miface_default face_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_miface_default sysfs_tp_fodstatus:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_miface_default sysfs_tp_fodstatus:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_miface_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miface_default camera_config_prop:file { read getattr map open };
+
+allow hal_miface_default cameraserver:binder { call transfer };
+
+allow hal_miface_default cameraserver:fd { use };
+
+allow hal_miface_default fwk_camera_service:service_manager { find };
+
+allow hal_miface_default fwk_camera_hwservice:hwservice_manager { find };
+
+allow hal_miface_default hal_graphics_allocator_default:binder { call transfer };
+
+allow hal_miface_default hal_graphics_allocator_default:fd { use };
+
+allow hal_miface_default hal_graphics_allocator_default_tmpfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miface_default hal_graphics_mapper_hwservice:hwservice_manager { find };
+
+allow hal_miface_default hal_graphics_mapper_service:service_manager { find };
+
+allow hal_miface_default hidl_token_hwservice:hwservice_manager { find };
+
+allow hal_miface_default fwk_sensor_hwservice:hwservice_manager { find };
+
+allow hal_miface_default vendor_sysfs_displayfeature:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_miface_default property_socket:sock_file { write };
+
+allow hal_miface_default init:unix_stream_socket { connectto };
+
+allow hal_miface_default vendor_miface_prop:property_service { set };
+
+allow hal_miface_default vendor_miface_prop:file { read getattr map open };
+
+allow hal_miface_default vendor_fp_prop:file { read getattr map open };
+
+allow hal_miface_default proc_sysrq:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_miface_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_miface_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_miface_default self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_miface_default vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_miface_default vendor_radio_prop:file { read getattr map open };
+
+allow hal_miface_default vendor_display_prop:file { read getattr map open };
+
+allow hal_miface_default mitee_client_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allowxperm hal_miface_default vendor_membuf_dev:chr_file ioctl { 0x4d05 };

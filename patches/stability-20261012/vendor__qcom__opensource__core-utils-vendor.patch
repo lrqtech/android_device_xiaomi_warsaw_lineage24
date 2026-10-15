@@ -1,0 +1,15 @@
+diff --git a/qspaservice/Android.bp b/qspaservice/Android.bp
+index 8ef6b72..a946473 100644
+--- a/qspaservice/Android.bp
++++ b/qspaservice/Android.bp
+@@ -1,6 +1,9 @@
+ cc_binary{
+     name: "vendor.qti.qspa-service",
+-    init_rc: ["vendor.qti.qspa-service.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_vendor_qti_qspa_service_rc"],
++        default: ["vendor.qti.qspa-service.rc"],
++    }),
+     srcs:[
+         "src/main.cpp",
+         "src/Qspa.cpp"

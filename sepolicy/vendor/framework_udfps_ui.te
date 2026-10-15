@@ -1,0 +1,5 @@
+typeattribute system_server hal_touchfeature_xiaomi_client;
+
+allow platform_app vendor_touchfeature_prop:file { read getattr map open };
+
+allow platform_app vendor_fp_prop:file { read getattr map open };

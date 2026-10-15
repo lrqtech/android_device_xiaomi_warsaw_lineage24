@@ -1,0 +1,21 @@
+typeattribute hal_light_default hal_light;
+
+typeattribute hal_light_default hal_light_server;
+
+typeattribute hal_light_default halserverdomain;
+
+allow hal_light_default hal_light_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_light_default vendor_sysfs_displayfeature:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_light_default vendor_sysfs_displayfeature:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_light_default vendor_displayfeature_device:chr_file { ioctl read write open };
+
+allow hal_light_default vendor_displayfeature_prop:file { read getattr map open };
+
+allow hal_light_default vendor_sysfs_led_file:dir { search };
+
+allow hal_light_default vendor_sysfs_led_file:file { read write open };
+
+allow hal_light_default dumpstate:binder { transfer };

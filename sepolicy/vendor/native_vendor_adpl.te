@@ -1,0 +1,47 @@
+type vendor_adpl, domain;
+
+domain_auto_trans(init, vendor_adpl_exec, vendor_adpl)
+
+typeattribute vendor_adpl netdomain;
+
+allow vendor_adpl vendor_adpl_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_adpl vendor_ipa_dev:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_adpl vendor_rmnet_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_adpl vendor_mhi_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_adpl self:socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_adpl self:udp_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_adpl self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_adpl property_socket:sock_file { write };
+
+allow vendor_adpl init:unix_stream_socket { connectto };
+
+allow vendor_adpl vendor_dataadpl_prop:property_service { set };
+
+allow vendor_adpl vendor_dataadpl_prop:file { read getattr map open };
+
+allow vendor_adpl vendor_dataadpl_socket:sock_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_adpl sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_adpl sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };

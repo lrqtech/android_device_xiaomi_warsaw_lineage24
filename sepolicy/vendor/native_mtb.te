@@ -1,0 +1,21 @@
+type mtb, domain;
+
+domain_trans(init, mtb_exec, mtb)
+
+allow mtb mtb_exec:file { read getattr map execute open entrypoint };
+
+allow mtb self:process { execmem };
+
+allow mtb vendor_radio_prop:file { read getattr map open };
+
+allow mtb property_socket:sock_file { write };
+
+allow mtb init:unix_stream_socket { connectto };
+
+allow mtb vendor_radio_prop:property_service { set };
+
+allow mtb vendor_boot_ota_file:file { read getattr map execute open };
+
+allow mtb vendor_file:file { read getattr map execute open };
+
+allow mtb self:qipcrtr_socket { create };

@@ -1,0 +1,3 @@
+SOONG_CONFIG_NAMESPACES += warsaw_camera_exposure
+SOONG_CONFIG_warsaw_camera_exposure += enabled
+SOONG_CONFIG_warsaw_camera_exposure_enabled := true

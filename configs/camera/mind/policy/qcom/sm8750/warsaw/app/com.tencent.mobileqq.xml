@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.tencent.mobileqq.xml">
+
+    <app prio="100" name="com.tencent.mobileqq" >
+        <profile name="normal">
+
+            <activity name="com.tencent.av.ui.AVActivity">
+                <case cameraUsing="true" cameraId="1">
+
+                    <action name ="cameraPreviewFps" value="-1:-1" />
+
+                    <case batteryLevel="0:6">
+                        <action name ="cameraPreviewFps" value="30:30" />
+                    </case>
+
+
+
+                    <case skinTemp="41000:1000000" cameraUsingTime="300000:-1" appFpsRangeOuter="0:15" >
+                        <action name ="cameraPreviewFps" value="12:12" />
+                    </case>
+
+
+                    <case skinTempDesc="41000:39000" cameraUsingTime="300000:-1" appFpsRangeOuter="0:15" >
+                        <action name ="cameraPreviewFps" value="12:12" />
+                    </case>
+                </case>
+            </activity>
+
+            <activity name="com.tencent.mobileqq.olympic.activity.ScanTorchActivity">
+            </activity>
+        </profile>
+    </app>
+
+    <app prio="100" name="__DEFAULT__" >
+        <profile name="normal">
+            <activity name="__DEFAULT__">
+                <case cameraUsing="com.tencent.mobileqq" windowPackageName="com.tencent.mobileqq" windowTitle="com.tencent.mobileqq/.FloatingWindow">
+                    <case cameraUsing="true" cameraId="1">
+
+                        <action name ="cameraPreviewFps" value="-1:-1" />
+
+                        <case batteryLevel="0:6">
+                            <action name ="cameraPreviewFps" value="30:30" />
+                        </case>
+
+
+
+                        <case skinTemp="41000:1000000" cameraUsingTime="300000:-1" appFpsRangeOuter="0:15" >
+                            <action name ="cameraPreviewFps" value="12:12" />
+                        </case>
+
+
+                        <case skinTempDesc="41000:39000" cameraUsingTime="300000:-1" appFpsRangeOuter="0:15" >
+                            <action name ="cameraPreviewFps" value="12:12" />
+                        </case>
+                    </case>
+                </case>
+            </activity>
+        </profile>
+    </app>
+</policy>

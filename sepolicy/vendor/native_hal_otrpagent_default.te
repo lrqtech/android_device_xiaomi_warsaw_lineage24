@@ -1,0 +1,45 @@
+type hal_otrpagent_default, domain;
+
+domain_auto_trans(init, hal_otrpagent_default_exec, hal_otrpagent_default)
+
+typeattribute hal_otrpagent_default hal_otrpagent;
+
+typeattribute hal_otrpagent_default hal_otrpagent_server;
+
+typeattribute hal_otrpagent_default halserverdomain;
+
+binder_use(hal_otrpagent_default)
+
+allow hal_otrpagent_default mitee_client_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_otrpagent_default hal_otrpagent_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_otrpagent_default servicemanager:binder { call transfer };
+
+allow hal_otrpagent_default system_app:fd { use };
+
+allow hal_otrpagent_default untrusted_app_all:fd { use };
+
+allow hal_otrpagent_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_otrpagent_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_otrpagent_default init:unix_stream_socket { connectto };
+
+allow hal_otrpagent_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_otrpagent_default mnt_vendor_file:dir { ioctl read write create getattr setattr lock relabelfrom rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_otrpagent_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_otrpagent_default ta_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_otrpagent_default ta_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_otrpagent_default platform_app:fd { use };
+
+allow hal_otrpagent_default hal_mtdservice_default:fd { use };
+
+allow hal_otrpagent_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_otrpagent_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };

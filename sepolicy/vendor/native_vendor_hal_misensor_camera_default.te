@@ -1,0 +1,51 @@
+type vendor_hal_misensor_camera_default, domain;
+
+domain_auto_trans(init, vendor_hal_misensor_camera_default_exec, vendor_hal_misensor_camera_default)
+
+typeattribute vendor_hal_misensor_camera_default hal_graphics_allocator_client;
+
+typeattribute vendor_hal_misensor_camera_default halclientdomain;
+
+typeattribute vendor_hal_misensor_camera_default halserverdomain;
+
+typeattribute vendor_hal_misensor_camera_default vendor_hal_misensor_camera;
+
+typeattribute vendor_hal_misensor_camera_default vendor_hal_misensor_camera_server;
+
+binder_use(vendor_hal_misensor_camera_default)
+
+allow vendor_hal_misensor_camera_default vendor_hal_misensor_camera_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_misensor_camera_default servicemanager:binder { call transfer };
+
+allow vendor_hal_misensor_camera_default self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_misensor_camera_default self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_misensor_camera_default camera_config_prop:file { read getattr map open };
+
+allow vendor_hal_misensor_camera_default cameraserver:binder { call transfer };
+
+allow vendor_hal_misensor_camera_default cameraserver:fd { use };
+
+allow vendor_hal_misensor_camera_default hal_graphics_mapper_hwservice:hwservice_manager { find };
+
+allow vendor_hal_misensor_camera_default fwk_camera_service:service_manager { find };
+
+allow vendor_hal_misensor_camera_default fwk_camera_hwservice:hwservice_manager { find };
+
+allow vendor_hal_misensor_camera_default hidl_token_hwservice:hwservice_manager { find };
+
+allow vendor_hal_misensor_camera_default fwk_sensor_hwservice:hwservice_manager { find };
+
+allow vendor_hal_misensor_camera_default hal_graphics_allocator_default:binder { call transfer };
+
+allow vendor_hal_misensor_camera_default hal_graphics_allocator_default:fd { use };
+
+allow vendor_hal_misensor_camera_default cameraserver:binder { transfer };
+
+allow vendor_hal_misensor_camera_default vendor_display_prop:file { read getattr map open };
+
+allowxperm vendor_hal_misensor_camera_default self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_hal_misensor_camera_default self:qipcrtr_socket ioctl { 0xc300-0xc305 };

@@ -1,0 +1,57 @@
+type hal_videoservice_default, domain;
+
+domain_auto_trans(init, hal_videoservice_default_exec, hal_videoservice_default)
+
+typeattribute hal_videoservice_default hal_graphics_allocator_client;
+
+typeattribute hal_videoservice_default hal_mediaeventgatherservice_client;
+
+typeattribute hal_videoservice_default hal_videoservice;
+
+typeattribute hal_videoservice_default hal_videoservice_server;
+
+typeattribute hal_videoservice_default halclientdomain;
+
+typeattribute hal_videoservice_default halserverdomain;
+
+typeattribute hal_videoservice_default mlstrustedsubject;
+
+binder_use(hal_videoservice_default)
+
+allow hal_videoservice_default dumpstate:binder { transfer };
+
+allow hal_videoservice_default mediacodec:process { signal };
+
+allow hal_videoservice_default mediacodec:process { sigkill };
+
+allow hal_videoservice_default vendor_vppservice:process { signal };
+
+allow hal_videoservice_default vendor_vppservice:process { sigkill };
+
+allow hal_videoservice_default vendor_data_file:dir { write add_name search };
+
+allow hal_videoservice_default vendor_data_file:file { read write create getattr open };
+
+allow hal_videoservice_default property_socket:sock_file { write };
+
+allow hal_videoservice_default init:unix_stream_socket { connectto };
+
+allow hal_videoservice_default vendor_video_mi_prop:property_service { set };
+
+allow hal_videoservice_default vendor_video_mi_prop:file { read getattr map open };
+
+allow hal_videoservice_default proc_loadavg:dir { search };
+
+allow hal_videoservice_default proc_loadavg:file { read open };
+
+allow hal_videoservice_default hal_videoservice_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_videoservice_default servicemanager:binder { call transfer };
+
+allow hal_videoservice_default servicemanager:fd { use };
+
+allow hal_videoservice_default hal_mediaeventgatherservice_service:service_manager { find };
+
+allow hal_videoservice_default hal_mediaeventgatherservice_server:fd { use };
+
+allow hal_videoservice_default hal_mediaeventgatherservice:binder { call };

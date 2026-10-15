@@ -1,0 +1,49 @@
+type vendor_hal_keymint_strongbox, domain;
+
+domain_auto_trans(init, vendor_hal_keymint_strongbox_exec, vendor_hal_keymint_strongbox)
+
+typeattribute vendor_hal_keymint_strongbox hal_keymint;
+
+typeattribute vendor_hal_keymint_strongbox hal_keymint_server;
+
+typeattribute vendor_hal_keymint_strongbox halserverdomain;
+
+binder_use(vendor_hal_keymint_strongbox)
+
+hwbinder_use(vendor_hal_keymint_strongbox)
+
+allow vendor_hal_keymint_strongbox vendor_security_patch_level_prop:file { read getattr map open };
+
+allow vendor_hal_keymint_strongbox vendor_hal_keymint_strongbox_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_keymint_strongbox secure_element:binder { call transfer };
+
+allow vendor_hal_keymint_strongbox secure_element:fd { use };
+
+allow vendor_hal_keymint_strongbox secure_element_service:service_manager { find };
+
+allow vendor_hal_keymint_strongbox self:capability2 { wake_alarm };
+
+allow vendor_hal_keymint_strongbox sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_keymint_strongbox self:capability2 { block_suspend };
+
+allow vendor_hal_keymint_strongbox self:cap2_userns { block_suspend };
+
+allow vendor_hal_keymint_strongbox system_suspend_server:binder { call transfer };
+
+allow vendor_hal_keymint_strongbox system_suspend_server:fd { use };
+
+allow vendor_hal_keymint_strongbox system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_hal_keymint_strongbox hwservicemanager:binder { call transfer };
+
+allow vendor_hal_keymint_strongbox hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_hal_keymint_strongbox hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_hal_keymint_strongbox hal_system_suspend_service:service_manager { find };
+
+allow vendor_hal_keymint_strongbox servicemanager:binder { call transfer };
+
+allow vendor_hal_keymint_strongbox boot_status_prop:file { read getattr map open };

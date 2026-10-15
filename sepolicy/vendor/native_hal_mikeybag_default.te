@@ -1,0 +1,23 @@
+type hal_mikeybag_default, domain;
+
+domain_auto_trans(init, hal_mikeybag_default_exec, hal_mikeybag_default)
+
+typeattribute hal_mikeybag_default hal_mikeybag;
+
+typeattribute hal_mikeybag_default hal_mikeybag_server;
+
+typeattribute hal_mikeybag_default halserverdomain;
+
+binder_use(hal_mikeybag_default)
+
+allow hal_mikeybag_default hal_mikeybag_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_mikeybag_default servicemanager:binder { call transfer };
+
+allow hal_mikeybag_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mikeybag_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mikeybag_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_mikeybag_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };

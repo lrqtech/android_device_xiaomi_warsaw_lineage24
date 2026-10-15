@@ -1,0 +1,43 @@
+# Keep the working QuickCamera contract when selecting the specific app domain.
+allow warsaw_camera_app hal_quickcamera_service:service_manager find;
+allow warsaw_camera_app hal_camera_default:binder { call transfer };
+# The OEM provider invokes the camera app callback during preview.
+allow hal_camera_default warsaw_camera_app:binder { call transfer };
+
+# The camera's real Binder clients, as observed in AVCs and its shipped DEX.
+allow warsaw_camera_app hal_misys_vendor_service:service_manager find;
+allow warsaw_camera_app hal_misys_vendor_default:binder { call transfer };
+allow hal_misys_vendor_default warsaw_camera_app:binder transfer;
+# perf_lock_acq/rel carry only integer/array data, without Binder objects or FDs.
+allow warsaw_camera_app vendor_hal_perf2_service:service_manager find;
+allow warsaw_camera_app vendor_hal_perf_default:binder call;
+hal_client_domain(warsaw_camera_app, vendor_hal_qspmhal)
+# WriteToFile/ReadFromFile pass the camera's SharedMemory file descriptor.
+allow hal_misys_vendor_default warsaw_camera_app:fd use;
+allow hal_misys_vendor_default warsaw_camera_app:memfd_file { getattr read write map };
+
+get_prop(warsaw_camera_app, vendor_camera_prop)
+get_prop(warsaw_camera_app, vendor_camera_p3enable_prop)
+allow warsaw_camera_app vendor_sysfs_soc:dir search;
+allow warsaw_camera_app vendor_sysfs_soc:file { open read getattr };
+
+# Only the captured camera FastRPC operations, not unrestricted app IOCTLs.
+allow warsaw_camera_app vendor_xdsp_device:chr_file { open read ioctl };
+allowxperm warsaw_camera_app vendor_xdsp_device:chr_file ioctl { 0x5203 0x520c 0x520d }; # GET_DSP_INFO: read DSP capabilities
+
+# The OTA labels SoC identifiers as vendor_sysfs_public. Keep the selected
+# camera client working after restoring those exact kernel node labels.
+allow warsaw_camera_app vendor_sysfs_public:dir { getattr ioctl lock open read search watch watch_reads };
+allow warsaw_camera_app vendor_sysfs_public:file { getattr ioctl lock map open read watch watch_reads };
+allow warsaw_camera_app vendor_sysfs_public:lnk_file { getattr ioctl lock map open read watch watch_reads };
+allow warsaw_camera_app vendor_sysfs_public:filesystem { getattr };
+
+# Camera-only counterparts of the OTA app-domain grants, required by captured AVCs.
+allow warsaw_camera_app adsprpcd_file:dir { getattr search };
+allow warsaw_camera_app vendor_sysfs_kgsl:dir { getattr search };
+get_prop(warsaw_camera_app, vendor_audio_prop)
+get_prop(warsaw_camera_app, vendor_camera_sensor_prop)
+get_prop(warsaw_camera_app, vendor_displayfeature_prop)
+get_prop(warsaw_camera_app, vendor_display_prop)
+# Adreno RenderThread reads gpu_model; no GPU control writes.
+allow warsaw_camera_app vendor_sysfs_kgsl:file r_file_perms;

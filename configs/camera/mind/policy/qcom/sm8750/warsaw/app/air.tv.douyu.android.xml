@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/air.tv.douyu.android.xml">
+
+    <app prio="100" name="air.tv.douyu.android" >
+        <profile name="normal">
+            <activity name="com.dy.liveV2.living.RecorderCameraActivityV2Portrait">
+                <macro name="thirdPartAppTempPolicyNoActivity" />
+            </activity>
+        </profile>
+    </app>
+</policy>

@@ -1,0 +1,67 @@
+type vendor_per_mgr, domain;
+
+domain_auto_trans(init, vendor_per_mgr_exec, vendor_per_mgr)
+
+vndbinder_use(vendor_per_mgr)
+
+allow vendor_per_mgr vendor_hal_gnss_qti:binder { call transfer };
+
+allow vendor_per_mgr vendor_hal_gnss_qti:fd { use };
+
+allow vendor_per_mgr vendor_hal_gnss_qti:binder { transfer };
+
+allow vendor_per_mgr vendor_per_proxy:binder { transfer };
+
+allow vendor_per_mgr vendor_per_mgr_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_per_mgr vendor_per_mgr_service:service_manager { add find };
+
+allow vendor_per_mgr vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_per_mgr vndservicemanager:binder { call transfer };
+
+allow vendor_per_mgr hal_gnss:binder { call transfer };
+
+allow vendor_per_mgr hal_gnss:fd { use };
+
+allow vendor_per_mgr vendor_per_proxy:binder { call transfer };
+
+allow vendor_per_mgr vendor_per_proxy:fd { use };
+
+allow vendor_per_mgr vendor_wcnss_service:binder { call transfer };
+
+allow vendor_per_mgr vendor_wcnss_service:fd { use };
+
+allow vendor_per_mgr rild:binder { call transfer };
+
+allow vendor_per_mgr rild:fd { use };
+
+allow vendor_per_mgr self:capability { net_bind_service };
+
+allow vendor_per_mgr firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_per_mgr firmware_file:dir { search };
+
+allow vendor_per_mgr self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_per_mgr vendor_ssr_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_per_mgr vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_per_mgr property_socket:sock_file { write };
+
+allow vendor_per_mgr init:unix_stream_socket { connectto };
+
+allow vendor_per_mgr vendor_per_mgr_state_prop:property_service { set };
+
+allow vendor_per_mgr vendor_per_mgr_state_prop:file { read getattr map open };
+
+allow vendor_per_mgr rild:binder { transfer };
+
+allow vendor_per_mgr vendor_wcnss_service:binder { transfer };
+
+allow vendor_per_mgr self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allowxperm vendor_per_mgr self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_per_mgr self:qipcrtr_socket ioctl { 0xc300-0xc305 };

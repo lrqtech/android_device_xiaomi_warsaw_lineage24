@@ -1,0 +1,40 @@
+# Startup contracts verified against the installed services and OS4 policy.
+# ueventd executes vmmgr for the retained Trusted VM firmware handlers.
+domain_auto_trans(ueventd, vendor_vm_mgr_exec, vendor_vm_mgr)
+allow ueventd vendor_vm_qti_system_file:dir r_dir_perms;
+
+# Init owns these retained TEE, USB and WLAN-reset property actions.
+set_prop(vendor_init, vendor_mitee_prop)
+set_prop(vendor_init, vendor_usb_prop)
+set_prop(vendor_init, vendor_ssr_prop)
+
+# The OMAPI service returns Reader/Session/Channel Binder objects to StrongBox.
+allow secure_element vendor_hal_keymint_strongbox:binder transfer;
+
+# The panel-info script publishes the touch vendor, including the UNKNOWN case.
+set_prop(vendor_touch_init_shell, vendor_fp_info_prop)
+
+# Label the kernel printk sysctl family used by the retained boot actions.
+type vendor_proc_kernel_log, fs_type, proc_type;
+allow { init vendor_init vendor_qti_init_shell } vendor_proc_kernel_log:file rw_file_perms;
+allow vendor_init proc_hung_task:file rw_file_perms;
+
+# init creates the fingerprint socket with this dedicated inode type. Keep
+# client access scoped to the HAL; no generic socket_device allowance is added.
+type vendor_fpsensor_socket, file_type;
+allow vendor_mfp-daemon vendor_fpsensor_socket:sock_file rw_file_perms;
+
+# Keep the OEM parser-disable setting used by the media startup script.
+set_prop(vendor_init, vendor_video_prop)
+
+# Captured early-boot writes; each exact property type is writable by OEM init.
+set_prop(vendor_init, vendor_displayfeature_prop)
+set_prop(vendor_init, vendor_display_prop)
+set_prop(vendor_init, vendor_audio_prop)
+set_prop(vendor_init, vendor_disable_spu_prop)
+set_prop(vendor_init, vendor_keymint_retry_timer_prop)
+set_prop(vendor_init, vendor_miface_prop)
+set_prop(vendor_init, vendor_vm_ssrenable_prop)
+set_prop(vendor_init, vendor_qcc_prop)
+set_prop(vendor_init, vendor_mi_ric_prop)
+set_prop(vendor_init, vendor_deviceid_prop)

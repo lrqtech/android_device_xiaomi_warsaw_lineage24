@@ -1,0 +1,2 @@
+# OS4 vendor vibrator path, shared with the Qualcomm haptics backend.
+ro.vendor.mm.vibrator.sys_path=/sys/class/qcom-haptics

@@ -1,0 +1,15 @@
+typeattribute hal_thermal_default hal_thermal;
+
+typeattribute hal_thermal_default hal_thermal_server;
+
+typeattribute hal_thermal_default halserverdomain;
+
+allow hal_thermal_default hal_thermal_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_thermal_default proc_stat:file { read getattr open };
+
+allow hal_thermal_default sysfs_thermal:file { write lock append map open };
+
+allow hal_thermal_default self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_thermal_default self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };

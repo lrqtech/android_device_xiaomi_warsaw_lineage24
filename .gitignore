@@ -1,0 +1,20 @@
+# Local build and editor artifacts
+/out/
+/.cache/
+__pycache__/
+*.py[cod]
+*.log
+*.bak
+*.orig
+*.rej
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local credentials and diagnostic authorization
+*.pem
+*.key
+*.pk8
+*.p12
+adb_keys

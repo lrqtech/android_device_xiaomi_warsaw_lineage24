@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+<privapp-permissions package="com.qti.phone">
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+        <permission name="android.permission.STATUS_BAR" />
+        <permission name="android.permission.INTERACT_ACROSS_USERS" />
+        <permission name="android.permission.MANAGE_USERS" />
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+        <permission name="android.permission.MODIFY_PHONE_STATE" />
+        <permission name="android.permission.WRITE_EMBEDDED_SUBSCRIPTIONS" />
+        <permission name="android.permission.READ_PRECISE_PHONE_STATE" />
+        <permission name="android.permission.WRITE_APN_SETTINGS" />
+        <permission name="android.permission.MODIFY_AUDIO_ROUTING" />
+        <permission name="android.permission.MODIFY_AUDIO_SETTINGS" />
+        <permission name="android.permission.MANAGE_USERS" />
+        <permission name="android.permission.MASTER_CLEAR" />
+        <permission name="android.permission.SHUTDOWN" />
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
+        <permission name="android.permission.REBOOT" />
+    </privapp-permissions>
+<privapp-permissions package="com.qualcomm.qcrilmsgtunnel">
+        <permission name="android.permission.INTERACT_ACROSS_USERS" />
+    </privapp-permissions>
+<privapp-permissions package="com.qualcomm.location">
+        <permission name="android.permission.MANAGE_USERS" />
+        <permission name="android.permission.PACKAGE_USAGE_STATS" />
+        <permission name="android.permission.REAL_GET_TASKS" />
+        <permission name="android.permission.UPDATE_APP_OPS_STATS" />
+        <permission name="android.permission.WATCH_APPOPS" />
+        <permission name="android.permission.WRITE_APN_SETTINGS" />
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+        <permission name="android.permission.READ_OEM_UNLOCK_STATE" />
+        <permission name="android.permission.OBSERVE_GRANT_REVOKE_PERMISSIONS" />
+        <permission name="android.permission.CONNECTIVITY_USE_RESTRICTED_NETWORKS" />
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+    </privapp-permissions>
+<privapp-permissions package="com.qualcomm.qti.services.systemhelper">
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+        <permission name="android.permission.INTERACT_ACROSS_USERS" />
+        <permission name="android.permission.MANAGE_USERS" />
+    </privapp-permissions>
+<privapp-permissions package="vendor.qti.bluetooth.xpan">
+        <permission name="android.permission.ACCESS_COARSE_LOCATION" />
+        <permission name="android.permission.MODIFY_PHONE_STATE" />
+        <permission name="android.permission.ACCESS_FINE_LOCATION" />
+        <permission name="android.permission.ACCESS_NETWORK_STATE" />
+        <permission name="android.permission.ACCESS_WIFI_STATE" />
+        <permission name="android.permission.CONNECTIVITY_INTERNAL" />
+        <permission name="android.permission.NETWORK_SETUP_WIZARD" />
+        <permission name="android.permission.MAINLINE_NETWORK_STACK" />
+        <permission name="android.permission.CHANGE_WIFI_STATE" />
+        <permission name="android.permission.CHANGE_NETWORK_STATE" />
+        <permission name="android.permission.NEARBY_WIFI_DEVICES" />
+        <permission name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+        <permission name="android.permission.BLUETOOTH_PRIVILEGED" />
+        <permission name="android.permission.LOCAL_MAC_ADDRESS" />
+        <permission name="android.permission.READ_WIFI_CREDENTIAL" />
+        <permission name="android.permission.INTERNET" />
+        <permission name="android.permission.UPDATE_DEVICE_STATS" />
+        <permission name="android.permission.WAKE_LOCK" />
+        <permission name="android.permission.MANAGE_WIFI_INTERFACES" />
+        <permission name="android.permission.RADIO_SCAN_WITHOUT_LOCATION" />
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+        <permission name="android.permission.ACCESS_LOCAL_NETWORK" />
+    </privapp-permissions>
+<privapp-permissions package="com.qti.ltebc">
+        <permission name="android.permission.SEND_EMBMS_INTENTS" />
+        <permission name="android.permission.SCHEDULE_EXACT_ALARM" />
+    </privapp-permissions>
+</permissions>

@@ -1,0 +1,73 @@
+type hal_cld_default, domain;
+
+domain_auto_trans(init, hal_cld_default_exec, hal_cld_default)
+
+typeattribute hal_cld_default hal_cld;
+
+typeattribute hal_cld_default hal_cld_client;
+
+typeattribute hal_cld_default hal_cld_server;
+
+typeattribute hal_cld_default halclientdomain;
+
+typeattribute hal_cld_default halserverdomain;
+
+binder_use(hal_cld_default)
+
+allow hal_cld_default hal_cld_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_cld_default system_server:binder { call };
+
+allow hal_cld_default servicemanager:binder { call transfer };
+
+allow hal_cld_default sysfs:dir { read getattr open search };
+
+allow hal_cld_default sysfs_block:dir { read getattr open search };
+
+allow hal_cld_default sysfs_mem_sleep:dir { read getattr open search };
+
+allow hal_cld_default sysfs_powercap:dir { read getattr open search };
+
+allow hal_cld_default sysfs_thunderbolt:dir { read getattr open search };
+
+allow hal_cld_default sysfs_typec:dir { read getattr open search };
+
+allow hal_cld_default sysfs_udc:dir { read getattr open search };
+
+allow hal_cld_default sysfs_usb_pd:dir { read getattr open search };
+
+allow hal_cld_default sysfs_usbcore:dir { read getattr open search };
+
+allow hal_cld_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default sysfs_memory:dir { read getattr open search };
+
+allow hal_cld_default sysfs_memory:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_cld_default sysfs_devices_block:dir { search };
+
+allow hal_cld_default sysfs_devices_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_cld_default block_device:dir { search };
+
+allow hal_cld_default gsort_block_device:lnk_file { read write open };
+
+allow hal_cld_default gsort_block_device:blk_file { read write open };

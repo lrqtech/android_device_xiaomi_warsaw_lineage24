@@ -1,0 +1,63 @@
+type vendor_qtidataservices_app, domain;
+
+app_domain(vendor_qtidataservices_app)
+
+net_domain(vendor_qtidataservices_app)
+
+typeattribute vendor_qtidataservices_app halclientdomain;
+
+typeattribute vendor_qtidataservices_app vendor_hal_cacertservice_qti;
+
+typeattribute vendor_qtidataservices_app vendor_hal_cacertservice_qti_server;
+
+typeattribute vendor_qtidataservices_app vendor_hal_datafactory_qti_client;
+
+typeattribute vendor_qtidataservices_app vendor_hal_iwlanservice_qti_client;
+
+typeattribute vendor_qtidataservices_app vendor_hal_perf_client;
+
+typeattribute vendor_qtidataservices_app vendor_halserverdomain;
+
+binder_use(vendor_qtidataservices_app)
+
+hwbinder_use(vendor_qtidataservices_app)
+
+allow vendor_qtidataservices_app appdomain_tmpfs:file { read write getattr map execute };
+
+allow vendor_qtidataservices_app hwservicemanager:binder { call transfer };
+
+allow vendor_qtidataservices_app system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qtidataservices_app hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_qtidataservices_app vendor_cnd_prop:file { read getattr map open };
+
+allow vendor_qtidataservices_app property_socket:sock_file { write };
+
+allow vendor_qtidataservices_app init:unix_stream_socket { connectto };
+
+allow vendor_qtidataservices_app telephony_status_prop:property_service { set };
+
+allow vendor_qtidataservices_app telephony_status_prop:file { read getattr map open };
+
+allow vendor_qtidataservices_app app_api_service:service_manager { find };
+
+allow vendor_qtidataservices_app activity_service:service_manager { find };
+
+allow vendor_qtidataservices_app self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qtidataservices_app vendor_radio_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qtidataservices_app radio_service:service_manager { find };
+
+allow vendor_qtidataservices_app vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qtidataservices_app servicemanager:binder { call transfer };
+
+allow vendor_qtidataservices_app vendor_nicmd:fd { use };
+
+allow vendor_qtidataservices_app vendor_nicmd:udp_socket { read write getattr getopt };
+
+allow vendor_qtidataservices_app vendor_cnd:udp_socket { read write };
+
+type_transition vendor_qtidataservices_app tmpfs:file appdomain_tmpfs;

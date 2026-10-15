@@ -1,0 +1,15 @@
+typeattribute hal_memtrack_default hal_memtrack;
+
+typeattribute hal_memtrack_default hal_memtrack_server;
+
+typeattribute hal_memtrack_default halserverdomain;
+
+allow hal_memtrack_default hal_memtrack_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_memtrack_default vendor_sysfs_kgsl_proc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_memtrack_default vendor_sysfs_kgsl_proc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_memtrack_default vendor_sysfs_kgsl_proc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_memtrack_default vendor_sysfs_kgsl:dir { search };

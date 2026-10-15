@@ -1,0 +1,3 @@
+# Warsaw runtime AVC repairs (2026-10-13)
+# SensorService's OEM light-sensor polling uses the installed CIT sensor HAL.
+typeattribute system_server vendor_hal_citsensorservice_xiaomi_client;

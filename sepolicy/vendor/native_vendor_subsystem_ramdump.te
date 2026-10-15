@@ -1,0 +1,145 @@
+type vendor_subsystem_ramdump, domain;
+
+domain_auto_trans(init, vendor_subsystem_ramdump_exec, vendor_subsystem_ramdump)
+
+allow vendor_subsystem_ramdump vendor_subsystem_ramdump_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_subsystem_ramdump device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump vendor_ramdump_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump vendor_ramdump_microdump_modem_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump vendor_sysfs_devcd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_subsystem_ramdump vendor_sysfs_qcom_ramdump:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_subsystem_ramdump self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_subsystem_ramdump sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump sysfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_block:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_mem_sleep:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_powercap:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_thunderbolt:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_typec:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_udc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_usb_pd:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_usbcore:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_block:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_mem_sleep:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_powercap:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_thunderbolt:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_typec:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_udc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_usb_pd:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump sysfs_usbcore:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump vendor_ramdump_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_subsystem_ramdump vendor_ramdump_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_subsystem_ramdump property_socket:sock_file { write };
+
+allow vendor_subsystem_ramdump init:unix_stream_socket { connectto };
+
+allow vendor_subsystem_ramdump vendor_ssr_prop:property_service { set };
+
+allow vendor_subsystem_ramdump vendor_ssr_prop:file { read getattr map open };
+
+allow vendor_subsystem_ramdump vendor_mdmhelperdata_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump vendor_mdmhelperdata_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump vendor_sysfs_msm_subsys_restart:dir { search };
+
+allow vendor_subsystem_ramdump vendor_ramdump_microdump_modem_device:chr_file { read open };
+
+allow vendor_subsystem_ramdump sysfs_ramdump:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_subsystem_ramdump block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump storage_file:dir { search };
+
+allow vendor_subsystem_ramdump storage_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump mnt_user_file:dir { search };
+
+allow vendor_subsystem_ramdump mnt_user_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_subsystem_ramdump mnt_user_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump fuse:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_subsystem_ramdump fuse:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_subsystem_ramdump sdcardfs:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_subsystem_ramdump sdcardfs:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_subsystem_ramdump self:capability { kill net_admin sys_nice };
+
+allow vendor_subsystem_ramdump self:netlink_kobject_uevent_socket { create };
+
+allow vendor_subsystem_ramdump logdr_socket:sock_file { write };
+
+allow vendor_subsystem_ramdump logd:unix_stream_socket { connectto };
+
+allow vendor_subsystem_ramdump kernel:system { syslog_read };
+
+allow vendor_subsystem_ramdump proc_ramdump:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_subsystem_ramdump fuse:fifo_file { read write create unlink open };
+
+allow vendor_subsystem_ramdump vendor_ramdump_vendor_data_file:fifo_file { write create open };
+
+allow vendor_subsystem_ramdump ctl_start_prop:property_service { set };
+
+allow vendor_subsystem_ramdump vendor_wlan_ramdump_prop:property_service { set };
+
+allow vendor_subsystem_ramdump vendor_wlan_ramdump_prop:file { read getattr map open };
+
+allow vendor_subsystem_ramdump vendor_sysfs_devicetree_soc:dir { read open search };
+
+allow vendor_subsystem_ramdump vendor_sysfs_devicetree_soc:file { read open };
+
+allow vendor_subsystem_ramdump vendor_bsp_data_log_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_subsystem_ramdump vendor_bsp_data_log_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_subsystem_ramdump vendor_checknv_prop:property_service { set };

@@ -1,0 +1,34 @@
+diff --git a/aidl/Android.bp b/aidl/Android.bp
+index 6c09830..0f25c62 100644
+--- a/aidl/Android.bp
++++ b/aidl/Android.bp
+@@ -46,7 +46,10 @@ cc_defaults {
+ 
+ filegroup {
+     name: "android.hardware.boot-service.qti.rc",
+-    srcs: ["android.hardware.boot-service.qti.rc"],
++    srcs: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_android_hardware_boot_service_qti_rc"],
++        default: ["android.hardware.boot-service.qti.rc"],
++    }),
+ }
+ 
+ cc_defaults {
+diff --git a/gpt-utils/Android.bp b/gpt-utils/Android.bp
+index 7a845a3..668a6c2 100644
+--- a/gpt-utils/Android.bp
++++ b/gpt-utils/Android.bp
+@@ -6,7 +6,12 @@
+ cc_library {
+     name: "libgptutils.qti",
+     export_include_dirs: ["."],
+-    header_libs: ["generated_kernel_headers"],
++    // BSG uses the stable UFS UAPI exported by Bionic. Only the legacy UFS
++    // ioctl implementation needs additional kernel-source headers.
++    header_libs: select(soong_config_variable("QTI_GPT_UTILS", "USE_BSG_FRAMEWORK"), {
++        false: ["generated_kernel_headers"],
++        default: [],
++    }),
+     recovery_available: true,
+     shared_libs: [
+         "libcutils",

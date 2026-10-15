@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<exceptions>
+<exception package="vendor.qti.bluetooth.xpan">
+      <permission name="android.permission.FOREGROUND_SERVICE" fixed="false" />
+      <permission name="android.permission.FOREGROUND_SERVICE_LOCATION" fixed="false" />
+      <permission name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" fixed="false" />
+      <permission name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" fixed="false" />
+      <permission name="android.permission.ACCESS_FINE_LOCATION" fixed="true" />
+      <permission name="android.permission.ACCESS_BACKGROUND_LOCATION" fixed="true" />
+      <permission name="android.permission.NEARBY_WIFI_DEVICES" fixed="true" />
+      <permission name="android.permission.BLUETOOTH_CONNECT" fixed="false" />
+      <permission name="android.permission.ACCESS_COARSE_LOCATION" fixed="true" />
+      <permission name="android.permission.BLUETOOTH_ADVERTISE" fixed="false" />
+      <permission name="android.permission.BLUETOOTH_SCAN" fixed="false" />
+    </exception>
+</exceptions>

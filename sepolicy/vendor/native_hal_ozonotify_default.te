@@ -1,0 +1,13 @@
+type hal_ozonotify_default, domain;
+
+domain_auto_trans(init, hal_ozonotify_default_exec, hal_ozonotify_default)
+
+typeattribute hal_ozonotify_default hal_ozonotify;
+
+typeattribute hal_ozonotify_default hal_ozonotify_server;
+
+typeattribute hal_ozonotify_default halserverdomain;
+
+binder_use(hal_ozonotify_default)
+
+allow hal_ozonotify_default hal_ozonotify_default_exec:file { read getattr map execute open entrypoint };

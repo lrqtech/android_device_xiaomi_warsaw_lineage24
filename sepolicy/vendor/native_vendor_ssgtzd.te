@@ -1,0 +1,37 @@
+type vendor_ssgtzd, domain;
+
+domain_auto_trans(init, vendor_ssgtzd_exec, vendor_ssgtzd)
+
+typeattribute vendor_ssgtzd mlstrustedsubject;
+
+vndbinder_use(vendor_ssgtzd)
+
+allow vendor_ssgtzd vendor_ssgtzd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_ssgtzd tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_ssgtzd vendor_firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_ssgtzd vendor_firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_ssgtzd vendor_qwes_data_file:dir { ioctl read write getattr setattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_ssgtzd vendor_qwes_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_ssgtzd self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_ssgtzd self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_ssgtzd vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_ssgtzd vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_ssgtzd vndservicemanager:binder { call transfer };
+
+allow vendor_ssgtzd self:capability2 { wake_alarm block_suspend };
+
+allow vendor_ssgtzd sysfs_wake_lock:file { append open };
+
+allowxperm vendor_ssgtzd self:socket ioctl { 0xc300-0xc305 };
+
+allowxperm vendor_ssgtzd self:qipcrtr_socket ioctl { 0xc300-0xc305 };

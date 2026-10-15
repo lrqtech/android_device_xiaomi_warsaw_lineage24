@@ -1,0 +1,167 @@
+diff --git a/audio/include/system/audio-base-utils.h b/audio/include/system/audio-base-utils.h
+index da74d791..e01e284b 100644
+--- a/audio/include/system/audio-base-utils.h
++++ b/audio/include/system/audio-base-utils.h
+@@ -190,6 +190,7 @@ static CONST_ARRAY audio_devices_t AUDIO_DEVICE_OUT_ALL_ARRAY[] = {
+     AUDIO_DEVICE_OUT_BLE_BROADCAST,             // 0x20000002u
+     AUDIO_DEVICE_OUT_BLE_HEARING_AID,           // 0x20000004u
+     AUDIO_DEVICE_OUT_BLE_CENTRAL,               // 0x20000008u
++    AUDIO_DEVICE_OUT_MULTIROUTE,                // 0x20000010u, Xiaomi virtual route
+     AUDIO_DEVICE_OUT_DEFAULT,                   // 0x40000000u, BIT_DEFAULT
+ };
+ 
+diff --git a/audio/include/system/audio-hal-enums.h b/audio/include/system/audio-hal-enums.h
+index 6c0a3dfa..43822704 100644
+--- a/audio/include/system/audio-hal-enums.h
++++ b/audio/include/system/audio-hal-enums.h
+@@ -430,6 +430,7 @@ enum {
+     V(AUDIO_DEVICE_OUT_BLE_BROADCAST, 0x20000002u) \
+     V(AUDIO_DEVICE_OUT_BLE_HEARING_AID, 0x20000004u) \
+     V(AUDIO_DEVICE_OUT_BLE_CENTRAL, 0x20000008u) \
++    V(AUDIO_DEVICE_OUT_MULTIROUTE, 0x20000010u) \
+     V(AUDIO_DEVICE_OUT_DEFAULT, AUDIO_DEVICE_BIT_DEFAULT) \
+     V(AUDIO_DEVICE_IN_COMMUNICATION, AUDIO_DEVICE_BIT_IN | 0x1u) \
+     V(AUDIO_DEVICE_IN_AMBIENT, AUDIO_DEVICE_BIT_IN | 0x2u) \
+@@ -513,7 +514,8 @@ inline bool audio_device_from_string(const char* s, audio_devices_t* t) {
+     V(AUDIO_OUTPUT_FLAG_GAPLESS_OFFLOAD, 0x20000) \
+     V(AUDIO_OUTPUT_FLAG_SPATIALIZER, 0x40000) \
+     V(AUDIO_OUTPUT_FLAG_ULTRASOUND, 0x80000) \
+-    V(AUDIO_OUTPUT_FLAG_BIT_PERFECT, 0x100000)
++    V(AUDIO_OUTPUT_FLAG_BIT_PERFECT, 0x100000) \
++    V(AUDIO_OUTPUT_FLAG_VIRTUAL_DEEP_BUFFER, 0x40000000)
+ 
+ typedef enum : uint32_t {
+     AUDIO_OUTPUT_FLAG_LIST_DEF(AUDIO_DEFINE_ENUM_SYMBOL_V)
+@@ -701,6 +703,7 @@ enum {
+     V(AUDIO_FORMAT_APTX_ADAPTIVE, 0x27000000u) \
+     V(AUDIO_FORMAT_LHDC, 0x28000000u) \
+     V(AUDIO_FORMAT_LHDC_LL, 0x29000000u) \
++    V(AUDIO_FORMAT_MIHC, 0x40000000u) \
+     V(AUDIO_FORMAT_APTX_TWSP, 0x2A000000u) \
+     V(AUDIO_FORMAT_LC3, 0x2B000000u) \
+     V(AUDIO_FORMAT_MPEGH, 0x2C000000u) \
+@@ -883,6 +886,7 @@ inline bool audio_stream_type_from_string(const char* s, audio_stream_type_t* t)
+     V(AUDIO_USAGE_VIRTUAL_SOURCE, 15) \
+     V(AUDIO_USAGE_ASSISTANT, 16) \
+     V(AUDIO_USAGE_CALL_ASSISTANT, 17) \
++    V(AUDIO_USAGE_BLUETOOTH_SCO, 19) \
+     V(AUDIO_USAGE_EMERGENCY, 1000) \
+     V(AUDIO_USAGE_SAFETY, 1001) \
+     V(AUDIO_USAGE_VEHICLE_STATUS, 1002) \
+diff --git a/audio/include/system/audio.h b/audio/include/system/audio.h
+index e9d6002d..bb903c42 100644
+--- a/audio/include/system/audio.h
++++ b/audio/include/system/audio.h
+@@ -1992,6 +1992,7 @@ static inline bool audio_is_valid_format(audio_format_t format)
+     case AUDIO_FORMAT_APTX_ADAPTIVE:
+     case AUDIO_FORMAT_LHDC:
+     case AUDIO_FORMAT_LHDC_LL:
++    case AUDIO_FORMAT_MIHC:
+     case AUDIO_FORMAT_APTX_TWSP:
+     case AUDIO_FORMAT_LC3:
+     case AUDIO_FORMAT_APTX_ADAPTIVE_QLEA:
+diff --git a/camera/Android.bp b/camera/Android.bp
+index f2b818e0..a6124234 100644
+--- a/camera/Android.bp
++++ b/camera/Android.bp
+@@ -88,3 +88,24 @@ filegroup {
+     name: "libcamera_metadata_tags_file",
+     srcs: ["include/system/camera_metadata_tags.h"],
+ }
++
++// The face client receives current framework metadata. Do not replace the
++// global OEM vendor library: the camera HAL has a different private tag table.
++cc_library_shared {
++    name: "libcamera_metadata_warsaw_face",
++    vendor: true,
++    host_supported: true,
++    compile_multilib: "64",
++    srcs: ["src/camera_metadata.c"],
++    include_dirs: ["system/media/private/camera/include"],
++    local_include_dirs: ["include"],
++    export_include_dirs: ["include"],
++    header_libs: ["libcutils_headers"],
++    export_header_lib_headers: ["libcutils_headers"],
++    shared_libs: ["liblog"],
++    cflags: [
++        "-Wall", "-Werror", "-Wextra", "-fvisibility=hidden", "-std=c11",
++        "-include system/media/camera/src/warsaw_face_metadata_namespace.h",
++    ],
++    version_script: "libcamera_metadata_warsaw_face.map.txt",
++}
+diff --git a/camera/libcamera_metadata_warsaw_face.map.txt b/camera/libcamera_metadata_warsaw_face.map.txt
+new file mode 100644
+index 00000000..73a83592
+--- /dev/null
++++ b/camera/libcamera_metadata_warsaw_face.map.txt
+@@ -0,0 +1,8 @@
++# Copyright (C) 2026 The LineageOS Project
++# SPDX-License-Identifier: Apache-2.0
++LIBCAMERA_METADATA_WARSAW_FACE {
++    global:
++        warsaw_face_*;
++    local:
++        *;
++};
+diff --git a/camera/src/warsaw_face_metadata_namespace.h b/camera/src/warsaw_face_metadata_namespace.h
+new file mode 100644
+index 00000000..d0e17edc
+--- /dev/null
++++ b/camera/src/warsaw_face_metadata_namespace.h
+@@ -0,0 +1,56 @@
++// Copyright (C) 2026 The LineageOS Project
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++// Keep the framework metadata implementation private to Warsaw's face NDK
++// bridge. The OEM camera HAL retains its original metadata tags and globals.
++// Namespace all API/data symbols, including vendor-tag state accessors, so
++// loading both bridges cannot interpose the legacy metadata implementation.
++#define allocate_camera_metadata warsaw_face_allocate_camera_metadata
++#define get_camera_metadata_alignment warsaw_face_get_camera_metadata_alignment
++#define allocate_copy_camera_metadata_checked warsaw_face_allocate_copy_camera_metadata_checked
++#define place_camera_metadata warsaw_face_place_camera_metadata
++#define free_camera_metadata warsaw_face_free_camera_metadata
++#define camera_metadata_type_size warsaw_face_camera_metadata_type_size
++#define camera_metadata_type_names warsaw_face_camera_metadata_type_names
++#define camera_metadata_section_names warsaw_face_camera_metadata_section_names
++#define camera_metadata_section_bounds warsaw_face_camera_metadata_section_bounds
++#define calculate_camera_metadata_size warsaw_face_calculate_camera_metadata_size
++#define get_camera_metadata_size warsaw_face_get_camera_metadata_size
++#define get_camera_metadata_compact_size warsaw_face_get_camera_metadata_compact_size
++#define get_camera_metadata_entry_count warsaw_face_get_camera_metadata_entry_count
++#define get_camera_metadata_entry_capacity warsaw_face_get_camera_metadata_entry_capacity
++#define get_camera_metadata_data_count warsaw_face_get_camera_metadata_data_count
++#define get_camera_metadata_data_capacity warsaw_face_get_camera_metadata_data_capacity
++#define copy_camera_metadata warsaw_face_copy_camera_metadata
++#define validate_camera_metadata_structure warsaw_face_validate_camera_metadata_structure
++#define append_camera_metadata warsaw_face_append_camera_metadata
++#define clone_camera_metadata warsaw_face_clone_camera_metadata
++#define calculate_camera_metadata_entry_data_size warsaw_face_calculate_camera_metadata_entry_data_size
++#define add_camera_metadata_entry warsaw_face_add_camera_metadata_entry
++#define sort_camera_metadata warsaw_face_sort_camera_metadata
++#define get_camera_metadata_entry warsaw_face_get_camera_metadata_entry
++#define get_camera_metadata_ro_entry warsaw_face_get_camera_metadata_ro_entry
++#define find_camera_metadata_entry warsaw_face_find_camera_metadata_entry
++#define find_camera_metadata_ro_entry warsaw_face_find_camera_metadata_ro_entry
++#define delete_camera_metadata_entry warsaw_face_delete_camera_metadata_entry
++#define update_camera_metadata_entry warsaw_face_update_camera_metadata_entry
++#define get_camera_metadata_section_name warsaw_face_get_camera_metadata_section_name
++#define get_camera_metadata_tag_name warsaw_face_get_camera_metadata_tag_name
++#define get_camera_metadata_tag_type warsaw_face_get_camera_metadata_tag_type
++#define get_local_camera_metadata_section_name warsaw_face_get_local_camera_metadata_section_name
++#define get_local_camera_metadata_tag_name warsaw_face_get_local_camera_metadata_tag_name
++#define get_local_camera_metadata_tag_type warsaw_face_get_local_camera_metadata_tag_type
++#define get_camera_metadata_permission_needed warsaw_face_get_camera_metadata_permission_needed
++#define set_camera_metadata_vendor_tag_ops warsaw_face_set_camera_metadata_vendor_tag_ops
++#define dump_camera_metadata warsaw_face_dump_camera_metadata
++#define dump_indented_camera_metadata warsaw_face_dump_indented_camera_metadata
++#define camera_metadata_enum_snprint warsaw_face_camera_metadata_enum_snprint
++#define camera_metadata_enum_value warsaw_face_camera_metadata_enum_value
++#define set_camera_metadata_vendor_ops warsaw_face_set_camera_metadata_vendor_ops
++#define set_camera_metadata_vendor_cache_ops warsaw_face_set_camera_metadata_vendor_cache_ops
++#define get_camera_metadata_vendor_id warsaw_face_get_camera_metadata_vendor_id
++#define set_camera_metadata_vendor_id warsaw_face_set_camera_metadata_vendor_id
++#define get_local_camera_metadata_tag_type_vendor_id warsaw_face_get_local_camera_metadata_tag_type_vendor_id
++#define get_local_camera_metadata_tag_name_vendor_id warsaw_face_get_local_camera_metadata_tag_name_vendor_id
++#define get_local_camera_metadata_section_name_vendor_id warsaw_face_get_local_camera_metadata_section_name_vendor_id

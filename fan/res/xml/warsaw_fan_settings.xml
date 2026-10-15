@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/warsaw_fan_app_name">
+    <SwitchPreferenceCompat
+        android:key="cooling_fan_enable"
+        android:title="@string/warsaw_fan_enabled"
+        android:persistent="false" />
+    <com.android.settings.widget.SeekBarPreference
+        android:key="warsaw_fan_pwm"
+        android:title="@string/warsaw_fan_pwm_title"
+        android:max="100"
+        android:min="0"
+        android:defaultValue="50"
+        android:persistent="false" />
+</PreferenceScreen>

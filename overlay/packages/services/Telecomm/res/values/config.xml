@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OS4.0.0.15 GmsMiCSPTelecommOverlay: temporary dialer location access
+         during emergency calls. Shared by Telecom and TelecomServiceResources. -->
+    <bool name="grant_location_permission_enabled">true</bool>
+</resources>

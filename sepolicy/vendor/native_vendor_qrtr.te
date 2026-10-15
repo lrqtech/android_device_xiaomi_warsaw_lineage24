@@ -1,0 +1,21 @@
+type vendor_qrtr, domain;
+
+domain_auto_trans(init, vendor_qrtr_exec, vendor_qrtr)
+
+allow vendor_qrtr vendor_qrtr_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qrtr self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qrtr self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qrtr devpts:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qrtr self:capability { net_bind_service };
+
+allow vendor_qrtr vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qrtr vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allowxperm vendor_qrtr self:socket ioctl { 0x5411 };
+
+allowxperm vendor_qrtr self:qipcrtr_socket ioctl { 0x5411 };

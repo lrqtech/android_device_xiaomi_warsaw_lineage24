@@ -1,0 +1,61 @@
+type vendor_diag-router, domain;
+
+domain_auto_trans(init, vendor_diag-router_exec, vendor_diag-router)
+
+typeattribute vendor_diag-router hal_allocator_client;
+
+typeattribute vendor_diag-router halclientdomain;
+
+typeattribute vendor_diag-router halserverdomain;
+
+typeattribute vendor_diag-router vendor_hal_diaghal;
+
+typeattribute vendor_diag-router vendor_hal_diaghal_server;
+
+allow vendor_diag-router vendor_diag-router_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_diag-router vendor_sysfs_soc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_diag-router vendor_sysfs_soc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_diag-router vendor_sysfs_soc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_diag-router vendor_sysfs_qdss_dev:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_diag-router vendor_sysfs_qdss_dev:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_diag-router vendor_sysfs_qdss_dev:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_diag-router functionfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_diag-router functionfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_diag-router self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_diag-router vendor_mhi_diag_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_diag-router self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_diag-router self:capability { kill };
+
+allow vendor_diag-router su:process { signal };
+
+allow vendor_diag-router vendor_sysfs_soc:file { write lock append map open };
+
+allow vendor_diag-router vendor_sysfs_qdss_dev:file { write lock append map open };
+
+allow vendor_diag-router kmsg_device:chr_file { write getattr open };
+
+allow vendor_diag-router vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_diag-router vendor_data_file:fifo_file { read write create getattr unlink open };
+
+allow vendor_diag-router vendor_data_file:file { read write create getattr unlink open };
+
+allow vendor_diag-router vendor_modem_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_diag-router vendor_modem_data_file:fifo_file { read write create getattr unlink open };
+
+allow vendor_diag-router vendor_modem_data_file:file { read write create getattr unlink open };
+
+allowxperm vendor_diag-router functionfs:file ioctl { 0x6782 };

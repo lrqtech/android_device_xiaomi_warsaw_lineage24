@@ -1,0 +1,77 @@
+type vendor_hal_imsrtp, domain;
+
+type vendor_hal_imsrtp_exec, exec_type, vendor_file_type, file_type;
+
+init_daemon_domain(vendor_hal_imsrtp)
+
+typeattribute vendor_hal_imsrtp vendor_hal_imsrtphal;
+
+typeattribute vendor_hal_imsrtp vendor_hal_imsrtphal_server;
+
+hal_attribute_service(vendor_hal_imsrtphal, vendor_hal_imsrtp_service)
+
+binder_call(vendor_hal_imsrtphal_client, vendor_hal_imsrtphal_server)
+
+binder_call(vendor_hal_imsrtphal_server, vendor_hal_imsrtphal_client)
+
+net_domain(vendor_hal_imsrtp)
+
+typeattribute vendor_hal_imsrtp vendor_halserverdomain;
+
+hwbinder_use(vendor_hal_imsrtp)
+
+allow vendor_hal_imsrtp vendor_hal_imsrtp_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_imsrtp self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_imsrtp vendor_ims_service_socket:sock_file { write };
+
+allow vendor_hal_imsrtp vendor_ims_service:unix_stream_socket { connectto };
+
+allow vendor_hal_imsrtp self:capability { net_bind_service };
+
+allow vendor_hal_imsrtp vendor_qce_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_imsrtp ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_imsrtp vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_imsrtp logdr_socket:sock_file { write };
+
+allow vendor_hal_imsrtp vendor_sysfs_diag:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_imsrtp vendor_sysfs_diag:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_imsrtp vendor_sysfs_diag:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_imsrtp vendor_ims_prop:file { read getattr map open };
+
+allow vendor_hal_imsrtp vendor_qtelephony:binder { call transfer };
+
+allow vendor_hal_imsrtp vendor_qtelephony:fd { use };
+
+allow vendor_hal_imsrtp anr_data_file:file { append };
+
+allow vendor_hal_imsrtp dumpstate:fd { use };
+
+allow vendor_hal_imsrtp incidentd:fd { use };
+
+allow vendor_hal_imsrtp dumpstate:fifo_file { write append };
+
+allow vendor_hal_imsrtp incidentd:fifo_file { write append };
+
+allow vendor_hal_imsrtp system_server:fifo_file { write append };
+
+allow vendor_hal_imsrtp tombstoned:unix_stream_socket { connectto };
+
+allow vendor_hal_imsrtp tombstoned:fd { use };
+
+allow vendor_hal_imsrtp tombstoned_crash_socket:sock_file { write };
+
+allow vendor_hal_imsrtp tombstone_data_file:file { append };
+
+allow vendor_hal_imsrtp hwservicemanager:binder { call transfer };
+
+allow vendor_hal_imsrtp system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_imsrtp hwservicemanager_prop:file { read getattr map open };

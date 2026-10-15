@@ -1,0 +1,31 @@
+typeattribute hal_bootctl_default hal_bootctl;
+
+typeattribute hal_bootctl_default hal_bootctl_server;
+
+typeattribute hal_bootctl_default halserverdomain;
+
+allow hal_bootctl_default hal_bootctl_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_bootctl_default proc_cmdline:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bootctl_default sysfs_dt_firmware_android:dir { search };
+
+allow hal_bootctl_default sysfs_dt_firmware_android:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bootctl_default gsi_metadata_file_type:dir { search };
+
+allow hal_bootctl_default metadata_file:dir { search };
+
+allow hal_bootctl_default gsi_public_metadata_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bootctl_default proc_bootconfig:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_bootctl_default block_device:dir { search };
+
+allow hal_bootctl_default misc_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_bootctl_default kmsg_device:chr_file { open };
+
+allow hal_bootctl_default kmsg_device:chr_file { write };
+
+allow hal_bootctl_default vendor_uefi_block_device:blk_file { getattr };

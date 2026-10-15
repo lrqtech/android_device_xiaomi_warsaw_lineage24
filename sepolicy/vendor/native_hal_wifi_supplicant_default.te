@@ -1,0 +1,119 @@
+typeattribute hal_wifi_supplicant_default hal_nlinterceptor_client;
+
+typeattribute hal_wifi_supplicant_default hal_wifi_client;
+
+typeattribute hal_wifi_supplicant_default hal_wifi_supplicant;
+
+typeattribute hal_wifi_supplicant_default hal_wifi_supplicant_server;
+
+typeattribute hal_wifi_supplicant_default halclientdomain;
+
+typeattribute hal_wifi_supplicant_default halserverdomain;
+
+typeattribute hal_wifi_supplicant_default netdomain;
+
+hwbinder_use(hal_wifi_supplicant_default)
+
+allow hal_wifi_supplicant_default hal_wifi_supplicant_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_wifi_supplicant_default proc_net_type:file { write };
+
+allow hal_wifi_supplicant_default hwservicemanager:binder { call transfer };
+
+allow hal_wifi_supplicant_default system_wifi_keystore_hwservice:hwservice_manager { find };
+
+allow hal_wifi_supplicant_default wifi_keystore_service_server:binder { call transfer };
+
+allow hal_wifi_supplicant_default wifi_keystore_service_server:fd { use };
+
+allow hal_wifi_supplicant_default wpa_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_wifi_supplicant_default wpa_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_supplicant_default wpa_data_file:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_wifi_supplicant_default device_logging_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_wifi_supplicant_default wpa_data_file:dir { write lock open add_name remove_name search };
+
+allow hal_wifi_supplicant_default vendor_cnd:unix_dgram_socket { sendto };
+
+allow hal_wifi_supplicant_default vendor_qms:unix_dgram_socket { sendto };
+
+allow hal_wifi_supplicant_default vendor_location_lowi_server:unix_dgram_socket { sendto };
+
+allow hal_wifi_supplicant_default self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow hal_wifi_supplicant_default proc_net:file { write };
+
+allow hal_wifi_supplicant_default hal_wifi_default:binder { call };
+
+allow hal_wifi_supplicant_default hal_wifi_hwservice:hwservice_manager { find };
+
+allow hal_wifi_supplicant_default vendor_tombstone_data_file:dir { read open search };
+
+allow hal_wifi_supplicant_default vendor_tombstone_data_file:file { read getattr open };
+
+allow hal_wifi_supplicant_default vendor_log_wifi_data_file:dir { search };
+
+allow hal_wifi_supplicant_default vendor_log_wifi_data_file:dir { write add_name };
+
+allow hal_wifi_supplicant_default vendor_log_wifi_data_file:file { write create getattr open };
+
+allow hal_wifi_supplicant_default vendor_log_wifi_data_file:dir { write };
+
+allow hal_wifi_supplicant_default vendor_wcnss_service:unix_dgram_socket { sendto };
+
+allow hal_wifi_supplicant_default vendor_wifihal_socket:dir { search };
+
+allow hal_wifi_supplicant_default vendor_wifihal_socket:sock_file { write };
+
+allow hal_wifi_supplicant_default sysfs:file { write };
+
+allow hal_wifi_supplicant_default sysfs_block:file { write };
+
+allow hal_wifi_supplicant_default sysfs_mem_sleep:file { write };
+
+allow hal_wifi_supplicant_default sysfs_powercap:file { write };
+
+allow hal_wifi_supplicant_default sysfs_thunderbolt:file { write };
+
+allow hal_wifi_supplicant_default sysfs_typec:file { write };
+
+allow hal_wifi_supplicant_default sysfs_udc:file { write };
+
+allow hal_wifi_supplicant_default sysfs_usb_pd:file { write };
+
+allow hal_wifi_supplicant_default sysfs_usbcore:file { write };
+
+allow hal_wifi_supplicant_default vendor_miui_wifi_p2phc_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default property_socket:sock_file { write };
+
+allow hal_wifi_supplicant_default init:unix_stream_socket { connectto };
+
+allow hal_wifi_supplicant_default vendor_miui_wifi_p2phc_prop:property_service { set };
+
+allow hal_wifi_supplicant_default vendor_wifi_mon_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default vendor_wifi_mon_prop:property_service { set };
+
+allow hal_wifi_supplicant_default vendor_wlan_eht_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default vendor_wlan_eht_prop:property_service { set };
+
+allow hal_wifi_supplicant_default vendor_miui_wifi_p2p_enable160m_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default vendor_miui_wifi_p2p_enable160m_prop:property_service { set };
+
+allow hal_wifi_supplicant_default vendor_ssr_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default vendor_ssr_prop:property_service { set };
+
+allow hal_wifi_supplicant_default vendor_wifi_sar_prop:file { read getattr map open };
+
+allow hal_wifi_supplicant_default vendor_wifi_sar_prop:property_service { set };
+
+allowxperm hal_wifi_supplicant_default self:socket ioctl { 0xc300-0xc305 };

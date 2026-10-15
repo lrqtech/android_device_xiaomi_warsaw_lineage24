@@ -1,0 +1,27 @@
+# Phone roles required for media playback and headset calls. Pairing alone
+# does not enable these services; their platform defaults are false.
+bluetooth.profile.a2dp.source.enabled=true
+bluetooth.profile.avrcp.target.enabled=true
+bluetooth.profile.hfp.ag.enabled=true
+
+bluetooth.profile.asha.central.enabled=true
+bluetooth.profile.bap.broadcast.assist.enabled=true
+bluetooth.profile.bap.broadcast.source.enabled=true
+bluetooth.profile.bap.unicast.client.enabled=true
+bluetooth.profile.ccp.server.enabled=true
+bluetooth.profile.csip.set_coordinator.enabled=true
+bluetooth.profile.hap.client.enabled=true
+bluetooth.profile.mcp.server.enabled=true
+bluetooth.profile.vcp.controller.enabled=true
+ro.bluetooth.a2dp_offload.supported=true
+wifi.aware.interface=wifi-aware0
+
+# Official OS4 audio UI scale and default, consumed by AudioService.
+ro.config.media_vol_steps=150
+ro.config.media_vol_default=100
+ro.config.vc_call_vol_steps=11
+ro.config.alarm_vol_steps=15
+ro.config.system_vol_steps=15
+
+# Preserve the official default radio modes for both SIM slots.
+ro.telephony.default_network=33,33

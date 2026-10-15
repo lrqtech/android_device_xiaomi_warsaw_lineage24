@@ -1,0 +1,37 @@
+domain_auto_trans(init, vendor_hal_qvirtservice_qti_exec, vendor_hal_qvirtservice_qti)
+
+typeattribute vendor_hal_qvirtservice_qti halclientdomain;
+
+typeattribute vendor_hal_qvirtservice_qti halserverdomain;
+
+typeattribute vendor_hal_qvirtservice_qti vendor_hal_qvirtservice;
+
+typeattribute vendor_hal_qvirtservice_qti vendor_hal_qvirtservice_server;
+
+typeattribute vendor_hal_qvirtservice_qti vendor_hal_qvirtvendor_client;
+
+binder_use(vendor_hal_qvirtservice_qti)
+
+allow vendor_hal_qvirtservice_qti vendor_hal_qvirtservice_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_qvirtservice_qti servicemanager:binder { call transfer };
+
+allow vendor_hal_qvirtservice_qti vendor_qcrosvm_exec:file { read getattr map execute open };
+
+allow vendor_hal_qvirtservice_qti vendor_qvirtmgr:process { transition };
+
+allow vendor_hal_qvirtservice_qti vendor_qvirtmgr:process { siginh rlimitinh };
+
+allow vendor_hal_qvirtservice_qti property_socket:sock_file { write };
+
+allow vendor_hal_qvirtservice_qti init:unix_stream_socket { connectto };
+
+allow vendor_hal_qvirtservice_qti vendor_qvirtmgr_prop:property_service { set };
+
+allow vendor_hal_qvirtservice_qti vendor_qvirtmgr_prop:file { read getattr map open };
+
+allow vendor_hal_qvirtservice_qti vendor_qcrosvm_exec:file { ioctl read getattr lock map execute open watch watch_reads };
+
+allow vendor_hal_qvirtservice_qti self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_qvirtservice_qti vendor_vm_ssrenable_prop:file { read getattr map open };

@@ -1,0 +1,5 @@
+type vendor_hal_qvirtservice_qti, domain;
+
+type vendor_hal_qvirtservice_qti_exec, exec_type, file_type, system_file_type;
+
+type vendor_qcrosvm_exec, exec_type, file_type, system_file_type;

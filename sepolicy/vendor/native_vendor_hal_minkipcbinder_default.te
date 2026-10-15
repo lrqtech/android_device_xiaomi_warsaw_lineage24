@@ -1,0 +1,15 @@
+type vendor_hal_minkipcbinder_default, domain;
+
+domain_auto_trans(init, vendor_hal_minkipcbinder_default_exec, vendor_hal_minkipcbinder_default)
+
+typeattribute vendor_hal_minkipcbinder_default halserverdomain;
+
+typeattribute vendor_hal_minkipcbinder_default vendor_hal_minkipcbinder;
+
+typeattribute vendor_hal_minkipcbinder_default vendor_hal_minkipcbinder_server;
+
+allow vendor_hal_minkipcbinder_default vendor_hal_minkipcbinder_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_minkipcbinder_default vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_hal_minkipcbinder_default vendor_ssgtzd:unix_stream_socket { connectto };

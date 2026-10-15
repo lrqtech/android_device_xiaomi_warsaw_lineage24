@@ -1,0 +1,87 @@
+type vendor_shsusrd, domain;
+
+domain_auto_trans(init, vendor_shsusrd_exec, vendor_shsusrd)
+
+typeattribute vendor_shsusrd halclientdomain;
+
+typeattribute vendor_shsusrd netdomain;
+
+typeattribute vendor_shsusrd vendor_hal_perf_client;
+
+binder_use(vendor_shsusrd)
+
+hwbinder_use(vendor_shsusrd)
+
+allow vendor_shsusrd vendor_shsusrd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_shsusrd vendor_proc_shs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_shsusrd vendor_proc_shs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_shsusrd self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_shsusrd sysfs_net:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_shsusrd sysfs_net:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_shsusrd vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_shsusrd proc_net:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_shsusrd netutils_wrapper_exec:file { read getattr map execute open };
+
+allow vendor_shsusrd netutils_wrapper:process { transition };
+
+allow vendor_shsusrd netutils_wrapper:process { siginh rlimitinh };
+
+allow vendor_shsusrd sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_shsusrd self:capability2 { block_suspend };
+
+allow vendor_shsusrd self:cap2_userns { block_suspend };
+
+allow vendor_shsusrd system_suspend_server:binder { call transfer };
+
+allow vendor_shsusrd system_suspend_server:fd { use };
+
+allow vendor_shsusrd system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_shsusrd hwservicemanager:binder { call transfer };
+
+allow vendor_shsusrd hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_shsusrd hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_shsusrd hal_system_suspend_service:service_manager { find };
+
+allow vendor_shsusrd servicemanager:binder { call transfer };
+
+allow vendor_shsusrd self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_shsusrd self:netlink_kobject_uevent_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_shsusrd vendor_shsusr_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_shsusrd vendor_shsusr_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_shsusrd vendor_mpctl_prop:file { read getattr map open };
+
+allow vendor_shsusrd vendor_ipa_vendor_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_shsusrd vendor_ipa_vendor_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_shsusrd self:udp_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_shsusrd self:capability { kill net_admin net_raw };
+
+allow vendor_shsusrd vendor_shsusrd_socket:dir { write lock open add_name remove_name search };
+
+allow vendor_shsusrd vendor_shsusrd_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_shsusrd self:netlink_route_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown nlmsg_read nlmsg_write nlmsg_readpriv };
+
+allow vendor_shsusrd vendor_sysfs_rmnet:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_shsusrd vendor_sysfs_rmnet:file { ioctl read getattr lock map open watch watch_reads };
+
+allowxperm vendor_shsusrd self:udp_socket ioctl { 0x89fd };

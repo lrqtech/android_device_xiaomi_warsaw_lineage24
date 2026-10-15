@@ -1,0 +1,11 @@
+type vendor_wifilearnersvc, domain;
+
+domain_auto_trans(init, vendor_wifilearnersvc_exec, vendor_wifilearnersvc)
+
+typeattribute vendor_wifilearnersvc halserverdomain;
+
+typeattribute vendor_wifilearnersvc vendor_hal_wifilearner;
+
+typeattribute vendor_wifilearnersvc vendor_hal_wifilearner_server;
+
+allow vendor_wifilearnersvc vendor_wifilearnersvc_exec:file { read getattr map execute open entrypoint };

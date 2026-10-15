@@ -1,0 +1,11 @@
+type vendor_hal_display_color_default, domain;
+
+domain_auto_trans(init, vendor_hal_display_color_default_exec, vendor_hal_display_color_default)
+
+typeattribute vendor_hal_display_color_default halserverdomain;
+
+typeattribute vendor_hal_display_color_default vendor_hal_display_color;
+
+typeattribute vendor_hal_display_color_default vendor_hal_display_color_server;
+
+allow vendor_hal_display_color_default vendor_hal_display_color_default_exec:file { read getattr map execute open entrypoint };

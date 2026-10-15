@@ -1,0 +1,33 @@
+user=_app seinfo=platform name=com.miui.powerkeeper isPrivApp=true domain=warsaw_powerkeeper_bridge_app type=app_data_file levelFrom=all
+
+user=system seinfo=platform name=org.lineageos.warsaw.display isPrivApp=true domain=warsaw_display_app type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=org.codeaurora.ims isPrivApp=true domain=vendor_qtelephony type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=com.qti.phone isPrivApp=true domain=vendor_qtelephony levelFrom=all
+
+user=radio seinfo=platform name=.dataservices domain=vendor_dataservice_app type=radio_data_file
+
+user=_app seinfo=platform name=com.qualcomm.location isPrivApp=true domain=vendor_location_app type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=com.qualcomm.uimremoteserver domain=vendor_qtelephony type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=com.qualcomm.uimremoteclient domain=vendor_qtelephony type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=com.qualcomm.qti.uimGbaApp domain=vendor_qtelephony type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=com.qti.ltebc domain=vendor_qti_embmssl_app isPrivApp=true type=app_data_file levelFrom=all
+
+user=_app seinfo=platform name=com.qualcomm.qti.poweroffalarm domain=vendor_qti_poweroffalarm_app isPrivApp=false type=app_data_file levelFrom=all
+
+user=system seinfo=platform name=com.qualcomm.qti.services.systemhelper:systemhelper_service domain=vendor_systemhelper_app type=system_app_data_file
+
+user=_app seinfo=platform name=vendor.qti.bluetooth.xpan domain=vendor_xpanprovider_app type=app_data_file levelFrom=all
+
+# This platform-signed system service receives a PackageManager app UID.
+# Retain its dedicated system-service label and private data type.
+user=_app seinfo=platform name=com.xiaomi.cameramind domain=cameramind_app type=camera_mind_data_file levelFrom=none
+
+# Limit OEM camera HAL clients to the selected platform-signed privileged APK.
+user=_app seinfo=platform name=com.android.camera isPrivApp=true domain=warsaw_camera_app type=app_data_file levelFrom=user
+user=_app seinfo=platform name=com.android.camera:* isPrivApp=true domain=warsaw_camera_app type=app_data_file levelFrom=user

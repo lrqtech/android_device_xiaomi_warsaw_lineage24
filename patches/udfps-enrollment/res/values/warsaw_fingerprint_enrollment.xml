@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="warsaw_fp_place">Place your finger on the sensor</string>
+    <string name="warsaw_fp_start">Rest your finger in the fingerprint area, then follow the prompts to slide and reposition it.</string>
+    <string name="warsaw_fp_continue">Continue recording your fingerprint</string>
+    <string name="warsaw_fp_area">Move back into the fingerprint area</string>
+    <string name="warsaw_fp_area_detail">Keep your finger over the sensor while moving it gently.</string>
+    <string name="warsaw_fp_retry">Try recording that part again</string>
+    <string name="warsaw_fp_clean">Clean and dry your finger</string>
+    <string name="warsaw_fp_clean_detail">Wipe the fingerprint area, then try again.</string>
+    <string name="warsaw_fp_slower">Slide a little more slowly</string>
+    <string name="warsaw_fp_faster">Slide a little faster</string>
+    <string name="warsaw_fp_slide_detail">Keep your finger in contact with the fingerprint area as you slide.</string>
+    <string name="warsaw_fp_adjust">Change your finger position</string>
+    <string name="warsaw_fp_adjust_detail">Adjust the angle to record another part of your fingerprint.</string>
+    <string name="warsaw_fp_lift">Lift your finger and try again</string>
+    <string name="warsaw_fp_lift_detail">Lift your finger fully before placing it back on the sensor.</string>
+    <string name="warsaw_fp_finishing">Finishing fingerprint enrollment</string>
+    <string name="warsaw_fp_finishing_detail">Wait for the enrollment result.</string>
+    <plurals name="warsaw_fp_remaining">
+        <item quantity="one">%d capture remaining. Follow the prompts to reposition your finger.</item>
+        <item quantity="other">%d captures remaining. Follow the prompts to reposition your finger.</item>
+    </plurals>
+</resources>

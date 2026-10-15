@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<config>
+<allow-in-power-save package="com.qualcomm.atfwd" />
+<allow-in-power-save package="com.qualcomm.qcrilmsgtunnel" />
+<allow-in-power-save package="com.qualcomm.qti.ims" />
+<allow-in-power-save package="com.qualcomm.location" />
+</config>

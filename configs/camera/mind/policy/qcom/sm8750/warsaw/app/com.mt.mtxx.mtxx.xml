@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.mt.mtxx.mtxx.xml">
+
+    <app prio="100" name="com.mt.mtxx.mtxx" >
+        <profile name="normal">
+
+            <activity name="com.mt.mtxx.camera.view.CameraActivity">
+            </activity>
+
+            <activity name="com.meitu.library.media.camera.qrui.QrCodeActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

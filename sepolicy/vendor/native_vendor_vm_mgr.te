@@ -1,0 +1,41 @@
+type vendor_vm_mgr, domain;
+
+domain_auto_trans(init, vendor_vm_mgr_exec, vendor_vm_mgr)
+
+allow vendor_vm_mgr vendor_vm_mgr_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_vm_mgr ueventd:process { sigchld };
+
+allow vendor_vm_mgr vendor_vm_system_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_vm_mgr vendor_vm_system_file:dir { search };
+
+allow vendor_vm_mgr self:capability { sys_admin };
+
+allow vendor_vm_mgr self:cap_userns { sys_admin };
+
+allow vendor_vm_mgr vendor_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_vm_mgr vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_vm_mgr block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_vm_mgr block_device:blk_file { getattr };
+
+allow vendor_vm_mgr loop_control_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_vm_mgr loop_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_vm_mgr vendor_ssr_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_vm_mgr vendor_sysfs_bootguestvm:file { write lock append map open };
+
+allow vendor_vm_mgr vendor_sysfs_svm_neuron:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_vm_mgr ueventd:fd { use };
+
+allow vendor_vm_mgr ueventd:unix_stream_socket { read write getattr };
+
+allowxperm vendor_vm_mgr loop_control_device:chr_file ioctl { 0x4c82 };
+
+allowxperm vendor_vm_mgr loop_device:blk_file ioctl { 0x4c00-0x4c01 0x4c04-0x4c05 };

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.ss.android.ugc.live.xml">
+
+    <app prio="100" name="com.ss.android.ugc.live" >
+        <profile name="normal">
+
+            <activity name="com.ss.android.ugc.aweme.live.LiveBroadcastActivity">
+                <macro name="thirdPartAppTempPolicyNoActivity" />
+            </activity>
+
+            <activity name="com.ss.android.ugc.aweme.shortvideo.ui.VideoRecordNewActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

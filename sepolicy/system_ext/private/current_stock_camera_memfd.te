@@ -1,0 +1,3 @@
+allow cameraserver appdomain_tmpfs:file { read write getattr map };
+
+allow cameraserver appdomain:memfd_file { read write getattr map };

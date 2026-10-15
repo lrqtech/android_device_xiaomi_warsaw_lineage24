@@ -1,0 +1,1215 @@
+genfscon sysfs /kernel/pmic_pon_log/pon_log_full u:object_r:sysfs_pmic_pon_log:s0
+
+genfscon proc /debug_ext/panic_trigger/panic u:object_r:customized_panic:s0
+
+genfscon proc /debugdriver/driverdump u:object_r:vendor_proc_wifi_dbg:s0
+
+genfscon proc /tp_lockdown_info_1 u:object_r:proc_tp_lockdown:s0
+
+genfscon proc /asound/card0/state u:object_r:vendor_proc_audiod:s0
+
+genfscon proc /perflock_exception u:object_r:vendor_proc_perflock_exception:s0
+
+genfscon proc /modem_t1_gpio_ctrl u:object_r:proc_modem_enhance:s0
+
+genfscon proc /modem_sleep_stats u:object_r:proc_modem_enhance:s0
+
+genfscon proc /tp_lockdown_info u:object_r:proc_tp_lockdown:s0
+
+genfscon proc /perflock_records u:object_r:vendor_proc_perflock_records:s0
+
+genfscon proc /apss_sleep_stats u:object_r:proc_modem_enhance:s0
+
+genfscon proc /global_reclaim u:object_r:vendor_proc_global_reclaim:s0
+
+genfscon proc /ath_pktlog/cld u:object_r:vendor_proc_wifi_dbg:s0
+
+genfscon proc /tp_fw_version u:object_r:proc_tp_file:s0
+
+genfscon proc /enable_msflag u:object_r:proc_enable_msflag:s0
+
+genfscon proc /ramdump_state u:object_r:proc_ramdump:s0
+
+genfscon proc /debug/fwdump u:object_r:vendor_proc_wifi_dbg:s0
+
+genfscon proc /asound/cards u:object_r:vendor_proc_audiod:s0
+
+genfscon proc /last_mcrash u:object_r:proc_ramdump:s0
+
+genfscon proc /usb_msflag u:object_r:proc_usb_msflag:s0
+
+genfscon proc /usb_ms_use u:object_r:proc_usb_ms_use:s0
+
+genfscon proc /mitee_log u:object_r:proc_mitee_log:s0
+
+genfscon proc /ufs_debug u:object_r:procfs_memory:s0
+
+genfscon proc /mimdlog u:object_r:vendor_proc_mimdlog:s0
+
+genfscon proc /vmkmsg u:object_r:vendor_proc_vmkmsg:s0
+
+genfscon proc /shs u:object_r:vendor_proc_shs:s0
+
+genfscon proc /sla u:object_r:qti_proc_sla:s0
+
+genfscon proc /mv u:object_r:procfs_memory:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300:pwrkey-resin-bark/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-audio-apr/soc:qcom,msm-audio-apr:qcom,q6core-audio/soc:qcom,msm-audio-apr:qcom,q6core-audio:bolero-cdc/wsa-macro/wsa_swr_ctrl/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-audio-apr/soc:qcom,msm-audio-apr:qcom,q6core-audio/soc:qcom,msm-audio-apr:qcom,q6core-audio:bolero-cdc/tx-macro/tx_swr_ctrl/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-audio-apr/soc:qcom,msm-audio-apr:qcom,q6core-audio/soc:qcom,msm-audio-apr:qcom,q6core-audio:bolero-cdc/rx-macro/rx_swr_ctrl/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300:pwrkey-bark/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/3000000.remoteproc-adsp/remoteproc/remoteproc0/3000000.remoteproc-adsp:glink-edge/3000000.remoteproc-adsp:glink-edge.adsp_apps.-1.-1/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/3000000.remoteproc-adsp/remoteproc/remoteproc1/3000000.remoteproc-adsp:glink-edge/3000000.remoteproc-adsp:glink-edge.adsp_apps.-1.-1/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300:pwrkey/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300:resin/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,ucsi/power_supply/ucsi-source-psy-soc:qcom,pmic_glink:qcom,ucsi1/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,ucsi/power_supply/ucsi-source-psy-soc:qcom,pmic_glink:qcom,ucsi1 u:object_r:vendor_sysfs_usb_supply:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:rtc@6100/rtc/rtc0/alarmtimer.0.auto/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:rtc@6100/rtc/rtc0/alarmtimer.1.auto/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/soc/800f000.qcom,spmi/spmi-0/spmi0-02/800f000.qcom,spmi:qcom,pmi8998@2:qcom,qpnp-smb2/power_supply/battery/capacity u:object_r:sysfs_batteryinfo:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-07/c42d000.qcom,spmi:qcom,pm7550ba@7:qcom,vibrator@df00/leds/vibrator u:object_r:sysfs_leds:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-07/c42d000.qcom,spmi:qcom,pmiv0108@7:qcom,vibrator@df00/leds/vibrator u:object_r:sysfs_leds:s0
+
+genfscon sysfs /devices/soc/800f000.qcom,spmi/spmi-0/spmi0-02/800f000.qcom,spmi:qcom,pmi8998@2:qpnp,fg/power_supply/bms/capacity u:object_r:sysfs_batteryinfo:s0
+
+genfscon sysfs /devices/soc/800f000.qcom,spmi/spmi-0/spmi0-02/800f000.qcom,spmi:qcom,pmi8998@2:qcom,usb-pdphy@1700/usbpd0/typec u:object_r:vendor_sysfs_usb_c:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-01/c42d000.qcom,spmi:qcom,pmxr2230@1:led-controller/leds/green u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/power_supply/wireless/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-01/c42d000.qcom,spmi:qcom,pmxr2230@1:led-controller/leds/blue u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/power_supply/battery/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-01/c42d000.qcom,spmi:qcom,pm8550@1:led-controller/leds/green u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-01/c42d000.qcom,spmi:qcom,pmxr2230@1:led-controller/leds/red u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/800f000.qcom,spmi/spmi-0/spmi0-03/800f000.qcom,spmi:qcom,pmi8998@3:qcom,leds@d000/leds u:object_r:sysfs_leds:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-01/c42d000.qcom,spmi:qcom,pm8550@1:led-controller/leds/blue u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-01/c42d000.qcom,spmi:qcom,pm8550@1:led-controller/leds/red u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/power_supply/usb/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/power_supply/wireless u:object_r:vendor_sysfs_usb_supply:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/power_supply/battery u:object_r:vendor_sysfs_battery_supply:s0
+
+genfscon sysfs /devices/platform/soc/soc:spf_core_platform/soc:spf_core_platform:lpass-cdc/va-macro/va_swr_ctrl/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:rtc@6100/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/power_supply/usb u:object_r:vendor_sysfs_usb_supply:s0
+
+genfscon sysfs /devices/platform/soc/1c00000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/mhi_110e_00.01.00/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/1c00000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/mhi_1107_00.01.00/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,svm_neuron_block/soc:qcom,svm_neuron_block:application/blk_name u:object_r:vendor_sysfs_svm_neuron:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/c900000.qcom,mdss_mdp:qcom,mdss_fb_primary/leds u:object_r:sysfs_leds:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_0_geni_se/a90000.spi/spi_master/spi1/spi1.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/880000.spi/spi_master/spi4/spi4.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/888000.spi/spi_master/spi1/spi1.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi4/spi4.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a88000.spi/spi_master/spi0/spi0.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-0/fps_periodicity_ms u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-1/fps_periodicity_ms u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-2/fps_periodicity_ms u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-0/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-1/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-2/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/hypervisor/hypervisor:qcom,resource-manager-rpc@9f7ef3fad806a845/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-0/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-1/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-2/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/5e00000.qcom,mdss_mdp/drm/card0/sde-crtc-0/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/5e00000.qcom,mdss_mdp/drm/card0/sde-crtc-1/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/5e00000.qcom,mdss_mdp/drm/card0/sde-crtc-2/retire_frame_event u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-0/measured_fps u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-1/measured_fps u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/card0-sde-crtc-2/measured_fps u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/888000.i2c/i2c-10/10-005a/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-11/11-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-11/11-006f/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/89c000.i2c/i2c-15/15-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-11/11-0065/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/89c000.i2c/i2c-15/15-006a/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-11/11-006a/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a80000.i2c/i2c-0/0-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a8c000.i2c/i2c-1/1-000e/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a8c000.i2c/i2c-2/2-000e/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.i2c/i2c-4/4-0049/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.i2c/i2c-2/2-0049/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.i2c/i2c-3/3-0049/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a80000.i2c/i2c-2/2-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a80000.i2c/i2c-1/1-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/884000.i2c/i2c-9/9-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/1c00000.qcom,pcie/pci0000:00/0000:00:00.0/0000:01:00.0/net u:object_r:sysfs_net:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/888000.i2c/i2c-7/7-0057/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/884000.i2c/i2c-9/9-0057/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a80000.i2c/i2c-4/4-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a8c000.i2c/i2c-3/3-000e/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-7/7-0041/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-4/4-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-6/6-0041/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-3/3-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-4/4-006e/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-8/8-0033/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-3/3-006a/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-3/3-006e/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-8/8-0041/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a98000.i2c/i2c-4/4-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-7/7-0033/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-8/8-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-5/5-006b/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-6/6-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/894000.i2c/i2c-9/9-0038/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/880000.i2c/i2c-8/8-0038/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-7/7-006a/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-7/7-006c/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-3/3-0077/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a98000.i2c/i2c-4/4-0053/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a98000.i2c/i2c-6/6-006a/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-2/2-0055/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.i2c/i2c-2/2-006e/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/898000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a94000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a98000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/990000.spi/spi_master/spi0/spi0.0/trusted_touch_enable u:object_r:vendor_sysfs_trusted_touch_enable:s0
+
+genfscon sysfs /devices/platform/soc/990000.spi/spi_master/spi0/spi0.0/trusted_touch_event u:object_r:vendor_sysfs_trusted_touch_event:s0
+
+genfscon sysfs /devices/platform/soc/1c00000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/net u:object_r:sysfs_net:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/wireless/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:0/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:1/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:2/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:3/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:4/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:5/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:6/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:7/scsi_generic u:object_r:vendor_sysfs_scsi_target:s0
+
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/880000.i3c-master/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_battery/power_supply/battery/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,trustedvm@d0800000/subsys2/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,trustedvm@d0800000/subsys3/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/subsys10/restart_level u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/hypervisor/hypervisor:qcom,gh-watchdog/wakeup_enable u:object_r:vendor_sysfs_wdog_device:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/subsys2/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/subsys9/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/usb/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/a600000.dwc3/xhci-hcd.2.auto/usb1 u:object_r:vendor_sysfs_usb_node:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/a600000.dwc3/xhci-hcd.2.auto/usb2 u:object_r:vendor_sysfs_usb_node:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/a600000.dwc3/xhci-hcd.1.auto/usb u:object_r:vendor_sysfs_usb_node:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/a600000.dwc3/xhci-hcd.2.auto/usb u:object_r:vendor_sysfs_usb_node:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/wireless u:object_r:vendor_sysfs_usb_supply:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon0/cable.0/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon0/cable.1/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon1/cable.0/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon1/cable.1/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon2/cable.0/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon2/cable.1/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon3/cable.0/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon3/cable.1/ u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_battery/power_supply/battery u:object_r:vendor_sysfs_battery_supply:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_strategy_wireless_revchg_class/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/990000.i2c/i2c-0/0-0038/trusted_touch_enable u:object_r:vendor_sysfs_trusted_touch_enable:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_strategy_basic_wireless_class/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/990000.i2c/i2c-0/0-0038/trusted_touch_event u:object_r:vendor_sysfs_trusted_touch_event:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys1/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys5/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys6/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys7/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys8/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu7-cpu-l3-latfloor/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/990000.i2c/i2c-0/0-0038/trusted_touch_type u:object_r:vendor_sysfs_trusted_touch_type:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon0/name u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon1/name u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon2/name u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon3/name u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/qcom/boost_monitor_timer_ms u:object_r:vendor_sysfs_ufs:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys0/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys4/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys5/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys6/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys7/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu7-cpu-ddr-qoslatfloor/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/usb u:object_r:vendor_sysfs_usb_supply:s0
+
+genfscon sysfs /devices/platform/soc/abb0000.qcom,cvpss/subsys1/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/abb0000.qcom,cvpss/subsys3/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/aab0000.qcom,venus/subsys3/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/aab0000.qcom,venus/subsys4/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/aab0000.qcom,venus/subsys5/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys10/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,trustedvm@d0800000/subsys2/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,trustedvm@d0800000/subsys3/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/subsys10/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys2/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys3/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys4/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys6/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys5/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys7/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys8/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys9/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/subsys2/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/subsys9/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu4-cpu-llcc-latfloor/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:0 u:object_r:sysfs_memory:s0
+
+genfscon sysfs /devices/platform/soc/4804000.ufshc/host0/target0:0:0/0:0:0:0 u:object_r:sysfs_memory:s0
+
+genfscon sysfs /devices/soc/a800000.ssusb/a800000.dwc3/xhci-hcd.0.auto/usb1 u:object_r:vendor_sysfs_usb_device:s0
+
+genfscon sysfs /devices/soc/a800000.ssusb/a800000.dwc3/xhci-hcd.0.auto/usb2 u:object_r:vendor_sysfs_usb_device:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/qcom/boost_min_threshold u:object_r:vendor_sysfs_ufs:s0
+
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/qcom/boost_max_threshold u:object_r:vendor_sysfs_ufs:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,ipa_fws/subsys0/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,ipa_fws/subsys2/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys3/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys4/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys5/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys6/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys4/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys6/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys7/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys8/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys9/restart_level u:object_r:vendor_sysfs_ssr_toggle:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu0-cpu-ddr-latfloor/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu4-cpu-ddr-latfloor/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu7-cpu-ddr-latfloor/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_strategy_wireless_revchg_class u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu0-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu1-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu2-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu3-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu4-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu5-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu6-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,cpu7-cpu-l3-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/4744000.sdhci/mmc_host/mmc0/mmc0:0001 u:object_r:sysfs_memory:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_strategy_basic_wireless_class u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu4-cpu-ddr-qoslat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,dsi-display-primary/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/gesture_single_tap_state u:object_r:sysfs_tp_fodstatus:s0
+
+genfscon sysfs /devices/platform/soc/soc:modem_diag/coresight-modem-diag u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/power/control u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu0-cpu-llcc-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu0-llcc-ddr-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu4-cpu-llcc-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu4-llcc-ddr-lat/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fingerprint/fingerdown u:object_r:vendor_sysfs_displayfeature:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_x_resolution u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_y_resolution u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_preset_point u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys1/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys5/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys6/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys7/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/98900000.qcom,turing/subsys8/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/18590100.qcom,snoop-l3-bw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-qca6490/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /module/camera/parameters/sensor_apply_settings_control u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_qcom_subpmic_proxy/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_qcom_battery_gauge/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_noisefilter u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_ic_cmd_data u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/keyboard/keypad/keyboard_status_param u:object_r:sysfs_keyboard_status:s0
+
+genfscon sysfs /module/qcom_ramdump/parameters/enable_dump_collection u:object_r:vendor_sysfs_qcom_ramdump:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys0/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys4/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys5/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys6/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/17300000.qcom,lpass/subsys7/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu-cpu-llcc-bw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpu-llcc-ddr-bw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,smp2p_sleepstate/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/a3380000.remoteproc-soccp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/11230000.mmc/mmc_host/mmc0/mmc0:0001 u:object_r:sysfs_memory:s0
+
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fingerprint/actpower u:object_r:vendor_sysfs_displayfeature:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_mem_notify u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_testresult u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/platform/soc/abb0000.qcom,cvpss/subsys1/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/abb0000.qcom,cvpss/subsys3/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/aab0000.qcom,venus/subsys3/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/aab0000.qcom,venus/subsys4/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/aab0000.qcom,venus/subsys5/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys10/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/1004f000.tmc/coresight-tmc-etr1 u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/platform/soc/10b11000.csr/coresight-swao-csr u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-adsp-secure/wakeup25 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-cdsp-secure/wakeup25 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-sdsp-secure/wakeup25 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/32300000.remoteproc-cdsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/97000000.remoteproc-wpss/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-peach/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_charger/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_islandthd u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_cmd_ready u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_dump_data u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_doze_analysis u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_active_status u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_finger_status u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/core_ctl_register u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys2/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys3/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys4/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,kgsl-hyp/subsys6/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys5/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys7/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys8/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/188101c.qcom,spss/subsys9/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/10b05000.tmc/coresight-tmc-etf u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/platform/soc/10048000.tmc/coresight-tmc-etr u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink_log/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/188101c.remoteproc-spss/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/a84000.i2c/i2c-1/1-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd-secure/wakeup25 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/3000000.remoteproc-adsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/2400000.remoteproc-slpi/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/b0000000.qcom,cnss-kiwi/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/bootdevice/mmc_host/mmc0/mmc0:0001 u:object_r:sysfs_memory:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/enable_touch_delta u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_testmode u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/platform/soc/c17a000.i2c/i2c-6/6-005a/leds u:object_r:sysfs_leds:s0
+
+genfscon sysfs /devices/platform/soc/c1b5000.i2c/i2c-7/7-0030/leds u:object_r:sysfs_leds:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/dynamic_disable u:object_r:vendor_sysfs_usb_device:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,ipa_fws/subsys0/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,ipa_fws/subsys2/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys3/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys4/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys5/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/4080000.qcom,mss/subsys6/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys4/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys6/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys7/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys8/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/5c00000.qcom,ssc/subsys9/name u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /devices/platform/soc/4080000.remoteproc-mss/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-adsp-secure/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-cdsp-secure/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-sdsp-secure/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /module/camera/parameters/sensor_cci_result_control u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /devices/platform/soc/soc:fingerprint_goodix/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fingerprint/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/mi_memory/mi_memory_device/ufshcd0 u:object_r:sysfs_memory:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_strategy_quick_charge u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_downthd u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_movethd u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_sensor_ctrl u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,memlat-cpu0/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,memlat-cpu2/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,memlat-cpu4/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,memlat-cpu6/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/gplaf_data_node u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/gplaf_log_level u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/platform/soc/17110040.qcom,wcn7750/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/17110040.qcom,wcn6750/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd-secure/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp-secure/wakeup36 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-adsp-secure/wakeup38 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp-secure/wakeup37 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp-secure/wakeup38 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-adsp-secure/wakeup40 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp-secure/wakeup39 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-adsp-secure/wakeup39 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-adsp-secure/wakeup41 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp-secure/wakeup46 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-adsp-secure/wakeup49 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/enable_touch_raw u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_rx_num u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_tx_num u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_smooth u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/palm_sensor_data u:object_r:sysfs_tp_virtual_prox:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/fod_press_status u:object_r:sysfs_tp_fodstatus:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_ic_cmd u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/workqueue/kgsl-workqueue/cpumask u:object_r:vendor_sysfs_kgsl:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/evnt_gplaf_pid u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/splh_sample_ms u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/splh_log_level u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/lplh_sample_ms u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/lplh_log_level u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/dplh_log_level u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/wakeup/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/a800000.ssusb/wakeup/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/88e0000.qcom,msm-eud/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,qbt_handler/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/894000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,smp2p-modem/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:xiaomi_wifi_gpio/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_upthd u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_ic_buffer u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/ear_sensor_data u:object_r:sysfs_tp_virtual_prox:s0
+
+genfscon sysfs /devices/platform/soc/0.qcom,rmtfs_sharedmem/uio u:object_r:vendor_sysfs_uio_file:s0
+
+genfscon sysfs /devices/platform/soc/10002000.stm/coresight-stm u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,pmic_glink/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,smp2p-adsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,smp2p-dsps/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,smp2p-cdsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/17110040.qcom,wcn7750/net/ u:object_r:sysfs_net:s0
+
+genfscon sysfs /devices/platform/soc/17110040.qcom,wcn6750/net/ u:object_r:sysfs_net:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp-secure/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-adsp-secure/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/clicktouch_raw u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/update_rawdata u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_dump u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/abnormal_event u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,mincpubw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/cpu_min_freq u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/cpu_max_freq u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/gplaf_notify u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/gplaf_health u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/notify/curr_cap_cluster u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/notify/top_load_cluster u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/platform/soc/soc:qfprom@0/feat_conf_m7 u:object_r:vendor_sysfs_qfprom:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/super_speed u:object_r:vendor_sysfs_usb_supply:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_thp_cmd u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/suspend_state u:object_r:sysfs_touch_suspend:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,l3-cpu0/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,l3-cpu2/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,l3-cpu4/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,l3-cpu6/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,ipa_fws@1e08000 u:object_r:vendor_sysfs_data:s0
+
+genfscon sysfs /devices/virtual/workqueue/kgsl-events/cpumask u:object_r:vendor_sysfs_kgsl:s0
+
+genfscon sysfs /devices/virtual/workqueue/kgsl-workqueue/nice u:object_r:vendor_sysfs_kgsl:s0
+
+genfscon sysfs /module/msm_thermal/core_control/cpus_offlined u:object_r:vendor_sysfs_mpctl:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-adsp/wakeup24 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-cdsp/wakeup24 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-sdsp/wakeup24 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_strategy_pd_auth u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_charge_interface u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_business_charger u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/touch_irq_no u:object_r:sysfs_touch_hostprocess:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,llccbw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/splh_notif u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/lplh_notif u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/dplh_notif u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd/wakeup24 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/3e00000.qcom,ipa/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:tiantong_mdm/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_charger_thermal u:object_r:sysfs_thermal:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/palm_sensor u:object_r:sysfs_tp_virtual_prox:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/hold_sensor u:object_r:sysfs_tp_virtual_prox:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,cpubw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /module/diagchar/parameters/timestamp_switch u:object_r:vendor_sysfs_diag:s0
+
+genfscon sysfs /devices/soc/soc:hbtp/secure_touch_userspace u:object_r:vendor_hbtp_kernel_sysfs:s0
+
+genfscon sysfs /kernel/msm_performance/notify/aggr_top_load u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-adsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-cdsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/fastrpc-sdsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /module/camera/parameters/cam_cci_io_protect u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /devices/platform/soc/soc:xiaomi_hall/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/touch/touch_dev/ear_sensor u:object_r:sysfs_tp_virtual_prox:s0
+
+genfscon sysfs /devices/virtual/workqueue/kgsl-events/nice u:object_r:vendor_sysfs_kgsl:s0
+
+genfscon sysfs /kernel/sched_penalty/parameters/target_pid u:object_r:vendor_sysfs_sched_penalty:s0
+
+genfscon sysfs /devices/platform/soc/soc:qcom,spcom/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp/wakeup35 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp/wakeup36 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp/wakeup37 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp/wakeup38 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp/wakeup45 u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:mi_t1_chip/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /kernel/qts/secondary/trusted_touch_enable u:object_r:vendor_sysfs_trusted_touch_enable:s0
+
+genfscon sysfs /kernel/msm_performance/events/cpu_hotplug u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /kernel/msm_performance/notify/aggr_big_nr u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/soc:gpio_keys/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/e7000000.dpu/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/soc/soc:qcom,memlat-cpu0/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/soc/soc:qcom,memlat-cpu2/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/soc/soc:qcom,memlat-cpu4/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/soc/soc:qcom,memlat-cpu6/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /devices/soc/soc:hbtp/secure_touch_enable u:object_r:vendor_hbtp_kernel_sysfs:s0
+
+genfscon sysfs /devices/platform/soc/soc:gpio_key/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/1c00000.pcie/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/dummy_hcd.0/usb1/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/misc/fastrpc-cdsp/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/virtual/xm_power/wireless_master u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/synaptics_tcm.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /devices/platform/soc/a600000.ssusb/mode u:object_r:vendor_sysfs_usb_device:s0
+
+genfscon sysfs /devices/platform/soc/a800000.ssusb/mode u:object_r:vendor_sysfs_usb_device:s0
+
+genfscon sysfs /devices/platform/soc/4e00000.ssusb/mode u:object_r:vendor_sysfs_usb_device:s0
+
+genfscon sysfs /kernel/qts/primary/trusted_touch_enable u:object_r:vendor_sysfs_trusted_touch_enable:s0
+
+genfscon sysfs /kernel/hardware_info_to_dump/hardw_info u:object_r:vendor_sysfs_hardwareinfo:s0
+
+genfscon sysfs /devices/platform/battery_current_limit u:object_r:sysfs_thermal:s0
+
+genfscon sysfs /kernel/msm_performance/parameters/inst u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /devices/soc/soc:qcom,mincpubw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /class/qcom-haptics/primitive_duration u:object_r:vendor_sysfs_haptics:s0
+
+genfscon sysfs /kernel/msm_performance/notify/gfx_evt u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /module/drm/parameters/vblankoffdelay u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/virtual/xm_power/charge_pump u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/soc:strategy-fg u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/virtual/xm_power/hw_monitor/ u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/goodix_ts.0/wakeup u:object_r:sysfs_wakeup:s0
+
+genfscon sysfs /module/rmnet_perf_tether/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /kernel/sched_penalty/parameters/fps u:object_r:vendor_sysfs_sched_penalty:s0
+
+genfscon sysfs /devices/virtual/xm_power/charge_log u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fan u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/soc/soc:qcom,cpubw/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /class/qcom-haptics/visense_enabled u:object_r:vendor_sysfs_haptics:s0
+
+genfscon sysfs /devices/virtual/xm_power/fuelgauge u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/virtual/xm_power/mca_event u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/soc/soc:hbtp/secure_touch u:object_r:vendor_hbtp_kernel_sysfs:s0
+
+genfscon sysfs /csiphy_umd_paras/csiphy_umd_paras u:object_r:sysfs_csiphy_umd_paras:s0
+
+genfscon sysfs /kernel/mi_wmark/extra_free_kbytes u:object_r:vendor_sysfs_extra_free_kbytes:s0
+
+genfscon sysfs /kernel/load_guestvm/boot_guestvm u:object_r:vendor_sysfs_bootguestvm:s0
+
+genfscon sysfs /kernel/slab/zs_handle/store_user u:object_r:vendor_sysfs_slab_zshandle_storeuser:s0
+
+genfscon sysfs /devices/virtual/xm_power/charger u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/platform/soc/soc:mca_bmd u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/soc/8c0000.qcom,msm-cam u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /class/qcom-haptics/v_gain_error u:object_r:vendor_sysfs_haptics:s0
+
+genfscon sysfs /class/qcom-haptics/i_gain_error u:object_r:vendor_sysfs_haptics:s0
+
+genfscon sysfs /module/rmnet_offload/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /kernel/sched_penalty/parameters u:object_r:vendor_sysfs_sched_penalty:s0
+
+genfscon sysfs /devices/virtual/npu/msm_npu/pwr u:object_r:vendor_sysfs_npu:s0
+
+genfscon sysfs /bus/coresight/reset_source_sink u:object_r:vendor_sysfs_qdss_dev:s0
+
+genfscon sysfs /devices/virtual/kgsl/kgsl/proc u:object_r:vendor_sysfs_kgsl_proc:s0
+
+genfscon sysfs /devices/virtual/xm_power/typec u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/soc/caa0000.qcom,jpeg u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /firmware/devicetree/base/cpus u:object_r:vendor_sysfs_devicetree_cpu:s0
+
+genfscon sysfs /class/qcom-battery/resistance u:object_r:vendor_sysfs_battery_supply:s0
+
+genfscon sysfs /kernel/slab/zspage/store_user u:object_r:vendor_sysfs_slab_zspage_storeuser:s0
+
+genfscon sysfs /devices/virtual/graphics/fb0 u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/virtual/graphics/fb1 u:object_r:vendor_sysfs_graphics:s0
+
+genfscon sysfs /devices/virtual/cvp/cvp/boot u:object_r:vendor_sysfs_boot_cvp:s0
+
+genfscon sysfs /firmware/devicetree/base/soc u:object_r:vendor_sysfs_devicetree_soc:s0
+
+genfscon sysfs /module/rmnet_perf/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /module/rmnet_wlan/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /class/qcom-battery/fg_vendor u:object_r:vendor_sysfs_battery:s0
+
+genfscon sysfs /devices/soc/caa4000.qcom,fd u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /module/rmnet_aps/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /module/rmnet_sch/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /module/rmnet_shs/parameters u:object_r:vendor_sysfs_rmnet:s0
+
+genfscon sysfs /kernel/camera/subparts_info u:object_r:vendor_sysfs_camera:s0
+
+genfscon sysfs /devices/soc/soc:bt_wcn3990 u:object_r:sysfs_bluetooth_writable:s0
+
+genfscon sysfs /kernel/snd_card/card_state u:object_r:vendor_sysfs_sndcard:s0
+
+genfscon sysfs /kernel/qvr_external_sensor u:object_r:vendor_sysfs_qvr_external_sensor:s0
+
+genfscon sysfs /devices/soc0/subset_parts u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/subset_cores u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /wifi/max_chipset_log_size u:object_r:vendor_sysfs_max_chipset_log_size:s0
+
+genfscon sysfs /module/subsystem_restart u:object_r:vendor_sysfs_msm_subsys_restart:s0
+
+genfscon sysfs /devices/virtual/xm_power u:object_r:vendor_sysfs_xm_power:s0
+
+genfscon sysfs /devices/virtual/thermal u:object_r:sysfs_thermal:s0
+
+genfscon sysfs /kernel/hbtp/display_pwr u:object_r:vendor_hbtp_kernel_sysfs:s0
+
+genfscon sysfs /module/msm_performance u:object_r:vendor_sysfs_msm_perf:s0
+
+genfscon sysfs /class/qcom-battery/soh u:object_r:vendor_sysfs_battery_supply:s0
+
+genfscon sysfs /devices/system/memory/ u:object_r:vendor_sysfs_system_memory:s0
+
+genfscon sysfs /kernel/boot_adsp/boot u:object_r:vendor_sysfs_boot_adsp:s0
+
+genfscon sysfs /kernel/boot_cdsp/boot u:object_r:vendor_sysfs_boot_cdsp:s0
+
+genfscon sysfs /devices/soc0/display1 u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /wifi/dump_in_progress u:object_r:vendor_sysfs_dump_in_progress:s0
+
+genfscon sysfs /kernel/aud_dev/state u:object_r:vendor_sysfs_agm:s0
+
+genfscon sysfs /devices/virtual/kgsl u:object_r:vendor_sysfs_kgsl:s0
+
+genfscon sysfs /kernel/boot_adsp/ssr u:object_r:vendor_sysfs_adsp_ssr:s0
+
+genfscon sysfs /devices/soc0/display u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/sensors u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/camera u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /kernel/mem-offline/ u:object_r:vendor_sysfs_mem_offline:s0
+
+genfscon sysfs /module/msm_thermal u:object_r:sysfs_thermal:s0
+
+genfscon sysfs /devices/soc0/audio u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/comp1 u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/video u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/modem u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /class/qcom-battery u:object_r:vendor_sysfs_qcom_battery:s0
+
+genfscon sysfs /module/lpm_levels u:object_r:vendor_sysfs_msm_power:s0
+
+genfscon sysfs /class/typec/usbc0 u:object_r:vendor_sysfs_usb_c:s0
+
+genfscon sysfs /devices/soc0/wlan u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/comp u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/spss u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /module/cpu_boost u:object_r:vendor_sysfs_cpu_boost:s0
+
+genfscon sysfs /class/remoteproc u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /kernel/boot_slpi u:object_r:vendor_sysfs_slpi:s0
+
+genfscon sysfs /devices/soc0/nav u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/nsp u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/eva u:object_r:vendor_sys_nonsp_comp:s0
+
+genfscon sysfs /devices/soc0/gpu u:object_r:vendor_sys_sp_comp:s0
+
+genfscon sysfs /devices/soc0/npu u:object_r:vendor_sys_sp_comp:s0
+
+genfscon sysfs /kernel/wcd_cpe0 u:object_r:vendor_sysfs_audio:s0
+
+genfscon sysfs /module/diagchar u:object_r:vendor_sysfs_diag:s0
+
+genfscon sysfs /bus/msm_subsys u:object_r:vendor_sysfs_ssr:s0
+
+genfscon sysfs /class/devfreq u:object_r:vendor_sysfs_devfreq:s0
+
+genfscon sysfs /class/thermal u:object_r:sysfs_thermal:s0
+
+genfscon sysfs /class/sensors u:object_r:vendor_sysfs_sensors:s0
+
+genfscon sysfs /devices/soc0 u:object_r:vendor_sysfs_soc:s0
+
+genfscon sysfs /class/kgsl u:object_r:vendor_sysfs_kgsl:s0
+
+genfscon sysfs /class/uio u:object_r:sysfs_uio:s0
+
+genfscon sysfs /bootinfo u:object_r:sysfs_bootinfo:s0
+
+genfscon tracefs /events/f2fs/f2fs_datawrite_start/ u:object_r:debugfs_tracing:s0
+
+genfscon tracefs /events/sde/tracing_mark_write/ u:object_r:debugfs_tracing:s0
+
+genfscon tracefs /instances/hsuart u:object_r:vendor_debugfs_bt_tracing:s0
+
+genfscon tracefs /events/sde/ u:object_r:debugfs_tracing:s0
+
+# Retained OS4 kernel hardware/performance node labels.
+genfscon sysfs /class/power_debug/temp_aware u:object_r:sysfs_poweraware:s0
+genfscon sysfs /devices/virtual/power_debug/mi_power_device/qcom_sleep_stats u:object_r:sysfs_suspend_stats:s0
+genfscon sysfs /devices/virtual/power_debug/mi_power_device/qcom_sleep_stats/ u:object_r:sysfs_suspend_stats:s0
+genfscon sysfs /fs/mifs u:object_r:sysfs_fs_f2fs:s0
+genfscon sysfs /module/cache_prefetch/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/gaea/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/metis/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/mi_game/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/migt u:object_r:sysfs_migt:s0
+genfscon sysfs /module/miloadtrace/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/mist/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/perfmgr u:object_r:sysfs_perfmgr:s0
+genfscon sysfs /module/powersave u:object_r:sysfs_power_save:s0
+genfscon sysfs /module/speed_touch/parameters u:object_r:sysfs_migt:s0
+genfscon sysfs /module/turbo_sched u:object_r:sysfs_migt:s0
+genfscon sysfs /powersave u:object_r:sysfs_power_save:s0
+
+# OS4 SoC public hardware identifiers.
+genfscon sysfs /devices/soc0/family u:object_r:vendor_sysfs_public:s0
+genfscon sysfs /devices/soc0/soc_id u:object_r:vendor_sysfs_public:s0
+genfscon sysfs /devices/system/soc/soc0/id u:object_r:vendor_sysfs_public:s0
+
+# Kernel log controls used during early-init.
+genfscon proc /sys/kernel/printk u:object_r:vendor_proc_kernel_log:s0
+genfscon proc /sys/kernel/printk_devkmsg u:object_r:vendor_proc_kernel_log:s0
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fan/fan_support u:object_r:warsaw_fan_control:s0
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fan/target_level u:object_r:warsaw_fan_control:s0
+genfscon sysfs /devices/platform/soc/soc:xiaomi_fan/pwm_duty u:object_r:warsaw_fan_control:s0

@@ -1,0 +1,33 @@
+type vendor_hal_soter_qti, domain;
+
+domain_auto_trans(init, vendor_hal_soter_qti_exec, vendor_hal_soter_qti)
+
+typeattribute vendor_hal_soter_qti halserverdomain;
+
+typeattribute vendor_hal_soter_qti vendor_hal_soter;
+
+typeattribute vendor_hal_soter_qti vendor_hal_soter_server;
+
+binder_use(vendor_hal_soter_qti)
+
+allow vendor_hal_soter_qti vendor_hal_soter_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_soter_qti tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_soter_qti firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_soter_qti firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_soter_qti firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_soter_qti ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_soter_qti vendor_tee_listener_prop:file { read getattr map open };
+
+allow vendor_hal_soter_qti vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_soter_qti vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_soter_qti servicemanager:binder { call transfer };
+
+allow vendor_hal_soter_qti servicemanager:fd { use };

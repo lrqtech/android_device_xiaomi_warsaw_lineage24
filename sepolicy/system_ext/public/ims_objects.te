@@ -1,0 +1,81 @@
+type vendor_dpmd_exec, exec_type, file_type, system_file_type;
+
+type vendor_imsvtdaemon_exec, exec_type, file_type, system_file_type;
+
+type vendor_qvirtmgr_service, service_manager_type;
+
+type vendor_hal_qvirt_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_audio_powersave_prop, property_type, system_property_type, system_public_property_type;
+
+type sysfs_perfmgr, fs_type, sysfs_type;
+
+type proc_sys_walt, fs_type, proc_type;
+
+type proc_perfmgr, fs_type, proc_type;
+
+type vendor_dpmd_data_file, core_data_file_type, data_file_type, file_type;
+
+type vendor_persist_dpm_prop, property_type, system_property_type, system_public_property_type;
+
+type ctl_dpmd_prop, property_type, system_internal_property_type, system_property_type;
+
+type vendor_persist_camera_prop, property_type, system_property_type, system_restricted_property_type;
+
+type vendor_qccsyshal_hwservice, coredomain_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_qccsyshal_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_sys_ims_prop, property_type, system_internal_property_type, system_property_type;
+
+type vendor_hal_imsvt_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_dpmtcm_socket, coredomain_socket, file_type, mlstrustedobject;
+
+type vendor_hal_systemhelper_hwservice, coredomain_hwservice, hwservice_manager_type, protected_hwservice;
+
+type vendor_hal_systemhelper_aidl_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_frc_prop, property_type, vendor_property_type, vendor_public_property_type;
+
+type hypsys_ssi_service, service_manager_type;
+
+type mqsasd_service, service_manager_type;
+
+type vendor_hal_displayconfig_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_telephony_service, hal_service_type, protected_service, service_manager_type;
+
+type vendor_persist_rcs_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_persist_tcm_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_wlc_public_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_smcinvoke_device, dev_type;
+
+type miui_native_file, core_data_file_type, data_file_type, file_type, mlstrustedobject;
+
+type data_log_stability_file, core_data_file_type, data_file_type, file_type, mlstrustedobject;
+
+type miui_coredump_file, core_data_file_type, data_file_type, file_type, mlstrustedobject;
+
+type miui_hprof_file, core_data_file_type, data_file_type, file_type, mlstrustedobject;
+
+type vendor_cne_service, service_manager_type;
+
+type vendor_dpmservice, service_manager_type;
+
+type vendor_imsdc_service, service_manager_type;
+
+type vendor_dpmd_socket, coredomain_socket, file_type;
+
+type vendor_persist_ntn_prop, property_type, system_property_type, system_public_property_type;
+
+type vendor_sys_location_prop, property_type, system_internal_property_type, system_property_type;
+
+type vendor_seempdw_socket, coredomain_socket, file_type, mlstrustedobject;
+
+type vendor_vps_service, service_manager_type;
+
+type vendor_perf_service, service_manager_type;

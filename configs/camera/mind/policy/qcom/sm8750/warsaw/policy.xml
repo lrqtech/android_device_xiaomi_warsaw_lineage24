@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/policy.xml">
+    <config name="camera_id_name">
+        <item name="front"          value="[1]" />
+        <item name="rear"          value="[0][2][3][4][5][6][7][8][9][10]" />
+    </config>
+    <config name="motionParam">
+        <item name="enterThreshold" value="0.008" />
+        <item name="quitThreshold" value="0.15" />
+        <item name="enterCount" value="18" />
+        <item name="quitCount" value="14" />
+    </config>
+    <config name="camMode">
+        <item name="pro_ambilight" value="0xBF"/>
+    </config>
+    <config name="sampler_node_paths">
+        <item name="online6" value="/sys/devices/system/cpu/cpu6/online"/>
+        <item name="online7" value="/sys/devices/system/cpu/cpu7/online"/>
+
+        <item name="policy0_cur_freq" value="/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"/>
+        <item name="policy0_max_freq" value="/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq"/>
+
+        <item name="policy6_cur_freq" value="/sys/devices/system/cpu/cpufreq/policy6/scaling_cur_freq"/>
+        <item name="policy6_max_freq" value="/sys/devices/system/cpu/cpufreq/policy6/scaling_max_freq"/>
+
+        <item name="gpu_cur_freq" value="/sys/class/kgsl/kgsl-3d0/clock_mhz"/>
+        <item name="gpu_max_freq" value="/sys/class/kgsl/kgsl-3d0/max_clock_mhz"/>
+
+        <item name="brightness" value="/sys/class/backlight/panel0-backlight/brightness"/>
+    </config>
+    <config name="system_configuration">
+
+        <item name="cameraserver" reportPreviewAvgFps="1" reportExposureTime="1" reportLuxIndex="1" traceOn="1" />
+    </config>
+
+    <config name="filecreclaim_app_list">
+        <item name="com.ss.android.ugc.aweme"/>
+        <item name="com.ss.android.ugc.aweme.lite"/>
+        <item name="com.smile.gifmaker"/>
+        <item name="com.habby.danke.mi"/>
+        <item name="com.tencent.tmgp.pubgmhd"/>
+        <item name="com.jingdong.app.mall"/>
+        <item name="com.xunmeng.pinduoduo"/>
+        <item name="com.kuaishou.nebula"/>
+        <item name="com.taobao.taobao"/>
+        <item name="com.taobao.idlefish"/>
+        <item name="com.zhihu.android"/>
+        <item name="com.autonavi.minimap"/>
+        <item name="com.sankuai.meituan"/>
+        <item name="me.ele"/>
+        <item name="com.tencent.mobileqq"/>
+        <item name="com.tencent.mm"/>
+        <item name="com.luna.music"/>
+        <item name="com.shizhuang.duapp"/>
+        <item name="com.tencent.tmgp.sgame"/>
+        <item name="com.tencent.lolm"/>
+        <item name="com.tencent.qqlive"/>
+        <item name="com.qiyi.video"/>
+        <item name="com.qiyi.video.lite"/>
+        <item name="com.ss.android.article.lite"/>
+        <item name="tv.danmaku.bili"/>
+        <item name="com.mycompany.app.soulbrowser"/>
+        <item name="com.xiaomi.shop"/>
+        <item name="com.baidu.searchbox"/>
+        <item name="com.alibaba.android.rimet"/>
+        <item name="com.sina.weibo"/>
+        <item name="com.tencent.qqmusic"/>
+        <item name="com.tencent.qqlive"/>
+        <item name="com.ss.android.article.news"/>
+        <item name="com.tencent.mtt"/>
+        <item name="com.xingin.xhs"/>
+        <item name="com.tencent.wework"/>
+        <item name="com.dragon.read"/>
+        <item name="com.youku.phone"/>
+        <item name="com.quark.browser"/>
+        <item name="com.ximalaya.ting.android"/>
+        <item name="com.eg.android.AlipayGphone"/>
+        <item name="com.netease.cloudmusic"/>
+    </config>
+    <app prio="100" name="__DEFAULT__" >
+        <profile name="normal">
+            <activity name="__DEFAULT__">
+
+                <action name="selfLog" value="3" />
+                <action name="halConfig" androidLog="1" offlineLog="1" halTrace="1" />
+
+
+                <case eventDetector="configStream">
+
+                    <action name="performEvent" value="resetData"/>
+                </case>
+            </activity>
+        </profile>
+    </app>
+</policy>

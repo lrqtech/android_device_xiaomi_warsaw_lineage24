@@ -1,0 +1,7 @@
+allow vendor_boringssl_self_test vendor_boringssl_self_test_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_boringssl_self_test boringssl_self_test_marker:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_boringssl_self_test boringssl_self_test_marker:dir { ioctl read write getattr lock open watch watch_reads add_name search };
+
+allow vendor_boringssl_self_test kmsg_debug_device:chr_file { ioctl write getattr lock append map open };

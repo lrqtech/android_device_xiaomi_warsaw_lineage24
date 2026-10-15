@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="warsaw_fan_app_name">Cooling fan</string>
+    <string name="warsaw_fan_enabled">Enable cooling fan</string>
+    <string name="warsaw_fan_mode">Cooling mode</string>
+    <string-array name="warsaw_fan_modes"><item>Smart</item><item>High cooling</item><item>Quiet</item><item>Frenzy · approximately 20000 rpm</item><item>Manual level</item></string-array>
+    <string name="warsaw_fan_range">When to use the fan</string>
+    <string-array name="warsaw_fan_ranges"><item>Selected scenarios</item><item>Also in other scenarios</item></string-array>
+    <string name="warsaw_fan_gaming">Gaming</string>
+    <string name="warsaw_fan_rapid_charge">Rapid charging</string>
+    <string name="warsaw_fan_navigation">Navigation</string>
+    <string name="warsaw_fan_recording">Reduce fan noise during recording</string>
+    <string name="warsaw_fan_self_clean">Automatic cleaning</string>
+    <string name="warsaw_fan_self_clean_description">After 30 days without running, the fan can clean for 8 seconds once the screen has been off and the phone charging without a call for 5 minutes.</string>
+    <string name="warsaw_fan_behavior_description">The fan follows temperature and activity. It may stop while the phone is locked, during a call or while recording. A selected mode does not mean the fan is currently running.</string>
+    <string name="warsaw_fan_state_waiting">Waiting for current fan status…</string>
+    <string name="warsaw_fan_state_cleaning">Automatic cleaning in progress</string>
+    <string name="warsaw_fan_state_stopped">Fan stopped</string>
+    <string name="warsaw_fan_state_running">Fan set to level %1$d</string>
+    <string name="warsaw_fan_state_inputs_unavailable">Automatic control is waiting for device state. The current setting has not been confirmed.</string>
+    <string name="warsaw_fan_state_unavailable">Fan control unavailable. Changes have not been confirmed.</string>
+    <string name="warsaw_fan_save_failed">Could not save the setting</string>
+    <string name="warsaw_fan_choose_value">Choose a value</string>
+    <string name="warsaw_fan_state_rpm">Measured speed: %1$d rpm</string>
+    <string name="warsaw_fan_speed_waiting">Waiting for measured speed</string>
+    <string name="warsaw_fan_manual_level">Fan level</string>
+    <string-array name="warsaw_fan_manual_entries"><item>1 · approximately 12000 rpm</item><item>2 · approximately 14000 rpm</item><item>3 · approximately 16000 rpm</item><item>4 · approximately 20000 rpm</item></string-array>
+    <string name="warsaw_fan_state_inputs_stopped">Fan stopped because device state is unavailable. Automatic control will resume after it recovers.</string>
+    <string name="warsaw_fan_state_configuration_stopped">Fan stopped because its control configuration is unavailable.</string>
+    <string name="warsaw_fan_speed_driver_error">Fan hardware reported a fault</string>
+    <string name="warsaw_fan_speed_sensor_unavailable">Fan speed sensor unavailable</string>
+    <string name="warsaw_fan_speed_write_failed">Could not deliver the measured speed to fan control</string>
+    <string name="warsaw_fan_speed_invalid">No valid speed measurement available</string>
+    <string name="warsaw_fan_speed_inactive">Speed is measured while charging with the fan enabled</string>
+    <string name="warsaw_fan_state_hal_stopped">Fan stopped, but its controller state could not be read.</string>
+    <string name="warsaw_fan_homepage_title">Cooling fan</string>
+    <string name="warsaw_fan_homepage_summary">Enable the fan and adjust PWM</string>
+    <string name="warsaw_fan_pwm_title">PWM duty cycle</string>
+    <string name="warsaw_fan_pwm_value">%1$d%%</string>
+    <string name="warsaw_fan_control_unavailable">Fan control is temporarily unavailable</string>
+</resources>

@@ -1,0 +1,221 @@
+type vendor_cnd, domain;
+
+domain_auto_trans(init, vendor_cnd_exec, vendor_cnd)
+
+typeattribute vendor_cnd hal_wifi_hostapd_client;
+
+typeattribute vendor_cnd hal_wifi_supplicant_client;
+
+typeattribute vendor_cnd halclientdomain;
+
+typeattribute vendor_cnd netdomain;
+
+typeattribute vendor_cnd vendor_hal_datafactory_qti;
+
+typeattribute vendor_cnd vendor_hal_datafactory_qti_server;
+
+typeattribute vendor_cnd vendor_hal_mwqemadapter_qti;
+
+typeattribute vendor_cnd vendor_hal_mwqemadapter_qti_server;
+
+typeattribute vendor_cnd vendor_hal_qms_qti_client;
+
+typeattribute vendor_cnd vendor_halserverdomain;
+
+type_transition vendor_cnd socket_device:dir vendor_cnd_socket;
+
+type_transition vendor_cnd socket_device:fifo_file vendor_cnd_socket;
+
+type_transition vendor_cnd socket_device:sock_file vendor_cnd_socket;
+
+type_transition vendor_cnd socket_device:lnk_file vendor_cnd_socket;
+
+type_transition vendor_cnd socket_device:file vendor_cnd_socket;
+
+binder_use(vendor_cnd)
+
+hwbinder_use(vendor_cnd)
+
+vndbinder_use(vendor_cnd)
+
+allow vendor_cnd socket_device:dir { ioctl read write getattr lock open watch watch_reads add_name search };
+
+allow vendor_cnd vendor_cnd_socket:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd vendor_cnd_socket:lnk_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd vendor_cnd_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd vendor_cnd_socket:fifo_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd vendor_cnd_socket:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_cnd vendor_cnd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_cnd self:capability { net_bind_service };
+
+allow vendor_cnd wpa_socket:sock_file { write };
+
+allow vendor_cnd hal_wifi_supplicant:unix_dgram_socket { sendto };
+
+allow vendor_cnd wpa_data_file:dir { write lock open add_name remove_name search };
+
+allow vendor_cnd wpa_data_file:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd self:capability2 { block_suspend };
+
+allow vendor_cnd self:udp_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd self:netlink_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cnd proc_meminfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cnd property_socket:sock_file { write };
+
+allow vendor_cnd init:unix_stream_socket { connectto };
+
+allow vendor_cnd vendor_cnd_prop:property_service { set };
+
+allow vendor_cnd vendor_cnd_prop:file { read getattr map open };
+
+allow vendor_cnd vendor_cnd_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd vendor_cnd_data_file:sock_file { create setattr unlink };
+
+allow vendor_cnd vendor_cnd_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_cnd sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_cnd self:cap2_userns { block_suspend };
+
+allow vendor_cnd system_suspend_server:binder { call transfer };
+
+allow vendor_cnd system_suspend_server:fd { use };
+
+allow vendor_cnd system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_cnd hwservicemanager:binder { call transfer };
+
+allow vendor_cnd hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_cnd hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_cnd hal_system_suspend_service:service_manager { find };
+
+allow vendor_cnd servicemanager:binder { call transfer };
+
+allow vendor_cnd vendor_ipa_vendor_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_ipa_vendor_data_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cnd vendor_nicmd_socket:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_nicmd_socket:sock_file { write };
+
+allow vendor_cnd vendor_nicmd:unix_stream_socket { connectto };
+
+allow vendor_cnd vendor_nicmd_socket:sock_file { read write getattr };
+
+allow vendor_cnd vendor_nicmd_socket:tipc_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd vendor_nicmd:fd { use };
+
+allow vendor_cnd vendor_nicmd:udp_socket { read write };
+
+allow vendor_cnd system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_sysfs_ssr:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_sysfs_ssr:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cnd vendor_sysfs_ssr:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_cnd vendor_wlan_device:chr_file { write lock append map open };
+
+allow vendor_cnd vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_cnd vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_cnd vendor_location_lowi_server:binder { transfer };
+
+allow vendor_cnd vendor_cnd_vendor_prop:property_service { set };
+
+allow vendor_cnd vendor_cnd_vendor_prop:file { read getattr map open };
+
+allow vendor_cnd vendor_smem_log_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_cnd self:capability { net_admin net_raw };
+
+allow vendor_cnd self:netlink_route_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd self:netlink_tcpdiag_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd vendor_wifi_vendor_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_wifi_vendor_wpa_socket:sock_file { write };
+
+allow vendor_cnd vendor_hostapd_exec:file { read getattr map execute open };
+
+allow vendor_cnd vendor_hostapd:process { transition };
+
+allow vendor_cnd vendor_hostapd:process { siginh rlimitinh };
+
+allow vendor_cnd vendor_hostapd_socket:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_hostapd_socket:sock_file { write };
+
+allow vendor_cnd vendor_hostapd:unix_dgram_socket { sendto };
+
+allow vendor_cnd self:socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_cnd vendor_hal_latency_hwservice:hwservice_manager { add find };
+
+allow vendor_cnd hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_cnd vendor_hal_slmadapter_hwservice:hwservice_manager { add find };
+
+allow vendor_cnd vendor_slm_prop:file { read getattr map open };
+
+allow vendor_cnd vendor_mwqem_prop:file { read getattr map open };
+
+allow vendor_cnd vendor_shsusrd_socket:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_cnd vendor_shsusrd_socket:sock_file { write };
+
+allow vendor_cnd vendor_shsusrd:unix_stream_socket { connectto };
+
+allow vendor_cnd vendor_shsusrd_socket:sock_file { read write };
+
+allow vendor_cnd hostapd_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_cnd hostapd_data_file:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_cnd hal_wifi_hostapd_default:unix_dgram_socket { sendto };
+
+allow vendor_cnd vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_cnd vndservicemanager:binder { call transfer };
+
+allow vendor_cnd vendor_nwmgr_service:service_manager { find };
+
+allow vendor_cnd vendor_qms_service:service_manager { find };
+
+allow vendor_cnd vendor_qms:binder { call transfer };
+
+allow vendor_cnd vendor_qms:fd { use };
+
+allow vendor_cnd vendor_qms:binder { transfer };
+
+allow vendor_cnd vendor_hostapd:binder { transfer };
+
+allow vendor_cnd radio:binder { transfer };
+
+allowxperm vendor_cnd self:udp_socket ioctl { 0x8921 };
+
+allowxperm vendor_cnd self:udp_socket ioctl { 0x8b0c 0x8bf5 };

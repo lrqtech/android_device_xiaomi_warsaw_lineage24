@@ -1,0 +1,37 @@
+typeattribute hal_nfc_default hal_nfc;
+
+typeattribute hal_nfc_default hal_nfc_server;
+
+typeattribute hal_nfc_default halserverdomain;
+
+allow hal_nfc_default hal_nfc_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_nfc_default hal_nfc_hwservice:hwservice_manager { add find };
+
+allow hal_nfc_default hidl_base_hwservice:hwservice_manager { add };
+
+allow hal_nfc_default vendor_nfc_nq_prop:file { read getattr map open };
+
+allow hal_nfc_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_nfc_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_nfc_default firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_nfc_default vendor_nfc_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_nfc_default vendor_nfc_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_nfc_default vendor_hal_nxpnfc_service:service_manager { add find };
+
+allow hal_nfc_default vendor_ssgtzd_socket:sock_file { write };
+
+allow hal_nfc_default vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow hal_nfc_default vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_nfc_default vendor_data_file:file { ioctl read write create getattr lock append map open watch watch_reads };
+
+allow hal_nfc_default vendor_nfc_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow hal_nfc_default vendor_nfc_mi_prop:file { read getattr map open };

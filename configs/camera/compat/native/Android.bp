@@ -1,0 +1,9 @@
+cc_library_shared {
+    name: "libwarsaw_cameraperf",
+    srcs: ["CameraPerformance.cpp"],
+    header_libs: ["jni_headers"],
+    shared_libs: ["//vendor/xiaomi/warsaw:libqti-perfd-client_system_warsaw_system"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

@@ -1,0 +1,318 @@
+// Partition symlinks extracted from OS4.0.0.15.XHPCNXM.
+// The AON II model aliases are also dangling in the official OTA; no model data
+// is fabricated for those optional models.
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_capture_sh",
+    device_specific: true,
+    installed_location: "bin/capture.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_playback_sh",
+    device_specific: true,
+    installed_location: "bin/playback.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_auxmic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_auxmic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_backmic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_backmic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_headsetmic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_headsetmic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_mainmic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_mainmic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_sidebottommic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_sidebottommic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_sidetopmic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_sidetopmic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_setup_topmic2headphone_sh",
+    device_specific: true,
+    installed_location: "bin/setup_topmic2headphone.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_teardown_loopback_sh",
+    device_specific: true,
+    installed_location: "bin/teardown_loopback.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_typec_capture_headset_sh",
+    device_specific: true,
+    installed_location: "bin/typec_capture_headset.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_odm_bin_typec_playback_headset_sh",
+    device_specific: true,
+    installed_location: "bin/typec_playback_headset.sh",
+    symlink_target: "/odm/bin/audio-factory-test",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_kiwi_v2_WCNSS_qcom_cfg_ini",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/kiwi_v2/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/kiwi_v2/WCNSS_qcom_cfg.ini",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_kiwi_v2_wlan_mac_bin",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/kiwi_v2/wlan_mac.bin",
+    symlink_target: "/mnt/vendor/persist/wlan/wlan_mac.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_peach_WCNSS_qcom_cfg_ini",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/peach/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/peach/WCNSS_qcom_cfg.ini",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_peach_wlan_mac_bin",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/peach/wlan_mac.bin",
+    symlink_target: "/mnt/vendor/persist/wlan/wlan_mac.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_peach_v2_WCNSS_qcom_cfg_ini",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/peach_v2/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/peach_v2/WCNSS_qcom_cfg.ini",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_peach_v2_wlan_mac_bin",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/peach_v2/wlan_mac.bin",
+    symlink_target: "/mnt/vendor/persist/wlan/wlan_mac.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_qca6750_WCNSS_qcom_cfg_ini",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/qca6750/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/qca6750/WCNSS_qcom_cfg.ini",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_qca6750_wlan_mac_bin",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/qca6750/wlan_mac.bin",
+    symlink_target: "/mnt/vendor/persist/wlan/wlan_mac.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_wcn7750_WCNSS_qcom_cfg_ini",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/wcn7750/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/wcn7750/WCNSS_qcom_cfg.ini",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlan_qca_cld_wcn7750_wlan_mac_bin",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/wcn7750/wlan_mac.bin",
+    symlink_target: "/mnt/vendor/persist/wlan/wlan_mac.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_firmware_wlanmdsp_otaupdate",
+    soc_specific: true,
+    installed_location: "firmware/wlanmdsp.otaupdate",
+    symlink_target: "/data/vendor/firmware/wlanmdsp.mbn",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib_rfsa_adsp_libSnpeHtpV79Skel_so",
+    soc_specific: true,
+    installed_location: "lib/rfsa/adsp/libSnpeHtpV79Skel.so",
+    symlink_target: "/odm/lib/rfsa/adsp/libSnpeHtpV79Skel.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_camera_aon_front_i_1_pb",
+    soc_specific: true,
+    installed_location: "lib64/camera/aon_front_i_1.pb",
+    symlink_target: "/odm/lib64/camera/aon_front_i_1.pb",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_camera_aon_front_ii_1_pb",
+    soc_specific: true,
+    installed_location: "lib64/camera/aon_front_ii_1.pb",
+    symlink_target: "/odm/lib64/camera/aon_front_ii_1.pb",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_camera_aon_rear_i_2_pb",
+    soc_specific: true,
+    installed_location: "lib64/camera/aon_rear_i_2.pb",
+    symlink_target: "/odm/lib64/camera/aon_rear_i_2.pb",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_camera_aon_rear_ii_2_pb",
+    soc_specific: true,
+    installed_location: "lib64/camera/aon_rear_ii_2.pb",
+    symlink_target: "/odm/lib64/camera/aon_rear_ii_2.pb",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_camera_bitmlconfig_bin",
+    soc_specific: true,
+    installed_location: "lib64/camera/bitmlconfig.bin",
+    symlink_target: "/odm/lib64/camera/bitmlconfig.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_camera_com_qti_ofe_profiledb_default_bin",
+    soc_specific: true,
+    installed_location: "lib64/camera/com.qti.ofe.profiledb.default.bin",
+    symlink_target: "/odm/lib64/camera/com.qti.ofe.profiledb.default.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_hw_camera_qcom_so",
+    soc_specific: true,
+    installed_location: "lib64/hw/camera.qcom.so",
+    symlink_target: "/odm/lib64/hw/camera.qcom.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_hw_com_qti_chi_override_so",
+    soc_specific: true,
+    installed_location: "lib64/hw/com.qti.chi.override.so",
+    symlink_target: "/odm/lib64/hw/com.qti.chi.override.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_libEGL_adreno_so",
+    soc_specific: true,
+    installed_location: "lib64/libEGL_adreno.so",
+    symlink_target: "egl/libEGL_adreno.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_libGLESv2_adreno_so",
+    soc_specific: true,
+    installed_location: "lib64/libGLESv2_adreno.so",
+    symlink_target: "egl/libGLESv2_adreno.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_libSNPE_so",
+    soc_specific: true,
+    installed_location: "lib64/libSNPE.so",
+    symlink_target: "/odm/lib64/libSNPE.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_libcamxexternalformatutils_so",
+    soc_specific: true,
+    installed_location: "lib64/libcamxexternalformatutils.so",
+    symlink_target: "/odm/lib64/libcamxexternalformatutils.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_libq3dtools_adreno_so",
+    soc_specific: true,
+    installed_location: "lib64/libq3dtools_adreno.so",
+    symlink_target: "egl/libq3dtools_adreno.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_qsn1nrt430_bin",
+    soc_specific: true,
+    installed_location: "lib64/qsn1nrt430.bin",
+    symlink_target: "/odm/lib64/qsn1nrt430.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_qsn1nrt43270_bin",
+    soc_specific: true,
+    installed_location: "lib64/qsn1nrt43270.bin",
+    symlink_target: "/odm/lib64/qsn1nrt43270.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_qsn2all_bin",
+    soc_specific: true,
+    installed_location: "lib64/qsn2all.bin",
+    symlink_target: "/odm/lib64/qsn2all.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_qsn3all_bin",
+    soc_specific: true,
+    installed_location: "lib64/qsn3all.bin",
+    symlink_target: "/odm/lib64/qsn3all.bin",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_rfs_dsp_libbitml_nsp_73na_skel_so",
+    soc_specific: true,
+    installed_location: "lib64/rfs/dsp/libbitml_nsp_73na_skel.so",
+    symlink_target: "/odm/lib64/rfs/dsp/libbitml_nsp_73na_skel.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_rfs_dsp_libbitml_nsp_79na_skel_so",
+    soc_specific: true,
+    installed_location: "lib64/rfs/dsp/libbitml_nsp_79na_skel.so",
+    symlink_target: "/odm/lib64/rfs/dsp/libbitml_nsp_79na_skel.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_lib64_rfs_dsp_libqsegnetengine_dsp_skel_so",
+    soc_specific: true,
+    installed_location: "lib64/rfs/dsp/libqsegnetengine_dsp_skel.so",
+    symlink_target: "/odm/lib64/rfs/dsp/libqsegnetengine_dsp_skel.so",
+}
+
+install_symlink {
+    name: "warsaw_stock_vendor_rfs_msm_mpss_readonly_mbnconfig",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/readonly/mbnconfig",
+    symlink_target: "/data/vendor/mbnconfig",
+}

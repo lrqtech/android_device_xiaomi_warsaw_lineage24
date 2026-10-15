@@ -1,0 +1,15 @@
+typeattribute hal_tetheroffload_default hal_tetheroffload;
+
+typeattribute hal_tetheroffload_default hal_tetheroffload_server;
+
+typeattribute hal_tetheroffload_default halserverdomain;
+
+allow hal_tetheroffload_default hal_tetheroffload_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_tetheroffload_default vendor_ipa_dev:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_tetheroffload_default vendor_ipacm_socket:sock_file { write lock append map open };
+
+allow hal_tetheroffload_default vendor_ipa_vendor_data_file:dir { write lock open add_name remove_name search };
+
+allow hal_tetheroffload_default vendor_ipa_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };

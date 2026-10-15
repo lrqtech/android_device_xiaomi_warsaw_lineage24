@@ -1,0 +1,461 @@
+type vendor_qti_init_shell, domain;
+
+domain_auto_trans(init, vendor_qti_init_shell_exec, vendor_qti_init_shell)
+
+binder_use(vendor_qti_init_shell)
+
+hwbinder_use(vendor_qti_init_shell)
+
+allow vendor_qti_init_shell vendor_qti_init_shell_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qti_init_shell vendor_shell_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qti_init_shell vendor_qti_init_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans entrypoint };
+
+allow vendor_qti_init_shell vendor_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans entrypoint };
+
+allow vendor_qti_init_shell vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_qti_init_shell vendor_sysfs_graphics:file { ioctl read write getattr setattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell mnt_vendor_file:dir { write lock open add_name remove_name search };
+
+allow vendor_qti_init_shell mnt_vendor_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_smd_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell rootfs:file { execute_no_trans };
+
+allow vendor_qti_init_shell vendor_shell_exec:file { execute_no_trans };
+
+allow vendor_qti_init_shell gpu_device:chr_file { getattr };
+
+allow vendor_qti_init_shell vendor_sysfs_cpu_boost:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell vendor_sysfs_cpu_boost:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell self:capability { chown fowner fsetid net_admin sys_module sys_admin };
+
+allow vendor_qti_init_shell property_socket:sock_file { write };
+
+allow vendor_qti_init_shell init:unix_stream_socket { connectto };
+
+allow vendor_qti_init_shell vendor_ctl_port-bridge_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_ctl_port-bridge_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_ctl_qcrild_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_ctl_qcrild_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_ipacm-diag_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_ipacm-diag_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_ipacm_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_ipacm_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_msm_irqbalance_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_msm_irqbalance_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_dataqti_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_dataqti_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_display_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_display_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_alarm_boot_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_alarm_boot_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_gralloc_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_gralloc_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_usb_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_usb_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_system_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_system_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_mpctl_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_mpctl_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_radio_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_radio_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_audio_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_audio_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell radio_control_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_gpu_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_gpu_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_sensors_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_adsprpc_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_adsprpc_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell sysfs_devices_system_cpu:file { write lock append map open };
+
+allow vendor_qti_init_shell sysfs_lowmemorykiller:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_mmc_host:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_process_reclaim:file { write lock append map open };
+
+allow vendor_qti_init_shell sysfs_type:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell sysfs_type:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell sysfs_type:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_devfreq:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell vendor_sysfs_devfreq:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_devfreq:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_devfreq:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_wdog_device:file { write getattr };
+
+allow vendor_qti_init_shell vendor_sysfs_soc:file { write };
+
+allow vendor_qti_init_shell sysfs:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_block:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_mem_sleep:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_powercap:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_thunderbolt:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_typec:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_udc:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_usb_pd:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_usbcore:file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_block:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_mem_sleep:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_powercap:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_thunderbolt:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_typec:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_udc:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_usb_pd:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_usbcore:dir { relabelfrom };
+
+allow vendor_qti_init_shell sysfs:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_block:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_mem_sleep:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_powercap:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_thunderbolt:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_typec:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_udc:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_usb_pd:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_usbcore:lnk_file { relabelfrom };
+
+allow vendor_qti_init_shell sysfs_devices_system_cpu:file { relabelto };
+
+allow vendor_qti_init_shell sysfs_devices_system_cpu:dir { relabelto };
+
+allow vendor_qti_init_shell sysfs_devices_system_cpu:lnk_file { relabelto };
+
+allow vendor_qti_init_shell mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell mnt_vendor_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell mnt_vendor_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_persist_bluetooth_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell vendor_persist_bluetooth_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_persist_bluetooth_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell proc:file { write };
+
+allow vendor_qti_init_shell proc_firmware_config:file { write };
+
+allow vendor_qti_init_shell proc_net:file { write };
+
+allow vendor_qti_init_shell proc_net:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell graphics_device:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qti_init_shell graphics_device:lnk_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qti_init_shell kernel:key { search };
+
+allow vendor_qti_init_shell cgroup:dir { add_name };
+
+allow vendor_qti_init_shell firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell block_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell swap_block_device:blk_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell sysfs_transparent_hugepage:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell configfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell configfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell sysfs_zram:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell sysfs_zram:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_kgsl:file { ioctl read getattr setattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell proc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell proc_firmware_config:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell rootfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_radio_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qti_init_shell vendor_radio_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_mbn_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qti_init_shell vendor_mbn_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_ctl_vendor_hbtp_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_ctl_vendor_hbtp_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell vendor_sysfs_usb_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell vendor_sysfs_usbpd_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qti_init_shell vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_usb_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_usbpd_device:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_battery_supply:file { setattr };
+
+allow vendor_qti_init_shell vendor_sysfs_usb_supply:file { setattr };
+
+allow vendor_qti_init_shell vendor_sysfs_usbpd_device:file { setattr };
+
+allow vendor_qti_init_shell vendor_sysfs_msm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_msm_irqbalanced_exec:file { getattr };
+
+allow vendor_qti_init_shell vendor_wifi_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_wifi_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell proc_meminfo:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qti_init_shell sysfs_mem_sleep:file { write lock append map open };
+
+allow vendor_qti_init_shell sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell self:capability2 { block_suspend };
+
+allow vendor_qti_init_shell self:cap2_userns { block_suspend };
+
+allow vendor_qti_init_shell system_suspend_server:binder { call transfer };
+
+allow vendor_qti_init_shell system_suspend_server:fd { use };
+
+allow vendor_qti_init_shell system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_qti_init_shell hwservicemanager:binder { call transfer };
+
+allow vendor_qti_init_shell hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_qti_init_shell hal_system_suspend_service:service_manager { find };
+
+allow vendor_qti_init_shell servicemanager:binder { call transfer };
+
+allow vendor_qti_init_shell vendor_soc_id_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_soc_id_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_soc_name_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_soc_name_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_soc_model_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_soc_model_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_media_performance_class:property_service { set };
+
+allow vendor_qti_init_shell vendor_media_performance_class:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_console_log_level_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_dcvs_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_dcvs_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell proc_sched:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_sd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_sysfs_npu:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_mdm_helper_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_mdm_helper_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_mmi_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_mmi_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_video_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_video_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_dataadpl_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_dataadpl_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_hvdcp_opti_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_hvdcp_opti_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_mpctl_data_file:dir { write lock open add_name remove_name search };
+
+allow vendor_qti_init_shell vendor_mpctl_data_file:file { write create getattr append unlink open };
+
+allow vendor_qti_init_shell vendor_sysfs_vmpressure:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_bootguestvm:file { write lock append map open };
+
+allow vendor_qti_init_shell proc_watermark_scale_factor:file { write append open };
+
+allow vendor_qti_init_shell vendor_sysfs_slab_zshandle_storeuser:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_slab_zspage_storeuser:file { write lock append map open };
+
+allow vendor_qti_init_shell sysfs_dm:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_sysfs_kgsl:file { write lock append map open };
+
+allow vendor_qti_init_shell vendor_pasr_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_pasr_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell ctl_start_prop:property_service { set };
+
+allow vendor_qti_init_shell ctl_start_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_memory_min_free_kbytes:property_service { set };
+
+allow vendor_qti_init_shell vendor_memory_min_free_kbytes:file { read getattr map open };
+
+allow vendor_qti_init_shell nfc_device:chr_file { getattr };
+
+allow vendor_qti_init_shell vendor_ese_strongbox_prop:property_service { set };
+
+allow vendor_qti_init_shell vendor_ese_strongbox_prop:file { read getattr map open };
+
+allow vendor_qti_init_shell vendor_sysfs_extra_free_kbytes:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell proc_watermark_scale_factor:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell proc_percpu_pagelist_high_fraction:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell vendor_mi_extra_free_enable:file { read getattr map open };
+
+allow vendor_qti_init_shell proc_page_cluster:file { write setattr lock append map open };
+
+allow vendor_qti_init_shell vendor_ramdump_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qti_init_shell vendor_ramdump_vendor_data_file:fifo_file { read write create getattr unlink open };
+
+allow vendor_qti_init_shell vendor_ramdump_vendor_data_file:file { read write create getattr setattr unlink open };
+
+allow vendor_qti_init_shell vendor_modem_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qti_init_shell vendor_modem_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qti_init_shell sysfs:file { write };
+
+allow vendor_qti_init_shell sysfs_block:file { write };
+
+allow vendor_qti_init_shell sysfs_mem_sleep:file { write };
+
+allow vendor_qti_init_shell sysfs_powercap:file { write };
+
+allow vendor_qti_init_shell sysfs_thunderbolt:file { write };
+
+allow vendor_qti_init_shell sysfs_typec:file { write };
+
+allow vendor_qti_init_shell sysfs_udc:file { write };
+
+allow vendor_qti_init_shell sysfs_usb_pd:file { write };
+
+allow vendor_qti_init_shell sysfs_usbcore:file { write };
+
+allow vendor_qti_init_shell ttyHS5_device:chr_file { ioctl read write open };
+
+allow vendor_qti_init_shell vendor_data_file:dir { write create add_name };
+
+allow vendor_qti_init_shell vendor_data_file:file { read write create getattr append open };
+
+allow vendor_qti_init_shell vendor_boot_ota_file:file { execute_no_trans };
+
+allow vendor_qti_init_shell vendor_file:file { execute_no_trans };
+
+allow vendor_qti_init_shell vendor_firmware_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qti_init_shell vendor_firmware_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qti_init_shell proc_modem_enhance:file { read write getattr open };
+
+allow vendor_qti_init_shell self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qti_init_shell i2c_device:chr_file { ioctl read write open };
+
+allow vendor_qti_init_shell vendor_data_file:file { read write create getattr open };

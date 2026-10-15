@@ -1,0 +1,47 @@
+type ufs_utils, domain;
+
+domain_auto_trans(init, ufs_utils_exec, ufs_utils)
+
+allow ufs_utils ufs_utils_exec:file { read getattr map execute open entrypoint };
+
+allow ufs_utils vendor_ufs_lun4_bsg_device:chr_file { ioctl };
+
+allow ufs_utils vendor_bsg_device:chr_file { ioctl };
+
+allow ufs_utils vendor_data_file:file { read write create getattr append open };
+
+allow ufs_utils sysfs:dir { read getattr open search };
+
+allow ufs_utils sysfs_block:dir { read getattr open search };
+
+allow ufs_utils sysfs_mem_sleep:dir { read getattr open search };
+
+allow ufs_utils sysfs_powercap:dir { read getattr open search };
+
+allow ufs_utils sysfs_thunderbolt:dir { read getattr open search };
+
+allow ufs_utils sysfs_typec:dir { read getattr open search };
+
+allow ufs_utils sysfs_udc:dir { read getattr open search };
+
+allow ufs_utils sysfs_usb_pd:dir { read getattr open search };
+
+allow ufs_utils sysfs_usbcore:dir { read getattr open search };
+
+allow ufs_utils block_device:dir { search };
+
+allow ufs_utils system_data_file:dir { search };
+
+allow ufs_utils sysfs_fs_f2fs:dir { read getattr open search };
+
+allow ufs_utils sysfs_devices_block:dir { search };
+
+allow ufs_utils vendor_data_file:dir { write create getattr append add_name search };
+
+allow ufs_utils vendor_bsg_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ufs_utils vendor_ufs_lun4_bsg_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow ufs_utils sysfs_memory:dir { read open search };
+
+allow ufs_utils sysfs_memory:file { read open };

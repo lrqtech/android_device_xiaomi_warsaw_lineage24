@@ -1,0 +1,19 @@
+# Only the four observed RenderThread clients of the QSPM AIDL path.
+typeattribute system_app warsaw_qspm_render_client;
+typeattribute permissioncontroller_app warsaw_qspm_render_client;
+typeattribute priv_app warsaw_qspm_render_client;
+typeattribute platform_app warsaw_qspm_render_client;
+typeattribute radio warsaw_qspm_render_client;
+typeattribute system_server warsaw_qspm_render_client;
+
+typeattribute adservices warsaw_ota_media_buffer_client;
+typeattribute device_as_webcam warsaw_ota_media_buffer_client;
+typeattribute mediaprovider_app warsaw_ota_media_buffer_client;
+typeattribute pcc_component warsaw_ota_media_buffer_client;
+typeattribute permissioncontroller_app warsaw_ota_media_buffer_client;
+typeattribute sdk_sandbox_34 warsaw_ota_media_buffer_client;
+typeattribute sdk_sandbox_audit warsaw_ota_media_buffer_client;
+typeattribute sdk_sandbox_next warsaw_ota_media_buffer_client;
+typeattribute vmlauncher_app warsaw_ota_media_buffer_client;
+typeattribute vzwomatrigger_app warsaw_ota_media_buffer_client;
+typeattribute permissioncontroller_app warsaw_ota_perf_callback_client;

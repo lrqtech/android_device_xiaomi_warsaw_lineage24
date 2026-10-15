@@ -1,0 +1,3 @@
+# Unified patches require blank context lines; binary patches require a blank terminator.
+# Preserve their original bytes; validate patch syntax and added source lines separately.
+*.patch whitespace=-blank-at-eol,-blank-at-eof

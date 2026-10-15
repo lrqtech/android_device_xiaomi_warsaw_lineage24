@@ -1,0 +1,17 @@
+hal_attribute(micharge)
+
+hal_attribute(visdisplaysrv)
+
+attribute vendor_hal_displayfeature_xiaomi;
+
+attribute vendor_hal_displayfeature_xiaomi_client;
+
+attribute vendor_hal_displayfeature_xiaomi_server;
+
+neverallow { vendor_hal_displayfeature_xiaomi_server -halserverdomain } domain:process fork;
+
+attribute vendor_hal_imsrtphal;
+
+attribute vendor_hal_imsrtphal_client;
+
+attribute vendor_hal_imsrtphal_server;

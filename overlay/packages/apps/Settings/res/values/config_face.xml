@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The stock AIDL v4 HAL opens the front camera and consumes surfacePreview. -->
+    <bool name="config_face_enroll_hal_owns_camera">true</bool>
+    <bool name="config_face_enroll_secure_preview">true</bool>
+    <string name="config_face_enroll" translatable="false"></string>
+</resources>

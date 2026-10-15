@@ -1,0 +1,15 @@
+type vendor_hal_srvctracker_default, domain;
+
+domain_auto_trans(init, vendor_hal_srvctracker_default_exec, vendor_hal_srvctracker_default)
+
+typeattribute vendor_hal_srvctracker_default halserverdomain;
+
+typeattribute vendor_hal_srvctracker_default vendor_hal_srvctracker;
+
+typeattribute vendor_hal_srvctracker_default vendor_hal_srvctracker_server;
+
+allow vendor_hal_srvctracker_default vendor_hal_srvctracker_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_srvctracker_default hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_hal_srvctracker_default system_server:binder { transfer };

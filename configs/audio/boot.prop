@@ -1,0 +1,5 @@
+ro.vendor.audio.triplemic.support=true
+ro.vendor.audio.algorithm.support=Fluence
+
+ro.vendor.audio.meeting.mode=true
+persist.vendor.audio.call.tx.ns=true

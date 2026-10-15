@@ -1,0 +1,101 @@
+type hal_micharge_default, domain;
+
+type hal_micharge_default_exec, exec_type, vendor_file_type, file_type;
+
+init_daemon_domain(hal_micharge_default)
+
+hal_server_domain(hal_micharge_default, hal_micharge)
+
+hal_attribute_service(hal_micharge, hal_micharge_service)
+
+binder_call(hal_micharge_client, hal_micharge_server)
+
+binder_call(hal_micharge_server, hal_micharge_client)
+
+typeattribute hal_micharge_default hal_micharge;
+
+typeattribute hal_micharge_default hal_micharge_server;
+
+typeattribute hal_micharge_default hal_micharge_client;
+
+binder_use(hal_micharge_default)
+
+allow hal_micharge_default hal_micharge_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_micharge_default servicemanager:binder { call transfer };
+
+allow hal_micharge_default sysfs:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_block:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_mem_sleep:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_powercap:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_thunderbolt:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_typec:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_udc:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_usb_pd:dir { read getattr open search };
+
+allow hal_micharge_default sysfs_usbcore:dir { read getattr open search };
+
+allow hal_micharge_default sysfs:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_block:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_mem_sleep:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_powercap:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_thunderbolt:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_typec:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_udc:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_usb_pd:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default sysfs_usbcore:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_battery_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_micharge_default vendor_sysfs_battery_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_battery_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_battery_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_qcom_battery:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_micharge_default vendor_sysfs_qcom_battery:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_qcom_battery:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_qcom_battery:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_usb_supply:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_micharge_default vendor_sysfs_usb_supply:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_usb_supply:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_usb_supply:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default hidraw_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_usb_node:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_micharge_default vendor_sysfs_usb_node:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_usb_node:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_usb_node:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_xm_power:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_micharge_default vendor_sysfs_xm_power:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_micharge_default vendor_sysfs_xm_power:file { read write open };

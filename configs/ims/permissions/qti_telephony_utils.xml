@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+ <library name="qti-telephony-utils"
+         file="/system_ext/framework/qti-telephony-utils.jar"/>
+</permissions>

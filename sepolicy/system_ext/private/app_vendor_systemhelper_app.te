@@ -1,0 +1,53 @@
+typeattribute vendor_systemhelper_app coredomain;
+
+app_domain(vendor_systemhelper_app)
+
+typeattribute vendor_systemhelper_app hal_mitrustedui_client;
+
+typeattribute vendor_systemhelper_app halclientdomain;
+
+typeattribute vendor_systemhelper_app system_halserverdomain;
+
+typeattribute vendor_systemhelper_app vendor_hal_perf_client;
+
+typeattribute vendor_systemhelper_app vendor_hal_systemhelper;
+
+typeattribute vendor_systemhelper_app vendor_hal_systemhelper_server;
+
+binder_use(vendor_systemhelper_app)
+
+hwbinder_use(vendor_systemhelper_app)
+
+allow vendor_systemhelper_app appdomain_tmpfs:file { read write getattr map execute };
+
+allow vendor_systemhelper_app appdomain:memfd_file { read write getattr map execute };
+
+allow vendor_systemhelper_app hwservicemanager:binder { call transfer };
+
+allow vendor_systemhelper_app system_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_systemhelper_app hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_systemhelper_app vendor_hal_systemhelper_hwservice:hwservice_manager { add find };
+
+allow vendor_systemhelper_app hidl_base_hwservice:hwservice_manager { add };
+
+allow vendor_systemhelper_app surfaceflinger_service:service_manager { find };
+
+allow vendor_systemhelper_app activity_service:service_manager { find };
+
+allow vendor_systemhelper_app trust_service:service_manager { find };
+
+allow vendor_systemhelper_app vendor_vps_service:service_manager { find };
+
+allow vendor_systemhelper_app system_app_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_systemhelper_app thermal_service:service_manager { find };
+
+allow vendor_systemhelper_app vendor_perf_service:service_manager { find };
+
+allow vendor_systemhelper_app app_api_service:service_manager { find };
+
+allow vendor_systemhelper_app servicemanager:binder { call transfer };
+
+type_transition vendor_systemhelper_app tmpfs:file appdomain_tmpfs;

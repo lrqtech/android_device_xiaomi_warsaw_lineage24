@@ -1,0 +1,19 @@
+type vendor_power_off_alarm, domain;
+
+domain_auto_trans(init, vendor_power_off_alarm_exec, vendor_power_off_alarm)
+
+allow vendor_power_off_alarm vendor_power_off_alarm_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_power_off_alarm rtc_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_power_off_alarm kmsg_device:chr_file { write lock append map open };
+
+allow vendor_power_off_alarm self:capability2 { wake_alarm };
+
+allow vendor_power_off_alarm property_socket:sock_file { write };
+
+allow vendor_power_off_alarm init:unix_stream_socket { connectto };
+
+allow vendor_power_off_alarm powerctl_prop:property_service { set };
+
+allow vendor_power_off_alarm powerctl_prop:file { read getattr map open };

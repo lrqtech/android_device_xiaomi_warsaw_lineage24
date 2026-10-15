@@ -1,0 +1,6 @@
+// OS4.0.0.15 vendor export required by the Widevine APEX.
+{
+    "provideLibs": [
+        "liboemcrypto.so"
+    ]
+}

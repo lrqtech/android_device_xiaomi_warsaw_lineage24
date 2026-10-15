@@ -1,0 +1,11 @@
+type vendor_dataservice_app, domain;
+
+type vendor_location_app, domain;
+
+type vendor_qti_embmssl_app, domain;
+
+type vendor_qti_poweroffalarm_app, domain;
+
+type vendor_systemhelper_app, domain;
+
+type vendor_xpanprovider_app, domain;

@@ -1,0 +1,5 @@
+<resources>
+    <string-array name="warsaw_fan_mode_values" translatable="false"><item>-1</item><item>0</item><item>1</item><item>2</item><item>3</item></string-array>
+    <string-array name="warsaw_fan_range_values" translatable="false"><item>0</item><item>1</item></string-array>
+    <string-array name="warsaw_fan_manual_values" translatable="false"><item>1</item><item>2</item><item>3</item><item>4</item></string-array>
+</resources>

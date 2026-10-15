@@ -1,0 +1,21 @@
+type vendor_port-bridge, domain;
+
+domain_auto_trans(init, vendor_port-bridge_exec, vendor_port-bridge)
+
+allow vendor_port-bridge vendor_port-bridge_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_port-bridge vendor_port-bridge:netlink_kobject_uevent_socket { read create bind };
+
+allow vendor_port-bridge vendor_at_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_port-bridge vendor_mhi_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_port-bridge vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_port-bridge vendor_port_bridge_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_port-bridge vendor_port_bridge_data_file:dir { write lock open add_name remove_name search };
+
+allow vendor_port-bridge vendor_port-bridge_socket:dir { write lock open add_name remove_name search };
+
+allow vendor_port-bridge vendor_port-bridge_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };

@@ -1,0 +1,19 @@
+type vendor_syshealthmon_default, domain;
+
+domain_auto_trans(init, vendor_syshealthmon_default_exec, vendor_syshealthmon_default)
+
+typeattribute vendor_syshealthmon_default halserverdomain;
+
+typeattribute vendor_syshealthmon_default vendor_syshealthmon;
+
+typeattribute vendor_syshealthmon_default vendor_syshealthmon_server;
+
+binder_use(vendor_syshealthmon_default)
+
+allow vendor_syshealthmon_default vendor_syshealthmon_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_syshealthmon_default servicemanager:binder { call transfer };
+
+allow vendor_syshealthmon_default servicemanager:fd { use };
+
+allow vendor_syshealthmon_default vendor_stability_prop:file { read getattr map open };

@@ -1,0 +1,11 @@
+# The warsaw mi_fp driver creates this internal fingerprint input device.
+# Keep the existing Generic.kl navigation mappings; it has no gamepad axes.
+key 102 MOVE_HOME
+key 116 POWER
+key 139 MENU
+key 158 BACK
+
+# mi_fp reports its optional fingerprint double-click notification as BTN_C.
+# Preserve the scan code without assigning an Android game-controller action.
+# Fingerprint enrollment and authentication use the biometric HAL/TEE path.
+key 306 UNKNOWN

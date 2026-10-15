@@ -1,0 +1,28 @@
+diff --git a/healthd/Android.bp b/healthd/Android.bp
+index 6f14588c8..61037ea1c 100644
+--- a/healthd/Android.bp
++++ b/healthd/Android.bp
+@@ -380,7 +380,10 @@ phony {
+ // /vendor/etc/res/images/default/charger/battery_fail.png
+ prebuilt_etc {
+     name: "system_core_charger_res_images_battery_fail.png_default_vendor",
+-    src: "images/battery_fail.png",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_res_images_default_charger_battery_fail_png",
++        default: "images/battery_fail.png",
++    }),
+     relative_install_path: "res/images/default/charger",
+     vendor: true,
+     filename: "battery_fail.png",
+@@ -398,7 +401,10 @@ prebuilt_etc {
+ // /vendor/etc/res/images/default/charger/battery_scale.png
+ prebuilt_etc {
+     name: "system_core_charger_res_images_battery_scale.png_default_vendor",
+-    src: "images/battery_scale.png",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_res_images_default_charger_battery_scale_png",
++        default: "images/battery_scale.png",
++    }),
+     relative_install_path: "res/images/default/charger",
+     vendor: true,
+     filename: "battery_scale.png",

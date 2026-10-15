@@ -1,0 +1,19 @@
+type vendor_qti_media, domain;
+
+domain_auto_trans(init, vendor_qti_media_exec, vendor_qti_media)
+
+allow vendor_qti_media vendor_qti_media_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qti_media vendor_qti_media_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_qti_media vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_qti_media property_socket:sock_file { write };
+
+allow vendor_qti_media init:unix_stream_socket { connectto };
+
+allow vendor_qti_media vendor_video_prop:property_service { set };
+
+allow vendor_qti_media vendor_video_prop:file { read getattr map open };
+
+allow vendor_qti_media vendor_sysfs_sku:file { read open };

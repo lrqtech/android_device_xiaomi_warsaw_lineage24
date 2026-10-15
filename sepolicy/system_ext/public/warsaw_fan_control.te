@@ -1,0 +1,2 @@
+# Only the three stock MCA fan control files are assigned this type.
+type warsaw_fan_control, fs_type, sysfs_type;

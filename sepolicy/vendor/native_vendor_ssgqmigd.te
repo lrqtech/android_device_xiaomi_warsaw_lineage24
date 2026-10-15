@@ -1,0 +1,9 @@
+type vendor_ssgqmigd, domain;
+
+domain_auto_trans(init, vendor_ssgqmigd_exec, vendor_ssgqmigd)
+
+typeattribute vendor_ssgqmigd mlstrustedsubject;
+
+allow vendor_ssgqmigd vendor_ssgqmigd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_ssgqmigd self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };

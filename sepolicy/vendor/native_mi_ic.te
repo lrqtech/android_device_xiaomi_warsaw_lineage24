@@ -1,0 +1,131 @@
+type mi_ic, domain;
+
+domain_trans(init, mi_ic_exec, mi_ic)
+
+typeattribute mi_ic mlstrustedsubject;
+
+allow mi_ic mi_ic_exec:file { read getattr map execute open entrypoint };
+
+allow mi_ic sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_block:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_mem_sleep:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_powercap:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_thunderbolt:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_typec:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_udc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_usb_pd:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_usbcore:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_block:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_mem_sleep:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_powercap:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_thunderbolt:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_typec:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_udc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_usb_pd:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_usbcore:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_memory:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow mi_ic sysfs_memory:file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic sysfs_memory:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow mi_ic vendor_mi_ic_prop:property_service { set };
+
+allow mi_ic property_socket:sock_file { write };
+
+allow mi_ic init:unix_stream_socket { connectto };
+
+allow mi_ic vendor_mi_ic_prop:file { read getattr map open };
+
+allow mi_ic sysfs:file { read getattr open };
+
+allow mi_ic sysfs_block:file { read getattr open };
+
+allow mi_ic sysfs_mem_sleep:file { read getattr open };
+
+allow mi_ic sysfs_powercap:file { read getattr open };
+
+allow mi_ic sysfs_thunderbolt:file { read getattr open };
+
+allow mi_ic sysfs_typec:file { read getattr open };
+
+allow mi_ic sysfs_udc:file { read getattr open };
+
+allow mi_ic sysfs_usb_pd:file { read getattr open };
+
+allow mi_ic sysfs_usbcore:file { read getattr open };
+
+allow mi_ic rootfs:file { execute execute_no_trans };
+
+allow mi_ic vendor_shell_exec:file { read getattr execute open execute_no_trans };
+
+allow mi_ic console_device:chr_file { read write getattr setattr open };
+
+allow mi_ic mi_ic_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow mi_ic mi_ic_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow mi_ic mi_ic_data_file:blk_file { ioctl read write getattr setattr open };
+
+allow mi_ic rootfs:lnk_file { getattr setattr };
+
+allow mi_ic self:capability { chown fsetid };
+
+allow mi_ic vendor_boot_ota_file:file { execute_no_trans };
+
+allow mi_ic vendor_file:file { execute_no_trans };
+
+allow mi_ic mi_ic_exec:file { read getattr execute open entrypoint };
+
+allow mi_ic tmpfs:dir { search };
+
+allow mi_ic mnt_user_file:dir { search };
+
+allow mi_ic mnt_user_file:lnk_file { read };
+
+allow mi_ic storage_file:lnk_file { read };
+
+allow mi_ic vendor_toolbox_exec:file { read getattr execute open execute_no_trans };
+
+allow mi_ic sysfs_devices_block:lnk_file { read getattr open };
+
+allow mi_ic sysfs_devices_block:dir { read getattr open search };
+
+allow mi_ic sysfs_devices_block:file { read getattr map open };

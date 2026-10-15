@@ -1,0 +1,27 @@
+type vendor_qdcm-ss, domain;
+
+domain_auto_trans(init, vendor_qdcm-ss_exec, vendor_qdcm-ss)
+
+typeattribute vendor_qdcm-ss hal_graphics_composer_client;
+
+typeattribute vendor_qdcm-ss halclientdomain;
+
+vndbinder_use(vendor_qdcm-ss)
+
+allow vendor_qdcm-ss vendor_qdcm-ss_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qdcm-ss vendor_qdisplay_service:service_manager { find };
+
+allow vendor_qdcm-ss vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qdcm-ss vndservicemanager:binder { call transfer };
+
+allow vendor_qdcm-ss vendor_display_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qdcm-ss vendor_display_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qdcm-ss vendor_persist_display_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qdcm-ss vendor_persist_display_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qdcm-ss mnt_vendor_file:dir { search };

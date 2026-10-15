@@ -1,0 +1,15 @@
+type mieed_exec, exec_type, file_type, system_file_type;
+
+allow init mieed_exec:file { read getattr map execute open };
+
+allow vold mieed_exec:file { read getattr map execute open entrypoint };
+
+type_transition init mieed_exec:process vold;
+
+type mieed_service, service_manager_type;
+
+allow vold mieed_service:service_manager { add find };
+
+allow system_server mieed_service:service_manager find;
+
+neverallow { domain -vold } mieed_service:service_manager add;

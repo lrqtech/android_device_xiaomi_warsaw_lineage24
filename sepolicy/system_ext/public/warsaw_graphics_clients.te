@@ -1,0 +1,7 @@
+# Export this client role across the system/vendor policy boundary.
+# Platform-private app types remain private.
+attribute warsaw_qspm_render_client;
+
+# OEM codec/DRM clients use a public role while private app types stay private.
+attribute warsaw_ota_media_buffer_client;
+attribute warsaw_ota_perf_callback_client;

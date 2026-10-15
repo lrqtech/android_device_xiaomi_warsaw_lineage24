@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="warsaw_fp_place">将手指放在指纹识别区域</string>
+    <string name="warsaw_fp_start">先将手指放稳，再根据提示滑动手指、调整位置。</string>
+    <string name="warsaw_fp_continue">继续录入指纹</string>
+    <string name="warsaw_fp_area">将手指移回识别区域</string>
+    <string name="warsaw_fp_area_detail">轻轻移动手指，同时保持覆盖指纹识别区域。</string>
+    <string name="warsaw_fp_retry">请重新录入这一部分</string>
+    <string name="warsaw_fp_clean">保持手指清洁干燥</string>
+    <string name="warsaw_fp_clean_detail">擦净指纹识别区域后重试。</string>
+    <string name="warsaw_fp_slower">请稍微滑慢一点</string>
+    <string name="warsaw_fp_faster">请稍微滑快一点</string>
+    <string name="warsaw_fp_slide_detail">滑动时保持手指接触指纹识别区域。</string>
+    <string name="warsaw_fp_adjust">调整手指位置</string>
+    <string name="warsaw_fp_adjust_detail">改变角度，录入指纹的其他部分。</string>
+    <string name="warsaw_fp_lift">抬起手指后重试</string>
+    <string name="warsaw_fp_lift_detail">先完全抬起手指，再重新放到识别区域。</string>
+    <string name="warsaw_fp_finishing">正在完成指纹录入</string>
+    <string name="warsaw_fp_finishing_detail">请等待系统返回录入结果。</string>
+    <plurals name="warsaw_fp_remaining">
+        <item quantity="other">还需采集 %d 次，请根据提示调整手指位置。</item>
+    </plurals>
+</resources>

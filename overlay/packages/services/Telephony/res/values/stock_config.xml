@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <bool name="config_support_rtt">true</bool>
+    <bool name="config_support_simless_emergency_rtt">true</bool>
+    <bool name="csp_enabled">true</bool>
+    <bool name="dtmf_type_enabled">true</bool>
+    <string name="config_gba_package" translatable="false">com.qualcomm.qti.uimGbaApp</string>
+</resources>

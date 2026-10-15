@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="config_wifiCharsetsForSsidTranslation">
+        <item>all,GBK</item>
+    </string-array>
+    <integer-array name="config_wifiDisconnectedScanIntervalScheduleSec">
+        <item>20</item>
+    </integer-array>
+    <bool name="config_showConfirmationDialogForThirdPartyAppsEnablingWifi">false</bool>
+    <bool name="config_wifi5ghzSupport">true</bool>
+    <bool name="config_wifi6ghzSupport">true</bool>
+    <bool name="config_wifiAllowInsecureEnterpriseConfigurationsForSettingsAndSUW">true</bool>
+    <bool name="config_wifiAllowMultipleNetworksOnSameAwareNdi">true</bool>
+    <bool name="config_wifiApplicationCentricQosPolicyFeatureEnabled">true</bool>
+    <bool name="config_wifiBridgedSoftApSupported">false</bool>
+    <bool name="config_wifiDisableUnwantedNetworkOnLowRssi">true</bool>
+    <bool name="config_wifiDriverSupportedNl80211RegChangedEvent">true</bool>
+    <bool name="config_wifiEnableApfOnNonPrimarySta">true</bool>
+    <bool name="config_wifiEnableLinkedNetworkRoaming">false</bool>
+    <bool name="config_wifiEnablePartialInitialScan">true</bool>
+    <bool name="config_wifiForcedSoftApRestartWhenCountryCodeChanged">false</bool>
+    <bool name="config_wifiMultiStaLocalOnlyConcurrencyEnabled">false</bool>
+    <bool name="config_wifiMultiStaMultiInternetConcurrencyEnabled">true</bool>
+    <bool name="config_wifiMultiStaNetworkSwitchingMakeBeforeBreakEnabled">false</bool>
+    <bool name="config_wifiMultiStaRestrictedConcurrencyEnabled">false</bool>
+    <bool name="config_wifiNetworkCentricQosPolicyFeatureEnabled">true</bool>
+    <bool name="config_wifiP2pGoIpAddressAllocationInEapolFrames">true</bool>
+    <bool name="config_wifiSaeH2eSupported">true</bool>
+    <bool name="config_wifiSaeUpgradeOffloadEnabled">true</bool>
+    <bool name="config_wifiSoftApDynamicCountryCodeUpdateSupported">true</bool>
+    <bool name="config_wifiSoftapAcsIncludeDfs">true</bool>
+    <bool name="config_wifiSoftapAutoUpgradeToBridgedConfigWhenSupported">false</bool>
+    <bool name="config_wifiSoftapHeSuBeamformeeSupported">true</bool>
+    <bool name="config_wifiSoftapHeSuBeamformerSupported">true</bool>
+    <bool name="config_wifiSoftapIeee80211axSupported">true</bool>
+    <bool name="config_wifiSoftapIeee80211beSupported">false</bool>
+    <bool name="config_wifiSoftapOweSupported">true</bool>
+    <bool name="config_wifiSoftapOweTransitionSupported">true</bool>
+    <bool name="config_wifiStaDynamicCountryCodeUpdateSupported">true</bool>
+    <bool name="config_wifiUseHalApiToDisableFwRoaming">true</bool>
+    <bool name="config_wifi_background_scan_support">true</bool>
+    <bool name="config_wifi_connected_mac_randomization_supported">true</bool>
+    <bool name="config_wifi_only_link_same_credential_configurations">false</bool>
+    <bool name="config_wifi_p2p_mac_randomization_supported">true</bool>
+    <bool name="config_wifi_softap_acs_supported">true</bool>
+    <bool name="config_wifi_softap_ieee80211ac_supported">true</bool>
+    <bool name="config_wifi_softap_sae_supported">true</bool>
+    <integer name="config_disconnectedP2pIfaceLowPriorityTimeoutMs">0</integer>
+    <integer name="config_wifiBssidBlocklistMonitorApUnableToHandleNewStaThreshold">3</integer>
+    <integer name="config_wifiDelayDisconnectOnImsLostMs">1000</integer>
+    <integer name="config_wifiDisableReasonAssociationRejectionThreshold">5</integer>
+    <integer name="config_wifiDisableReasonAuthenticationFailureThreshold">5</integer>
+    <integer name="config_wifiDisableReasonByWrongPasswordThreshold">2</integer>
+    <integer name="config_wifiHardwareSoftapMaxClientCount">32</integer>
+    <integer name="config_wifiMaxNumWifiConfigurations">1000</integer>
+    <integer name="config_wifiPnoScanIntervalMultiplier">6</integer>
+    <string name="config_wifiSoftap2gChannelList" translatable="false"></string>
+    <string name="config_wifiSoftap5gChannelList" translatable="false"></string>
+    <string name="config_wifi_tcp_buffers" translatable="false">524288,1048576,16777216,262144,524288,16777216</string>
+</resources>

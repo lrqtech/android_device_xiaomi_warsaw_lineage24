@@ -1,0 +1,109 @@
+domain_auto_trans(init, vendor_imsvtdaemon_exec, vendor_imsvtdaemon)
+
+typeattribute vendor_imsvtdaemon coredomain;
+
+typeattribute vendor_imsvtdaemon hal_allocator_client;
+
+typeattribute vendor_imsvtdaemon hal_codec2_client;
+
+typeattribute vendor_imsvtdaemon hal_graphics_allocator_client;
+
+typeattribute vendor_imsvtdaemon hal_videoservice_client;
+
+typeattribute vendor_imsvtdaemon halclientdomain;
+
+typeattribute vendor_imsvtdaemon halserverdomain;
+
+typeattribute vendor_imsvtdaemon vendor_hal_imsrtphal_client;
+
+typeattribute vendor_imsvtdaemon vendor_hal_imsvthal;
+
+typeattribute vendor_imsvtdaemon vendor_hal_imsvthal_server;
+
+binder_use(vendor_imsvtdaemon)
+
+hwbinder_use(vendor_imsvtdaemon)
+
+allow vendor_imsvtdaemon vendor_imsvtdaemon_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_imsvtdaemon vendor_imsvtdaemon:file { getattr };
+
+allow vendor_imsvtdaemon hwservicemanager:binder { call transfer };
+
+allow vendor_imsvtdaemon hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_imsvtdaemon anr_data_file:file { append };
+
+allow vendor_imsvtdaemon dumpstate:fd { use };
+
+allow vendor_imsvtdaemon incidentd:fd { use };
+
+allow vendor_imsvtdaemon dumpstate:fifo_file { write append };
+
+allow vendor_imsvtdaemon incidentd:fifo_file { write append };
+
+allow vendor_imsvtdaemon system_server:fifo_file { write append };
+
+allow vendor_imsvtdaemon tombstoned:unix_stream_socket { connectto };
+
+allow vendor_imsvtdaemon tombstoned:fd { use };
+
+allow vendor_imsvtdaemon tombstoned_crash_socket:sock_file { write };
+
+allow vendor_imsvtdaemon tombstone_data_file:file { append };
+
+allow vendor_imsvtdaemon mediaserver_service:service_manager { find };
+
+allow vendor_imsvtdaemon mediametrics_service:service_manager { find };
+
+allow vendor_imsvtdaemon media_quality_service:service_manager { find };
+
+allow vendor_imsvtdaemon mediametrics:binder { call transfer };
+
+allow vendor_imsvtdaemon mediametrics:fd { use };
+
+allow vendor_imsvtdaemon cameraserver:binder { call transfer };
+
+allow vendor_imsvtdaemon cameraserver:fd { use };
+
+allow vendor_imsvtdaemon mediaserver:binder { call transfer };
+
+allow vendor_imsvtdaemon mediaserver:fd { use };
+
+allow vendor_imsvtdaemon surfaceflinger:binder { call transfer };
+
+allow vendor_imsvtdaemon surfaceflinger:fd { use };
+
+allow vendor_imsvtdaemon priv_app:binder { call transfer };
+
+allow vendor_imsvtdaemon priv_app:fd { use };
+
+allow vendor_imsvtdaemon system_server:binder { call transfer };
+
+allow vendor_imsvtdaemon system_server:fd { use };
+
+allow vendor_imsvtdaemon radio:binder { call transfer };
+
+allow vendor_imsvtdaemon radio:fd { use };
+
+allow vendor_imsvtdaemon vendor_sys_ims_prop:file { read getattr map open };
+
+allow vendor_imsvtdaemon vendor_hal_imsrtphal:memfd_file { read write getattr map };
+
+allow vendor_imsvtdaemon hal_codec2:memfd_file { read write getattr map };
+
+allow vendor_imsvtdaemon hal_allocator:memfd_file { read write getattr map };
+
+allow vendor_imsvtdaemon hal_graphics_allocator:memfd_file { read write getattr map };
+
+allow vendor_imsvtdaemon servicemanager:binder { call transfer };
+
+allow vendor_imsvtdaemon dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_imsvtdaemon package_native_service:service_manager { find };
+
+allow vendor_imsvtdaemon vendor_frc_prop:file { read getattr map open };
+
+allow vendor_imsvtdaemon hal_videoservice:memfd_file { read write getattr map };
+
+allow vendor_imsvtdaemon permission_service:service_manager { find };

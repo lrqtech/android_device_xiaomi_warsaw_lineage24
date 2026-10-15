@@ -1,0 +1,23 @@
+type hal_aidl_dms_default, domain;
+
+domain_auto_trans(init, hal_aidl_dms_default_exec, hal_aidl_dms_default)
+
+typeattribute hal_aidl_dms_default hal_aidl_dms;
+
+typeattribute hal_aidl_dms_default hal_aidl_dms_server;
+
+typeattribute hal_aidl_dms_default halserverdomain;
+
+allow hal_aidl_dms_default vendor_audio_prop:file { read getattr map open };
+
+allow hal_aidl_dms_default property_socket:sock_file { write };
+
+allow hal_aidl_dms_default init:unix_stream_socket { connectto };
+
+allow hal_aidl_dms_default vendor_audio_prop:property_service { set };
+
+allow hal_aidl_dms_default hal_aidl_dms_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_aidl_dms_default vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_aidl_dms_default vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };

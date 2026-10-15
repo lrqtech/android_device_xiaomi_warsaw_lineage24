@@ -1,0 +1,93 @@
+type vendor_hal_trustedui_qti, domain;
+
+domain_auto_trans(init, vendor_hal_trustedui_qti_exec, vendor_hal_trustedui_qti)
+
+typeattribute vendor_hal_trustedui_qti hal_allocator_client;
+
+typeattribute vendor_hal_trustedui_qti hal_graphics_allocator_client;
+
+typeattribute vendor_hal_trustedui_qti hal_graphics_composer_client;
+
+typeattribute vendor_hal_trustedui_qti halclientdomain;
+
+typeattribute vendor_hal_trustedui_qti halserverdomain;
+
+typeattribute vendor_hal_trustedui_qti vendor_hal_systemhelper_client;
+
+typeattribute vendor_hal_trustedui_qti vendor_hal_trustedui;
+
+typeattribute vendor_hal_trustedui_qti vendor_hal_trustedui_server;
+
+allow vendor_hal_trustedui_qti sysfs_touch_hostprocess:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_hal_trustedui_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_trustedui_qti vendor_sysfs_sectouch:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_tui_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_tui_data_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_trustedui_qti sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_trustedui_qti vendor_sysfs_trusted_touch_enable:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_sysfs_trusted_touch_event:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_sysfs_trusted_touch_type:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti surfaceflinger:fd { use };
+
+allow vendor_hal_trustedui_qti sysfs_devices_system_cpu:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_vm_trusted_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_vm_cp_app_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_vm_self_device:chr_file { read open };
+
+allow vendor_hal_trustedui_qti vendor_dmabuf_display_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_trustedui_qti tmpfs:file { read getattr open };
+
+allow vendor_hal_trustedui_qti platform_app:binder { call transfer };
+
+allow vendor_hal_trustedui_qti platform_app:fd { use };
+
+allow vendor_hal_trustedui_qti untrusted_app_all:binder { call transfer };
+
+allow vendor_hal_trustedui_qti untrusted_app_all:fd { use };
+
+allow vendor_hal_trustedui_qti appdomain_tmpfs:file { read };
+
+allow vendor_hal_trustedui_qti vendor_systemhelper_app:binder { call transfer };
+
+allow vendor_hal_trustedui_qti vendor_systemhelper_app:fd { use };
+
+allow vendor_hal_trustedui_qti vendor_systemhelper_app:binder { transfer };

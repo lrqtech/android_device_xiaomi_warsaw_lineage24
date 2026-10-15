@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.ss.android.ugc.trill.xml">
+
+    <app prio="100" name="com.ss.android.ugc.trill" >
+        <profile name="normal">
+            <macro name="thirdPartAppTempPolicy" />
+        </profile>
+    </app>
+</policy>

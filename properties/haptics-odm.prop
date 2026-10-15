@@ -1,0 +1,7 @@
+# Hardware selectors consumed by the original OS4 vibrator HAL.
+ro.odm.mm.vibrator.sys_path=/sys/class/qcom-haptics
+ro.odm.mm.vibrator.device_type=agm
+ro.odm.mm.vibrator.resonant_frequency=170
+ro.odm.mm.vibrator.slide_effect_protect_time=35
+ro.odm.mm.vibrator.audio_haptic_support=true
+ro.odm.mm.vibrator.lowPowerMode=true

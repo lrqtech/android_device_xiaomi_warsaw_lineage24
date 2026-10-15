@@ -1,0 +1,51 @@
+type vendor_dspservice, domain;
+
+domain_auto_trans(init, vendor_dspservice_exec, vendor_dspservice)
+
+typeattribute vendor_dspservice halserverdomain;
+
+typeattribute vendor_dspservice vendor_hal_dspmanager;
+
+typeattribute vendor_dspservice vendor_hal_dspmanager_server;
+
+binder_use(vendor_dspservice)
+
+hwbinder_use(vendor_dspservice)
+
+allow vendor_dspservice vendor_dspservice_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_dspservice adsprpcd_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_dspservice adsprpcd_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dspservice adsprpcd_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dspservice vendor_adsprpc_prop:file { read getattr map open };
+
+allow vendor_dspservice vendor_qdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dspservice vendor_xdsp_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dspservice ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_dspservice sysfs_wake_lock:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_dspservice self:capability2 { block_suspend };
+
+allow vendor_dspservice self:cap2_userns { block_suspend };
+
+allow vendor_dspservice system_suspend_server:binder { call transfer };
+
+allow vendor_dspservice system_suspend_server:fd { use };
+
+allow vendor_dspservice system_suspend_hwservice:hwservice_manager { find };
+
+allow vendor_dspservice hwservicemanager:binder { call transfer };
+
+allow vendor_dspservice hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_dspservice hidl_manager_hwservice:hwservice_manager { find };
+
+allow vendor_dspservice hal_system_suspend_service:service_manager { find };
+
+allow vendor_dspservice servicemanager:binder { call transfer };

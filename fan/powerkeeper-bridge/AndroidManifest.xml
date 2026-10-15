@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.miui.powerkeeper">
+    <uses-permission android:name="org.lineageos.warsaw.fan.permission.CAMERA_RECORD_STATE" />
+    <application
+        android:allowBackup="false"
+        android:directBootAware="false"
+        android:hasCode="true"
+        android:label="Warsaw camera thermal bridge">
+
+        <receiver
+            android:name=".WarsawCameraRecordBridge"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="record_start" />
+                <action android:name="record_end" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

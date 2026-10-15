@@ -1,0 +1,23 @@
+type vendor_embmssl_app, domain;
+
+app_domain(vendor_embmssl_app)
+
+net_domain(vendor_embmssl_app)
+
+typeattribute vendor_embmssl_app halclientdomain;
+
+typeattribute vendor_embmssl_app vendor_hal_embmssl_client;
+
+typeattribute vendor_embmssl_app vendor_hal_perf_client;
+
+allow vendor_embmssl_app appdomain_tmpfs:file { read write getattr map execute };
+
+allow vendor_embmssl_app vendor_dpmtcm_socket:sock_file { write };
+
+allow vendor_embmssl_app vendor_dpmd:unix_stream_socket { connectto };
+
+allow vendor_embmssl_app app_api_service:service_manager { find };
+
+allow vendor_embmssl_app radio_service:service_manager { find };
+
+type_transition vendor_embmssl_app tmpfs:file appdomain_tmpfs;

@@ -1,0 +1,27 @@
+type vendor_hal_embmssl_qti, domain;
+
+domain_auto_trans(init, vendor_hal_embmssl_qti_exec, vendor_hal_embmssl_qti)
+
+typeattribute vendor_hal_embmssl_qti halserverdomain;
+
+typeattribute vendor_hal_embmssl_qti vendor_hal_embmssl;
+
+typeattribute vendor_hal_embmssl_qti vendor_hal_embmssl_server;
+
+binder_use(vendor_hal_embmssl_qti)
+
+allow vendor_hal_embmssl_qti vendor_hal_embmssl_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_embmssl_qti servicemanager:binder { call transfer };
+
+allow vendor_hal_embmssl_qti self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_embmssl_qti vendor_time_daemon:unix_stream_socket { connectto };
+
+allow vendor_hal_embmssl_qti self:netlink_generic_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_embmssl_qti self:tipc_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_hal_embmssl_qti vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_hal_embmssl_qti vendor_ssgtzd:unix_stream_socket { connectto };

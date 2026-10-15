@@ -1,0 +1,59 @@
+domain_trans(init, vendor_modinstall-sh_exec, vendor_modprobe)
+
+allow vendor_modprobe vendor_toolbox_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_modprobe proc_modules:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe proc_cmdline:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe kmsg_device:chr_file { write lock append map open };
+
+allow vendor_modprobe self:capability { sys_module };
+
+allow vendor_modprobe self:cap_userns { sys_module };
+
+allow vendor_modprobe kernel:key { search };
+
+allow vendor_modprobe vendor_boot_ota_file:system { module_load };
+
+allow vendor_modprobe vendor_file:system { module_load };
+
+allow vendor_modprobe vendor_boot_ota_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_modprobe vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_modprobe vendor_boot_ota_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe vendor_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe vendor_boot_ota_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe vendor_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe vendor_modinstall-sh_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_modprobe vendor_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_modprobe vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_modprobe proc_version:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe system_dlkm_file:system { module_load };
+
+allow vendor_modprobe system_dlkm_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_modprobe system_dlkm_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe system_dlkm_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_modprobe debugfs_tracing_instances:dir { search };
+
+allow vendor_modprobe property_socket:sock_file { write };
+
+allow vendor_modprobe init:unix_stream_socket { connectto };
+
+allow vendor_modprobe vendor_modprobe_prop:property_service { set };
+
+allow vendor_modprobe vendor_modprobe_prop:file { read getattr map open };
+
+allow vendor_modprobe block_device:dir { getattr search };

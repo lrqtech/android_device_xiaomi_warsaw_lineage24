@@ -1,0 +1,29 @@
+# OS4 hardware node types shared by platform and vendor clients.
+type sysfs_flashlight, fs_type, sysfs_type;
+type sysfs_led_torch, fs_type, sysfs_type;
+type vendor_avtimer_device, dev_type;
+type vendor_dmabuf_cma_secure_cdsp_heap_device, dev_type, dmabuf_heap_device_type;
+type vendor_dmabuf_secure_non_pixel, dev_type, dmabuf_heap_device_type;
+type vendor_dmabuf_secure_sp_modem_heap_device, dev_type, dmabuf_heap_device_type;
+type vendor_dmabuf_sp_hlos_heap_device, dev_type, dmabuf_heap_device_type;
+type vendor_hlos_minkd_opener_socket, file_type, mlstrustedobject;
+type vendor_mlid_socket, file_type, mlstrustedobject;
+type vendor_q2spiuwb_device, dev_type;
+type vendor_qg_device, dev_type;
+type vendor_qwesd_socket, file_type, mlstrustedobject;
+type vendor_ssgqmig_socket, file_type, mlstrustedobject;
+type vendor_sysfs_public, fs_type, sysfs_type;
+type vendor_vm_cp_spss_hlos_shared_device, dev_type;
+type vendor_vm_cp_spss_sp_device, dev_type;
+type vendor_vm_cp_spss_sp_shared_device, dev_type;
+type vendor_vm_cp_touch_device, dev_type;
+
+# Additional hardware nodes explicitly declared by the OEM ueventd table.
+type vendor_cryptoapp_device, dev_type;
+type vendor_hbtp_device, dev_type;
+type vendor_npu_device, dev_type;
+type vendor_dsp_device, dev_type;
+type vendor_sp_keymaster_ssr_device, dev_type;
+type vendor_sp_nvm_device, dev_type;
+type vendor_spdaemon_ssr_device, dev_type;
+type vendor_spu_hal_ssr_device, dev_type;

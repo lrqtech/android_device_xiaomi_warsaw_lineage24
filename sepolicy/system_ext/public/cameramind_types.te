@@ -1,0 +1,9 @@
+type cameramind_app, domain;
+type camera_mind_data_file, file_type, data_file_type, core_data_file_type,
+    app_data_file_type, mlstrustedobject;
+
+type cammsger_device, dev_type;
+type camera_intentaware_filesys_driver, dev_type, mlstrustedobject;
+type proc_camera_mind, fs_type, proc_type;
+
+system_restricted_prop(warsaw_cameramind_prop)

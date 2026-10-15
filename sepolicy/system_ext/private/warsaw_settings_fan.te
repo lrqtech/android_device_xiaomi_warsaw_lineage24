@@ -1,0 +1,2 @@
+# Manual fan control in Settings. Do not grant writes to other charger sysfs nodes.
+allow system_app warsaw_fan_control:file { getattr open read write };

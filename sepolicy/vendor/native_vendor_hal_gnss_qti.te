@@ -1,0 +1,125 @@
+type vendor_hal_gnss_qti, domain;
+
+domain_auto_trans(init, vendor_hal_gnss_qti_exec, vendor_hal_gnss_qti)
+
+typeattribute vendor_hal_gnss_qti hal_gnss;
+
+typeattribute vendor_hal_gnss_qti hal_gnss_server;
+
+typeattribute vendor_hal_gnss_qti hal_health_client;
+
+typeattribute vendor_hal_gnss_qti halclientdomain;
+
+typeattribute vendor_hal_gnss_qti halserverdomain;
+
+binder_use(vendor_hal_gnss_qti)
+
+vndbinder_use(vendor_hal_gnss_qti)
+
+allow vendor_hal_gnss_qti vendor_hal_gnss_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_gnss_qti vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_gnss_qti vndservicemanager:binder { call transfer };
+
+allow vendor_hal_gnss_qti vendor_per_mgr:binder { transfer };
+
+allow vendor_hal_gnss_qti vendor_per_mgr:binder { call transfer };
+
+allow vendor_hal_gnss_qti vendor_per_mgr:fd { use };
+
+allow vendor_hal_gnss_qti vendor_per_mgr_service:service_manager { find };
+
+allow vendor_hal_gnss_qti vendor_per_mgr_state_prop:file { read getattr map open };
+
+allow vendor_hal_gnss_qti vendor_location_data_file:fifo_file { read write setattr open };
+
+allow vendor_hal_gnss_qti vendor_location_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_hal_gnss_qti vendor_location_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_location_socket:lnk_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_location_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_location_socket:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_gnss_qti vendor_location:unix_stream_socket { connectto };
+
+allow vendor_hal_gnss_qti vendor_location:unix_dgram_socket { sendto };
+
+allow vendor_hal_gnss_qti vendor_location_xtra_daemon:unix_dgram_socket { sendto };
+
+allow vendor_hal_gnss_qti vendor_location_lowi_server:unix_dgram_socket { sendto };
+
+allow vendor_hal_gnss_qti vendor_qsap_location_socket:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_qsap_location_socket:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_gnss_qti vendor_sysfs_mhi:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_ssgtzd_socket:sock_file { write };
+
+allow vendor_hal_gnss_qti vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow vendor_hal_gnss_qti boot_status_prop:file { read getattr map open };
+
+allow vendor_hal_gnss_qti firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_gnss_qti firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_gnss_qti firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_rild_socket:dir { search };
+
+allow vendor_hal_gnss_qti vendor_rild_socket:sock_file { write };
+
+allow vendor_hal_gnss_qti rild:unix_stream_socket { connectto };
+
+allow vendor_hal_gnss_qti servicemanager:binder { call transfer };
+
+allow vendor_hal_gnss_qti servicemanager:fd { use };
+
+allow vendor_hal_gnss_qti fwk_altitude_service:service_manager { find };
+
+allow vendor_hal_gnss_qti vendor_location_edgnss_daemon:unix_dgram_socket { sendto };
+
+allow vendor_hal_gnss_qti vendor_location_xtwifi_client:unix_dgram_socket { sendto };
+
+allow vendor_hal_gnss_qti vendor_qms_prop:file { read getattr map open };
+
+allow vendor_hal_gnss_qti vendor_qms_service:service_manager { find };
+
+allow vendor_hal_gnss_qti vendor_qms:binder { call transfer };
+
+allow vendor_hal_gnss_qti vendor_qms:fd { use };
+
+allow vendor_hal_gnss_qti vendor_qms:binder { transfer };
+
+allow vendor_hal_gnss_qti self:capability2 { wake_alarm block_suspend };
+
+allow vendor_hal_gnss_qti sysfs_wake_lock:file { append open };
+
+allow vendor_hal_gnss_qti vendor_ins_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_gnss_qti vendor_ins_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_gnss_qti vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_hal_gnss_qti vendor_mi_ins_prop:file { read getattr map open };
+
+allow vendor_hal_gnss_qti vendor_persist_sensors_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_gnss_qti vendor_persist_sensors_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hal_gnss_qti mnt_vendor_file:dir { search };
+
+allow vendor_hal_gnss_qti mnt_vendor_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_hal_gnss_qti fwk_sensor_hwservice:hwservice_manager { find };
+
+allow vendor_hal_gnss_qti system_server:binder { call transfer };
+
+allow vendor_hal_gnss_qti fwk_sensor_service:service_manager { find };
+
+allow vendor_hal_gnss_qti vendor_sensors_log_prop:file { read getattr map open };

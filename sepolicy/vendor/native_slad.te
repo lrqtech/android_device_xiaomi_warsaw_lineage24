@@ -1,0 +1,65 @@
+type slad, domain;
+
+domain_auto_trans(init, slad_exec, slad)
+
+typeattribute slad netdomain;
+
+allow slad slad_exec:file { read getattr map execute open entrypoint };
+
+allow slad slad_socket:sock_file { read write getattr };
+
+allow slad slad:unix_stream_socket { connectto };
+
+allow slad proc_net:file { read getattr open };
+
+allow slad system_file:lnk_file { getattr };
+
+allow slad self:capability { setgid setuid net_admin net_raw };
+
+allow slad slad:netlink_socket { read write create bind };
+
+allow slad self:netlink_tcpdiag_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown nlmsg_read nlmsg_write };
+
+allow slad self:netlink_generic_socket { read write create bind setopt };
+
+allow slad sla_data_file:dir { read write create unlink add_name remove_name search };
+
+allow slad sla_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow slad sla_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow slad sla_data_file:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow slad dnsproxyd_socket:sock_file { write };
+
+allow slad netd:unix_stream_socket { connectto };
+
+allow slad self:rawip_socket { read write create getopt setopt };
+
+allow slad fwmarkd_socket:sock_file { write };
+
+allow slad self:udp_socket { create getattr connect };
+
+allow slad socket_device:dir { write };
+
+allow slad property_socket:sock_file { write };
+
+allow slad init:unix_stream_socket { connectto };
+
+allow slad vendor_slad_prop:property_service { set };
+
+allow slad vendor_slad_prop:file { read getattr map open };
+
+allow slad qti_proc_sla:dir { search };
+
+allow slad qti_proc_sla:file { read write map open };
+
+allow slad socket_device:dir { remove_name };
+
+allow slad slad_socket:sock_file { unlink };
+
+allow slad socket_device:sock_file { create setattr unlink };
+
+allow slad socket_device:dir { add_name };
+
+allow slad vendor_shell_exec:file { execute_no_trans };

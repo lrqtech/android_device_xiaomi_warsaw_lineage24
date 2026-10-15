@@ -1,0 +1,1 @@
+allow vendor_hal_perf permissioncontroller_app:memfd_file { read write getattr map };

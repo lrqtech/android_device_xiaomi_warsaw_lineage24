@@ -1,0 +1,45 @@
+type hal_eid_default, domain;
+
+domain_auto_trans(init, hal_eid_default_exec, hal_eid_default)
+
+typeattribute hal_eid_default halclientdomain;
+
+typeattribute hal_eid_default halserverdomain;
+
+typeattribute hal_eid_default vendor_hal_eid;
+
+typeattribute hal_eid_default vendor_hal_eid_server;
+
+typeattribute hal_eid_default vendor_hal_qteeconnector_client;
+
+binder_use(hal_eid_default)
+
+allow hal_eid_default hal_eid_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_eid_default servicemanager:binder { call transfer };
+
+allow hal_eid_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_eid_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_eid_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_eid_default firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_eid_default ion_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_eid_default vendor_tee_listener_prop:file { read getattr map open };
+
+allow hal_eid_default vendor_ese_prop:file { read getattr map open };
+
+allow hal_eid_default property_socket:sock_file { write };
+
+allow hal_eid_default init:unix_stream_socket { connectto };
+
+allow hal_eid_default vendor_ese_prop:property_service { set };
+
+allow hal_eid_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_eid_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };
+
+allow hal_eid_default vendor_ese_gpio_device:chr_file { ioctl read write open };

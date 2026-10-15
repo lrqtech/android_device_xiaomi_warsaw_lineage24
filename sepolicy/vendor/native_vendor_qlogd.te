@@ -1,0 +1,57 @@
+type vendor_qlogd, domain;
+
+domain_auto_trans(init, vendor_qlogd_exec, vendor_qlogd)
+
+allow vendor_qlogd fuse:dir { read write create open add_name remove_name search rmdir };
+
+allow vendor_qlogd vendor_qlogd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qlogd vendor_sysfs_qdss_dev:dir { search };
+
+allow vendor_qlogd vendor_sysfs_qdss_dev:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qlogd vendor_qdss_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qlogd vendor_diag_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qlogd vendor_qlogd_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_qlogd vendor_radio_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_qlogd vendor_radio_vendor_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qlogd fuse:dir { read write create open add_name remove_name search };
+
+allow vendor_qlogd fuse:file { read write create unlink open };
+
+allow vendor_qlogd fuse:file { getattr };
+
+allow vendor_qlogd mnt_user_file:lnk_file { read };
+
+allow vendor_qlogd mnt_user_file:dir { search };
+
+allow vendor_qlogd vendor_radio_prop:file { read getattr map open };
+
+allow vendor_qlogd vendor_ipa_dev:chr_file { ioctl read open };
+
+allow vendor_qlogd property_socket:sock_file { write };
+
+allow vendor_qlogd init:unix_stream_socket { connectto };
+
+allow vendor_qlogd vendor_modem_diag_prop:property_service { set };
+
+allow vendor_qlogd vendor_modem_diag_prop:file { read getattr map open };
+
+allow vendor_qlogd vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow vendor_qlogd vendor_data_file:fifo_file { read write create getattr unlink open };
+
+allow vendor_qlogd vendor_data_file:file { read write create getattr unlink open };
+
+allow vendor_qlogd vendor_modem_data_file:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+
+allow vendor_qlogd vendor_modem_data_file:fifo_file { read write create getattr unlink open };
+
+allow vendor_qlogd vendor_modem_data_file:file { read write create getattr unlink open };
+
+allow vendor_qlogd vendor_audio_prop:file { read getattr map open };

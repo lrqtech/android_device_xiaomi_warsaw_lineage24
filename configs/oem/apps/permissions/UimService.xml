@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+ <library name="com.qualcomm.qti.uim.uimservicelibrary"
+          file="/product/framework/uimservicelibrary.jar"
+          dependency="qti-telephony-hidl-wrapper-prd"/>
+</permissions>

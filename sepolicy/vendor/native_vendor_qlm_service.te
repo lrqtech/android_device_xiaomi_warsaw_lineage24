@@ -1,0 +1,31 @@
+type vendor_qlm_service, domain;
+
+domain_auto_trans(init, vendor_qlm_service_exec, vendor_qlm_service)
+
+allow vendor_qlm_service vendor_qlm_service_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qlm_service sysfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_block:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_mem_sleep:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_powercap:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_thunderbolt:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_typec:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_udc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_usb_pd:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_usbcore:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service vendor_qlm_socket:sock_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_qlm_service sysfs_thermal:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qlm_service sysfs_thermal:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_qlm_service sysfs_thermal:lnk_file { ioctl read getattr lock map open watch watch_reads };

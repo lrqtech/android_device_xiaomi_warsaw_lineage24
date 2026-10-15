@@ -1,0 +1,4 @@
+<permissions>
+<library name="vendor.qti.ims.datachannelservice-V3-java"
+         file="/system_ext/framework/vendor.qti.ims.datachannelservice-V3-java.jar"/>
+</permissions>

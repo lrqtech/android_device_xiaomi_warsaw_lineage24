@@ -1,0 +1,9 @@
+android_app {
+    name: "WarsawPowerKeeperBridge",
+    manifest: "AndroidManifest.xml",
+    srcs: ["src/com/miui/powerkeeper/WarsawCameraRecordBridge.java"],
+    platform_apis: true,
+    certificate: "platform",
+    privileged: true,
+    system_ext_specific: true,
+}

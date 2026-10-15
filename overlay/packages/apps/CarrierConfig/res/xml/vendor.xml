@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<carrier_config_list>
+    <!-- Domestic non-roaming MCC rules from OS4.0.0.15 cust_sim_features.xml. -->
+    <carrier_config mcc="655">
+        <string-array name="non_roaming_operator_string_array" num="1">
+            <item value="655" />
+        </string-array>
+    </carrier_config>
+    <carrier_config mcc="405">
+        <string-array name="non_roaming_operator_string_array" num="2">
+            <item value="404" />
+            <item value="405" />
+        </string-array>
+    </carrier_config>
+    <carrier_config mcc="214">
+        <string-array name="non_roaming_operator_string_array" num="1">
+            <item value="214" />
+        </string-array>
+    </carrier_config>
+    <carrier_config mcc="404">
+        <string-array name="non_roaming_operator_string_array" num="2">
+            <item value="404" />
+            <item value="405" />
+        </string-array>
+    </carrier_config>
+    <carrier_config mcc="460">
+        <string-array name="non_roaming_operator_string_array" num="1">
+            <item value="460" />
+        </string-array>
+    </carrier_config>
+
+    <carrier_config mcc="460" mnc="00">
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-113" /><item value="-105" /><item value="-97" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="01">
+        <int name="eutran_rsrp_hysteresis_db_int" value="1" />
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-118" /><item value="-114" /><item value="-105" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="02">
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-113" /><item value="-105" /><item value="-97" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="06">
+        <int name="eutran_rsrp_hysteresis_db_int" value="1" />
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-118" /><item value="-114" /><item value="-105" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="07">
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-113" /><item value="-105" /><item value="-97" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="08">
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-113" /><item value="-105" /><item value="-97" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="09">
+        <int name="eutran_rsrp_hysteresis_db_int" value="1" />
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-118" /><item value="-114" /><item value="-105" />
+        </int-array>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="13">
+        <boolean name="use_only_rsrp_for_lte_signal_bar_bool" value="true" />
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-120" /><item value="-113" /><item value="-105" /><item value="-97" />
+        </int-array>
+    </carrier_config>
+
+    <!-- OS4 CarrierConfig: mainland MNO SUPL endpoint. -->
+    <carrier_config mcc="460" cid="1435" name="China Mobile">
+        <string name="gps.supl_host">supl.bd-caict.com</string>
+        <string name="gps.supl_port">7275</string>
+    </carrier_config>
+    <carrier_config mcc="460" cid="1436" name="China Unicom">
+        <string name="gps.supl_host">supl.bd-caict.com</string>
+        <string name="gps.supl_port">7275</string>
+    </carrier_config>
+    <carrier_config mcc="460" cid="2237" name="China Telecom">
+        <string name="gps.supl_host">supl.bd-caict.com</string>
+        <string name="gps.supl_port">7275</string>
+    </carrier_config>
+    <!-- OS4 warsaw: effective static OEM IMS defaults after CarrierStudio.
+         SIM MCC is matched independently of current serving/roaming network.
+         Carrier apps and persistent/runtime bundles retain their normal higher
+         service-level priority. User IMS choices and provisioning are untouched. -->
+    <carrier_config mcc="460">
+        <boolean name="carrier_volte_available_bool" value="true" />
+        <boolean name="carrier_vt_available_bool" value="true" />
+        <boolean name="carrier_wfc_ims_available_bool" value="false" />
+    </carrier_config>
+    <carrier_config mcc="302">
+        <boolean name="carrier_volte_available_bool" value="true" />
+        <boolean name="carrier_vt_available_bool" value="false" />
+        <boolean name="carrier_wfc_ims_available_bool" value="false" />
+    </carrier_config>
+
+</carrier_config_list>

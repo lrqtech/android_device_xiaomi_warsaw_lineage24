@@ -1,0 +1,31 @@
+persist.vendor.audio.power.save.enable  u:object_r:vendor_audio_powersave_prop:s0 exact bool
+
+persist.vendor.dpm.                        u:object_r:vendor_persist_dpm_prop:s0
+
+persist.vendor.rcs.                        u:object_r:vendor_persist_rcs_prop:s0
+
+persist.vendor.tcmd.                       u:object_r:vendor_persist_tcm_prop:s0
+
+persist.vendor.ai-director.                u:object_r:vendor_persist_camera_prop:s0
+
+vendor.mpctl.init.complete                 u:object_r:vendor_wlc_public_prop:s0
+
+vendor.gpp.create_frc_extension            u:object_r:vendor_frc_prop:s0
+
+persist.dpm.feature                        u:object_r:vendor_persist_dpm_prop:s0
+
+ctl.stop$dpmd                              u:object_r:ctl_dpmd_prop:s0
+
+vendor.sys.ims.                                  u:object_r:vendor_sys_ims_prop:s0
+
+persist.vendor.sys.ims.                          u:object_r:vendor_sys_ims_prop:s0
+
+persist.vendor.sys.qti.telephony.vt_cam_interface u:object_r:vendor_sys_ims_prop:s0
+
+vendor.gpp.dynamic.settings.enable         u:object_r:vendor_frc_prop:s0
+
+sys.camera.bgcpushare_factor               u:object_r:warsaw_cameramind_prop:s0
+sys.camera.fgcpushare_factor               u:object_r:warsaw_cameramind_prop:s0
+sys.camera.mind.dropcache                  u:object_r:warsaw_cameramind_prop:s0
+sys.camera.mind.swappiness                 u:object_r:warsaw_cameramind_prop:s0
+persist.sys.miui.camera.cameramind.supported u:object_r:warsaw_cameramind_prop:s0 exact bool

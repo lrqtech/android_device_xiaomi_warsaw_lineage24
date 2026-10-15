@@ -1,0 +1,43 @@
+type vendor_hostapd, domain;
+
+domain_auto_trans(vendor_cnd, vendor_hostapd_exec, vendor_hostapd)
+
+allow vendor_hostapd vendor_hostapd_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hostapd vendor_cnd:process { sigchld };
+
+allow vendor_hostapd vendor_cnd:binder { call transfer };
+
+allow vendor_hostapd vendor_cnd:fd { use };
+
+allow vendor_hostapd vendor_cnd_socket:sock_file { write };
+
+allow vendor_hostapd vendor_cnd:unix_stream_socket { connectto };
+
+allow vendor_hostapd vendor_cnd:unix_dgram_socket { sendto };
+
+allow vendor_hostapd vendor_cnd:fifo_file { read write };
+
+allow vendor_hostapd vendor_cnd:unix_stream_socket { read write };
+
+allow vendor_hostapd vendor_cnd:unix_dgram_socket { read write };
+
+allow vendor_hostapd vendor_cnd:netlink_route_socket { read write };
+
+allow vendor_hostapd vendor_cnd:netlink_tcpdiag_socket { read write };
+
+allow vendor_hostapd vendor_cnd:fifo_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hostapd vendor_smem_log_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hostapd vendor_wifi_vendor_data_file:dir { write lock open add_name remove_name search };
+
+allow vendor_hostapd vendor_wifi_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hostapd hostapd_data_file:dir { write lock open add_name remove_name search };
+
+allow vendor_hostapd hostapd_data_file:sock_file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow vendor_hostapd vendor_wifi_vendor_wpa_socket:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hostapd vendor_wifi_vendor_wpa_socket:sock_file { ioctl read write getattr lock append map open watch watch_reads };

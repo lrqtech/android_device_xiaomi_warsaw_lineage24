@@ -1,0 +1,23 @@
+type vendor_pd_mapper, domain;
+
+domain_auto_trans(init, vendor_pd_mapper_exec, vendor_pd_mapper)
+
+allow vendor_pd_mapper vendor_pd_mapper_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_pd_mapper self:capability { setgid setuid setpcap net_bind_service };
+
+allow vendor_pd_mapper firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_pd_mapper firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_pd_mapper self:socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_pd_mapper vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_pd_mapper vendor_pd_locater_dbg_prop:file { read getattr map open };
+
+allow vendor_pd_mapper self:qipcrtr_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allowxperm vendor_pd_mapper self:socket ioctl { 0xc304 };
+
+allowxperm vendor_pd_mapper self:qipcrtr_socket ioctl { 0xc300-0xc305 };

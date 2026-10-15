@@ -1,0 +1,223 @@
+allow vndservicemanager vendor_hal_displayfeature_xiaomi_default:dir { search };
+
+allow vndservicemanager vendor_hal_displayfeature_xiaomi_default:file { read map open };
+
+allow vndservicemanager vendor_hal_displayfeature_xiaomi_default:process { getattr };
+
+allow vndservicemanager hal_visdisplaysrv_default:dir { search };
+
+allow vndservicemanager hal_visdisplaysrv_default:file { read map open };
+
+allow vndservicemanager hal_visdisplaysrv_default:process { getattr };
+
+allow vndservicemanager mediacodec:dir { search };
+
+allow vndservicemanager mediacodec:file { read map open };
+
+allow vndservicemanager mediacodec:process { getattr };
+
+allow vndservicemanager vndservicemanager_exec:file { read getattr map execute open entrypoint };
+
+allow vndservicemanager self:binder { set_context_mgr };
+
+allow vndservicemanager vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vndservicemanager vndservice_contexts_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vndservicemanager service_manager_vndservice:service_manager { add find };
+
+allow vndservicemanager property_socket:sock_file { write };
+
+allow vndservicemanager init:unix_stream_socket { connectto };
+
+allow vndservicemanager ctl_interface_start_prop:property_service { set };
+
+allow vndservicemanager ctl_interface_start_prop:file { read getattr map open };
+
+allow vndservicemanager selinuxfs:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vndservicemanager selinuxfs:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vndservicemanager selinuxfs:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vndservicemanager selinuxfs:file { write lock append map open };
+
+allow vndservicemanager kernel:security { compute_av };
+
+allow vndservicemanager self:netlink_selinux_socket { read write create getattr setattr lock relabelfrom relabelto append bind connect listen accept getopt setopt shutdown recvfrom sendto name_bind };
+
+allow vndservicemanager kmsg_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vndservicemanager vendor_displayfeature:dir { search };
+
+allow vndservicemanager vendor_displayfeature:file { read map open };
+
+allow vndservicemanager vendor_displayfeature:process { getattr };
+
+allow vndservicemanager vendor_hal_displayfeature_xiaomi:dir { search };
+
+allow vndservicemanager vendor_hal_displayfeature_xiaomi:file { read map open };
+
+allow vndservicemanager vendor_hal_displayfeature_xiaomi:process { getattr };
+
+allow vndservicemanager hal_touchfeature_xiaomi:dir { search };
+
+allow vndservicemanager hal_touchfeature_xiaomi:file { read map open };
+
+allow vndservicemanager hal_touchfeature_xiaomi:process { getattr };
+
+allow vndservicemanager vendor_feature_enabler_client:dir { search };
+
+allow vndservicemanager vendor_feature_enabler_client:file { read map open };
+
+allow vndservicemanager vendor_feature_enabler_client:process { getattr };
+
+allow vndservicemanager hal_audio:dir { search };
+
+allow vndservicemanager hal_audio:file { read map open };
+
+allow vndservicemanager hal_audio:process { getattr };
+
+allow vndservicemanager hal_audio_default:dir { search };
+
+allow vndservicemanager hal_audio_default:file { read map open };
+
+allow vndservicemanager hal_audio_default:process { getattr };
+
+allow vndservicemanager hal_camera_default:dir { search };
+
+allow vndservicemanager hal_camera_default:file { read map open };
+
+allow vndservicemanager hal_camera_default:process { getattr };
+
+allow vndservicemanager vendor_hal_display_color:dir { search };
+
+allow vndservicemanager vendor_hal_display_color:file { read map open };
+
+allow vndservicemanager vendor_hal_display_color:process { getattr };
+
+allow vndservicemanager vendor_hal_gnss_qti:dir { search };
+
+allow vndservicemanager vendor_hal_gnss_qti:file { read map open };
+
+allow vndservicemanager vendor_hal_gnss_qti:process { getattr };
+
+allow vndservicemanager hal_graphics_composer_default:dir { search };
+
+allow vndservicemanager hal_graphics_composer_default:file { read map open };
+
+allow vndservicemanager hal_graphics_composer_default:process { getattr };
+
+allow vndservicemanager vendor_location_xtra_daemon:dir { search };
+
+allow vndservicemanager vendor_location_xtra_daemon:file { read map open };
+
+allow vndservicemanager vendor_location_xtra_daemon:process { getattr };
+
+allow vndservicemanager vendor_per_proxy:dir { search };
+
+allow vndservicemanager vendor_per_proxy:file { read map open };
+
+allow vndservicemanager vendor_per_proxy:process { getattr };
+
+allow vndservicemanager vendor_per_mgr:dir { search };
+
+allow vndservicemanager vendor_per_mgr:file { read map open };
+
+allow vndservicemanager vendor_per_mgr:process { getattr };
+
+allow vndservicemanager vendor_qdcm-ss:dir { search };
+
+allow vndservicemanager vendor_qdcm-ss:file { read map open };
+
+allow vndservicemanager vendor_qdcm-ss:process { getattr };
+
+allow vndservicemanager rild:dir { search };
+
+allow vndservicemanager rild:file { read map open };
+
+allow vndservicemanager rild:process { getattr };
+
+allow vndservicemanager tee:dir { search };
+
+allow vndservicemanager tee:file { read map open };
+
+allow vndservicemanager tee:process { getattr };
+
+allow vndservicemanager vendor_wcnss_service:dir { search };
+
+allow vndservicemanager vendor_wcnss_service:file { read map open };
+
+allow vndservicemanager vendor_wcnss_service:process { getattr };
+
+allow vndservicemanager vendor_cnd:dir { search };
+
+allow vndservicemanager vendor_cnd:file { read map open };
+
+allow vndservicemanager vendor_cnd:process { getattr };
+
+allow vndservicemanager vendor_dpmd_vndr:dir { search };
+
+allow vndservicemanager vendor_dpmd_vndr:file { read map open };
+
+allow vndservicemanager vendor_dpmd_vndr:process { getattr };
+
+allow vndservicemanager vendor_hal_perf:dir { search };
+
+allow vndservicemanager vendor_hal_perf:file { read map open };
+
+allow vndservicemanager vendor_hal_perf:process { getattr };
+
+allow vndservicemanager vendor_qccvendor:dir { search };
+
+allow vndservicemanager vendor_qccvendor:file { read map open };
+
+allow vndservicemanager vendor_qccvendor:process { getattr };
+
+allow vndservicemanager vendor_qms:dir { search };
+
+allow vndservicemanager vendor_qms:file { read map open };
+
+allow vndservicemanager vendor_qms:process { getattr };
+
+allow vndservicemanager vendor_ssgtzd:dir { search };
+
+allow vndservicemanager vendor_ssgtzd:file { read map open };
+
+allow vndservicemanager vendor_ssgtzd:process { getattr };
+
+allow vndservicemanager vendor_wfdhdcphalservice_qti:dir { search };
+
+allow vndservicemanager vendor_wfdhdcphalservice_qti:file { read map open };
+
+allow vndservicemanager vendor_wfdhdcphalservice_qti:process { getattr };
+
+allow vndservicemanager vendor_wfdvndservice:dir { search };
+
+allow vndservicemanager vendor_wfdvndservice:file { read map open };
+
+allow vndservicemanager vendor_wfdvndservice:process { getattr };
+
+allow vndservicemanager vendor_wifidisplayhalservice:dir { search };
+
+allow vndservicemanager vendor_wifidisplayhalservice:file { read map open };
+
+allow vndservicemanager vendor_wifidisplayhalservice:process { getattr };
+
+allow vndservicemanager vendor_hal_display_demura:dir { search };
+
+allow vndservicemanager vendor_hal_display_demura:file { read map open };
+
+allow vndservicemanager vendor_hal_display_demura:process { getattr };
+
+allow vndservicemanager vendor_hal_citsensorservice_xiaomi:dir { search };
+
+allow vndservicemanager vendor_hal_citsensorservice_xiaomi:file { read map open };
+
+allow vndservicemanager vendor_hal_citsensorservice_xiaomi:process { getattr };
+
+allow vndservicemanager hal_miqms_default:dir { search };
+
+allow vndservicemanager hal_miqms_default:file { read map open };
+
+allow vndservicemanager hal_miqms_default:process { getattr };

@@ -1,0 +1,9 @@
+typeattribute hal_health_default bpfdomain;
+
+typeattribute hal_health_default hal_health;
+
+typeattribute hal_health_default hal_health_server;
+
+typeattribute hal_health_default halserverdomain;
+
+allow hal_health_default hal_health_default_exec:file { read getattr map execute open entrypoint };

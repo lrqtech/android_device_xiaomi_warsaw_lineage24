@@ -1,0 +1,6 @@
+<manifest version="8.0" type="device">
+    <hal format="aidl">
+        <name>vendor.qti.hardware.alarm</name>
+        <fqname>IAlarm/default</fqname>
+    </hal>
+</manifest>

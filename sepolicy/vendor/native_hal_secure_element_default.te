@@ -1,0 +1,63 @@
+typeattribute hal_secure_element_default hal_allocator_client;
+
+typeattribute hal_secure_element_default hal_mtdservice_client;
+
+typeattribute hal_secure_element_default hal_nfc_client;
+
+typeattribute hal_secure_element_default hal_secure_element;
+
+typeattribute hal_secure_element_default hal_secure_element_server;
+
+typeattribute hal_secure_element_default halclientdomain;
+
+typeattribute hal_secure_element_default halserverdomain;
+
+typeattribute hal_secure_element_default vendor_hal_qteeconnector_client;
+
+typeattribute hal_secure_element_default vendor_hal_spu_client;
+
+allow hal_secure_element_default secure_element_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_secure_element_default hal_secure_element_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_secure_element_default vendor_secure_element_vendor_data_file:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+
+allow hal_secure_element_default vendor_secure_element_vendor_data_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+
+allow hal_secure_element_default vendor_ese_prop:file { read getattr map open };
+
+allow hal_secure_element_default property_socket:sock_file { write };
+
+allow hal_secure_element_default init:unix_stream_socket { connectto };
+
+allow hal_secure_element_default vendor_ese_prop:property_service { set };
+
+allow hal_secure_element_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_secure_element_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_secure_element_default vendor_ssgtzd_socket:sock_file { write };
+
+allow hal_secure_element_default vendor_ssgtzd:unix_stream_socket { connectto };
+
+allow hal_secure_element_default nfc_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_secure_element_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow hal_secure_element_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_secure_element_default firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow hal_secure_element_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_secure_element_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_secure_element_default vendor_ese_gpio_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_secure_element_default nfc_device:chr_file { ioctl read write open };
+
+allow hal_secure_element_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_secure_element_default vendor_nfc_mi_prop:file { read getattr map open };
+
+allow hal_secure_element_default vendor_nfc_mi_prop:property_service { set };

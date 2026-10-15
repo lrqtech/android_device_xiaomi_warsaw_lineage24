@@ -1,0 +1,25 @@
+type hal_cit_bluetooth_default, domain;
+
+domain_auto_trans(init, hal_cit_bluetooth_default_exec, hal_cit_bluetooth_default)
+
+typeattribute hal_cit_bluetooth_default hal_cit_bluetooth;
+
+typeattribute hal_cit_bluetooth_default hal_cit_bluetooth_server;
+
+typeattribute hal_cit_bluetooth_default halserverdomain;
+
+binder_use(hal_cit_bluetooth_default)
+
+allow hal_cit_bluetooth_default hal_cit_bluetooth_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_cit_bluetooth_default servicemanager:binder { call transfer };
+
+allow hal_cit_bluetooth_default hal_cit_bluetooth_service:service_manager { add };
+
+allow hal_cit_bluetooth_default hal_cit_bluetooth_default_exec:file { read getattr map execute open };
+
+allow hal_cit_bluetooth_default hal_cit_bluetooth_sub:process { transition };
+
+allow hal_cit_bluetooth_default hal_cit_bluetooth_sub:process { siginh rlimitinh };
+
+allow hal_cit_bluetooth_default vendor_shell_exec:file { read getattr map execute open };

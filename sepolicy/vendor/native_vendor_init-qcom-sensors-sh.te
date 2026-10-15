@@ -1,0 +1,37 @@
+type vendor_init-qcom-sensors-sh, domain;
+
+domain_auto_trans(init, vendor_init-qcom-sensors-sh_exec, vendor_init-qcom-sensors-sh)
+
+allow vendor_init-qcom-sensors-sh vendor_init-qcom-sensors-sh_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_init-qcom-sensors-sh vendor_sensors_prop:file { read getattr map open };
+
+allow vendor_init-qcom-sensors-sh vendor_shell_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_init-qcom-sensors-sh vendor_toolbox_exec:file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans };
+
+allow vendor_init-qcom-sensors-sh mnt_vendor_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_init-qcom-sensors-sh mnt_vendor_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh mnt_vendor_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh vendor_persist_sensors_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_init-qcom-sensors-sh vendor_persist_sensors_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh vendor_persist_sensors_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh sensors_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh vendor_sysfs_devicetree_soc:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_init-qcom-sensors-sh vendor_sysfs_devicetree_soc:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh vendor_sysfs_devicetree_soc:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_init-qcom-sensors-sh property_socket:sock_file { write };
+
+allow vendor_init-qcom-sensors-sh init:unix_stream_socket { connectto };
+
+allow vendor_init-qcom-sensors-sh vendor_sensors_prop:property_service { set };

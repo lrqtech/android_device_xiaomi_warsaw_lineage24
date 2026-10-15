@@ -1,0 +1,23 @@
+type vendor_qmipriod, domain;
+
+domain_auto_trans(init, vendor_qmipriod_exec, vendor_qmipriod)
+
+typeattribute vendor_qmipriod netdomain;
+
+allow vendor_qmipriod vendor_qmipriod_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qmipriod self:qipcrtr_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qmipriod vendor_nicmd_socket:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_qmipriod vendor_nicmd_socket:sock_file { write };
+
+allow vendor_qmipriod vendor_nicmd:unix_stream_socket { connectto };
+
+allow vendor_qmipriod vendor_nicmd_socket:sock_file { read write getattr };
+
+allow vendor_qmipriod vendor_nicmd_socket:tipc_socket { read write create getattr setattr lock append map bind connect getopt setopt shutdown };
+
+allow vendor_qmipriod vendor_nicmd_socket:dir { write lock open add_name remove_name search };
+
+allow vendor_qmipriod vendor_nicmd_socket:sock_file { create };

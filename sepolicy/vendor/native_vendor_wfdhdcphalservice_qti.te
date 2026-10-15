@@ -1,0 +1,59 @@
+type vendor_wfdhdcphalservice_qti, domain;
+
+domain_auto_trans(init, vendor_wfdhdcphalservice_qti_exec, vendor_wfdhdcphalservice_qti)
+
+typeattribute vendor_wfdhdcphalservice_qti hal_drm;
+
+typeattribute vendor_wfdhdcphalservice_qti hal_drm_server;
+
+typeattribute vendor_wfdhdcphalservice_qti hal_graphics_composer_client;
+
+typeattribute vendor_wfdhdcphalservice_qti halclientdomain;
+
+typeattribute vendor_wfdhdcphalservice_qti halserverdomain;
+
+vndbinder_use(vendor_wfdhdcphalservice_qti)
+
+allow vendor_wfdhdcphalservice_qti vendor_wfdhdcphalservice_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_wfdhdcphalservice_qti vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_wfdhdcphalservice_qti vndservicemanager:binder { call transfer };
+
+allow vendor_wfdhdcphalservice_qti vendor_wfdhdcpvndservice_service:service_manager { find };
+
+allow vendor_wfdhdcphalservice_qti vendor_wfdvndservice:binder { call transfer };
+
+allow vendor_wfdhdcphalservice_qti vendor_wfdvndservice:fd { use };
+
+allow vendor_wfdhdcphalservice_qti mediacodec:fd { use };
+
+allow vendor_wfdhdcphalservice_qti vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_wfdhdcphalservice_qti vendor_dmabuf_system_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_wfdhdcphalservice_qti vendor_membuf_dev:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_wfdhdcphalservice_qti vendor_vm_cp_bitstream_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_wfdhdcphalservice_qti anr_data_file:file { append };
+
+allow vendor_wfdhdcphalservice_qti dumpstate:fd { use };
+
+allow vendor_wfdhdcphalservice_qti incidentd:fd { use };
+
+allow vendor_wfdhdcphalservice_qti dumpstate:fifo_file { write append };
+
+allow vendor_wfdhdcphalservice_qti incidentd:fifo_file { write append };
+
+allow vendor_wfdhdcphalservice_qti system_server:fifo_file { write append };
+
+allow vendor_wfdhdcphalservice_qti tombstoned:unix_stream_socket { connectto };
+
+allow vendor_wfdhdcphalservice_qti tombstoned:fd { use };
+
+allow vendor_wfdhdcphalservice_qti tombstoned_crash_socket:sock_file { write };
+
+allow vendor_wfdhdcphalservice_qti tombstone_data_file:file { append };
+
+allow vendor_wfdhdcphalservice_qti vendor_wfdvndservice:binder { transfer };

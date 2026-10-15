@@ -1,0 +1,21 @@
+type vendor_qt_service, domain;
+
+domain_auto_trans(init, vendor_qt_service_exec, vendor_qt_service)
+
+typeattribute vendor_qt_service halclientdomain;
+
+typeattribute vendor_qt_service vendor_hal_perf_client;
+
+binder_use(vendor_qt_service)
+
+allow vendor_qt_service vendor_qt_service_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_qt_service servicemanager:binder { call transfer };
+
+allow vendor_qt_service servicemanager:fd { use };
+
+allow vendor_qt_service vendor_thermal_socket:sock_file { write };
+
+allow vendor_qt_service vendor_thermal-engine:unix_stream_socket { connectto };
+
+allow vendor_qt_service vendor_hal_perf_default:binder { transfer };

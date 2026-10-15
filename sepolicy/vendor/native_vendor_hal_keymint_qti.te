@@ -1,0 +1,21 @@
+type vendor_hal_keymint_qti, domain;
+
+domain_auto_trans(init, vendor_hal_keymint_qti_exec, vendor_hal_keymint_qti)
+
+typeattribute vendor_hal_keymint_qti hal_keymint;
+
+typeattribute vendor_hal_keymint_qti hal_keymint_server;
+
+typeattribute vendor_hal_keymint_qti halserverdomain;
+
+allow vendor_hal_keymint_qti vendor_hal_keymint_qti_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_keymint_qti vendor_tee_listener_prop:file { read getattr map open };
+
+allow vendor_hal_keymint_qti vendor_disable_spu_prop:file { read getattr map open };
+
+allow vendor_hal_keymint_qti vendor_keymint_retry_timer_prop:file { read getattr map open };
+
+allow vendor_hal_keymint_qti tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_keymint_qti vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };

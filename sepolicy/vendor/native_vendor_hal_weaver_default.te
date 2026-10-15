@@ -1,0 +1,27 @@
+type vendor_hal_weaver_default, domain;
+
+domain_auto_trans(init, vendor_hal_weaver_default_exec, vendor_hal_weaver_default)
+
+typeattribute vendor_hal_weaver_default hal_miweaver_client;
+
+typeattribute vendor_hal_weaver_default hal_weaver;
+
+typeattribute vendor_hal_weaver_default hal_weaver_server;
+
+typeattribute vendor_hal_weaver_default halclientdomain;
+
+typeattribute vendor_hal_weaver_default halserverdomain;
+
+allow vendor_hal_weaver_default vendor_hal_weaver_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_weaver_default secure_element:binder { call transfer };
+
+allow vendor_hal_weaver_default secure_element:fd { use };
+
+allow vendor_hal_weaver_default secure_element_service:service_manager { find };
+
+allow vendor_hal_weaver_default self:capability2 { wake_alarm };
+
+allow vendor_hal_weaver_default boot_status_prop:file { read getattr map open };
+
+allow vendor_hal_weaver_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };

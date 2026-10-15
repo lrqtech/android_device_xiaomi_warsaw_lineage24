@@ -1,0 +1,15 @@
+type vendor_timeservice_app, domain;
+
+app_domain(vendor_timeservice_app)
+
+typeattribute vendor_timeservice_app halclientdomain;
+
+typeattribute vendor_timeservice_app vendor_hal_perf_client;
+
+allow vendor_timeservice_app appdomain_tmpfs:file { read write getattr map execute };
+
+allow vendor_timeservice_app app_api_service:service_manager { find };
+
+allow vendor_timeservice_app vendor_time_daemon:unix_stream_socket { connectto };
+
+type_transition vendor_timeservice_app tmpfs:file appdomain_tmpfs;

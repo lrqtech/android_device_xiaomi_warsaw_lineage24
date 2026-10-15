@@ -1,0 +1,5 @@
+type warsaw_camera_display_service, system_server_service, service_manager_type;
+
+add_service(system_server, warsaw_camera_display_service)
+
+allow platform_app warsaw_camera_display_service:service_manager { find };

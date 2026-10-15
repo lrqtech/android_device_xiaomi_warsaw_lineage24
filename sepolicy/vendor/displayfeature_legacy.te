@@ -1,0 +1,69 @@
+type vendor_displayfeature, domain;
+
+type vendor_displayfeature_exec, exec_type, vendor_file_type, file_type;
+
+init_daemon_domain(vendor_displayfeature)
+
+typeattribute vendor_displayfeature hal_graphics_composer_client;
+
+typeattribute vendor_displayfeature vendor_hal_displayfeature_xiaomi_client;
+
+typeattribute vendor_displayfeature hal_light_client;
+
+typeattribute vendor_displayfeature vendor_hal_display_color_client;
+
+typeattribute vendor_displayfeature vendor_hal_display_postproc_client;
+
+hwbinder_use(vendor_displayfeature)
+
+vndbinder_use(vendor_displayfeature)
+
+allow vendor_displayfeature system_server:binder { transfer };
+
+allow vendor_displayfeature vendor_displayfeature_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_displayfeature vndbinder_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_displayfeature vndservicemanager:binder { call transfer };
+
+allow vendor_displayfeature system_server:binder { call transfer };
+
+allow vendor_displayfeature system_server:fd { use };
+
+allow vendor_displayfeature appdomain:binder { call transfer };
+
+allow vendor_displayfeature appdomain:fd { use };
+
+allow vendor_displayfeature hwservicemanager:binder { call transfer };
+
+allow vendor_displayfeature hwservicemanager_prop:file { read getattr map open };
+
+allow vendor_displayfeature vendor_DisplayFeatureControl_service:service_manager { add find };
+
+allow vendor_displayfeature sysfs:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_block:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_mem_sleep:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_powercap:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_thunderbolt:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_typec:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_udc:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_usb_pd:file { read write getattr open };
+
+allow vendor_displayfeature sysfs_usbcore:file { read write getattr open };
+
+allow vendor_displayfeature vendor_boot_ota_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_displayfeature vendor_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_displayfeature graphics_device:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_displayfeature graphics_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_displayfeature vendor_displayfeature_prop:file { read getattr map open };

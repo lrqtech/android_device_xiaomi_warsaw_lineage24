@@ -1,0 +1,29 @@
+type vendor_hal_qseecom_default, domain;
+
+domain_auto_trans(init, vendor_hal_qseecom_default_exec, vendor_hal_qseecom_default)
+
+typeattribute vendor_hal_qseecom_default hal_allocator_client;
+
+typeattribute vendor_hal_qseecom_default halclientdomain;
+
+typeattribute vendor_hal_qseecom_default halserverdomain;
+
+typeattribute vendor_hal_qseecom_default vendor_hal_qseecom;
+
+typeattribute vendor_hal_qseecom_default vendor_hal_qseecom_server;
+
+allow vendor_hal_qseecom_default vendor_hal_qseecom_default_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_hal_qseecom_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_qseecom_default firmware_file:dir { ioctl read getattr lock open watch watch_reads search };
+
+allow vendor_hal_qseecom_default firmware_file:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_qseecom_default firmware_file:lnk_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_qseecom_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_hal_qseecom_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_hal_qseecom_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr lock map open watch watch_reads };

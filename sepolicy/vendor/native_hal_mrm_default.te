@@ -1,0 +1,35 @@
+type hal_mrm_default, domain;
+
+domain_auto_trans(init, hal_mrm_default_exec, hal_mrm_default)
+
+typeattribute hal_mrm_default hal_mrm;
+
+typeattribute hal_mrm_default hal_mrm_server;
+
+typeattribute hal_mrm_default halserverdomain;
+
+binder_use(hal_mrm_default)
+
+allow hal_mrm_default hal_mrm_default_exec:file { read getattr map execute open entrypoint };
+
+allow hal_mrm_default servicemanager:binder { call transfer };
+
+allow hal_mrm_default tee_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mrm_default ion_device:chr_file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow hal_mrm_default selinuxfs:file { read open };
+
+allow hal_mrm_default system_boot_reason_prop:file { read getattr map open };
+
+allow hal_mrm_default property_socket:sock_file { write };
+
+allow hal_mrm_default init:unix_stream_socket { connectto };
+
+allow hal_mrm_default vendor_payment_security_prop:property_service { set };
+
+allow hal_mrm_default vendor_payment_security_prop:file { read getattr map open };
+
+allow hal_mrm_default vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read open };
+
+allow hal_mrm_default vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read open };

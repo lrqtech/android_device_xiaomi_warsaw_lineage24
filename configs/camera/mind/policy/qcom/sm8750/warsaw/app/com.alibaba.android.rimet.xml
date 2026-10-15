@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy version="1.0" path="qcom/sm8750/warsaw/app/com.alibaba.android.rimet.xml">
+
+    <app prio="100" name="com.alibaba.android.rimet" >
+        <profile name="normal">
+
+            <activity name="com.taobao.ma.ui.ScanActivity2">
+            </activity>
+
+            <activity name="com.alibaba.android.teleconf.mozi.activity.TeleVideoConfActivity">
+            </activity>
+
+            <activity name="com.alibaba.android.teleconf.mozi.activity.TeleVideoConfEasygoActivity">
+            </activity>
+        </profile>
+    </app>
+</policy>

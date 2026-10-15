@@ -1,0 +1,21 @@
+type vendor_ssr_setup, domain;
+
+domain_auto_trans(init, vendor_ssr_setup_exec, vendor_ssr_setup)
+
+allow vendor_ssr_setup vendor_ssr_setup_exec:file { read getattr map execute open entrypoint };
+
+allow vendor_ssr_setup vendor_sysfs_ssr:lnk_file { write lock append map open };
+
+allow vendor_ssr_setup vendor_sysfs_ssr_toggle:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_ssr_setup vendor_sysfs_ssr:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_ssr_setup vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
+
+allow vendor_ssr_setup vendor_ssr_prop:file { read getattr map open };
+
+allow vendor_ssr_setup vendor_sysfs_ssr_coredump_toggle:file { ioctl read write getattr lock append map open watch watch_reads };
+
+allow vendor_ssr_setup sysfs_ispv4_dump:dir { search };
+
+allow vendor_ssr_setup sysfs_ispv4_dump:file { read write open };
