@@ -1,14 +1,13 @@
-# Building the pinned Warsaw snapshot
+# Building LineageOS for warsaw
 
-Use Linux or WSL2 with a case-sensitive Linux filesystem, Git, Git LFS, Repo,
-and the Android/LineageOS build prerequisites. Authenticate Git for access to
-the three private repositories before synchronization. Keep credentials in
-your credential manager, not in the manifest or remote URLs.
+Use Linux or WSL2 with a case-sensitive Linux filesystem. Install the
+LineageOS build dependencies, Repo and Git LFS, and configure Git access to
+the three private repositories.
 
-## Platform checkout
+## Get the sources
 
-The standalone manifest pins the platform to the exact base revisions for
-the bundled patches and the device/vendor projects to the snapshot tag.
+The supplied manifest selects the platform revisions required by the patch
+series and the `warsaw-20261015` tag for the device and vendor trees.
 
 ```sh
 git clone --branch lineage-24.0 https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24.git "$HOME/warsaw-device"
@@ -22,11 +21,12 @@ python3 device/xiaomi/warsaw/apply-platform-patches.py --source "$PWD" --check
 python3 device/xiaomi/warsaw/apply-platform-patches.py --source "$PWD" --apply
 ```
 
-`lineage.dependencies` is intentionally empty: private repositories are
-declared in the supplied manifest, not presented as official LineageOS
-dependencies. A normal unmodified LineageOS checkout by itself is insufficient.
+The patch helper checks every affected project before applying changes.
+`lineage.dependencies` is empty because the manifest already includes the
+private repositories. The platform patches are required; an unmodified
+LineageOS checkout is not sufficient.
 
-## Userdebug package
+## Build userdebug
 
 ```sh
 source build/envsetup.sh
@@ -35,30 +35,23 @@ lunch "lineage_warsaw-${aosp_target_release}-userdebug"
 m --no-skip-soong-tests -j32 bacon
 ```
 
-Adjust the job count to host resources. The explicit test option is required;
-do not suppress Soong tests or disable neverallow checks. Output is under
-`out/target/product/warsaw/`. Builds use the current local timestamp unless
-`BUILD_DATETIME` is explicitly supplied, so package hashes need not match a
-previously delivered ZIP.
+Adjust `-j32` for the build host. Keep `--no-skip-soong-tests` and neverallow
+checks enabled. The output directory is `out/target/product/warsaw/`.
 
-## Kernel input
+`BUILD_DATETIME` defaults to the time of the build. Set it explicitly if
+reproducing an earlier build; a different timestamp changes the package hash.
 
-See the kernel repository for the pinned Kleaf workspace and source build.
-The Android build defaults to `boot/gki-no-kunit` in the vendor repository,
-whose manifest records its Image and module hashes. A newly built Image and
-all its signed modules must be integrated together with regenerated module
-indexes. Never combine a newly signed Image with an old GKI module set.
-The archived source-built input is already paired; rebuilding it is optional
-when reproducing this Android snapshot.
+## Kernel
 
-`WARSAW_USE_OTA_GKI=true` selects the retained stock GKI fallback. It does not
-satisfy the no-KUnit source-kernel target and is not the default publication
-configuration. Five retained IMS/data libraries require a 4 KiB kernel;
-`configs/boot/boot.mk` enforces this prerequisite.
+The default input is `vendor/xiaomi/warsaw/boot/gki-no-kunit`. It contains the
+kernel Image, matching modules and their hash manifest. To rebuild it, follow
+the [kernel instructions](https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24#build)
+in a separate Kleaf workspace.
 
-## Scope of the tooling
+Replace the Image and all 78 signed GKI modules together, then regenerate
+the module indexes. Mixing modules from different kernel builds can prevent
+boot. The supplied set can be used directly when building Android.
 
-The device tree contains build integration helpers only. Publication,
-desktop delivery, host process management, captured logs and audit runners
-are not part of these repositories. No fresh full ROM build is required just
-to publish an unchanged build input snapshot.
+`WARSAW_USE_OTA_GKI=true` selects the stock GKI fallback. This is not the
+default and does not meet the no-KUnit configuration. Five IMS/data libraries
+require 4 KiB pages; `configs/boot/boot.mk` checks the kernel page size.
