@@ -1,0 +1,256 @@
+diff --git a/fs_mgr.cpp b/fs_mgr.cpp
+index de1ba254027a76ef423f4e169198decf2960419f..52c69b1394111877f37e5ef25cbd4132911b72a1 100644
+--- a/fs_mgr.cpp
++++ b/fs_mgr.cpp
+@@ -1858,6 +1858,7 @@ int fs_mgr_do_mount_one(const FstabEntry& entry, const std::string& alt_mount_po
+     // First check the filesystem if requested.
+     if (entry.fs_mgr_flags.wait && !WaitForFile(entry.blk_device, 20s)) {
+         LERROR << "Skipping mounting '" << entry.blk_device << "'";
++        return FS_MGR_DOMNT_FAILED;
+     }
+ 
+     auto& mount_point = alt_mount_point.empty() ? entry.mount_point : alt_mount_point;
+diff --git a/fs_mgr_dm_linear.cpp b/fs_mgr_dm_linear.cpp
+index e205e5a7e98d8332cc74701407d6c972c29127cd..c9218fd587a2a37f00777c0aa3ed3455e0aa337e 100644
+--- a/fs_mgr_dm_linear.cpp
++++ b/fs_mgr_dm_linear.cpp
+@@ -141,7 +141,7 @@ bool CreateLogicalPartitions(const std::string& block_device) {
+     auto metadata = ReadMetadata(block_device.c_str(), slot);
+     if (!metadata) {
+         LOG(ERROR) << "Could not read partition table.";
+-        return true;
++        return false;
+     }
+     return CreateLogicalPartitions(*metadata.get(), block_device);
+ }
+diff --git a/fs_mgr_roots.cpp b/fs_mgr_roots.cpp
+index 8a5608472b9ca2e71c13b406023fbee7c327a274..0a8718aa09d53182cb361db871ed6bd2f5bbf493 100644
+--- a/fs_mgr_roots.cpp
++++ b/fs_mgr_roots.cpp
+@@ -15,12 +15,14 @@
+  */
+ 
+ #include "android-base/file.h"
++#include "android-base/parseint.h"
+ #include "android-base/properties.h"
+ #include "android-base/strings.h"
+ #include "fs_mgr/roots.h"
+ 
+ #include <sys/mount.h>
+ #include <sys/stat.h>
++#include <sys/sysmacros.h>
+ #include <sys/types.h>
+ 
+ #include <string>
+@@ -85,6 +87,129 @@ static MountState GetMountState(const std::string& mount_point) {
+     return MountState::NOT_MOUNTED;
+ }
+ 
++// mountinfo escapes whitespace and backslashes in pathname fields. Compare the
++// encoded name; do not confuse an escaped space with a field separator.
++static std::string EncodeMountInfoPath(const std::string& path) {
++    std::string encoded;
++    for (char c : path) {
++        switch (c) {
++            case ' ': encoded += "\\040"; break;
++            case '\t': encoded += "\\011"; break;
++            case '\n': encoded += "\\012"; break;
++            case '\\': encoded += "\\134"; break;
++            default: encoded += c;
++        }
++    }
++    return encoded;
++}
++
++static bool HasMountOption(const std::string& options, const std::string& option) {
++    auto values = android::base::Split(options, ",");
++    return std::find(values.begin(), values.end(), option) != values.end();
++}
++
++// This recognizes a whole, block-backed filesystem in the caller's current
++// namespace. A source pathname (including a mapper alias) is not an identity:
++// compare the device numbers supplied by stat and by the kernel's mountinfo.
++static bool MountedEntryMatches(const FstabEntry& expected, const std::string& mount_point) {
++    constexpr unsigned long kPerMountFlags =
++            MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_NOATIME | MS_NODIRATIME | MS_NOSYMFOLLOW;
++    constexpr unsigned long kSuperFlags = MS_SYNCHRONOUS | MS_LAZYTIME;
++    constexpr unsigned long kKnownFlags = MS_RDONLY | kPerMountFlags | kSuperFlags;
++    if ((expected.flags & ~kKnownFlags) != 0) {
++        LERROR << "Cannot verify special mount flags for " << mount_point;
++        return false;
++    }
++
++    std::string mountinfo;
++    if (!android::base::ReadFileToString("/proc/self/mountinfo", &mountinfo)) {
++        PERROR << "Failed to read mount identity for " << mount_point;
++        return false;
++    }
++
++    const auto encoded_point = EncodeMountInfoPath(mount_point);
++    std::vector<std::string> match;
++    size_t separator = 0;
++    for (const auto& line : android::base::Split(mountinfo, "\n")) {
++        if (line.empty()) continue;
++        auto fields = android::base::Tokenize(line, " \t");
++        if (fields.size() < 10) {
++            LERROR << "Malformed mountinfo";
++            return false;
++        }
++        auto sep = std::find(fields.begin() + 6, fields.end(), "-");
++        if (sep == fields.end() || std::distance(sep, fields.end()) != 4) {
++            LERROR << "Malformed mountinfo separator";
++            return false;
++        }
++        if (fields[4] != encoded_point) continue;
++        if (!match.empty()) {
++            // Stacked mounts require an explicit visible-mount identity; the
++            // first matching text row is not enough to establish that.
++            LERROR << "Ambiguous stacked mounts at " << mount_point;
++            return false;
++        }
++        separator = std::distance(fields.begin(), sep);
++        match = std::move(fields);
++    }
++    if (match.empty() || match[3] != "/" || match[separator + 1] != expected.fs_type) {
++        LERROR << "Mounted filesystem/root does not match " << mount_point;
++        return false;
++    }
++
++    const auto device = android::base::Split(match[2], ":");
++    uint32_t device_major, device_minor;
++    if (device.size() != 2 || !android::base::ParseUint(device[0], &device_major) ||
++        !android::base::ParseUint(device[1], &device_minor)) {
++        LERROR << "Invalid mounted device identity";
++        return false;
++    }
++    struct stat source_stat {}, target_stat {};
++    if (stat(expected.blk_device.c_str(), &source_stat) != 0 ||
++        stat(mount_point.c_str(), &target_stat) != 0) {
++        PERROR << "Unable to verify mounted device for " << mount_point;
++        return false;
++    }
++    const dev_t mounted_device = makedev(device_major, device_minor);
++    if (!S_ISBLK(source_stat.st_mode) || !S_ISDIR(target_stat.st_mode) ||
++        source_stat.st_rdev != mounted_device || target_stat.st_dev != mounted_device) {
++        LERROR << "Mounted block device does not match " << mount_point;
++        return false;
++    }
++
++    const auto& mount_options = match[5];
++    const auto& super_options = match[separator + 3];
++    if (HasMountOption(mount_options, "ro") == HasMountOption(mount_options, "rw") ||
++        HasMountOption(super_options, "ro") == HasMountOption(super_options, "rw")) {
++        LERROR << "Unknown mounted read/write mode at " << mount_point;
++        return false;
++    }
++    const bool read_only = HasMountOption(mount_options, "ro") ||
++                           HasMountOption(super_options, "ro");
++    if (read_only != ((expected.flags & MS_RDONLY) != 0)) {
++        LERROR << "Mounted read/write mode does not match " << mount_point;
++        return false;
++    }
++    for (const auto& [flag, name] : {
++                 std::pair<unsigned long, const char*>{MS_NOSUID, "nosuid"},
++                 {MS_NODEV, "nodev"}, {MS_NOEXEC, "noexec"}, {MS_NOATIME, "noatime"},
++                 {MS_NODIRATIME, "nodiratime"}, {MS_NOSYMFOLLOW, "nosymfollow"}}) {
++        if ((expected.flags & flag) && !HasMountOption(mount_options, name)) {
++            LERROR << "Mounted filesystem lacks " << name << " at " << mount_point;
++            return false;
++        }
++    }
++    for (const auto& [flag, name] : {
++                 std::pair<unsigned long, const char*>{MS_SYNCHRONOUS, "sync"},
++                 {MS_LAZYTIME, "lazytime"}}) {
++        if ((expected.flags & flag) && !HasMountOption(super_options, name)) {
++            LERROR << "Mounted filesystem lacks " << name << " at " << mount_point;
++            return false;
++        }
++    }
++    return true;
++}
++
+ bool TryPathMount(FstabEntry* rec, const std::string& mount_pt) {
+     if (rec->fs_type == "ramdisk") {
+         // The ramdisk is always mounted.
+@@ -112,14 +237,6 @@ bool TryPathMount(FstabEntry* rec, const std::string& mount_pt) {
+ 
+     const std::string mount_point = mount_pt.empty() ? rec->mount_point : mount_pt;
+ 
+-    auto mounted = GetMountState(mount_point);
+-    if (mounted == MountState::ERROR) {
+-        return false;
+-    }
+-    if (mounted == MountState::MOUNTED) {
+-        return true;
+-    }
+-
+     static const std::vector<std::string> supported_fs{"ext4", "squashfs", "vfat", "exfat",
+                                                        "f2fs", "erofs",    "none"};
+     if (std::find(supported_fs.begin(), supported_fs.end(), rec->fs_type) == supported_fs.end()) {
+@@ -137,8 +254,18 @@ bool TryPathMount(FstabEntry* rec, const std::string& mount_pt) {
+ #endif
+     }
+ 
++
++    auto mounted = GetMountState(mount_point);
++    if (mounted == MountState::ERROR) {
++        return false;
++    }
++    if (mounted == MountState::MOUNTED) {
++        return MountedEntryMatches(*rec, mount_point);
++    }
++
++
+     int result = fs_mgr_do_mount_one(*rec, mount_point);
+-    if (result == -1) {
++    if (result != FS_MGR_DOMNT_SUCCESS) {
+         PERROR << "Failed to mount " << mount_point;
+         return false;
+     }
+diff --git a/libsnapshot/snapuserd/snapuserd_daemon.cpp b/libsnapshot/snapuserd/snapuserd_daemon.cpp
+index 74089e1fcf079d0d6c69fa9a8a470e5f42e57d4e..006bc86f6e1db37247268241be2e17ecced12b7b 100644
+--- a/libsnapshot/snapuserd/snapuserd_daemon.cpp
++++ b/libsnapshot/snapuserd/snapuserd_daemon.cpp
+@@ -18,6 +18,8 @@
+ #include <android-base/properties.h>
+ #include <android-base/strings.h>
+ #include <gflags/gflags.h>
++#include <utility>
++#include <vector>
+ #include <libsnapshot/capabilities.h>
+ #include <snapuserd/snapuserd_client.h>
+ #include <storage_literals/storage_literals.h>
+@@ -216,12 +218,18 @@ bool Daemon::StartServerForUserspaceSnapshots(int arg_start, int argc, char** ar
+         socket_ = FLAGS_fd_num;
+         user_server_.SetUeventHelper(uevent_helper);
+     }
++    // Validate every startup argument before any handler can serve I/O.
++    // A malformed later argument must not terminate an already-started handler.
++    std::vector<std::vector<std::string>> init_messages;
+     for (int i = arg_start; i < argc; i++) {
+         auto parts = android::base::Split(argv[i], ",");
+         if (parts.size() != 4) {
+             LOG(ERROR) << "Malformed message, expected four sub-arguments.";
+             return false;
+         }
++        init_messages.emplace_back(std::move(parts));
++    }
++    for (const auto& parts : init_messages) {
+         HandlerOptions options = {
+                 .num_worker_threads = FLAGS_worker_count,
+                 .use_iouring = FLAGS_io_uring,
+diff --git a/libsnapshot/snapuserd/ublk_block_server.cpp b/libsnapshot/snapuserd/ublk_block_server.cpp
+index 33c130cdccd87d66291116649940614d170d0aa1..c84bd92e0b68d23d4f35d1f3095f2fc94d92fb65 100644
+--- a/libsnapshot/snapuserd/ublk_block_server.cpp
++++ b/libsnapshot/snapuserd/ublk_block_server.cpp
+@@ -180,8 +180,8 @@ bool UblkBlockServer::ProcessRequests() {
+     // We won't be able to complete the IOs if the queues are created in different context.
+     // So first time ProcessRequests() is called, create the queue before proceeding.
+     // TODOUBLK: b/414812023, can use q_ itself as indicator instead of explicit bool
+-    if (!q_inited_) {
+-        Initialize();
++    if (!q_inited_ && !Initialize()) {
++        return false;
+     }
+     // All we need is ublk_process_io call. This will call
+     // handle_io_async() ops.

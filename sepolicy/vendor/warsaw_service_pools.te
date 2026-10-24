@@ -1,0 +1,32 @@
+# Actual qcom_dma_heaps and mi_mempool attributes used by retained services.
+# genfs labels and file_contexts agree before and after ueventd coldboot.
+type vendor_sysfs_reserve_pool_control, fs_type, sysfs_type;
+type vendor_sysfs_reserve_pool_pid, fs_type, sysfs_type;
+type vendor_sysfs_mi_mempool_pids, fs_type, sysfs_type;
+
+# Preserve existing sysfs_perf file access on the four relabeled reserve_pool
+# leaves. Other sysfs_type permissions continue to apply without duplication.
+allow hal_camera_default {
+    vendor_sysfs_reserve_pool_control
+    vendor_sysfs_reserve_pool_pid
+}:file { getattr open read };
+allow vold {
+    vendor_sysfs_reserve_pool_control
+    vendor_sysfs_reserve_pool_pid
+}:file r_file_perms;
+allow vendor_init {
+    vendor_sysfs_reserve_pool_control
+    vendor_sysfs_reserve_pool_pid
+}:file { rw_file_perms setattr };
+
+not_recovery(`
+# System-ext camera RC adjusts ownership/mode, without writing control values.
+allow init vendor_sysfs_reserve_pool_control:file setattr;
+
+# init writes service PIDs before setting the service UID, capabilities and
+# execution domain. Grant only the two attributes actually created by modules.
+allow init {
+    vendor_sysfs_reserve_pool_pid
+    vendor_sysfs_mi_mempool_pids
+}:file { open write };
+')

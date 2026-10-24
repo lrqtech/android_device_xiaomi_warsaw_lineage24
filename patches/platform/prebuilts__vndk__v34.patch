@@ -1,0 +1,18 @@
+diff --git a/Android.bp b/Android.bp
+index d267e418c672f2892d7df0633071918b01428c8d..6e23ad51025f930f6ef145086aadec606a9ab440 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -134,3 +134,13 @@ prebuilt_etc {
+     },
+ }
+ 
++
++// Public ABI declarations for vendor binaries using the VNDK 34 BoringSSL ABI.
++// Newer platform SHA512_CTX layouts are not binary-compatible with this ABI.
++cc_library_headers {
++    name: "boringssl_vndk34_headers",
++    visibility: ["//visibility:public"],
++    vendor_available: true,
++    min_sdk_version: "34",
++    export_include_dirs: ["arm64/include/external/boringssl/src/include"],
++}

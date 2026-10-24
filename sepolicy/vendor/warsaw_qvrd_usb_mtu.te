@@ -1,0 +1,10 @@
+# The retained QVR trigger runs only the vendor ifconfig applet to set usb0
+# MTU to 7986. Its named init service supplies this explicit process label.
+type vendor_qvrd_usb_mtu, domain;
+domain_trans(init, vendor_toolbox_exec, vendor_qvrd_usb_mtu)
+
+# ifconfig's MTU branch opens an AF_INET datagram control socket and performs
+# SIOCSIFMTU. It does not bind/connect/send packets or need general netdomain.
+allow vendor_qvrd_usb_mtu self:global_capability_class_set net_admin;
+allow vendor_qvrd_usb_mtu self:udp_socket { create ioctl };
+allowxperm vendor_qvrd_usb_mtu self:udp_socket ioctl SIOCSIFMTU;

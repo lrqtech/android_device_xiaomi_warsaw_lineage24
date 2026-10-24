@@ -1,0 +1,237 @@
+{
+  "scope": "Companion platform changes for the pinned LineageOS 24.0 manifest. Apply once to the recorded base revisions.",
+  "snapshot_date": "2026-10-24",
+  "projects": [
+    {
+      "project": "bootable/recovery",
+      "base_revision": "37c5d17bec80020b8dbfb0a0d39b4ba93b2b6efd",
+      "patch": "bootable__recovery.patch",
+      "sha256": "ef1cbb3e4fd2a5c4929850fed2af8c594e51ebd099aea82b04b121c9557a92f5",
+      "purpose": "Handle mount, FUSE, sideload and wipe failures; retain recovery fan controls and startup ordering."
+    },
+    {
+      "project": "build/make",
+      "base_revision": "90d006387398ae6899145e6531a304500cfa0f70",
+      "patch": "build__make.patch",
+      "sha256": "ad1ed898fd65e0da0ff32df34e27c88da7a5e3db4913f4a643e69d79f4cec0f6",
+      "purpose": "Preserve paired kernel module images and AVB geometry; require complete Treble labeling artifacts."
+    },
+    {
+      "project": "build/soong",
+      "base_revision": "a528a88bd553d2a449ad9338a3e944b89a164971",
+      "patch": "build__soong.patch",
+      "sha256": "c977f0b1aaa8bf17ff618abafd274d377eda859185cd6a7226e596ccc4aeebc4",
+      "purpose": "Support existing DSP RFS and kernel inputs, image-specific prebuilt ABIs, DLKM images and AVB layout; align Rust vendor and Java resource tests with existing LineageOS behavior."
+    },
+    {
+      "project": "external/boringssl",
+      "base_revision": "0cd1f6a94b670e6b61af95a06e71e690ae8e3262",
+      "patch": "external__boringssl.patch",
+      "sha256": "57b8cb4b29e0f68cf02f45243ef907767652725df13bcb7146153770f23bd461",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "external/liburing",
+      "base_revision": "92f1e7127f05803171ee50c757b7e262767a10eb",
+      "patch": "external__liburing.patch",
+      "sha256": "b9962a008ba052dc9d03dafd8125d631e1e035afe44bc1abdbf8d1ed8ed88d76",
+      "purpose": "Preserve setup flags and report io_uring setup failures to callers."
+    },
+    {
+      "project": "external/selinux",
+      "base_revision": "fbd5d3e731d34bc2ad6e5cacc43efa3a14a863c4",
+      "patch": "external__selinux.patch",
+      "sha256": "dd62a5f66db467b7731e6c707254e7f4f0014c9840743549b45ca164ca6cb698",
+      "purpose": "Propagate restorecon traversal and close failures without recording a successful relabel."
+    },
+    {
+      "project": "frameworks/av",
+      "base_revision": "937eb9047ec2f88620f1f6a4d9e407f6c869d91a",
+      "patch": "frameworks__av.patch",
+      "sha256": "adf6e1f8f5ed9e26bb9e24975e0323f02aef069eea222bd47039fa1c4bf1a58b",
+      "purpose": "Translate OEM audio values and volume curves, register its existing adapter, and parse 8K time-lapse. Connect the existing CameraMind runtime and authenticated camera session identity."
+    },
+    {
+      "project": "frameworks/base",
+      "base_revision": "e68d494b340affb257c9bf6e7f3623598926dc65",
+      "patch": "frameworks__base.patch",
+      "sha256": "31fecb6d4e53905c9d6a0770c3ae2085f83dac502eb65b067b041838b3684203",
+      "purpose": "Retain existing hardware integration and add device-gated OEM mainland signal thresholds and network icon presentation."
+    },
+    {
+      "project": "frameworks/ex",
+      "base_revision": "4080c2d3e5a6387e0d064ce5744d56fc6a7c9bb7",
+      "patch": "frameworks__ex.patch",
+      "sha256": "324745005d9893c39ac15ec66cc92be12deeff2c386bc6767c6db8cc187279b8",
+      "purpose": "Preserve the selected device ABI input using its native platform install owner."
+    },
+    {
+      "project": "frameworks/native",
+      "base_revision": "46018f54b42489de960c62c3db9de131abce43ea",
+      "patch": "frameworks__native.patch",
+      "sha256": "2ad4b18bf56818181efa3c2a0fa2df5845a66a353fb66d840f0ab80e44144ab7",
+      "purpose": "Connect existing FOD display, camera FPS and frame-rate ownership helpers."
+    },
+    {
+      "project": "frameworks/opt/telephony",
+      "base_revision": "bcbc6a3347cf9ac639ef633c2ad4a9cebd160df1",
+      "patch": "frameworks__opt__telephony.patch",
+      "sha256": "98d9c0e0e3501ecceda7a0bed29183f340a10658324c1d73949b439380e06991",
+      "purpose": "Read the OEM mainland carrier-name table in both display-name paths, preserving user labels, WFC and emergency behavior."
+    },
+    {
+      "project": "hardware/interfaces",
+      "base_revision": "13fc23dae0dcd24fc2411d74f54a407999eaf555",
+      "patch": "hardware__interfaces.patch",
+      "sha256": "e8112414c98f1e7dd1bb20a8fba95daba8bee02f93551739a4d817bbaac94e05",
+      "purpose": "Install the selected OEM Bluetooth audio schemas and service init files; handle infrared HAL failures without crashes or leaked frequency buffers."
+    },
+    {
+      "project": "hardware/lineage/compat",
+      "base_revision": "70abb57ff28a6af13837ad41acfe55d34773bd19",
+      "patch": "hardware__lineage__compat.patch",
+      "sha256": "7795c086d869bd7e1feee20f4e45217fc9abfea9504f091117f5644d593601ef",
+      "purpose": "Preserve the selected device ABI input using its native platform install owner."
+    },
+    {
+      "project": "hardware/qcom-caf/bootctrl",
+      "base_revision": "25092672e644459db328b43fd1c7c57cbff65c91",
+      "patch": "hardware__qcom-caf__bootctrl.patch",
+      "sha256": "253fe0ef3e92503eb2dcb839db40558375a85a9388131bc8048e9cdda4c67a40",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "hardware/qcom-caf/common",
+      "base_revision": "c7eda1ff7fd99f29999abbe19922ce59a41ee000",
+      "patch": "hardware__qcom-caf__common.patch",
+      "sha256": "ac5cde48602e6bef00a868e180fd721e2440b7d099a87c0e0e7a7de7d164278a",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "hardware/qcom-caf/sm8750/audio/primary-hal",
+      "base_revision": "31964dd4cb5824bb71cadb19b39d82d77bd8b5a7",
+      "patch": "hardware__qcom-caf__sm8750__audio__primary-hal.patch",
+      "sha256": "609fa825660f3379f2bd848a9740a4bc27fb29701b677ad38d76b8cb3b50140c",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "hardware/qcom-caf/sm8750/data-ipa-cfg-mgr",
+      "base_revision": "5c754092b8e85dd72904b9a5c62a687bae9ce627",
+      "patch": "hardware__qcom-caf__sm8750__data-ipa-cfg-mgr.patch",
+      "sha256": "d3247114fcbca553a244671ff224398679973f2faa5f2d4a481d8c41a74ed2b6",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "hardware/qcom-caf/sm8750/display/hal",
+      "base_revision": "9c00ef9bd5cc5799a441c13e442a09756b6db51e",
+      "patch": "hardware__qcom-caf__sm8750__display__hal.patch",
+      "sha256": "c44f757ff037b8612230772655ac3722385acaef51a1565fa0416c6e7f1f013d",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "hardware/qcom-caf/thermal",
+      "base_revision": "a54c4bef6ae6df53684ec538e9fdd713775238cb",
+      "patch": "hardware__qcom-caf__thermal.patch",
+      "sha256": "751d9a47f781b03084c7e28a1d8043f51eeb7f716628b46e7ac8316656439bab",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "hardware/qcom-caf/wlan",
+      "base_revision": "9a49c02e9a8bb865319b506364ffb7e3695b500a",
+      "patch": "hardware__qcom-caf__wlan.patch",
+      "sha256": "11c23f638072d0218cf5f6c285bbad6cbcba2992d27b41250f8effab79ff03c5",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "packages/apps/AudioFX",
+      "base_revision": "2fc3a5405fb9d7330ad787e106af8229c7a72830",
+      "patch": "packages__apps__AudioFX.patch",
+      "sha256": "1f09d5edf9d2caea937a09dace99f6f54c45471c3c5cc0ec0b2494473768c382",
+      "purpose": "Handle effect service initialization failure without dereferencing an absent manager."
+    },
+    {
+      "project": "packages/apps/Settings",
+      "base_revision": "0b97deb37dcba757a3130899273fb4c298702f00",
+      "patch": "packages__apps__Settings.patch",
+      "sha256": "10943b2b32eb690e01e370af3630c21560e2ccefb9d6e84ac8a9555326011e5f",
+      "purpose": "Native fan switch/PWM page above Apps; no UI entries for the three removed optional tools; retain face secure preview integration."
+    },
+    {
+      "project": "packages/modules/Bluetooth",
+      "base_revision": "298215bd30bd983a3d6fd83c790373dd557e85a5",
+      "patch": "packages__modules__Bluetooth.patch",
+      "sha256": "98cd847d389e0e8181f0fb4830e18dbec664f7672cb32a5743e0afcf9a866217",
+      "purpose": "Bound vendor A2DP extension indexes and add regression cases."
+    },
+    {
+      "project": "packages/modules/Wifi",
+      "base_revision": "1fc68a681229619b99999ebd80d048184741644d",
+      "patch": "packages__modules__Wifi.patch",
+      "sha256": "1c998d523a3515b909b892fd69a06b1080de61fceed5768d59a97a9fae3e6766",
+      "purpose": "Preserve the selected device ABI input using its native platform install owner."
+    },
+    {
+      "project": "prebuilts/vndk/v34",
+      "base_revision": "c6a2527f4e03a89896f9d44331bc6fe91f679aab",
+      "patch": "prebuilts__vndk__v34.patch",
+      "sha256": "1323b23f5276ec66fd934be927446427cec78d13ac25bb356888a9eaa5950e38",
+      "purpose": "Export headers matching the retained BoringSSL VNDK ABI."
+    },
+    {
+      "project": "system/core",
+      "base_revision": "65d661b1a536701e8b118be4e9728d7b5ca727c9",
+      "patch": "system__core.patch",
+      "sha256": "7328179a8b06bdf45ca6763a6e72292963edd0010d042011bb3eaed49ce5e002",
+      "purpose": "Check fastboot metadata cleanup, preserve borrowed mounts, and retain device startup and USB integration."
+    },
+    {
+      "project": "system/extras",
+      "base_revision": "378b92d7f4511cb3f23a34fecc694b9704530374",
+      "patch": "system__extras.patch",
+      "sha256": "26c24a3f96a9374d76ef0db2d00cae9f92243f56394f395a650958bcc8e31c17",
+      "purpose": "Preserve the selected device ABI input using its native platform install owner."
+    },
+    {
+      "project": "system/fs/fs_mgr",
+      "base_revision": "f58ab8cf7115da90ba4db660cfdbf027de8fc872",
+      "patch": "system__fs__fs_mgr.patch",
+      "sha256": "f93be3c719983336c0b3ffa9c803165b1e3d59ddb9f767e4ed90b5b6e4b75030",
+      "purpose": "Handle mount and device-mapper failures and preserve snapshot cleanup ordering."
+    },
+    {
+      "project": "system/media",
+      "base_revision": "a6e89ff7fdee50366c2790e09531fd94f81e522b",
+      "patch": "system__media.patch",
+      "sha256": "204bdb867f2709f2563f05d8046e681d60591631fa863ac84005e663248f7193",
+      "purpose": "Represent the retained OEM audio HAL private enum values and isolate current camera metadata for the retained face bridge."
+    },
+    {
+      "project": "system/update_engine",
+      "base_revision": "b12fb307bb2f96c06370d143e38c3630f14044e0",
+      "patch": "system__update_engine.patch",
+      "sha256": "3ee06b389d94809efe3536ded8a72b2139dc1f2126d910b83cad0d6791028e82",
+      "purpose": "Propagate download setup failures and cover the error path with a regression test."
+    },
+    {
+      "project": "vendor/qcom/opensource/core-utils-vendor",
+      "base_revision": "414fa42592568a6d9537f804c3d7dd4a95fcfd86",
+      "patch": "vendor__qcom__opensource__core-utils-vendor.patch",
+      "sha256": "4aa581c4abbebe4533c9b59cd1290cd5f187d7ad1b99fea70243be85f8105db6",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "vendor/qcom/opensource/healthd-ext",
+      "base_revision": "9bdd090e6b5797d339e96b060c03412f36993554",
+      "patch": "vendor__qcom__opensource__healthd-ext.patch",
+      "sha256": "08feed280eea7f3b1bc737c40dd48539b51817e8d093a10646ea8d14b48aa2f0",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    },
+    {
+      "project": "vendor/qcom/opensource/usb",
+      "base_revision": "0d32cd0034b767aa8a6b5fbc8516570af8cf3e5f",
+      "patch": "vendor__qcom__opensource__usb.patch",
+      "sha256": "d0123b362a5a2febf29852dc9ba3e42efafda1ba062958f8afe080177049c8c0",
+      "purpose": "Select retained OTA service identities and configuration for warsaw."
+    }
+  ]
+}

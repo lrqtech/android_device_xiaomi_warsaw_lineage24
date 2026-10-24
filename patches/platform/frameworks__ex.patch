@@ -1,0 +1,25 @@
+diff --git a/camera2/extensions/sample/Android.bp b/camera2/extensions/sample/Android.bp
+index 7029175136b4daafb9bf7116f01eaabc066e1038..b28e2060072767aa1407e5c6f9be0446b442baad 100644
+--- a/camera2/extensions/sample/Android.bp
++++ b/camera2/extensions/sample/Android.bp
+@@ -32,3 +32,20 @@ prebuilt_etc {
+     sub_dir: "permissions",
+     vendor: true,
+ }
++
++
++// The warsaw OTA supplies the real vendor-tag implementation used by CameraExtensionsProxy.
++// Keep the sample available for other products and retain normal D8/dexpreopt/CLC checks.
++java_import {
++    name: "androidx.camera.extensions.impl",
++    owner: "xiaomi",
++    enabled: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": true,
++        default: false,
++    }),
++    prefer: true,
++    jars: ["//vendor/xiaomi/warsaw:warsaw-camera-extensions-dex-input"],
++    installable: true,
++    compile_dex: true,
++    vendor: true,
++}

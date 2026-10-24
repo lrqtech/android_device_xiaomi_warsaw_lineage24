@@ -21,7 +21,7 @@ def main():
     action.add_argument('--apply', action='store_true', help='Apply missing patches after all checks pass')
     args = parser.parse_args()
     source = args.source.resolve(strict=True)
-    series_dir = Path(__file__).resolve().parent / 'patches/stability-20261012'
+    series_dir = Path(__file__).resolve().parent / 'patches/platform'
     series = json.loads((series_dir / 'series.json').read_text())
     pending = []
     result = []

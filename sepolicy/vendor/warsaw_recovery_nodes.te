@@ -1,0 +1,12 @@
+# The kernel-less recovery uses the vendor-boot WALT/cpufreq modules and the
+# six retained audio modules before init starts ADSP and selects WALT.
+# Keep these grants and the exact governor labels out of normal Android.
+recovery_only(`
+type vendor_recovery_cpufreq_governor, fs_type, sysfs_type;
+allow init vendor_recovery_cpufreq_governor:file { open write };
+allow init vendor_sysfs_adsp_ssr:file { open write };
+
+# init.recovery.qcom.rc sets panel0 brightness. Keep the existing graphics
+# label used by the shared ueventd file_contexts; grant writes only in recovery.
+allow init vendor_sysfs_graphics:file { open write };
+')

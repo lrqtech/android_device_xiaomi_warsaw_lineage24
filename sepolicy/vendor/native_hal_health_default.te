@@ -7,3 +7,8 @@ typeattribute hal_health_default hal_health_server;
 typeattribute hal_health_default halserverdomain;
 
 allow hal_health_default hal_health_default_exec:file { read getattr map execute open entrypoint };
+
+# Only REC selects the source health HAL that reads ro.vendor.qti.soc_id.
+recovery_only(`
+get_prop(hal_health_default, vendor_soc_id_prop)
+')

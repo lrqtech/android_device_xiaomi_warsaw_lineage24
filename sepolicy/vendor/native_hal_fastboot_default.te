@@ -1,0 +1,4 @@
+# REC fastboot uses KernelLogger with the write-only descriptor opened by init.
+recovery_only(`
+allow hal_fastboot_default kmsg_device:chr_file write;
+')

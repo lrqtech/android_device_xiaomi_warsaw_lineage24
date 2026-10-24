@@ -1,6 +1,9 @@
 # Local build and editor artifacts
 /out/
 /.cache/
+/.pytest_cache/
+/.ruff_cache/
+/.venv/
 __pycache__/
 *.py[cod]
 *.log

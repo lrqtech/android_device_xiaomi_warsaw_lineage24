@@ -1,0 +1,2940 @@
+diff --git a/fastboot/Android.bp b/fastboot/Android.bp
+index 2636743304fa833408b971ed3647d9cef3df3ac7..442455e060be77ba3fbcd1e9dc23c3661a19430b 100644
+--- a/fastboot/Android.bp
++++ b/fastboot/Android.bp
+@@ -198,6 +198,7 @@ cc_binary {
+     ],
+ 
+     static_libs: [
++        "librecovery_fan_control",
+         "android.hardware.health-translate-ndk",
+         "libhealthhalutils",
+         "libhealthshim",
+diff --git a/fastboot/device/commands.cpp b/fastboot/device/commands.cpp
+index 92a323bb21d122f42bb4182616303e27f96bc000..316afb563c64f08e2a00776c8efd976eebe7af95 100644
+--- a/fastboot/device/commands.cpp
++++ b/fastboot/device/commands.cpp
+@@ -66,7 +66,8 @@ struct VariableHandlers {
+     // Callback to retrieve the value of a single variable.
+     std::function<bool(FastbootDevice*, const std::vector<std::string>&, std::string*)> get;
+     // Callback to retrieve all possible argument combinations, for getvar all.
+-    std::function<std::vector<std::vector<std::string>>(FastbootDevice*)> get_all_args;
++    std::function<android::base::Result<std::vector<std::vector<std::string>>>(FastbootDevice*)>
++            get_all_args;
+ };
+ 
+ static bool IsSnapshotUpdateInProgress(FastbootDevice* device) {
+@@ -87,27 +88,34 @@ static bool IsProtectedPartitionDuringMerge(FastbootDevice* device, const std::s
+     return IsSnapshotUpdateInProgress(device);
+ }
+ 
+-static void GetAllVars(FastbootDevice* device, const std::string& name,
+-                       const VariableHandlers& handlers) {
++static bool GetAllVars(FastbootDevice* device, const std::string& name,
++                       const VariableHandlers& handlers, std::string* error) {
+     if (!handlers.get_all_args) {
+         std::string message;
+         if (!handlers.get(device, std::vector<std::string>(), &message)) {
+-            return;
++            return true;
+         }
+-        device->WriteInfo(android::base::StringPrintf("%s:%s", name.c_str(), message.c_str()));
+-        return;
++        return device->WriteInfo(
++                android::base::StringPrintf("%s:%s", name.c_str(), message.c_str()));
+     }
+ 
+     auto all_args = handlers.get_all_args(device);
+-    for (const auto& args : all_args) {
++    if (!all_args.ok()) {
++        *error = all_args.error().message();
++        return false;
++    }
++    for (const auto& args : *all_args) {
+         std::string message;
+         if (!handlers.get(device, args, &message)) {
+             continue;
+         }
+         std::string arg_string = android::base::Join(args, ":");
+-        device->WriteInfo(android::base::StringPrintf("%s:%s:%s", name.c_str(), arg_string.c_str(),
+-                                                      message.c_str()));
++        if (!device->WriteInfo(android::base::StringPrintf("%s:%s:%s", name.c_str(),
++                                                          arg_string.c_str(), message.c_str()))) {
++            return false;
++        }
+     }
++    return true;
+ }
+ 
+ const std::unordered_map<std::string, VariableHandlers> kVariableMap = {
+@@ -151,9 +159,11 @@ const std::unordered_map<std::string, VariableHandlers> kVariableMap = {
+         {FB_VAR_BATTERY_PART_STATUS, {GetBatteryPartStatus, nullptr}},
+ };
+ 
+-static bool GetVarAll(FastbootDevice* device) {
++static bool GetVarAll(FastbootDevice* device, std::string* error) {
+     for (const auto& [name, handlers] : kVariableMap) {
+-        GetAllVars(device, name, handlers);
++        if (!GetAllVars(device, name, handlers, error)) {
++            return false;
++        }
+     }
+     return true;
+ }
+@@ -166,7 +176,8 @@ static void PostWipeData() {
+     }
+ }
+ 
+-const std::unordered_map<std::string, std::function<bool(FastbootDevice*)>> kSpecialVars = {
++const std::unordered_map<std::string, std::function<bool(FastbootDevice*, std::string*)>>
++        kSpecialVars = {
+         {"all", GetVarAll},
+         {"dmesg", GetDmesg},
+ };
+@@ -179,8 +190,12 @@ bool GetVarHandler(FastbootDevice* device, const std::vector<std::string>& args)
+     // "all" and "dmesg" are multiline and handled specially.
+     auto found_special = kSpecialVars.find(args[1]);
+     if (found_special != kSpecialVars.end()) {
+-        if (!found_special->second(device)) {
+-            return false;
++        std::string error;
++        if (!found_special->second(device, &error)) {
++            if (error.empty()) {
++                return false;
++            }
++            return device->WriteFail(error);
+         }
+         return device->WriteOkay("");
+     }
+@@ -222,6 +237,8 @@ bool OemPostWipeData(FastbootDevice* device) {
+     }
+ }
+ 
++static bool CancelPartitionSnapshot(FastbootDevice* device, const std::string& partition_name);
++
+ bool EraseHandler(FastbootDevice* device, const std::vector<std::string>& args) {
+     if (args.size() < 2) {
+         return device->WriteStatus(FastbootResult::FAIL, "Invalid arguments");
+@@ -237,6 +254,11 @@ bool EraseHandler(FastbootDevice* device, const std::vector<std::string>& args)
+         return device->WriteFail(message);
+     }
+ 
++    if (LogicalPartitionExists(device, partition_name) &&
++        !CancelPartitionSnapshot(device, partition_name)) {
++        return device->WriteFail("Unable to cancel partition snapshot");
++    }
++
+     PartitionHandle handle;
+     if (!OpenPartition(device, partition_name, &handle)) {
+         return device->WriteStatus(FastbootResult::FAIL, "Partition doesn't exist");
+@@ -304,13 +326,17 @@ bool DownloadHandler(FastbootDevice* device, const std::vector<std::string>& arg
+     if (size == 0) {
+         return device->WriteStatus(FastbootResult::FAIL, "Invalid size (0)");
+     }
+-    device->download_data().resize(size);
++    device->BeginDownload(size);
+     if (!device->WriteStatus(FastbootResult::DATA, android::base::StringPrintf("%08x", size))) {
+         return false;
+     }
+ 
+     if (device->HandleData(true, &device->download_data())) {
+-        return device->WriteStatus(FastbootResult::OKAY, "");
++        if (!device->WriteStatus(FastbootResult::OKAY, "")) {
++            return false;
++        }
++        device->CommitDownload();
++        return true;
+     }
+ 
+     PLOG(ERROR) << "Couldn't download data";
+@@ -382,7 +408,7 @@ bool SetActiveHandler(FastbootDevice* device, const std::vector<std::string>& ar
+ bool ShutDownHandler(FastbootDevice* device, const std::vector<std::string>& /* args */) {
+     auto result = device->WriteStatus(FastbootResult::OKAY, "Shutting down");
+     android::base::SetProperty(ANDROID_RB_PROPERTY, "shutdown,fastboot");
+-    device->CloseDevice();
++    result = device->CloseDevice() && result;
+     TEMP_FAILURE_RETRY(pause());
+     return result;
+ }
+@@ -390,7 +416,7 @@ bool ShutDownHandler(FastbootDevice* device, const std::vector<std::string>& /*
+ bool RebootHandler(FastbootDevice* device, const std::vector<std::string>& /* args */) {
+     auto result = device->WriteStatus(FastbootResult::OKAY, "Rebooting");
+     android::base::SetProperty(ANDROID_RB_PROPERTY, "reboot,from_fastboot");
+-    device->CloseDevice();
++    result = device->CloseDevice() && result;
+     TEMP_FAILURE_RETRY(pause());
+     return result;
+ }
+@@ -398,7 +424,7 @@ bool RebootHandler(FastbootDevice* device, const std::vector<std::string>& /* ar
+ bool RebootBootloaderHandler(FastbootDevice* device, const std::vector<std::string>& /* args */) {
+     auto result = device->WriteStatus(FastbootResult::OKAY, "Rebooting bootloader");
+     android::base::SetProperty(ANDROID_RB_PROPERTY, "reboot,bootloader");
+-    device->CloseDevice();
++    result = device->CloseDevice() && result;
+     TEMP_FAILURE_RETRY(pause());
+     return result;
+ }
+@@ -406,7 +432,7 @@ bool RebootBootloaderHandler(FastbootDevice* device, const std::vector<std::stri
+ bool RebootFastbootHandler(FastbootDevice* device, const std::vector<std::string>& /* args */) {
+     auto result = device->WriteStatus(FastbootResult::OKAY, "Rebooting fastboot");
+     android::base::SetProperty(ANDROID_RB_PROPERTY, "reboot,fastboot");
+-    device->CloseDevice();
++    result = device->CloseDevice() && result;
+     TEMP_FAILURE_RETRY(pause());
+     return result;
+ }
+@@ -428,9 +454,15 @@ static bool EnterRecovery() {
+     }
+     // Switch to recovery will not update the boot reason since it does not
+     // require a reboot.
+-    auto ret = write(sock.get(), &msg_switch_to_recovery, sizeof(msg_switch_to_recovery));
++    auto ret = TEMP_FAILURE_RETRY(send(sock.get(), &msg_switch_to_recovery,
++                                       sizeof(msg_switch_to_recovery), MSG_NOSIGNAL));
+     if (ret != sizeof(msg_switch_to_recovery)) {
+-        PLOG(ERROR) << "Couldn't write message to switch to recovery";
++        if (ret < 0) {
++            PLOG(ERROR) << "Couldn't send message to switch to recovery";
++        } else {
++            LOG(ERROR) << "Incomplete message to switch to recovery: sent " << ret << " of "
++                       << sizeof(msg_switch_to_recovery) << " bytes";
++        }
+         return false;
+     }
+ 
+@@ -438,13 +470,11 @@ static bool EnterRecovery() {
+ }
+ 
+ bool RebootRecoveryHandler(FastbootDevice* device, const std::vector<std::string>& /* args */) {
+-    auto status = true;
+-    if (EnterRecovery()) {
+-        status = device->WriteStatus(FastbootResult::OKAY, "Rebooting to recovery");
+-    } else {
+-        status = device->WriteStatus(FastbootResult::FAIL, "Unable to reboot to recovery");
++    if (!EnterRecovery()) {
++        return device->WriteFail("Unable to reboot to recovery");
+     }
+-    device->CloseDevice();
++    auto status = device->WriteStatus(FastbootResult::OKAY, "Rebooting to recovery");
++    status = device->CloseDevice() && status;
+     TEMP_FAILURE_RETRY(pause());
+     return status;
+ }
+@@ -584,18 +614,18 @@ bool ResizePartitionHandler(FastbootDevice* device, const std::vector<std::strin
+     return device->WriteOkay("Partition resized");
+ }
+ 
+-void CancelPartitionSnapshot(FastbootDevice* device, const std::string& partition_name) {
++static bool CancelPartitionSnapshot(FastbootDevice* device, const std::string& partition_name) {
+     PartitionBuilder builder(device, partition_name);
+-    if (!builder.Valid()) return;
++    if (!builder.Valid()) return false;
+ 
+     auto partition = builder->FindPartition(partition_name);
+-    if (!partition) return;
++    if (!partition) return false;
+ 
+-    // Remove the updated flag to cancel any snapshots.
++    // Keep every metadata slot in sync, including the OTA target slot.
+     uint32_t attrs = partition->attributes();
+     partition->set_attributes(attrs & ~LP_PARTITION_ATTR_UPDATED);
+ 
+-    builder.Write();
++    return builder.Write();
+ }
+ 
+ bool FlashHandler(FastbootDevice* device, const std::vector<std::string>& args) {
+@@ -608,14 +638,19 @@ bool FlashHandler(FastbootDevice* device, const std::vector<std::string>& args)
+                                    "Flashing is not allowed on locked devices");
+     }
+ 
++    if (!device->HasValidDownload()) {
++        return device->WriteFail("No valid download available");
++    }
++
+     const auto& partition_name = args[1];
+     if (IsProtectedPartitionDuringMerge(device, partition_name)) {
+         auto message = "Cannot flash " + partition_name + " while a snapshot update is in progress";
+         return device->WriteFail(message);
+     }
+ 
+-    if (LogicalPartitionExists(device, partition_name)) {
+-        CancelPartitionSnapshot(device, partition_name);
++    if (LogicalPartitionExists(device, partition_name) &&
++        !CancelPartitionSnapshot(device, partition_name)) {
++        return device->WriteFail("Unable to cancel partition snapshot");
+     }
+ 
+     int ret = Flash(device, partition_name);
+@@ -687,6 +722,9 @@ bool GsiHandler(FastbootDevice* device, const std::vector<std::string>& args) {
+     } else {
+         return device->WriteFail("Invalid arguments");
+     }
++    if (!mount_metadata.Close()) {
++        return device->WriteFail("GSI operation completed, but /metadata could not be unmounted");
++    }
+     return device->WriteStatus(FastbootResult::OKAY, "Success");
+ }
+ 
+@@ -719,8 +757,8 @@ bool SnapshotUpdateHandler(FastbootDevice* device, const std::vector<std::string
+             case MergeStatus::MERGING: {
+                 const auto ret = hal->SetSnapshotMergeStatus(MergeStatus::CANCELLED);
+                 if (!ret.success) {
+-                    device->WriteFail("Failed to SetSnapshotMergeStatus(MergeStatus::CANCELLED) " +
+-                                      ret.errMsg);
++                    return device->WriteFail(
++                            "Failed to SetSnapshotMergeStatus(MergeStatus::CANCELLED) " + ret.errMsg);
+                 }
+                 break;
+             }
+diff --git a/fastboot/device/fastboot_device.cpp b/fastboot/device/fastboot_device.cpp
+index 43fd1bf3553f2e6fb45e8e610b1be82a68cb4fe8..8d2aa1ff81ea12bb74efa06b50f1e6b89057eb71 100644
+--- a/fastboot/device/fastboot_device.cpp
++++ b/fastboot/device/fastboot_device.cpp
+@@ -15,6 +15,7 @@
+  */
+ 
+ #include "fastboot_device.h"
++#include <recovery_fan/fan.h>
+ 
+ #include <algorithm>
+ 
+@@ -132,8 +133,16 @@ FastbootDevice::~FastbootDevice() {
+     CloseDevice();
+ }
+ 
+-void FastbootDevice::CloseDevice() {
+-    transport_->Close();
++bool FastbootDevice::CloseDevice() {
++    if (!close_attempted_) {
++        close_attempted_ = true;
++        close_succeeded_ = transport_->Close() == 0;
++        if (!close_succeeded_) {
++            // The descriptor may already be closed or reused. Do not retry.
++            LOG(ERROR) << "Failed to close fastboot transport";
++        }
++    }
++    return close_succeeded_;
+ }
+ 
+ std::string FastbootDevice::GetCurrentSlot() {
+@@ -229,6 +238,18 @@ void FastbootDevice::ExecuteCommands() {
+             WriteStatus(FastbootResult::FAIL, "Unrecognized command " + args[0]);
+             continue;
+         }
++        std::string fan_error;
++        if (!recovery_fan::Check(&fan_error)) {
++            // Reject every handler, including download, flash and reboot. Do
++            // not let a previously downloaded payload survive failed admission.
++            download_data_valid_ = false;
++            download_data_.clear();
++            LOG(ERROR) << "REC fan admission failed: " << fan_error;
++            if (!WriteFail("REC fan is not configured at 99% PWM; use the recovery error menu")) {
++                return;
++            }
++            continue;
++        }
+         if (!found_command->second(this, args)) {
+             return;
+         }
+diff --git a/fastboot/device/fastboot_device.h b/fastboot/device/fastboot_device.h
+index c0e5bf22ae745b1fc79f57d093dc0e1608a72e54..fee39349ea67d944c57b300428235a217b2608bc 100644
+--- a/fastboot/device/fastboot_device.h
++++ b/fastboot/device/fastboot_device.h
+@@ -36,7 +36,8 @@ class FastbootDevice {
+     FastbootDevice();
+     ~FastbootDevice();
+ 
+-    void CloseDevice();
++    // Reports the first close result; a failed close must never be retried.
++    bool CloseDevice();
+     void ExecuteCommands();
+     bool WriteStatus(FastbootResult result, const std::string& message);
+     bool HandleData(bool read, std::vector<char>* data);
+@@ -49,6 +50,19 @@ class FastbootDevice {
+     bool WriteInfo(const std::string& message);
+ 
+     std::vector<char>& download_data() { return download_data_; }
++    // Invalidate before accepting a new DATA transaction without releasing the
++    // existing buffer on a later transfer or status error.
++    void BeginDownload(size_t size) {
++        download_data_valid_ = false;
++        download_data_.resize(size);
++    }
++    void CommitDownload() { download_data_valid_ = true; }
++    bool HasValidDownload() const { return download_data_valid_ && !download_data_.empty(); }
++    std::vector<char> TakeDownload() {
++        if (!HasValidDownload()) return {};
++        download_data_valid_ = false;
++        return std::move(download_data_);
++    }
+     Transport* get_transport() { return transport_.get(); }
+     BootControlClient* boot_control_hal() const { return boot_control_hal_.get(); }
+     std::shared_ptr<aidl::android::hardware::fastboot::IFastboot> fastboot_hal() {
+@@ -65,6 +79,9 @@ class FastbootDevice {
+     std::unique_ptr<BootControlClient> boot_control_hal_;
+     std::shared_ptr<aidl::android::hardware::health::IHealth> health_hal_;
+     std::shared_ptr<aidl::android::hardware::fastboot::IFastboot> fastboot_hal_;
++    bool download_data_valid_ = false;
+     std::vector<char> download_data_;
+     std::string active_slot_;
++    bool close_attempted_ = false;
++    bool close_succeeded_ = false;
+ };
+diff --git a/fastboot/device/flashing.cpp b/fastboot/device/flashing.cpp
+index 520d92b6014d34ececd4ceb21eac0616af712c3b..0ac109ac5d437f7285e825677af77179ede031ea 100644
+--- a/fastboot/device/flashing.cpp
++++ b/fastboot/device/flashing.cpp
+@@ -49,11 +49,10 @@ namespace {
+ 
+ constexpr uint32_t SPARSE_HEADER_MAGIC = 0xed26ff3a;
+ 
+-void WipeOverlayfsForPartition(FastbootDevice* device, const std::string& partition_name) {
++bool WipeOverlayfsForPartition(FastbootDevice* device, const std::string& partition_name) {
+     // May be called, in the case of sparse data, multiple times so cache/skip.
+     static std::set<std::string> wiped;
+-    if (wiped.find(partition_name) != wiped.end()) return;
+-    wiped.insert(partition_name);
++    if (wiped.find(partition_name) != wiped.end()) return true;
+     // Following appears to have a first time 2% impact on flashing speeds.
+ 
+     // Convert partition_name to a validated mount point and wipe.
+@@ -70,8 +69,11 @@ void WipeOverlayfsForPartition(FastbootDevice* device, const std::string& partit
+         if ((partition + device->GetCurrentSlot()) == partition_name) {
+             mount_metadata.emplace();
+             android::fs_mgr::TeardownAllOverlayForMountPoint(entry.mount_point);
++            if (!mount_metadata->Close()) return false;
+         }
+     }
++    wiped.insert(partition_name);
++    return true;
+ }
+ 
+ }  // namespace
+@@ -174,12 +176,16 @@ static void CopyAVBFooter(std::vector<char>* data, const uint64_t block_device_s
+ }
+ 
+ int Flash(FastbootDevice* device, const std::string& partition_name) {
++    if (!device->HasValidDownload()) {
++        LOG(ERROR) << "Cannot flash without a valid download";
++        return -EINVAL;
++    }
+     PartitionHandle handle;
+     if (!OpenPartition(device, partition_name, &handle, O_WRONLY | O_DIRECT)) {
+         return -ENOENT;
+     }
+ 
+-    std::vector<char> data = std::move(device->download_data());
++    std::vector<char> data = device->TakeDownload();
+     if (data.size() == 0) {
+         LOG(ERROR) << "Cannot flash empty data vector";
+         return -EINVAL;
+@@ -192,20 +198,21 @@ int Flash(FastbootDevice* device, const std::string& partition_name) {
+         CopyAVBFooter(&data, block_device_size);
+     }
+     if (android::base::GetProperty("ro.system.build.type", "") != "user") {
+-        WipeOverlayfsForPartition(device, partition_name);
++        if (!WipeOverlayfsForPartition(device, partition_name)) return -EIO;
+     }
+     int result = FlashBlockDevice(&handle, data);
+     sync();
+     return result;
+ }
+ 
+-static void RemoveScratchPartition() {
++static bool RemoveScratchPartition() {
+     AutoMountMetadata mount_metadata;
+     android::fs_mgr::TeardownAllOverlayForMountPoint();
++    return mount_metadata.Close();
+ }
+ 
+ bool UpdateSuper(FastbootDevice* device, const std::string& super_name, bool wipe) {
+-    std::vector<char> data = std::move(device->download_data());
++    std::vector<char> data = device->TakeDownload();
+     if (data.empty()) {
+         return device->WriteFail("No data available");
+     }
+@@ -236,7 +243,9 @@ bool UpdateSuper(FastbootDevice* device, const std::string& super_name, bool wip
+         if (!FlashPartitionTable(super_name, *new_metadata.get())) {
+             return device->WriteFail("Unable to flash new partition table");
+         }
+-        RemoveScratchPartition();
++        if (!RemoveScratchPartition()) {
++            return device->WriteFail("Partition table flashed, but /metadata could not be unmounted");
++        }
+         sync();
+         return device->WriteOkay("Successfully flashed partition table");
+     }
+@@ -265,6 +274,9 @@ bool UpdateSuper(FastbootDevice* device, const std::string& super_name, bool wip
+ 
+     if (!partitions_to_keep.empty()) {
+         std::unique_ptr<MetadataBuilder> builder = MetadataBuilder::New(*new_metadata.get());
++        if (!builder) {
++            return device->WriteFail("Unable to build new partition table");
++        }
+         if (!builder->ImportPartitions(*old_metadata.get(), partitions_to_keep)) {
+             return device->WriteFail(
+                     "Old partitions are not compatible with the new super layout; wipe needed");
+diff --git a/fastboot/device/main.cpp b/fastboot/device/main.cpp
+index 2e8de8a81986cc5c0b12b6c2bf47b3516f103f26..57b5377197c2210885b96422f0ab692ae9e935e9 100644
+--- a/fastboot/device/main.cpp
++++ b/fastboot/device/main.cpp
+@@ -15,6 +15,8 @@
+  */
+ 
+ #include <stdarg.h>
++#include <chrono>
++#include <thread>
+ 
+ #include <android-base/logging.h>
+ #include <android-base/stringprintf.h>
+@@ -43,7 +45,12 @@ int main(int /*argc*/, char* argv[]) {
+     sparse_print_verbose = LogSparseVerboseMessage;
+ 
+     while (true) {
+-        FastbootDevice device;
+-        device.ExecuteCommands();
++        {
++            FastbootDevice device;
++            device.ExecuteCommands();
++        }
++        // Finish transport and payload destruction before retrying a failed
++        // listener or disconnected client. Avoid spinning on persistent errors.
++        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+     }
+ }
+diff --git a/fastboot/device/tcp_client.cpp b/fastboot/device/tcp_client.cpp
+index ec5e1e35a7083a29cda4e83d46b00cc56670e7c6..72a0f8fd1f0adde1718113e31bb58e54c0a32019 100644
+--- a/fastboot/device/tcp_client.cpp
++++ b/fastboot/device/tcp_client.cpp
+@@ -17,6 +17,9 @@
+ #include "tcp_client.h"
+ #include "constants.h"
+ 
++#include <algorithm>
++#include <cerrno>
++
+ #include <android-base/errors.h>
+ #include <android-base/logging.h>
+ #include <android-base/parseint.h>
+@@ -46,54 +49,70 @@ static void EncodeMessageLength(uint64_t length, void* buffer) {
+ }
+ 
+ ClientTcpTransport::ClientTcpTransport() {
++    if (!android::base::SetProperty("sys.fastbootd.ready", "none")) {
++        LOG(ERROR) << "cannot clear previous fastboot readiness";
++        closed_ = true;
++        close_result_ = -1;
++        errno = EIO;
++        return;
++    }
+     service_ = Socket::NewServer(Socket::Protocol::kTcp, kDefaultPort);
+-
+-    // A workaround to notify recovery to continue its work.
+-    android::base::SetProperty("sys.usb.ffs.ready", "1");
++    if (service_ == nullptr) {
++        closed_ = true;
++        close_result_ = -1;
++        return;
++    }
++    if (!android::base::SetProperty("sys.fastbootd.ready", "tcp")) {
++        LOG(ERROR) << "cannot publish TCP fastboot readiness";
++        close_result_ = -1;
++        Close();
++        errno = EIO;
++    }
+ }
+ 
+ ssize_t ClientTcpTransport::Read(void* data, size_t len) {
+-    if (len > SSIZE_MAX) {
++    if (closed_ || len > SSIZE_MAX) {
++        return -1;
++    }
++    if (len == 0) {
++        return 0;
++    }
++    if (socket_ == nullptr && !ListenFastbootSocket()) {
++        Close();
+         return -1;
+     }
+ 
+     size_t total_read = 0;
+     do {
+-        // Read a new message
++        // A disconnect terminates this transport. The main loop must create a
++        // new FastbootDevice, discarding the old connection's downloaded data.
+         while (message_bytes_left_ == 0) {
+-            if (socket_ == nullptr) {
+-                ListenFastbootSocket();
+-            }
+-
+             char buffer[8];
+-            if (socket_->ReceiveAll(buffer, 8, 0) == 8) {
+-                message_bytes_left_ = ExtractMessageLength(buffer);
+-            } else {
+-                // If connection is closed by host, Receive will return 0 immediately.
+-                socket_.reset(nullptr);
+-                // In DATA phase, return error.
+-                if (downloading_) {
+-                    return -1;
+-                }
++            if (socket_->ReceiveAll(buffer, sizeof(buffer), 0) !=
++                static_cast<ssize_t>(sizeof(buffer))) {
++                Close();
++                return -1;
++            }
++            message_bytes_left_ = ExtractMessageLength(buffer);
++            // A command or download frame must fit in the requested buffer.
++            // Never dispatch its prefix or leave payload bytes as the next command.
++            if (message_bytes_left_ > len - total_read) {
++                Close();
++                return -1;
+             }
+         }
+ 
+-        size_t read_length = len - total_read;
+-        if (read_length > message_bytes_left_) {
+-            read_length = message_bytes_left_;
+-        }
++        size_t read_length = std::min<uint64_t>(len - total_read, message_bytes_left_);
+         ssize_t bytes_read =
+                 socket_->ReceiveAll(reinterpret_cast<char*>(data) + total_read, read_length, 0);
+-        if (bytes_read == -1) {
+-            socket_.reset(nullptr);
++        // ReceiveAll can return a positive short count when EOF follows data.
++        if (bytes_read != static_cast<ssize_t>(read_length)) {
++            Close();
+             return -1;
+-        } else {
+-            message_bytes_left_ -= bytes_read;
+-            total_read += bytes_read;
+         }
+-    // There are more than one DATA phases if the downloading buffer is too
+-    // large, like a very big system image. All of data phases should be
+-    // received until the whole buffer is filled in that case.
++        message_bytes_left_ -= bytes_read;
++        total_read += bytes_read;
++    // Keep the existing support for a download split across multiple TCP frames.
+     } while (downloading_ && total_read < len);
+ 
+     return total_read;
+@@ -109,12 +128,13 @@ ssize_t ClientTcpTransport::Write(const void* data, size_t len) {
+     EncodeMessageLength(len, header);
+ 
+     if (!socket_->Send(std::vector<cutils_socket_buffer_t>{{header, 8}, {data, len}})) {
+-        socket_.reset(nullptr);
++        Close();
+         return -1;
+     }
+ 
+     // In DATA phase
+-    if (android::base::StartsWith(reinterpret_cast<const char*>(data), RESPONSE_DATA)) {
++    if (len >= sizeof(RESPONSE_DATA) - 1 &&
++        memcmp(data, RESPONSE_DATA, sizeof(RESPONSE_DATA) - 1) == 0) {
+         downloading_ = true;
+     } else {
+         downloading_ = false;
+@@ -124,53 +144,74 @@ ssize_t ClientTcpTransport::Write(const void* data, size_t len) {
+ }
+ 
+ int ClientTcpTransport::Close() {
+-    if (socket_ == nullptr) {
+-        return -1;
++    if (closed_) return close_result_;
++    closed_ = true;
++    message_bytes_left_ = 0;
++    downloading_ = false;
++    int close_error = 0;
++    // Socket::Close invalidates its descriptor even on error; do not retry it.
++    // Keep failures sticky so an earlier read/write cleanup error is observable.
++    if (socket_ != nullptr && socket_->Close() != 0) {
++        close_result_ = -1;
++        close_error = errno;
++        PLOG(ERROR) << "Failed to close TCP fastboot connection";
+     }
+-    socket_.reset(nullptr);
+-
+-    return 0;
++    socket_.reset();
++    if (service_ != nullptr && service_->Close() != 0) {
++        close_result_ = -1;
++        if (!close_error) close_error = errno;
++        PLOG(ERROR) << "Failed to close TCP fastboot listener";
++    }
++    service_.reset();
++    if (!android::base::SetProperty("sys.fastbootd.ready", "none")) {
++        LOG(ERROR) << "cannot clear TCP fastboot readiness";
++        close_result_ = -1;
++        if (!close_error) close_error = EIO;
++    }
++    if (close_error) errno = close_error;
++    return close_result_;
+ }
+ 
+ int ClientTcpTransport::Reset() {
+     return Close();
+ }
+ 
+-void ClientTcpTransport::ListenFastbootSocket() {
+-    while (true) {
++bool ClientTcpTransport::ListenFastbootSocket() {
++    if (service_ == nullptr) {
++        PLOG(ERROR) << "Fastboot TCP listener is unavailable";
++        return false;
++    }
++    do {
+         socket_ = service_->Accept();
++    } while (socket_ == nullptr && errno == EINTR);
++    if (socket_ == nullptr) {
++        PLOG(ERROR) << "Failed to accept fastboot connection";
++        return false;
++    }
+ 
+-        // Handshake
+-        char buffer[kHandshakeLength + 1];
+-        buffer[kHandshakeLength] = '\0';
+-        if (socket_->ReceiveAll(buffer, kHandshakeLength, kHandshakeTimeoutMs) !=
+-            kHandshakeLength) {
+-            PLOG(ERROR) << "No Handshake message received";
+-            socket_.reset(nullptr);
+-            continue;
+-        }
+-
+-        if (memcmp(buffer, "FB", 2) != 0) {
+-            PLOG(ERROR) << "Unrecognized initialization message";
+-            socket_.reset(nullptr);
+-            continue;
+-        }
+-
+-        int version = 0;
+-        if (!android::base::ParseInt(buffer + 2, &version) || version < kProtocolVersion) {
+-            LOG(ERROR) << "Unknown TCP protocol version " << buffer + 2
+-                       << ", our version: " << kProtocolVersion;
+-            socket_.reset(nullptr);
+-            continue;
+-        }
+-
+-        std::string handshake_message(android::base::StringPrintf("FB%02d", kProtocolVersion));
+-        if (!socket_->Send(handshake_message.c_str(), kHandshakeLength)) {
+-            PLOG(ERROR) << "Failed to send initialization message";
+-            socket_.reset(nullptr);
+-            continue;
+-        }
+-
+-        break;
++    // A malformed handshake ends this device instance as well. Accepting a new
++    // client is the next FastbootDevice's responsibility, outside any lease.
++    char buffer[kHandshakeLength + 1];
++    buffer[kHandshakeLength] = '\0';
++    if (socket_->ReceiveAll(buffer, kHandshakeLength, kHandshakeTimeoutMs) !=
++        kHandshakeLength) {
++        PLOG(ERROR) << "No Handshake message received";
++        return false;
++    }
++    if (memcmp(buffer, "FB", 2) != 0) {
++        LOG(ERROR) << "Unrecognized initialization message";
++        return false;
++    }
++    int version = 0;
++    if (!android::base::ParseInt(buffer + 2, &version) || version < kProtocolVersion) {
++        LOG(ERROR) << "Unknown TCP protocol version " << buffer + 2
++                   << ", our version: " << kProtocolVersion;
++        return false;
++    }
++    std::string handshake_message(android::base::StringPrintf("FB%02d", kProtocolVersion));
++    if (!socket_->Send(handshake_message.c_str(), kHandshakeLength)) {
++        PLOG(ERROR) << "Failed to send initialization message";
++        return false;
+     }
++    return true;
+ }
+diff --git a/fastboot/device/tcp_client.h b/fastboot/device/tcp_client.h
+index 32e98343b17433b988d9c03e2c3c36d4508e7737..415ffbd5c02ce4c0219d29deabd17a946bc5c557 100644
+--- a/fastboot/device/tcp_client.h
++++ b/fastboot/device/tcp_client.h
+@@ -31,12 +31,15 @@ class ClientTcpTransport : public Transport {
+     int Reset() override;
+ 
+   private:
+-    void ListenFastbootSocket();
++    bool ListenFastbootSocket();
+ 
+     std::unique_ptr<Socket> service_;
+     std::unique_ptr<Socket> socket_;
+     uint64_t message_bytes_left_ = 0;
+     bool downloading_ = false;
++    // One transport belongs to one accepted protocol connection.
++    bool closed_ = false;
++    int close_result_ = 0;
+ 
+     DISALLOW_COPY_AND_ASSIGN(ClientTcpTransport);
+ };
+diff --git a/fastboot/device/usb.cpp b/fastboot/device/usb.cpp
+index 727dcd23e1c5549ff782686b500437db3cf048e7..19569eb5f5e1097eff1b566597e054ca888dd896 100644
+--- a/fastboot/device/usb.cpp
++++ b/fastboot/device/usb.cpp
+@@ -15,6 +15,7 @@
+  */
+ 
+ #include "usb.h"
++#include "usb_client.h"
+ #include "usb_iouring.h"
+ 
+ #include <dirent.h>
+@@ -54,7 +55,7 @@ using namespace std::chrono_literals;
+ // Number of buffers needed to fit MAX_PAYLOAD, with an extra for ZLPs.
+ #define USB_FFS_NUM_BUFS ((4 * MAX_PAYLOAD / USB_FFS_BULK_SIZE) + 1)
+ 
+-static void aio_block_init(aio_block* aiob, unsigned num_bufs) {
++static bool aio_block_init(aio_block* aiob, unsigned num_bufs) {
+     aiob->iocb.resize(num_bufs);
+     aiob->iocbs.resize(num_bufs);
+     aiob->events.resize(num_bufs);
+@@ -64,8 +65,14 @@ static void aio_block_init(aio_block* aiob, unsigned num_bufs) {
+     }
+     memset(&aiob->ctx, 0, sizeof(aiob->ctx));
+     if (io_setup(num_bufs, &aiob->ctx)) {
+-        D("[ aio: got error on io_setup (%d) ]", errno);
++        const int setup_error = errno;
++        // An unsuccessful setup does not transfer ownership of a context.
++        aiob->ctx = 0;
++        LOG(ERROR) << "aio: io_setup failed: " << strerror(setup_error);
++        errno = setup_error;
++        return false;
+     }
++    return true;
+ }
+ 
+ int getMaxPacketSize(int ffs_fd) {
+@@ -168,37 +175,82 @@ static int usb_ffs_do_aio(usb_handle* h, const void* data, int len, bool read) {
+     }
+ 
+     while (true) {
+-        if (TEMP_FAILURE_RETRY(io_submit(aiob->ctx, num_bufs, aiob->iocbs.data())) < num_bufs) {
+-            PLOG(ERROR) << "aio: got error submitting " << (read ? "read" : "write");
++        std::vector<bool> completed(num_bufs, false);
++        std::vector<int64_t> results(num_bufs, 0);
++        const int submitted = TEMP_FAILURE_RETRY(io_submit(aiob->ctx, num_bufs, aiob->iocbs.data()));
++        if (submitted < 0) {
++            PLOG(ERROR) << "aio: error submitting " << (read ? "read" : "write");
+             return -1;
+         }
+-        if (TEMP_FAILURE_RETRY(io_getevents(aiob->ctx, num_bufs, num_bufs, aiob->events.data(),
+-                                            nullptr)) < num_bufs) {
+-            PLOG(ERROR) << "aio: got error waiting " << (read ? "read" : "write");
++        int first_error = submitted == num_bufs ? 0 : EIO;
++        if (first_error) {
++            LOG(ERROR) << "aio: submitted " << submitted << " of " << num_bufs << " requests";
++        }
++        aiob->num_submitted = submitted;
++        // A short submission still owns its accepted prefix. A failed wait is not
++        // a completion and must not let the caller free its buffer or handle.
++        while (aiob->num_submitted > 0) {
++            const int count = TEMP_FAILURE_RETRY(io_getevents(
++                    aiob->ctx, 1, aiob->num_submitted, aiob->events.data(), nullptr));
++            if (count <= 0) {
++                if (!first_error) {
++                    first_error = count < 0 ? errno : EIO;
++                    LOG(ERROR) << "aio: completion wait failed; retaining pending requests: "
++                               << strerror(first_error);
++                }
++                std::this_thread::sleep_for(std::chrono::milliseconds(100));
++                continue;
++            }
++            for (int i = 0; i < count; ++i) {
++                const auto& event = aiob->events[i];
++                int index = 0;
++                while (index < submitted &&
++                       event.obj != reinterpret_cast<uintptr_t>(aiob->iocbs[index])) {
++                    ++index;
++                }
++                if (index == submitted || completed[index]) {
++                    if (!first_error) first_error = EPROTO;
++                    LOG(ERROR) << "aio: unknown or duplicate completion; retaining pending requests";
++                    continue;
++                }
++                completed[index] = true;
++                results[index] = event.res;
++                // Keep the first non-retryable completion error in arrival order.
++                // Only the existing single-request EINTR retry and read HALT
++                // cancellation are candidates for retry after the whole batch drains.
++                if (event.res < 0 && !(num_bufs == 1 && event.res == -EINTR) &&
++                    !(read && event.res == -EPIPE) && !first_error) {
++                    first_error = -event.res;
++                    LOG(ERROR) << "aio: completion error on " << (read ? "read" : "write")
++                               << ": " << strerror(first_error);
++                }
++                --aiob->num_submitted;
++            }
++        }
++        if (first_error) {
++            errno = first_error;
+             return -1;
+         }
+-        if (num_bufs == 1 && aiob->events[0].res == -EINTR) {
++        if (num_bufs == 1 && results[0] == -EINTR) {
+             continue;
+         }
+-        if (read && aiob->events[0].res == -EPIPE) {
+-            // On initial connection, some clients will send a ClearFeature(HALT) to
+-            // attempt to resynchronize host and device after the fastboot server is killed.
+-            // On newer device kernels, the reads we've already dispatched will be cancelled.
+-            // Instead of treating this as a failure, which will tear down the interface and
+-            // lead to the client doing the same thing again, just resubmit if this happens
+-            // before we've actually read anything.
+-            PLOG(ERROR) << "aio: got -EPIPE on first read attempt. Re-submitting read... ";
++        if (read && num_bufs > 0 && results[0] == -EPIPE &&
++            std::all_of(results.begin(), results.end(),
++                        [](int64_t result) { return result == 0 || result == -EPIPE; })) {
++            // Preserve initial ClearFeature(HALT) recovery only for an entirely
++            // drained batch of zero-byte completions or the same HALT cancellation.
++            // Other negative results are real errors, not permission to retry.
++            LOG(ERROR) << "aio: got -EPIPE on first read attempt. Re-submitting read...";
+             continue;
+         }
+         int ret = 0;
+-        for (int i = 0; i < num_bufs; i++) {
+-            if (aiob->events[i].res < 0) {
+-                errno = -aiob->events[i].res;
+-                PLOG(ERROR) << "aio: got error event on " << (read ? "read" : "write")
+-                            << " total bufs " << num_bufs;
++        for (int i = 0; i < submitted; ++i) {
++            if (results[i] < 0) {
++                errno = -results[i];
++                PLOG(ERROR) << "aio: error event on " << (read ? "read" : "write");
+                 return -1;
+             }
+-            ret += aiob->events[i].res;
++            ret += results[i];
+         }
+         return ret;
+     }
+@@ -242,11 +294,120 @@ bool DoesKernelSupportIouring() {
+     return minor >= 6;
+ }
+ 
++// The command thread is the sole initialization caller. A failed cleanup keeps
++// its owner and disables further allocation; never retry an ambiguous destroy.
++struct FailedUsbInitialization {
++    std::unique_ptr<usb_handle> owner;
++    int setup_error = 0;
++    int cleanup_error = 0;
++};
++
++static FailedUsbInitialization& FailedUsbInit() {
++    static FailedUsbInitialization failed;
++    return failed;
++}
++
++// Only for the successful queue_init(..., 0) result before any submission.
++// liburing may add NO_SQARRAY. Unlike queue_exit(), check each release result.
++static int DestroyUnusedIoUring(io_uring* ring) {
++    if ((ring->flags & ~IORING_SETUP_NO_SQARRAY) || ring->int_flags != 0) {
++        LOG(ERROR) << "Unexpected unused io_uring layout; retaining its owner";
++        return EINVAL;
++    }
++    int error = 0;
++    auto failed = [&error](const char* operation) {
++        const int saved_errno = errno;
++        LOG(ERROR) << "Unused io_uring " << operation << " failed: " << strerror(saved_errno);
++        if (!error) error = saved_errno;
++    };
++    const bool shared_ring = ring->sq.ring_ptr == ring->cq.ring_ptr;
++    if (munmap(ring->sq.sqes, ring->sq.ring_entries * sizeof(*ring->sq.sqes)) != 0) {
++        failed("SQE unmap");
++    } else {
++        ring->sq.sqes = nullptr;
++    }
++    if (munmap(ring->sq.ring_ptr, ring->sq.ring_sz) != 0) {
++        failed("SQ unmap");
++    } else {
++        ring->sq.ring_ptr = nullptr;
++        ring->sq.ring_sz = 0;
++        if (shared_ring) {
++            ring->cq.ring_ptr = nullptr;
++            ring->cq.ring_sz = 0;
++        }
++    }
++    if (!shared_ring && munmap(ring->cq.ring_ptr, ring->cq.ring_sz) != 0) {
++        failed("CQ unmap");
++    } else if (!shared_ring) {
++        ring->cq.ring_ptr = nullptr;
++        ring->cq.ring_sz = 0;
++    }
++    // A Linux close error must not lead to a second close of a potentially reused fd.
++    const int fd = ring->ring_fd;
++    ring->ring_fd = ring->enter_ring_fd = -1;
++    if (close(fd) != 0) failed("close");
++    return error;
++}
++
++void ClientUsbTransport::CleanupFailedInitialization(int init_error, int cleanup_error) {
++    auto h = std::move(handle_);
++    // Constructor-only: endpoints were closed, and no read/write was ever called.
++    // This is not a running-request drain or a runtime context destructor.
++    if (h->aio_type == AIOType::AIO) {
++        for (auto* block : {&h->read_aiob, &h->write_aiob}) {
++            if (io_destroy(block->ctx) != 0) {
++                const int destroy_error = errno;
++                LOG(ERROR) << "Unused AIO context " << block->ctx << " cleanup failed: "
++                           << strerror(destroy_error);
++                if (!cleanup_error) cleanup_error = destroy_error;
++            } else {
++                block->ctx = 0;
++            }
++        }
++    } else if (h->aio_type == AIOType::IO_URING) {
++        const int ring_error = DestroyUnusedIoUring(&h->ring);
++        if (!cleanup_error) cleanup_error = ring_error;
++    }
++    if (cleanup_error) {
++        auto& failed = FailedUsbInit();
++        failed.setup_error = init_error;
++        failed.cleanup_error = cleanup_error;
++        LOG(ERROR) << "USB initialization cleanup failed; retaining owner and disabling retries";
++        failed.owner = std::move(h);
++    } else {
++        h.reset();
++    }
++    errno = init_error;
++}
++
+ std::unique_ptr<usb_handle> create_usb_handle(unsigned num_bufs, unsigned io_size) {
++    auto& failed = FailedUsbInit();
++    if (failed.owner) {
++        errno = failed.setup_error;
++        return nullptr;
++    }
+     auto h = std::make_unique<usb_handle>();
+     if (DoesKernelSupportIouring() &&
+         android::base::GetBoolProperty("sys.usb.ffs.io_uring_enabled", false)) {
+-        init_io_uring_ffs(h.get(), num_bufs);
++        if (!init_io_uring_ffs(h.get(), num_bufs)) {
++            const int setup_error = errno;
++            const auto& cleanup = h->ring_init_cleanup;
++            const int cleanup_error = cleanup.sq_ring_result < 0 ? -cleanup.sq_ring_result
++                    : cleanup.cq_ring_result < 0 ? -cleanup.cq_ring_result
++                    : cleanup.close_result < 0 ? -cleanup.close_result : 0;
++            LOG(ERROR) << "Cannot initialize requested io_uring transport";
++            if (cleanup_error) {
++                // No endpoint/request exists. Keep failed mappings and the
++                // one-shot close receipt; never retry an ambiguous cleanup.
++                failed.setup_error = setup_error;
++                failed.cleanup_error = cleanup_error;
++                failed.owner = std::move(h);
++            } else {
++                h.reset();
++            }
++            errno = setup_error;
++            return nullptr;
++        }
+         h->aio_type = AIOType::IO_URING;
+         LOG(INFO) << "Using io_uring for usb ffs";
+     } else if (android::base::GetBoolProperty("sys.usb.ffs.aio_compat", false)) {
+@@ -257,10 +418,33 @@ std::unique_ptr<usb_handle> create_usb_handle(unsigned num_bufs, unsigned io_siz
+         h->aio_type = AIOType::SYNC_IO;
+         LOG(INFO) << "Using sync io for usb ffs";
+     } else {
++        if (!aio_block_init(&h->read_aiob, num_bufs)) {
++            const int setup_error = errno;
++            h.reset();
++            errno = setup_error;
++            return nullptr;
++        }
++        if (!aio_block_init(&h->write_aiob, num_bufs)) {
++            const int setup_error = errno;
++            // Only the read context exists; no request or endpoint has been
++            // submitted/opened by this factory-local handle.
++            if (io_destroy(h->read_aiob.ctx)) {
++                failed.setup_error = setup_error;
++                failed.cleanup_error = errno;
++                LOG(ERROR) << "aio: initial read-context cleanup failed: "
++                           << strerror(failed.cleanup_error) << "; setup failed: "
++                           << strerror(failed.setup_error)
++                           << "; retaining context and disabling further USB initialization";
++                failed.owner = std::move(h);
++            } else {
++                h->read_aiob.ctx = 0;
++                h.reset();
++            }
++            errno = setup_error;
++            return nullptr;
++        }
+         h->write = usb_ffs_aio_write;
+         h->read = usb_ffs_aio_read;
+-        aio_block_init(&h->read_aiob, num_bufs);
+-        aio_block_init(&h->write_aiob, num_bufs);
+         h->aio_type = AIOType::AIO;
+         LOG(INFO) << "Using aio for usb ffs";
+     }
+diff --git a/fastboot/device/usb.h b/fastboot/device/usb.h
+index 7859e86654f6445fa4dd8546354a49a858f7831f..45c4ae27c7fcca686195bea85e468526d394e824 100644
+--- a/fastboot/device/usb.h
++++ b/fastboot/device/usb.h
+@@ -61,6 +61,7 @@ struct usb_handle {
+     struct aio_block write_aiob;
+ 
+     io_uring ring;
++    io_uring_init_cleanup ring_init_cleanup{};
+     size_t io_size;
+     AIOType aio_type;
+ #ifdef ZERO_PACKET
+diff --git a/fastboot/device/usb_client.cpp b/fastboot/device/usb_client.cpp
+index ccf79a553f51b628496da9fea8504b6a5b0ad57a..b9a1dcd1ace76a2595924dd532496562a5e3e3c4 100644
+--- a/fastboot/device/usb_client.cpp
++++ b/fastboot/device/usb_client.cpp
+@@ -185,14 +185,32 @@ static struct DescV2 v2_descriptor = {
+         .ss_descs = ss_descriptors,
+ };
+ 
++// Close once even on EINTR: retrying can close a descriptor reused by another
++// thread. release() also removes the unique_fd owner tag before the raw close.
++static bool CloseFunctionFsEndpoint(android::base::unique_fd* endpoint, const char* name) {
++    const int fd = endpoint->release();
++    if (fd >= 0 && close(fd) != 0) {
++        PLOG(ERROR) << "Failed to close fastboot FunctionFS " << name;
++        return false;
++    }
++    return true;
++}
++
+ // Reimplementing since usb_ffs_close() does not close the control FD.
+-static void CloseFunctionFs(usb_handle* h) {
+-    h->bulk_in.reset();
+-    h->bulk_out.reset();
+-    h->control.reset();
++// Endpoint close success does not prove AIO/io_uring requests are drained. Keep
++// the handle and its request storage alive; their lifecycle is a separate issue.
++static int CloseFunctionFs(usb_handle* h) {
++    int error = 0;
++    if (!CloseFunctionFsEndpoint(&h->bulk_in, "bulk-in")) error = errno;
++    if (!CloseFunctionFsEndpoint(&h->bulk_out, "bulk-out") && !error) error = errno;
++    if (!CloseFunctionFsEndpoint(&h->control, "control") && !error) error = errno;
++    if (error) errno = error;
++    return error ? -1 : 0;
+ }
+ 
+-static bool InitFunctionFs(usb_handle* h) {
++static bool InitFunctionFs(usb_handle* h, int* cleanup_error) {
++    *cleanup_error = 0;
++    bool ready_requested = false;
+     LOG(INFO) << "initializing functionfs";
+ 
+     if (h->control < 0) {  // might have already done this before
+@@ -204,18 +222,25 @@ static bool InitFunctionFs(usb_handle* h) {
+         }
+ 
+         auto ret = write(h->control.get(), &v2_descriptor, sizeof(v2_descriptor));
+-        if (ret < 0) {
++        if (ret != static_cast<ssize_t>(sizeof(v2_descriptor))) {
++            if (ret >= 0) errno = EIO;
+             PLOG(ERROR) << "cannot write descriptors " << kUsbFfsFastbootEp0;
+             goto err;
+         }
+ 
+         ret = write(h->control.get(), &strings, sizeof(strings));
+-        if (ret < 0) {
++        if (ret != static_cast<ssize_t>(sizeof(strings))) {
++            if (ret >= 0) errno = EIO;
+             PLOG(ERROR) << "cannot write strings " << kUsbFfsFastbootEp0;
+             goto err;
+         }
+         // Signal only when writing the descriptors to ffs
+-        android::base::SetProperty("sys.usb.ffs.ready", "1");
++        ready_requested = true;
++        if (!android::base::SetProperty("sys.fastbootd.ready", "usb")) {
++            LOG(ERROR) << "cannot publish FunctionFS readiness";
++            errno = EIO;
++            goto err;
++        }
+     }
+ 
+     h->bulk_out.reset(open(kUsbFfsFastbootOut, O_RDONLY));
+@@ -238,20 +263,36 @@ static bool InitFunctionFs(usb_handle* h) {
+     return true;
+ 
+ err:
+-    CloseFunctionFs(h);
++    const int init_error = errno;
++    if (CloseFunctionFs(h) != 0) *cleanup_error = errno;
++    if (ready_requested && !android::base::SetProperty("sys.fastbootd.ready", "none")) {
++        LOG(ERROR) << "cannot clear failed FunctionFS readiness";
++        if (!*cleanup_error) *cleanup_error = EIO;
++    }
++    errno = init_error;
+     return false;
+ }
+ 
+-ClientUsbTransport::ClientUsbTransport()
+-    : handle_(std::unique_ptr<usb_handle>(create_usb_handle(kFbFfsNumBufs, kFbFfsBufSize))) {
+-    if (!InitFunctionFs(handle_.get())) {
+-        handle_.reset(nullptr);
++ClientUsbTransport::ClientUsbTransport() {
++    // This transport owns only the dedicated fastboot marker, never ADB readiness.
++    // Clear stale state before any context allocation, including failed factories.
++    if (!android::base::SetProperty("sys.fastbootd.ready", "none")) {
++        LOG(ERROR) << "cannot clear previous fastboot readiness";
++        errno = EIO;
++        return;
++    }
++    handle_ = create_usb_handle(kFbFfsNumBufs, kFbFfsBufSize);
++    if (!handle_) return;
++    int cleanup_error = 0;
++    if (!InitFunctionFs(handle_.get(), &cleanup_error)) {
++        const int init_error = errno;
++        CleanupFailedInitialization(init_error, cleanup_error);
+     }
+ }
+ 
+ ssize_t ClientUsbTransport::Read(void* data, size_t len) {
+-    if (handle_ == nullptr) {
+-        LOG(ERROR) << "ClientUsbTransport: no handle";
++    if (closed_ || handle_ == nullptr) {
++        LOG(ERROR) << "ClientUsbTransport: closed or no handle";
+         return -1;
+     }
+     if (len > SSIZE_MAX) {
+@@ -278,7 +319,7 @@ ssize_t ClientUsbTransport::Read(void* data, size_t len) {
+ }
+ 
+ ssize_t ClientUsbTransport::Write(const void* data, size_t len) {
+-    if (handle_ == nullptr || len > SSIZE_MAX) {
++    if (closed_ || handle_ == nullptr || len > SSIZE_MAX) {
+         return -1;
+     }
+     const char* char_data = reinterpret_cast<const char*>(data);
+@@ -299,11 +340,20 @@ ssize_t ClientUsbTransport::Write(const void* data, size_t len) {
+ }
+ 
+ int ClientUsbTransport::Close() {
++    if (closed_) return close_result_;
++    closed_ = true;
+     if (handle_ == nullptr) {
+-        return -1;
++        return close_result_ = -1;
+     }
+-    CloseFunctionFs(handle_.get());
+-    return 0;
++    close_result_ = CloseFunctionFs(handle_.get());
++    int close_error = close_result_ ? errno : 0;
++    if (!android::base::SetProperty("sys.fastbootd.ready", "none")) {
++        LOG(ERROR) << "cannot clear fastboot readiness after close";
++        close_result_ = -1;
++        if (!close_error) close_error = EIO;
++    }
++    if (close_error) errno = close_error;
++    return close_result_;
+ }
+ 
+ int ClientUsbTransport::Reset() {
+diff --git a/fastboot/device/usb_client.h b/fastboot/device/usb_client.h
+index e702a0d22d2c3b0539d1e3e1847b95ac27cc693b..07bd3f5582c9ec7bac582f85ab5a4a7a5fd171aa 100644
+--- a/fastboot/device/usb_client.h
++++ b/fastboot/device/usb_client.h
+@@ -32,7 +32,12 @@ class ClientUsbTransport : public Transport {
+     int Reset() override;
+ 
+   private:
++    // Called only while constructing, before a transport can submit requests.
++    void CleanupFailedInitialization(int init_error, int cleanup_error);
++
+     std::unique_ptr<usb_handle> handle_;
++    bool closed_ = false;
++    int close_result_ = 0;
+ 
+     DISALLOW_COPY_AND_ASSIGN(ClientUsbTransport);
+ };
+diff --git a/fastboot/device/usb_iouring.cpp b/fastboot/device/usb_iouring.cpp
+index d987712b94a0cb3e82a75c9e87413d42294fda11..9c0eb3abd1f5312a150916f136236a48cde069ec 100644
+--- a/fastboot/device/usb_iouring.cpp
++++ b/fastboot/device/usb_iouring.cpp
+@@ -16,45 +16,32 @@
+ 
+ #include <android-base/logging.h>
+ #include <liburing.h>
++#include <chrono>
++#include <thread>
+ #include "liburing/io_uring.h"
+ #include "usb.h"
+ 
+-static int prep_async_read(struct io_uring* ring, int fd, void* data, size_t len, int64_t offset) {
+-    if (io_uring_sq_space_left(ring) <= 0) {
+-        LOG(ERROR) << "Submission queue run out of space.";
+-        return -1;
+-    }
+-    auto sqe = io_uring_get_sqe(ring);
+-    if (sqe == nullptr) {
+-        return -1;
+-    }
+-    io_uring_sqe_set_flags(sqe, IOSQE_IO_LINK | IOSQE_ASYNC);
+-    io_uring_prep_read(sqe, fd, data, len, offset);
+-    return 0;
+-}
+-
+-static int prep_async_write(struct io_uring* ring, int fd, const void* data, size_t len,
+-                            int64_t offset) {
+-    if (io_uring_sq_space_left(ring) <= 0) {
+-        LOG(ERROR) << "Submission queue run out of space.";
+-        return -1;
+-    }
+-    auto sqe = io_uring_get_sqe(ring);
+-    if (sqe == nullptr) {
+-        return -1;
+-    }
+-    io_uring_sqe_set_flags(sqe, IOSQE_IO_LINK | IOSQE_ASYNC);
+-    io_uring_prep_write(sqe, fd, data, len, offset);
+-    return 0;
++// This private ring is used only by the synchronous fastboot command thread.
++// No SQPOLL consumer or concurrent enter may observe the unconsumed SQ tail.
++static void DiscardUnsubmittedSqes(io_uring* ring, unsigned consumed_tail) {
++    ring->sq.sqe_head = consumed_tail;
++    ring->sq.sqe_tail = consumed_tail;
++    io_uring_smp_store_release(ring->sq.ktail, consumed_tail);
+ }
+ 
+ template <bool read, typename T>
+-int prep_async_io(struct io_uring* ring, int fd, T* data, size_t len, int64_t offset) {
++int prep_async_io(struct io_uring* ring, int fd, T* data, size_t len, int64_t offset,
++                  uint64_t request_id) {
++    auto sqe = io_uring_get_sqe(ring);
++    if (sqe == nullptr) return -1;
+     if constexpr (read) {
+-        return prep_async_read(ring, fd, data, len, offset);
++        io_uring_prep_read(sqe, fd, data, len, offset);
+     } else {
+-        return prep_async_write(ring, fd, data, len, offset);
++        io_uring_prep_write(sqe, fd, data, len, offset);
+     }
++    io_uring_sqe_set_flags(sqe, IOSQE_IO_LINK | IOSQE_ASYNC);
++    io_uring_sqe_set_data64(sqe, request_id);
++    return 0;
+ }
+ 
+ template <typename T>
+@@ -68,48 +55,82 @@ template <bool read, typename T>
+ static int usb_ffs_do_aio(usb_handle* h, T* const data, const int len) {
+     const aio_block* aiob = read ? &h->read_aiob : &h->write_aiob;
+     const int num_requests = DivRoundup<int>(len, h->io_size);
++    auto* ring = &h->ring;
++    // Tail withdrawal below requires exclusive ownership and no SQPOLL thread.
++    if ((ring->flags & IORING_SETUP_SQPOLL) || io_uring_sq_ready(ring) != 0 ||
++        io_uring_cq_ready(ring) != 0) {
++        errno = EBUSY;
++        return -1;
++    }
++    if (num_requests > static_cast<int>(io_uring_sq_space_left(ring))) {
++        errno = ENOSPC;
++        return -1;
++    }
++    std::vector<bool> completed(num_requests, false);
++    const unsigned start = ring->sq.sqe_tail;
+     auto cur_data = data;
+-    const auto packet_size = getMaxPacketSize(aiob->fd);
+-
++    int index = 0;
+     for (int bytes_remain = len; bytes_remain > 0;) {
+         const int buf_len = std::min(bytes_remain, static_cast<int>(h->io_size));
+-        const auto ret = prep_async_io<read>(&h->ring, aiob->fd, cur_data, buf_len, 0);
+-        if (ret < 0) {
+-            PLOG(ERROR) << "Failed to queue io_uring request";
++        if (prep_async_io<read>(ring, aiob->fd, cur_data, buf_len, 0, ++index) < 0) {
++            // Nothing has entered the kernel; these are only local preparations.
++            DiscardUnsubmittedSqes(ring, start);
++            errno = ENOSPC;
+             return -1;
+         }
+-
+         bytes_remain -= buf_len;
+         cur_data = reinterpret_cast<T*>(reinterpret_cast<size_t>(cur_data) + buf_len);
+     }
+-    const int ret = io_uring_submit(&h->ring);
+-    if (ret <= 0 || ret != num_requests) {
+-        PLOG(ERROR) << "io_uring: failed to submit SQE entries to kernel";
+-        return -1;
++    const int submit_result = io_uring_submit(ring);
++    // The kernel head, not the requested count, identifies the consumed prefix.
++    const unsigned consumed_tail = io_uring_load_sq_head(ring);
++    const unsigned submitted = consumed_tail - start;
++    if (submitted > static_cast<unsigned>(num_requests)) {
++        LOG(ERROR) << "io_uring: invalid consumed head; retaining uncertain request ownership";
++        for (;;) std::this_thread::sleep_for(std::chrono::milliseconds(100));
++    }
++    int first_error = 0;
++    if (submit_result < 0 || submitted != static_cast<unsigned>(num_requests) ||
++        submit_result != static_cast<int>(submitted)) {
++        first_error = submit_result < 0 ? -submit_result : EIO;
++        LOG(ERROR) << "io_uring: incomplete submission; draining consumed requests: "
++                   << strerror(first_error);
+     }
++    // io_uring_submit has returned and this ring has no other consumer. Withdraw
++    // only unconsumed entries so a later submit/wait cannot send stale payload.
++    DiscardUnsubmittedSqes(ring, consumed_tail);
++    unsigned remaining = submitted;
+     int res = 0;
+-    bool success = true;
+-    for (int i = 0; i < num_requests; ++i) {
++    while (remaining != 0) {
+         struct io_uring_cqe* cqe{};
+-        const auto ret = TEMP_FAILURE_RETRY(io_uring_wait_cqe(&h->ring, &cqe));
+-        if (ret < 0 || cqe == nullptr) {
+-            PLOG(ERROR) << "Failed to get CQE from kernel";
+-            success = false;
++        const int wait_result = io_uring_wait_cqe(ring, &cqe);
++        if (wait_result == -EINTR) continue;
++        if (wait_result < 0 || cqe == nullptr) {
++            if (!first_error) {
++                first_error = wait_result < 0 ? -wait_result : EIO;
++                LOG(ERROR) << "io_uring: completion wait failed; retaining pending requests: "
++                           << strerror(first_error);
++            }
++            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+             continue;
+         }
+-        res += cqe->res;
+-        if (cqe->res < 0) {
+-            LOG(ERROR) << "io_uring request failed:, i = " << i
+-                       << ", num_requests = " << num_requests << ", res = " << cqe->res << ": "
+-                       << strerror(cqe->res) << (read ? " read" : " write")
+-                       << " request size: " << len << ", io_size: " << h->io_size
+-                       << " max packet size: " << packet_size << ", fd: " << aiob->fd;
+-            success = false;
+-            errno = -cqe->res;
++        const uint64_t id = cqe->user_data;
++        if (id == 0 || id > submitted || completed[id - 1]) {
++            if (!first_error) first_error = EPROTO;
++            LOG(ERROR) << "io_uring: unknown or duplicate completion; retaining pending requests";
++        } else {
++            completed[id - 1] = true;
++            --remaining;
++            if (cqe->res < 0) {
++                if (!first_error) first_error = -cqe->res;
++            } else {
++                res += cqe->res;
++            }
+         }
+-        io_uring_cqe_seen(&h->ring, cqe);
++        io_uring_cqe_seen(ring, cqe);
+     }
+-    if (!success) {
++    if (first_error) {
++        errno = first_error;
+         return -1;
+     }
+     return res;
+@@ -128,10 +149,22 @@ void exit_io_uring_ffs(usb_handle* h) {
+ }
+ 
+ bool init_io_uring_ffs(usb_handle* h, size_t queue_depth) {
+-    const auto err = io_uring_queue_init(queue_depth, &h->ring, 0);
++    const auto err = io_uring_queue_init_checked(queue_depth, &h->ring, &h->ring_init_cleanup);
+     if (err) {
+         LOG(ERROR) << "Failed to initialize io_uring of depth " << queue_depth << ": "
+-                   << strerror(err);
++                   << strerror(-err);
++        const auto& cleanup = h->ring_init_cleanup;
++        if (cleanup.sq_ring_result < 0) {
++            LOG(ERROR) << "io_uring initial SQ unmap failed: " << strerror(-cleanup.sq_ring_result);
++        }
++        if (cleanup.cq_ring_result < 0) {
++            LOG(ERROR) << "io_uring initial CQ unmap failed: " << strerror(-cleanup.cq_ring_result);
++        }
++        if (cleanup.close_result < 0) {
++            LOG(ERROR) << "io_uring initial fd " << cleanup.close_fd
++                       << " close failed: " << strerror(-cleanup.close_result);
++        }
++        errno = -err;
+         return false;
+     }
+     h->write = usb_ffs_io_uring_write;
+diff --git a/fastboot/device/utility.cpp b/fastboot/device/utility.cpp
+index e12ee64790ff8d73b1c1fa41bb2f7ba386897b16..cb9f21ecf9babd17b4316dd696e4e6f8390cb742 100644
+--- a/fastboot/device/utility.cpp
++++ b/fastboot/device/utility.cpp
+@@ -147,19 +147,32 @@ bool GetSlotNumber(const std::string& slot, int32_t* number) {
+     return true;
+ }
+ 
+-std::vector<std::string> ListPartitions(FastbootDevice* device) {
++android::base::Result<std::vector<std::string>> ListPartitions(FastbootDevice* device) {
+     std::vector<std::string> partitions;
+ 
+     // First get physical partitions.
+-    struct dirent* de;
+     std::unique_ptr<DIR, decltype(&closedir)> by_name(opendir("/dev/block/by-name"), closedir);
+-    while ((de = readdir(by_name.get())) != nullptr) {
++    if (!by_name) {
++        return android::base::ErrnoError() << "Unable to open /dev/block/by-name";
++    }
++    for (;;) {
++        errno = 0;
++        auto de = readdir(by_name.get());
++        if (!de) {
++            if (errno) {
++                return android::base::ErrnoError() << "Unable to read /dev/block/by-name";
++            }
++            break;
++        }
+         if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")) {
+             continue;
+         }
+         struct stat s;
+         std::string path = "/dev/block/by-name/" + std::string(de->d_name);
+-        if (!stat(path.c_str(), &s) && S_ISBLK(s.st_mode)) {
++        if (stat(path.c_str(), &s) != 0) {
++            return android::base::ErrnoError() << "Unable to stat " << path;
++        }
++        if (S_ISBLK(s.st_mode)) {
+             partitions.emplace_back(de->d_name);
+         }
+     }
+@@ -232,27 +245,32 @@ std::string GetSuperSlotSuffix(FastbootDevice* device, const std::string& partit
+ }
+ 
+ AutoMountMetadata::AutoMountMetadata() {
++    if (!ReadDefaultFstab(&fstab_)) {
++        LOG(ERROR) << "Could not read default fstab";
++        return;
++    }
+     android::fs_mgr::Fstab proc_mounts;
+     if (!ReadFstabFromFile("/proc/mounts", &proc_mounts)) {
+         LOG(ERROR) << "Could not read /proc/mounts";
+         return;
+     }
++    const bool was_mounted = GetEntryForMountPoint(&proc_mounts, "/metadata") != nullptr;
++    // Even a pre-existing mount must pass source, root, filesystem and flag
++    // checks. Presence alone is not authority to use it for snapshot metadata.
++    mounted_ = EnsurePathMounted(&fstab_, "/metadata");
++    should_unmount_ = mounted_ && !was_mounted;
++}
+ 
+-    if (GetEntryForMountPoint(&proc_mounts, "/metadata")) {
+-        mounted_ = true;
+-        return;
+-    }
+-
+-    if (!ReadDefaultFstab(&fstab_)) {
+-        LOG(ERROR) << "Could not read default fstab";
+-        return;
++bool AutoMountMetadata::Close() {
++    if (mounted_ && should_unmount_ && !EnsurePathUnmounted(&fstab_, "/metadata")) {
++        LOG(ERROR) << "Could not unmount owned /metadata mount";
++        return false;
+     }
+-    mounted_ = EnsurePathMounted(&fstab_, "/metadata");
+-    should_unmount_ = true;
++    mounted_ = false;
++    should_unmount_ = false;
++    return true;
+ }
+ 
+ AutoMountMetadata::~AutoMountMetadata() {
+-    if (mounted_ && should_unmount_) {
+-        EnsurePathUnmounted(&fstab_, "/metadata");
+-    }
++    Close();
+ }
+diff --git a/fastboot/device/utility.h b/fastboot/device/utility.h
+index a62125e4f44ead8948bd884e404d6fa5828723b3..9c04bc413f8d465756f60278b54f19c1587ed672 100644
+--- a/fastboot/device/utility.h
++++ b/fastboot/device/utility.h
+@@ -20,6 +20,7 @@
+ 
+ #include <android-base/file.h>
+ #include <android-base/logging.h>
++#include <android-base/result.h>
+ #include <android-base/unique_fd.h>
+ #include <fstab/fstab.h>
+ #include <liblp/liblp.h>
+@@ -97,6 +98,8 @@ class AutoMountMetadata {
+   public:
+     AutoMountMetadata();
+     ~AutoMountMetadata();
++    // Report owned-mount cleanup before sending a successful command reply.
++    bool Close();
+     explicit operator bool() const { return mounted_; }
+ 
+   private:
+@@ -124,7 +127,7 @@ bool OpenPartition(FastbootDevice* device, const std::string& name, PartitionHan
+                    int flags = O_WRONLY);
+ 
+ bool GetSlotNumber(const std::string& slot, int32_t* number);
+-std::vector<std::string> ListPartitions(FastbootDevice* device);
++android::base::Result<std::vector<std::string>> ListPartitions(FastbootDevice* device);
+ bool GetDeviceLockStatus();
+ 
+ // Update all copies of metadata.
+diff --git a/fastboot/device/variables.cpp b/fastboot/device/variables.cpp
+index 9c915cbbb3c2280b990c802e882dbdc61e9a8d74..6a600bf8f438af3dadcbb6c7d100214538e7a118 100644
+--- a/fastboot/device/variables.cpp
++++ b/fastboot/device/variables.cpp
+@@ -18,6 +18,7 @@
+ 
+ #include <inttypes.h>
+ #include <stdio.h>
++#include <sys/wait.h>
+ 
+ #include <android-base/file.h>
+ #include <android-base/logging.h>
+@@ -411,17 +412,26 @@ bool GetIsForceDebuggable(FastbootDevice* /* device */, const std::vector<std::s
+     return true;
+ }
+ 
+-std::vector<std::vector<std::string>> GetAllPartitionArgsWithSlot(FastbootDevice* device) {
++android::base::Result<std::vector<std::vector<std::string>>> GetAllPartitionArgsWithSlot(
++        FastbootDevice* device) {
+     std::vector<std::vector<std::string>> args;
+     auto partitions = ListPartitions(device);
+-    for (const auto& partition : partitions) {
++    if (!partitions.ok()) {
++        return partitions.error();
++    }
++    for (const auto& partition : *partitions) {
+         args.emplace_back(std::initializer_list<std::string>{partition});
+     }
+     return args;
+ }
+ 
+-std::vector<std::vector<std::string>> GetAllPartitionArgsNoSlot(FastbootDevice* device) {
+-    auto partitions = ListPartitions(device);
++android::base::Result<std::vector<std::vector<std::string>>> GetAllPartitionArgsNoSlot(
++        FastbootDevice* device) {
++    auto result = ListPartitions(device);
++    if (!result.ok()) {
++        return result.error();
++    }
++    auto partitions = std::move(*result);
+ 
+     std::string slot_suffix = device->GetCurrentSlot();
+     if (!slot_suffix.empty()) {
+@@ -541,36 +551,51 @@ bool GetMaxFetchSize(FastbootDevice* /* device */, const std::vector<std::string
+     return true;
+ }
+ 
+-bool GetDmesg(FastbootDevice* device) {
++bool GetDmesg(FastbootDevice* device, std::string* message) {
+     if (GetDeviceLockStatus()) {
+-        return device->WriteFail("Cannot use when device flashing is locked");
++        *message = "Cannot use when device flashing is locked";
++        return false;
+     }
+ 
+-    std::unique_ptr<FILE, decltype(&::fclose)> fp(popen("/system/bin/dmesg", "re"), ::fclose);
++    std::unique_ptr<FILE, decltype(&::pclose)> fp(popen("/system/bin/dmesg", "re"), ::pclose);
+     if (!fp) {
+-        PLOG(ERROR) << "popen /system/bin/dmesg";
+-        return device->WriteFail("Unable to run dmesg: "s + strerror(errno));
++        *message = "Unable to run dmesg: "s + strerror(errno);
++        return false;
+     }
+ 
+-    ssize_t rv;
+     size_t n = 0;
+     char* str = nullptr;
+-    while ((rv = ::getline(&str, &n, fp.get())) > 0) {
++    for (;;) {
++        errno = 0;
++        ssize_t rv = ::getline(&str, &n, fp.get());
++        if (rv <= 0) {
++            break;
++        }
+         if (str[rv - 1] == '\n') {
+             rv--;
+         }
+-        device->WriteInfo(std::string(str, rv));
++        if (!device->WriteInfo(std::string(str, rv))) {
++            ::free(str);
++            return false;
++        }
+     }
+ 
+-    int saved_errno = errno;
++    int read_errno = errno;
++    bool read_failed = ferror(fp.get()) || !feof(fp.get());
+     ::free(str);
+-
+-    if (rv < 0 && saved_errno) {
+-        LOG(ERROR) << "dmesg getline: " << strerror(saved_errno);
+-        device->WriteFail("Unable to read dmesg: "s + strerror(saved_errno));
++    int status = pclose(fp.release());
++    if (read_failed) {
++        *message = "Unable to read dmesg: "s + strerror(read_errno ? read_errno : EIO);
++        return false;
++    }
++    if (status == -1) {
++        *message = "Unable to wait for dmesg: "s + strerror(errno);
++        return false;
++    }
++    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
++        *message = "dmesg did not exit successfully";
+         return false;
+     }
+-
+     return true;
+ }
+ 
+@@ -582,7 +607,8 @@ bool GetBatterySerialNumber(FastbootDevice* device, const std::vector<std::strin
+     }
+ 
+     if (GetDeviceLockStatus()) {
+-        return device->WriteFail("Device is locked");
++        *message = "Device is locked";
++        return false;
+     }
+ 
+     *message = "unsupported";
+@@ -590,7 +616,8 @@ bool GetBatterySerialNumber(FastbootDevice* device, const std::vector<std::strin
+     int32_t version = 0;
+     auto res = health_hal->getInterfaceVersion(&version);
+     if (!res.isOk()) {
+-        return device->WriteFail("Unable to query battery data");
++        *message = "Unable to query battery data";
++        return false;
+     }
+     if (version >= 3) {
+         using aidl::android::hardware::health::BatteryHealthData;
+@@ -598,7 +625,8 @@ bool GetBatterySerialNumber(FastbootDevice* device, const std::vector<std::strin
+         BatteryHealthData data;
+         auto res = health_hal->getBatteryHealthData(&data);
+         if (!res.isOk()) {
+-            return device->WriteFail("Unable to query battery data");
++            *message = "Unable to query battery data";
++            return false;
+         }
+         if (data.batterySerialNumber) {
+             *message = *data.batterySerialNumber;
+@@ -621,7 +649,8 @@ bool GetBatteryPartStatus(FastbootDevice* device, const std::vector<std::string>
+     int32_t version = 0;
+     auto res = health_hal->getInterfaceVersion(&version);
+     if (!res.isOk()) {
+-        return device->WriteFail("Unable to query battery data");
++        *message = "Unable to query battery data";
++        return false;
+     }
+     if (version >= 3) {
+         using aidl::android::hardware::health::BatteryHealthData;
+@@ -629,7 +658,8 @@ bool GetBatteryPartStatus(FastbootDevice* device, const std::vector<std::string>
+         BatteryHealthData data;
+         auto res = health_hal->getBatteryHealthData(&data);
+         if (!res.isOk()) {
+-            return device->WriteFail("Unable to query battery data");
++            *message = "Unable to query battery data";
++            return false;
+         }
+         status = data.batteryPartStatus;
+     }
+diff --git a/fastboot/device/variables.h b/fastboot/device/variables.h
+index 99d1355ef6b2f32d1a4776d23426b40ae7ed79fd..a5ed76926cbf80788b0b6285f9365defe224f645 100644
+--- a/fastboot/device/variables.h
++++ b/fastboot/device/variables.h
+@@ -19,6 +19,8 @@
+ #include <string>
+ #include <vector>
+ 
++#include <android-base/result.h>
++
+ class FastbootDevice;
+ 
+ bool GetVersion(FastbootDevice* device, const std::vector<std::string>& args, std::string* message);
+@@ -92,8 +94,10 @@ bool GetMaxFetchSize(FastbootDevice* /* device */, const std::vector<std::string
+                      std::string* message);
+ 
+ // Complex cases.
+-bool GetDmesg(FastbootDevice* device);
++bool GetDmesg(FastbootDevice* device, std::string* message);
+ 
+ // Helpers for getvar all.
+-std::vector<std::vector<std::string>> GetAllPartitionArgsWithSlot(FastbootDevice* device);
+-std::vector<std::vector<std::string>> GetAllPartitionArgsNoSlot(FastbootDevice* device);
++android::base::Result<std::vector<std::vector<std::string>>> GetAllPartitionArgsWithSlot(
++        FastbootDevice* device);
++android::base::Result<std::vector<std::vector<std::string>>> GetAllPartitionArgsNoSlot(
++        FastbootDevice* device);
+diff --git a/healthd/Android.bp b/healthd/Android.bp
+index 6f14588c886cca8ac1e8dd72a0c6360fa436c433..61037ea1c18d3dad51f19c87b900de3fc5995d05 100644
+--- a/healthd/Android.bp
++++ b/healthd/Android.bp
+@@ -380,7 +380,10 @@ phony {
+ // /vendor/etc/res/images/default/charger/battery_fail.png
+ prebuilt_etc {
+     name: "system_core_charger_res_images_battery_fail.png_default_vendor",
+-    src: "images/battery_fail.png",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_res_images_default_charger_battery_fail_png",
++        default: "images/battery_fail.png",
++    }),
+     relative_install_path: "res/images/default/charger",
+     vendor: true,
+     filename: "battery_fail.png",
+@@ -398,7 +401,10 @@ prebuilt_etc {
+ // /vendor/etc/res/images/default/charger/battery_scale.png
+ prebuilt_etc {
+     name: "system_core_charger_res_images_battery_scale.png_default_vendor",
+-    src: "images/battery_scale.png",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_res_images_default_charger_battery_scale_png",
++        default: "images/battery_scale.png",
++    }),
+     relative_install_path: "res/images/default/charger",
+     vendor: true,
+     filename: "battery_scale.png",
+diff --git a/healthd/BatteryMonitor.cpp b/healthd/BatteryMonitor.cpp
+index 719f745bd71a3d2e525385cb372b255df38a3380..3b3309785691c8883cb244eb634e745df312607f 100644
+--- a/healthd/BatteryMonitor.cpp
++++ b/healthd/BatteryMonitor.cpp
+@@ -147,17 +147,18 @@ BatteryMonitor::BatteryMonitor()
+       mHealthInfo(std::make_unique<HealthInfo>()),
+       mLastGoodBatteryLevel(std::nullopt) {
+     initHealthInfo(mHealthInfo.get());
+-    glob_t globbuf;
+-    int ret = glob(DEV_GLOB, GLOB_MARK, nullptr, &globbuf);
+-    if (ret) {
+-        KLOG_ERROR(LOG_TAG, "Failed to lookup glob %s: %d\n", DEV_GLOB, ret);
+-    } else {
++    glob_t globbuf = {};
++    int ret = glob(DEV_GLOB, GLOB_MARK | GLOB_ERR, nullptr, &globbuf);
++    if (ret == 0) {
+         for (int i = 0; globbuf.gl_pathv[i]; i++) {
+             if (access(globbuf.gl_pathv[i], F_OK) == 0) {
+                 mDevPath = String8(globbuf.gl_pathv[i]);
+             }
+         }
++    } else if (ret != GLOB_NOMATCH) {
++        KLOG_ERROR(LOG_TAG, "Failed to lookup glob %s: %d\n", DEV_GLOB, ret);
+     }
++    globfree(&globbuf);
+ }
+ 
+ BatteryMonitor::~BatteryMonitor() {}
+diff --git a/init/block_dev_initializer.cpp b/init/block_dev_initializer.cpp
+index 70ca0e495c31868f0ea17da6d8f08646ebc97b2f..3db732734a94a9344f7b17f2ea45e8994cc7976b 100644
+--- a/init/block_dev_initializer.cpp
++++ b/init/block_dev_initializer.cpp
+@@ -81,31 +81,31 @@ bool BlockDevInitializer::InitBootDevicesFromPartUuid() {
+ 
+ // Second_stage_init requires loop-control before ueventd starts.
+ void BlockDevInitializer::InitLoopDevices() {
+-    (void)InitMiscDevice("loop-control");
++    (void)InitMiscDevice("loop-control", "/dev/loop-control");
+ }
+ 
+ bool BlockDevInitializer::InitDeviceMapper() {
+-    return InitMiscDevice("device-mapper");
++    return InitMiscDevice("device-mapper", "/dev/device-mapper");
+ }
+ 
+ bool BlockDevInitializer::InitDmUser(const std::string& name) {
+-    return InitMiscDevice("dm-user!" + name);
++    return InitMiscDevice("dm-user!" + name, "/dev/dm-user/" + name);
+ }
+ 
+ bool BlockDevInitializer::InitUblkMiscDevices(const std::string& name) {
+     LOG(INFO) << "InitUblkMiscDevices " << name;
+-    if (name == "ublk-control") return InitMiscDevice(name);
++    if (name == "ublk-control") return InitMiscDevice(name, "/dev/" + name);
+ 
+-    return InitMiscDevice("ublk-control/" + name);
++    return InitMiscDevice("ublk-control/" + name, "/dev/" + name);
+ }
+-bool BlockDevInitializer::InitMiscDevice(const std::string& name) {
++bool BlockDevInitializer::InitMiscDevice(const std::string& name,
++                                         const std::string& required_path) {
+     const std::string dm_path = "/devices/virtual/misc/" + name;
+     bool found = false;
+-    auto dm_callback = [this, &dm_path, &found](const Uevent& uevent) {
++    auto dm_callback = [this, &dm_path, &required_path, &found](const Uevent& uevent) {
+         if (uevent.path == dm_path) {
+-            device_handler_->HandleUevent(uevent);
+-            found = true;
+-            return ListenerAction::kStop;
++            found = device_handler_->HandleUeventWithResult(uevent, {required_path});
++            return found ? ListenerAction::kStop : ListenerAction::kContinue;
+         }
+         return ListenerAction::kContinue;
+     };
+@@ -139,37 +139,31 @@ ListenerAction BlockDevInitializer::HandleUevent(const Uevent& uevent,
+         name = uevent.path.substr(base_idx + 1);
+     }
+ 
+-    auto iter = devices->find(name);
+-    if (iter == devices->end()) {
+-        auto partition_name = DeviceHandler::GetPartitionNameForDevice(uevent.device_name);
+-        if (!partition_name.empty()) {
+-            iter = devices->find(partition_name);
+-        }
+-        if (iter == devices->end()) {
+-            return ListenerAction::kContinue;
++    const auto mapped_name = DeviceHandler::GetPartitionNameForDevice(uevent.device_name);
++    std::vector<std::set<std::string>::iterator> matches;
++    std::vector<std::string> required_paths;
++    for (auto iter = devices->begin(); iter != devices->end(); ++iter) {
++        const bool exact_path = android::base::StartsWith(*iter, "/dev/");
++        const std::string requested_name = exact_path ? android::base::Basename(*iter) : *iter;
++        if (requested_name != name && (mapped_name.empty() || requested_name != mapped_name) &&
++            (!exact_path || requested_name != android::base::Basename(uevent.path))) {
++            continue;
+         }
++        matches.push_back(iter);
++        if (exact_path) required_paths.push_back(*iter);
+     }
++    if (matches.empty()) return ListenerAction::kContinue;
+ 
+-    LOG(VERBOSE) << __PRETTY_FUNCTION__ << ": found partition: " << name;
+-
+-    // Remove the partition from the list of partitions we're waiting for.
+-    //
+-    // Partitions that we're waiting for here are expected to be on the boot
+-    // device, so only remove from the list if they're on the boot device.
+-    // This prevents us from being confused if there are multiple disks (some
+-    // perhaps connected via USB) that have matching partition names.
+-    //
+-    // ...but...
+-    //
+-    // Some products (especialy emulators) don't seem to set up boot_devices
+-    // or possibly not all the partitions that we need to wait for are on the
+-    // specified boot device. Thus, only require partitions to be on the boot
+-    // device in "strict" mode, which should be used on newer systems.
+-    if (device_handler_->IsBootDevice(uevent) || !device_handler_->IsBootDeviceStrict()) {
+-        devices->erase(iter);
++    // Preserve strict boot-device filtering without assuming a fixed controller.
++    // A legacy bare name verifies only the primary node, not every alias.
++    if (!device_handler_->IsBootDevice(uevent) && device_handler_->IsBootDeviceStrict()) {
++        device_handler_->HandleUevent(uevent);
++        return ListenerAction::kContinue;
++    }
++    // Process once even when several requested aliases match this event.
++    if (device_handler_->HandleUeventWithResult(uevent, required_paths)) {
++        for (auto iter : matches) devices->erase(iter);
+     }
+-
+-    device_handler_->HandleUevent(uevent);
+     return devices->empty() ? ListenerAction::kStop : ListenerAction::kContinue;
+ }
+ 
+@@ -181,7 +175,9 @@ ListenerAction BlockDevInitializer::HandleUevent(const Uevent& uevent,
+ // return success (true). If any devices aren't found we'll return failure
+ // (false). As devices are found they will be removed from `devices`.
+ //
+-// The contents of `devices` is the names of the partitions. This can be:
++// Exact consumer /dev paths retain their selected slot suffix and require that
++// path as well as the primary node. Legacy bare names validate the primary node
++// only. Requests match the following partition names:
+ // - The `partition_name` reported by a uevent, or the final component in the
+ //   `path` reported by a uevent if the `partition_name` is blank.
+ // - The result of DeviceHandler::GetPartitionNameForDevice() on the
+@@ -218,26 +214,26 @@ bool BlockDevInitializer::InitDevices(std::set<std::string> devices) {
+ bool BlockDevInitializer::InitDmDevice(const std::string& device) {
+     const std::string device_name(basename(device.c_str()));
+     const std::string syspath = "/sys/block/" + device_name;
+-    return InitDevice(syspath, device_name);
++    return InitDevice(syspath, device_name, "/dev/block/" + device_name);
+ }
+ 
+ bool BlockDevInitializer::InitPlatformDevice(const std::string& dev_name) {
+-    return InitDevice("/sys/devices/platform", dev_name);
++    return InitDevice("/sys/devices/platform", dev_name, "/dev/" + dev_name);
+ }
+ 
+ bool BlockDevInitializer::InitHvcDevice(const std::string& dev_name) {
+-    return InitDevice("/sys/devices/virtual/tty", dev_name);
++    return InitDevice("/sys/devices/virtual/tty", dev_name, "/dev/" + dev_name);
+ }
+ 
+-bool BlockDevInitializer::InitDevice(const std::string& syspath, const std::string& device_name) {
++bool BlockDevInitializer::InitDevice(const std::string& syspath, const std::string& device_name,
++                                     const std::string& required_path) {
+     bool found = false;
+ 
+-    auto uevent_callback = [&device_name, this, &found](const Uevent& uevent) {
++    auto uevent_callback = [&device_name, &required_path, this, &found](const Uevent& uevent) {
+         if (uevent.device_name == device_name) {
+             LOG(VERBOSE) << "Creating device : " << device_name;
+-            device_handler_->HandleUevent(uevent);
+-            found = true;
+-            return ListenerAction::kStop;
++            found = device_handler_->HandleUeventWithResult(uevent, {required_path});
++            return found ? ListenerAction::kStop : ListenerAction::kContinue;
+         }
+         return ListenerAction::kContinue;
+     };
+diff --git a/init/block_dev_initializer.h b/init/block_dev_initializer.h
+index bbd70bc723ed2f09f34df584790661120a8c492a..119542f41c7d031d791a0ffde4c4f32c79a45bcb 100644
+--- a/init/block_dev_initializer.h
++++ b/init/block_dev_initializer.h
+@@ -42,8 +42,9 @@ class BlockDevInitializer final {
+   private:
+     ListenerAction HandleUevent(const Uevent& uevent, std::set<std::string>* devices);
+ 
+-    bool InitMiscDevice(const std::string& name);
+-    bool InitDevice(const std::string& syspath, const std::string& device);
++    bool InitMiscDevice(const std::string& name, const std::string& required_path);
++    bool InitDevice(const std::string& syspath, const std::string& device,
++                    const std::string& required_path);
+ 
+     std::unique_ptr<DeviceHandler> device_handler_;
+     UeventListener uevent_listener_;
+diff --git a/init/builtins.cpp b/init/builtins.cpp
+index 2e4a3b4dc77c57b9edbc9ed5350aa4f546af409b..ffe4397369d362a80eab20165b28fd019f9a55d8 100644
+--- a/init/builtins.cpp
++++ b/init/builtins.cpp
+@@ -80,6 +80,7 @@
+ #include "parser.h"
+ #include "property_service.h"
+ #include "reboot.h"
++#include "reboot_utils.h"
+ #include "rlimit_parser.h"
+ #include "selabel.h"
+ #include "selinux.h"
+@@ -406,7 +407,11 @@ static Result<void> make_dir_with_options(const MkdirOptions& options) {
+         if (errno != ENOENT) {
+             return ErrnoError() << "lstat() failed on " << options.target;
+         }
+-        if (!make_dir(options.target, options.mode)) {
++        auto result = make_dir(options.target, options.mode);
++        if (result == MakeDirResult::kSetContextFailed) {
++            return ErrnoError() << "setfscreatecon() failed before mkdir on " << options.target;
++        }
++        if (result == MakeDirResult::kMkdirFailed) {
+             return ErrnoErrorIgnoreEnoent() << "mkdir() failed on " << options.target;
+         }
+         if (lstat(options.target.c_str(), &mstat) != 0) {
+@@ -648,6 +653,10 @@ static Result<void> do_mount_all(const BuiltinArguments& args) {
+         import_late(mount_all->rc_paths);
+     }
+ 
++    if (mount_fstab_result < 0) {
++        return Error() << "fs_mgr_mount_all() failed: " << mount_fstab_result;
++    }
++
+     if (queue_event) {
+         /* queue_fs_event will queue event based on mount_fstab return code
+          * and return processed return code*/
+@@ -771,31 +780,36 @@ static Result<void> do_trigger(const BuiltinArguments& args) {
+     return {};
+ }
+ 
+-static int MakeSymlink(const std::string& target, const std::string& linkpath) {
++static Result<void> MakeSymlink(const std::string& target, const std::string& linkpath) {
+     std::string secontext;
+-    // Passing 0 for mode should work.
++    // No matching context retains the platform's default creation behavior.
+     if (SelabelLookupFileContext(linkpath, 0, &secontext) && !secontext.empty()) {
+-        setfscreatecon(secontext.c_str());
++        if (setfscreatecon(secontext.c_str()) != 0) {
++            // A context-selection ENOENT is not a missing optional link parent.
++            return ErrnoError() << "Cannot set creation context before symlink " << linkpath;
++        }
+     }
+ 
+     int rc = symlink(target.c_str(), linkpath.c_str());
+-
+-    if (!secontext.empty()) {
+-        int save_errno = errno;
+-        setfscreatecon(nullptr);
+-        errno = save_errno;
++    const int saved_errno = errno;
++    if (!secontext.empty() && setfscreatecon(nullptr) != 0) {
++        PLOG(FATAL) << "Cannot reset creation context after symlink " << linkpath;
++        // Fatal logging can be filtered. Never resume with a residual
++        // creation context; preserve init's PID1 versus subcontext abort behavior.
++        if (getpid() == 1) InitFatalReboot(SIGABRT);
++        android::base::DefaultAborter("Cannot reset creation context after symlink");
++        abort();
++    }
++    errno = saved_errno;
++    if (rc < 0) {
++        // Only an actual symlink ENOENT retains the optional-parent exception.
++        return ErrnoErrorIgnoreEnoent() << "symlink() failed";
+     }
+-
+-    return rc;
++    return {};
+ }
+ 
+ static Result<void> do_symlink(const BuiltinArguments& args) {
+-    if (MakeSymlink(args[1], args[2]) < 0) {
+-        // The symlink builtin is often used to create symlinks for older devices to be backwards
+-        // compatible with new paths, therefore we skip reporting this error.
+-        return ErrnoErrorIgnoreEnoent() << "symlink() failed";
+-    }
+-    return {};
++    return MakeSymlink(args[1], args[2]);
+ }
+ 
+ static Result<void> do_rm(const BuiltinArguments& args) {
+@@ -1181,7 +1195,9 @@ static Result<void> do_installkey(const BuiltinArguments& args) {
+     if (!is_file_crypto()) return {};
+ 
+     auto unencrypted_dir = args[1] + fscrypt_unencrypted_folder;
+-    if (!make_dir(unencrypted_dir, 0700) && errno != EEXIST) {
++    auto result = make_dir(unencrypted_dir, 0700);
++    if (result == MakeDirResult::kSetContextFailed ||
++        (result == MakeDirResult::kMkdirFailed && errno != EEXIST)) {
+         return ErrnoError() << "Failed to create " << unencrypted_dir;
+     }
+     return ExecVdcRebootOnFailure("enablefilecrypto");
+diff --git a/init/coldboot.cpp b/init/coldboot.cpp
+index f9d611340771ca437e5497fc7170ab073d66166d..ce9e3f8cdd4042e5ecaa285ae6807724f7c8b3f0 100644
+--- a/init/coldboot.cpp
++++ b/init/coldboot.cpp
+@@ -114,7 +114,9 @@ void ColdBoot::Run() {
+ 
+     runner->Wait();
+ 
+-    android::base::SetProperty(kColdBootDoneProp, "true");
++    if (!android::base::SetProperty(kColdBootDoneProp, "true")) {
++        LOG(FATAL) << "Failed to publish coldboot completion";
++    }
+ 
+     // When we handle the uevents in the thread pool, the unused memory is not immediately unmapped
+     // and brought back to the kernel, even after joining the threads, as opposed to handling
+diff --git a/init/devices.cpp b/init/devices.cpp
+index e27de64aa12483697edfad7bece199a0db5e774b..6f9303aed5b434e82b43256eef8535d510f6a690 100644
+--- a/init/devices.cpp
++++ b/init/devices.cpp
+@@ -443,7 +443,7 @@ std::tuple<mode_t, uid_t, gid_t> DeviceHandler::GetDevicePermissions(
+     return {0600, 0, 0};
+ }
+ 
+-void DeviceHandler::MakeDevice(const std::string& path, bool block, int major, int minor,
++bool DeviceHandler::MakeDevice(const std::string& path, bool block, int major, int minor,
+                                const std::vector<std::string>& links) const {
+     auto [mode, uid, gid] = GetDevicePermissions(path, links);
+     mode |= (block ? S_IFBLK : S_IFCHR);
+@@ -451,68 +451,71 @@ void DeviceHandler::MakeDevice(const std::string& path, bool block, int major, i
+     std::string secontext;
+     if (!SelabelLookupFileContextBestMatch(path, links, mode, &secontext)) {
+         PLOG(ERROR) << "Device '" << path << "' not created; cannot find SELinux label";
+-        return;
++        return false;
+     }
+-    if (!secontext.empty()) {
+-        setfscreatecon(secontext.c_str());
++    if (!secontext.empty() && setfscreatecon(secontext.c_str()) != 0) {
++        PLOG(FATAL) << "Cannot set creation context for " << path;
+     }
+ 
++    bool success = false;
+     gid_t new_group = -1;
+-
+     dev_t dev = makedev(major, minor);
+     /* Temporarily change egid to avoid race condition setting the gid of the
+      * device node. Unforunately changing the euid would prevent creation of
+      * some device nodes, so the uid has to be set with chown() and is still
+      * racy. Fixing the gid race at least fixed the issue with system_server
+      * opening dynamic input devices under the AID_INPUT gid. */
+-    if (setegid(gid)) {
++    if (setegid(gid) != 0) {
+         PLOG(ERROR) << "setegid(" << gid << ") for " << path << " device failed";
+         goto out;
+     }
+-    /* If the node already exists update its SELinux label and the file mode to handle cases when
+-     * it was created with the wrong context and file mode during coldboot procedure. */
+-    if (mknod(path.c_str(), mode, dev) && (errno == EEXIST) && !secontext.empty()) {
+-        char* fcon = nullptr;
+-        int rc = lgetfilecon(path.c_str(), &fcon);
+-        if (rc < 0) {
+-            PLOG(ERROR) << "Cannot get SELinux label on '" << path << "' device";
++    if (mknod(path.c_str(), mode, dev) != 0) {
++        if (errno != EEXIST) {
++            PLOG(ERROR) << "Cannot create device " << path;
+             goto out;
+         }
+-
+-        bool different = fcon != secontext;
+-        freecon(fcon);
+-
+-        if (different && lsetfilecon(path.c_str(), secontext.c_str())) {
+-            PLOG(ERROR) << "Cannot set '" << secontext << "' SELinux label on '" << path
+-                        << "' device";
+-        }
+-
++        // Do not relabel or change ownership of a different inode at this path.
+         struct stat s;
+-        if (stat(path.c_str(), &s) == 0) {
+-            if (gid != s.st_gid) {
+-                new_group = gid;
++        if (lstat(path.c_str(), &s) != 0) {
++            PLOG(ERROR) << "Cannot stat " << path;
++            goto out;
++        }
++        if ((s.st_mode & S_IFMT) != (mode & S_IFMT) || s.st_rdev != dev) {
++            LOG(ERROR) << "Existing inode does not match device " << path;
++            goto out;
++        }
++        if (!secontext.empty()) {
++            char* fcon = nullptr;
++            if (lgetfilecon(path.c_str(), &fcon) < 0) {
++                PLOG(ERROR) << "Cannot get SELinux label on " << path;
++                goto out;
+             }
+-            if (mode != s.st_mode) {
+-                if (chmod(path.c_str(), mode) != 0) {
+-                    PLOG(ERROR) << "Cannot chmod " << path << " to " << mode;
+-                }
++            bool different = fcon != secontext;
++            freecon(fcon);
++            if (different && lsetfilecon(path.c_str(), secontext.c_str()) != 0) {
++                PLOG(ERROR) << "Cannot set SELinux label on " << path;
++                goto out;
+             }
+-        } else {
+-            PLOG(ERROR) << "Cannot stat " << path;
++        }
++        if (gid != s.st_gid) new_group = gid;
++        if ((mode & 07777) != (s.st_mode & 07777) && chmod(path.c_str(), mode) != 0) {
++            PLOG(ERROR) << "Cannot chmod " << path;
++            goto out;
+         }
+     }
+-
+-out:
+     if (chown(path.c_str(), uid, new_group) < 0) {
+-        PLOG(ERROR) << "Cannot chown " << path << " " << uid << " " << new_group;
++        PLOG(ERROR) << "Cannot chown " << path;
++        goto out;
+     }
+-    if (setegid(AID_ROOT)) {
++    success = true;
++out:
++    if (setegid(AID_ROOT) != 0) {
+         PLOG(FATAL) << "setegid(AID_ROOT) failed";
+     }
+-
+-    if (!secontext.empty()) {
+-        setfscreatecon(nullptr);
++    if (!secontext.empty() && setfscreatecon(nullptr) != 0) {
++        PLOG(FATAL) << "Cannot reset creation context after " << path;
+     }
++    return success;
+ }
+ 
+ // replaces any unacceptable characters with '_', the
+@@ -619,10 +622,20 @@ static void RemoveDeviceMapperLinks(const std::string& devpath) {
+     }
+ }
+ 
+-void DeviceHandler::HandleDevice(const std::string& action, const std::string& devpath, bool block,
+-                                 int major, int minor, const std::vector<std::string>& links) const {
+-    if (action == "add") {
+-        MakeDevice(devpath, block, major, minor, links);
++bool DeviceHandler::HandleDevice(const std::string& action, const std::string& devpath, bool block,
++                                 int major, int minor, const std::vector<std::string>& links,
++                                 const std::vector<std::string>& required_paths,
++                                 bool verify_result) const {
++    bool created = false;
++    bool required_links_ok = true;
++    const auto is_required = [&](const std::string& path) {
++        return std::find(required_paths.begin(), required_paths.end(), path) != required_paths.end();
++    };
++    // A DM change can create aliases even after its add event failed.
++    // Validate or repair the node before either event publishes aliases.
++    if (action == "add" || (action == "change" && StartsWith(devpath, "/dev/block/dm-"))) {
++        if (!MakeDevice(devpath, block, major, minor, links)) return false;
++        created = true;
+     }
+ 
+     // Handle device-mapper nodes.
+@@ -639,35 +652,76 @@ void DeviceHandler::HandleDevice(const std::string& action, const std::string& d
+                 target = "/sys/block/" + Basename(devpath);
+             } else {
+                 LOG(ERROR) << "Unrecognized link type: " << link;
++                if (is_required(link)) required_links_ok = false;
+                 continue;
+             }
+ 
+             if (!mkdir_recursive(Dirname(link), 0755)) {
+                 PLOG(ERROR) << "Failed to create directory " << Dirname(link);
++                if (is_required(link)) required_links_ok = false;
+             }
+ 
+             // Create symlink and make sure it's correctly labeled
+             std::string secontext;
+-            // Passing 0 for mode should work.
+-            if (SelabelLookupFileContext(link, 0, &secontext) && !secontext.empty()) {
+-                setfscreatecon(secontext.c_str());
++            // Label the link inode itself, independently of the primary device.
++            if (!SelabelLookupFileContext(link, S_IFLNK, &secontext)) {
++                PLOG(ERROR) << "Cannot find SELinux label for " << link;
++                if (is_required(link)) required_links_ok = false;
++                continue;
++            }
++            if (!secontext.empty() && setfscreatecon(secontext.c_str()) != 0) {
++                PLOG(FATAL) << "Cannot set creation context for " << link;
+             }
+ 
+             int rc = symlink(target.c_str(), link.c_str());
+ 
+             if (!secontext.empty()) {
+                 int save_errno = errno;
+-                setfscreatecon(nullptr);
++                if (setfscreatecon(nullptr) != 0) {
++                    PLOG(FATAL) << "Cannot reset creation context after " << link;
++                }
+                 errno = save_errno;
+             }
+ 
+             if (rc < 0) {
+                 if (errno != EEXIST) {
+                     PLOG(ERROR) << "Failed to symlink " << devpath << " to " << link;
+-                } else if (std::string link_path;
+-                           Readlink(link, &link_path) && link_path != devpath) {
+-                    PLOG(ERROR) << "Failed to symlink " << devpath << " to " << link
+-                                << ", which already links to: " << link_path;
++                    if (is_required(link)) required_links_ok = false;
++                } else {
++                    // EEXIST does not prove that this is our link or that its
++                    // own label matches the path-specific creation context.
++                    struct stat existing;
++                    std::string link_path;
++                    bool link_ok = true;
++                    if (lstat(link.c_str(), &existing) != 0) {
++                        PLOG(ERROR) << "Cannot stat existing symlink " << link;
++                        link_ok = false;
++                    } else if (!S_ISLNK(existing.st_mode)) {
++                        LOG(ERROR) << "Existing inode is not a symlink: " << link;
++                        link_ok = false;
++                    } else if (!Readlink(link, &link_path)) {
++                        PLOG(ERROR) << "Cannot read existing symlink " << link;
++                        link_ok = false;
++                    } else if (link_path != target) {
++                        LOG(ERROR) << "Existing symlink " << link << " points to " << link_path
++                                   << ", expected " << target;
++                        link_ok = false;
++                    } else if (!secontext.empty()) {
++                        char* current_context = nullptr;
++                        if (lgetfilecon(link.c_str(), &current_context) < 0) {
++                            PLOG(ERROR) << "Cannot get SELinux label on symlink " << link;
++                            link_ok = false;
++                        } else {
++                            const bool different = current_context != secontext;
++                            freecon(current_context);
++                            if (different &&
++                                lsetfilecon(link.c_str(), secontext.c_str()) != 0) {
++                                PLOG(ERROR) << "Cannot set SELinux label on symlink " << link;
++                                link_ok = false;
++                            }
++                        }
++                    }
++                    if (!link_ok && is_required(link)) required_links_ok = false;
+                 }
+             }
+         }
+@@ -685,6 +739,34 @@ void DeviceHandler::HandleDevice(const std::string& action, const std::string& d
+         }
+         unlink(devpath.c_str());
+     }
++
++    // Ordinary ueventd callers do not consume readiness and need no extra stat.
++    if (!verify_result) return created;
++    // Matching remove/ordinary change is not evidence of successful creation.
++    if (!created || !required_links_ok) return false;
++    struct stat node;
++    if (lstat(devpath.c_str(), &node) != 0) {
++        PLOG(ERROR) << "Cannot verify requested device " << devpath;
++        return false;
++    }
++    const mode_t type = block ? S_IFBLK : S_IFCHR;
++    if ((node.st_mode & S_IFMT) != type || node.st_rdev != makedev(major, minor)) {
++        LOG(ERROR) << "Requested device identity does not match " << devpath;
++        return false;
++    }
++    for (const auto& path : required_paths) {
++        if (path == devpath) continue;
++        std::string target;
++        struct stat link_node, resolved;
++        if (lstat(path.c_str(), &link_node) != 0 || !S_ISLNK(link_node.st_mode) ||
++            !Readlink(path, &target) || target != devpath || stat(path.c_str(), &resolved) != 0 ||
++            (resolved.st_mode & S_IFMT) != type || resolved.st_rdev != node.st_rdev ||
++            resolved.st_dev != node.st_dev || resolved.st_ino != node.st_ino) {
++            LOG(ERROR) << "Required alias does not identify " << devpath << ": " << path;
++            return false;
++        }
++    }
++    return true;
+ }
+ 
+ void DeviceHandler::HandleAshmemUevent(const Uevent& uevent) {
+@@ -774,6 +856,16 @@ void DeviceHandler::HandleBindInternal(std::string driver_name, std::string acti
+ }
+ 
+ void DeviceHandler::HandleUevent(const Uevent& uevent) {
++    (void)HandleUeventInternal(uevent, {}, false);
++}
++
++bool DeviceHandler::HandleUeventWithResult(
++        const Uevent& uevent, const std::vector<std::string>& required_paths) {
++    return HandleUeventInternal(uevent, required_paths, true);
++}
++
++bool DeviceHandler::HandleUeventInternal(
++        const Uevent& uevent, const std::vector<std::string>& required_paths, bool verify_result) {
+     if (uevent.action == "add" || uevent.action == "change" || uevent.action == "bind" ||
+         uevent.action == "online") {
+         FixupSysPermissions(uevent.path, uevent.subsystem);
+@@ -784,22 +876,22 @@ void DeviceHandler::HandleUevent(const Uevent& uevent) {
+ 
+         bound_drivers_[uevent.path] = uevent.driver;
+         HandleBindInternal(uevent.driver, "add", uevent);
+-        return;
++        return false;
+     } else if (uevent.action == "unbind") {
+         std::lock_guard<std::mutex> lock(device_update_lock_);
+ 
+-        if (bound_drivers_.count(uevent.path) == 0) return;
++        if (bound_drivers_.count(uevent.path) == 0) return false;
+         HandleBindInternal(bound_drivers_[uevent.path], "remove", uevent);
+ 
+         std::string sys_path = sysfs_mount_point_ + uevent.path;
+         std::erase_if(tracked_uevents_, [&sys_path](const TrackedUevent& tracked) {
+             return sys_path == tracked.canonical_device_path;
+         });
+-        return;
++        return false;
+     }
+ 
+     // if it's not a /dev device, nothing to do
+-    if (uevent.major < 0 || uevent.minor < 0) return;
++    if (uevent.major < 0 || uevent.minor < 0) return false;
+ 
+     std::string devpath;
+     std::vector<std::string> links;
+@@ -831,7 +923,7 @@ void DeviceHandler::HandleUevent(const Uevent& uevent) {
+         }
+     } else if (StartsWith(uevent.subsystem, "usb")) {
+         // ignore other USB events
+-        return;
++        return false;
+     } else if (uevent.subsystem == "misc" && StartsWith(uevent.device_name, "dm-user/")) {
+         devpath = "/dev/dm-user/" + uevent.device_name.substr(8);
+     } else if (uevent.subsystem == "misc" && uevent.device_name == "vfio/vfio") {
+@@ -842,13 +934,15 @@ void DeviceHandler::HandleUevent(const Uevent& uevent) {
+         devpath = "/dev/" + Basename(uevent.path);
+     }
+ 
+-    mkdir_recursive(Dirname(devpath), 0755);
++    const bool parent_ready = mkdir_recursive(Dirname(devpath), 0755);
+ 
+-    HandleDevice(uevent.action, devpath, block, uevent.major, uevent.minor, links);
++    const bool result = HandleDevice(uevent.action, devpath, block, uevent.major, uevent.minor,
++                                     links, required_paths, verify_result);
+ 
+     // Duplicate /dev/ashmem device and name it /dev/ashmem<boot_id>.
+     // TODO(b/111903542): remove once all users of /dev/ashmem are migrated to libcutils API.
+     HandleAshmemUevent(uevent);
++    return parent_ready && result;
+ }
+ 
+ void DeviceHandler::ColdbootDone() {
+diff --git a/init/devices.h b/init/devices.h
+index dd4887e0d101b5dc2c7d704a1f24ec1c00b81805..80372872860779e4a1836a25f37d3aae4d30847c 100644
+--- a/init/devices.h
++++ b/init/devices.h
+@@ -146,6 +146,10 @@ class DeviceHandler : public UeventHandler {
+ 
+     bool CheckUeventForBootPartUuid(const Uevent& uevent);
+     void HandleUevent(const Uevent& uevent) override EXCLUDES(device_update_lock_);
++    // Empty required_paths verifies the primary node, not every optional alias.
++    bool HandleUeventWithResult(const Uevent& uevent,
++                               const std::vector<std::string>& required_paths = {})
++            EXCLUDES(device_update_lock_);
+ 
+     // `androidboot.partition_map` allows associating a partition name for a raw block device
+     // through a comma separated and semicolon deliminated list. For example,
+@@ -172,11 +176,16 @@ class DeviceHandler : public UeventHandler {
+     bool FindScsiDevice(const std::string& path, std::string* scsi_device_path) const;
+     std::tuple<mode_t, uid_t, gid_t> GetDevicePermissions(
+         const std::string& path, const std::vector<std::string>& links) const;
+-    void MakeDevice(const std::string& path, bool block, int major, int minor,
++    bool MakeDevice(const std::string& path, bool block, int major, int minor,
+                     const std::vector<std::string>& links) const;
+     std::vector<std::string> GetBlockDeviceSymlinks(const Uevent& uevent) const;
+-    void HandleDevice(const std::string& action, const std::string& devpath, bool block, int major,
+-                      int minor, const std::vector<std::string>& links) const;
++    bool HandleDevice(const std::string& action, const std::string& devpath, bool block, int major,
++                      int minor, const std::vector<std::string>& links,
++                      const std::vector<std::string>& required_paths = {},
++                      bool verify_result = false) const;
++    bool HandleUeventInternal(const Uevent& uevent,
++                              const std::vector<std::string>& required_paths, bool verify_result)
++            EXCLUDES(device_update_lock_);
+     void FixupSysPermissions(const std::string& upath, const std::string& subsystem) const;
+     void HandleAshmemUevent(const Uevent& uevent);
+ 
+diff --git a/init/first_stage_mount.cpp b/init/first_stage_mount.cpp
+index 8134a1e1e957567491d9532b1f5218047fad6185..994d272b50f83f3f6ee879bfa6ab2659971ad72a 100644
+--- a/init/first_stage_mount.cpp
++++ b/init/first_stage_mount.cpp
+@@ -167,7 +167,7 @@ void FirstStageMount::GetSuperDeviceName(std::set<std::string>* devices) {
+         return;
+     }
+ 
+-    devices->emplace(super_partition_name_);
++    devices->emplace("/dev/block/by-name/" + super_partition_name_);
+ }
+ 
+ // Creates devices with uevent->partition_name matching ones in the given set.
+@@ -440,7 +440,8 @@ bool FirstStageMount::GetDmVerityDevices(std::set<std::string>* devices) {
+         if (!fstab_entry.blk_device.starts_with("/dev/")) {
+             continue;
+         }
+-        devices->emplace(basename(fstab_entry.blk_device.c_str()));
++        // ReadDefaultFstab has already applied slotselect to this path.
++        devices->emplace(fstab_entry.blk_device);
+     }
+ 
+     // Any partitions needed for verifying the partitions used in first stage mount, e.g. vbmeta
+@@ -460,7 +461,8 @@ bool FirstStageMount::GetDmVerityDevices(std::set<std::string>* devices) {
+             // partition twice. e.g., /vendor might be in both places:
+             //   - device_tree_vbmeta_parts_ = "vbmeta,boot,system,vendor"
+             //   - mount_fstab_recs_: /vendor_a
+-            devices->emplace(partition_name);
++            // This is the physical path consumed by FsManagerAvbOps.
++            devices->emplace("/dev/block/by-name/" + partition_name);
+         }
+     }
+     return true;
+diff --git a/init/host_init_stubs.h b/init/host_init_stubs.h
+index 2fef9d3498c9ce854b82842982b1da4b0c08c1b0..65e2859f17421c6abace1105e0580e1d44877950 100644
+--- a/init/host_init_stubs.h
++++ b/init/host_init_stubs.h
+@@ -52,7 +52,7 @@ inline void __attribute__((noreturn)) InitFatalReboot(int signal_number) {
+ }
+ 
+ // selabel.h
+-inline void SelabelInitialize() {}
++[[nodiscard]] inline bool SelabelInitialize() { return true; }
+ inline bool SelabelLookupFileContext(const std::string&, int, std::string*) {
+     return false;
+ }
+diff --git a/init/init.cpp b/init/init.cpp
+index aec2688fc8387d1166be7e6a6e24e4a536337c03..ced8f0692a2375884b33cc46af63166c8c53f821 100644
+--- a/init/init.cpp
++++ b/init/init.cpp
+@@ -1136,9 +1136,23 @@ int SecondStageMain(int argc, char** argv) {
+     // Mount extra filesystems required during second stage init
+     MountExtraFilesystems();
+ 
+-    // Now set up SELinux for second stage.
+-    SelabelInitialize();
+-    SelinuxRestoreContext();
++    // Now set up SELinux for second stage. Recovery must complete its required
++    // labeling before property-service threads or RC actions can start.
++#ifdef RECOVERY
++    constexpr bool strict_recovery_labels = true;
++#else
++    const bool strict_recovery_labels = IsRecoveryMode();
++#endif
++    if (!SelabelInitialize()) {
++        LOG(ERROR) << "Could not initialize file-context handle after policy load";
++        if (strict_recovery_labels) InitFatalReboot(SIGABRT);
++    }
++    if (auto result = SelinuxRestoreContext(strict_recovery_labels); !result.ok()) {
++        LOG(ERROR) << "Second-stage startup labeling failed: " << result.error();
++        // Normal boot may already have active snapuserd I/O; its failure
++        // lifecycle is separate from this recovery startup gate.
++        if (strict_recovery_labels) InitFatalReboot(SIGABRT);
++    }
+ 
+     Epoll epoll;
+     if (auto result = epoll.Open(); !result.ok()) {
+diff --git a/init/selabel.cpp b/init/selabel.cpp
+index daeb83261972ecc5172b7988b7fab9cc6cd3788a..c4ba5c2e11e67d25e437d4a412a4e7cf1aa1c6f2 100644
+--- a/init/selabel.cpp
++++ b/init/selabel.cpp
+@@ -30,9 +30,12 @@ selabel_handle* sehandle = nullptr;
+ // its value.  selinux_android_restorecon() also needs an sehandle for file context look up.  It
+ // will create and store its own copy, but selinux_android_set_sehandle() can be used to provide
+ // one, thus eliminating an extra call to selinux_android_file_context_handle().
+-void SelabelInitialize() {
+-    sehandle = selinux_android_file_context_handle();
++bool SelabelInitialize() {
++    auto* handle = selinux_android_file_context_handle();
++    if (!handle) return false;
++    sehandle = handle;
+     selinux_android_set_sehandle(sehandle);
++    return true;
+ }
+ 
+ // A C++ wrapper around selabel_lookup() using the cached sehandle.
+diff --git a/init/selabel.h b/init/selabel.h
+index 5d590b2977be3f99387befa37709405df3e366a2..588da17c833bebb5eafb85d7a4b6282a163874a8 100644
+--- a/init/selabel.h
++++ b/init/selabel.h
+@@ -22,7 +22,8 @@
+ namespace android {
+ namespace init {
+ 
+-void SelabelInitialize();
++// Called after policy load. First-stage lookups before this call remain valid.
++[[nodiscard]] bool SelabelInitialize();
+ bool SelabelLookupFileContext(const std::string& key, int type, std::string* result);
+ bool SelabelLookupFileContextBestMatch(const std::string& key,
+                                        const std::vector<std::string>& aliases, int type,
+diff --git a/init/selinux.cpp b/init/selinux.cpp
+index 4baf9a4fe6cf71aae844ebd65ab6a9ee4979e521..a887d695ff7bf27528cb82119c19648b659720b9 100644
+--- a/init/selinux.cpp
++++ b/init/selinux.cpp
+@@ -57,9 +57,12 @@
+ #include <linux/netlink.h>
+ #include <stdlib.h>
+ #include <sys/mount.h>
++#include <sys/stat.h>
+ #include <sys/wait.h>
+ #include <unistd.h>
+ 
++#include <memory>
++
+ #include <android-base/chrono_utils.h>
+ #include <android-base/file.h>
+ #include <android-base/logging.h>
+@@ -81,6 +84,7 @@
+ #include "debug_ramdisk.h"
+ #include "reboot_utils.h"
+ #include "second_stage_resources.h"
++#include "selabel.h"
+ #include "snapuserd_transition.h"
+ #include "util.h"
+ #include "ota_utils.h"
+@@ -461,48 +465,100 @@ void SelinuxAvcLog(char* buf) {
+     TEMP_FAILURE_RETRY(send(fd.get(), &request, sizeof(request), 0));
+ }
+ 
+-int RestoreconIfExists(const char* path, unsigned int flags) {
+-    if (access(path, F_OK) != 0 && errno == ENOENT) {
+-        // Avoid error message for path that is expected to not always exist.
+-        return 0;
++Result<void> RestoreconStartupPath(const char* path, unsigned int flags, mode_t type,
++                                  bool required, bool strict, bool previously_optional = false) {
++    std::string expected_context;
++    if (strict) {
++        struct stat sb;
++        if (lstat(path, &sb) != 0) {
++            if (!required && errno == ENOENT) return {};
++            return ErrnoError() << "lstat failed before startup restorecon: " << path;
++        }
++        if ((sb.st_mode & S_IFMT) != type) {
++            return Error() << "Unexpected file type before startup restorecon: " << path;
++        }
++        if (!SelabelLookupFileContext(path, sb.st_mode, &expected_context)) {
++            return ErrnoError() << "File-context lookup failed before startup restorecon: " << path;
++        }
++        if (expected_context.empty()) {
++            return Error() << "No file context before startup restorecon: " << path;
++        }
++    } else if (previously_optional && access(path, F_OK) != 0 && errno == ENOENT) {
++        // Retain normal boot's existing optional-path and restore-call sequence.
++        return {};
++    }
++
++    if (selinux_android_restorecon(path, flags) != 0) {
++        return ErrnoError() << "Startup restorecon failed: " << path;
+     }
+-    return selinux_android_restorecon(path, flags);
++    if (strict) {
++        // libselinux can report success when lookup or a recursive root visit was
++        // skipped. Verify this root; this is not a label inventory of descendants.
++        char* actual_context = nullptr;
++        if (lgetfilecon(path, &actual_context) < 0) {
++            return ErrnoError() << "Cannot read context after startup restorecon: " << path;
++        }
++        std::unique_ptr<char, decltype(&freecon)> context(actual_context, &freecon);
++        if (!actual_context || expected_context != actual_context) {
++            return Error() << "Unexpected context after startup restorecon: " << path
++                           << ", expected " << expected_context << ", got "
++                           << (actual_context ? actual_context : "<null>");
++        }
++    }
++    return {};
+ }
+ 
+ }  // namespace
+ 
+-void SelinuxRestoreContext() {
++Result<void> SelinuxRestoreContext(bool strict) {
+     LOG(INFO) << "Running restorecon...";
+-    selinux_android_restorecon("/dev", 0);
+-    selinux_android_restorecon("/dev/console", 0);
+-    selinux_android_restorecon("/dev/kmsg", 0);
+-    if constexpr (WORLD_WRITABLE_KMSG) {
+-        selinux_android_restorecon("/dev/kmsg_debug", 0);
++    if (strict && is_selinux_enabled() <= 0) {
++        return Error() << "SELinux is unavailable after policy load in recovery";
+     }
+-    selinux_android_restorecon("/dev/null", 0);
+-    selinux_android_restorecon("/dev/ptmx", 0);
+-    selinux_android_restorecon("/dev/socket", 0);
+-    selinux_android_restorecon("/dev/random", 0);
+-    selinux_android_restorecon("/dev/urandom", 0);
+-    selinux_android_restorecon("/dev/__properties__", 0);
+ 
+-    selinux_android_restorecon("/dev/block", SELINUX_ANDROID_RESTORECON_RECURSE);
+-    selinux_android_restorecon("/dev/dm-user", SELINUX_ANDROID_RESTORECON_RECURSE);
+-    selinux_android_restorecon("/dev/device-mapper", 0);
++    Result<void> first_error;
++    auto restore = [&](const char* path, unsigned int flags, mode_t type, bool required,
++                       bool previously_optional = false) {
++        auto result = RestoreconStartupPath(path, flags, type, required, strict, previously_optional);
++        if (!result.ok()) {
++            LOG(ERROR) << result.error();
++            if (first_error.ok()) first_error = std::move(result);
++        }
++    };
+ 
++    restore("/dev", 0, S_IFDIR, true);
++    restore("/dev/console", 0, S_IFCHR, false);
++    restore("/dev/kmsg", 0, S_IFCHR, true);
++    if constexpr (WORLD_WRITABLE_KMSG) {
++        restore("/dev/kmsg_debug", 0, S_IFCHR, true);
++    }
++    restore("/dev/null", 0, S_IFCHR, true);
++    restore("/dev/ptmx", 0, S_IFCHR, true);
++    restore("/dev/socket", 0, S_IFDIR, true);
++    restore("/dev/random", 0, S_IFCHR, true);
++    restore("/dev/urandom", 0, S_IFCHR, true);
++    restore("/dev/__properties__", 0, S_IFDIR, true);
++
++    // Missing devices from the optional AVB-version probe must not prevent REC.
++    // Actual storage consumers retain responsibility for requiring their devices.
++    restore("/dev/block", SELINUX_ANDROID_RESTORECON_RECURSE, S_IFDIR, false);
++    restore("/dev/dm-user", SELINUX_ANDROID_RESTORECON_RECURSE, S_IFDIR, true);
++    restore("/dev/device-mapper", 0, S_IFCHR, false);
+     if constexpr (com::android::apex::flags::mount_before_data()) {
+-        selinux_android_restorecon("/dev/loop-control", 0);
++        restore("/dev/loop-control", 0, S_IFCHR, false);
+     }
+ 
+-    selinux_android_restorecon("/apex", 0);
+-    selinux_android_restorecon("/bootstrap-apex", 0);
+-    selinux_android_restorecon("/linkerconfig", 0);
++    restore("/apex", 0, S_IFDIR, true);
++    restore("/bootstrap-apex", 0, S_IFDIR, false);
++    restore("/linkerconfig", 0, S_IFDIR, true);
+ 
+     // adb remount, snapshot-based updates, and DSUs all create files during
+-    // first-stage init.
+-    RestoreconIfExists(SnapshotManager::GetGlobalRollbackIndicatorPath().c_str(), 0);
+-    RestoreconIfExists("/metadata/gsi",
+-                       SELINUX_ANDROID_RESTORECON_RECURSE | SELINUX_ANDROID_RESTORECON_SKIP_SEHASH);
++    // first-stage init. Only an absent optional path is accepted in strict mode.
++    restore(SnapshotManager::GetGlobalRollbackIndicatorPath().c_str(), 0, S_IFREG, false, true);
++    restore("/metadata/gsi",
++            SELINUX_ANDROID_RESTORECON_RECURSE | SELINUX_ANDROID_RESTORECON_SKIP_SEHASH,
++            S_IFDIR, false, true);
++    return first_error;
+ }
+ 
+ int SelinuxKlogCallback(int type, const char* fmt, ...) {
+diff --git a/init/selinux.h b/init/selinux.h
+index 1a41bfd6fce5cf3bce5d7b65bac898b853b034a2..bc2b9737e2f345ca2b01ce84c8b1ae4e16736b77 100644
+--- a/init/selinux.h
++++ b/init/selinux.h
+@@ -16,6 +16,8 @@
+ 
+ #pragma once
+ 
++#include <android-base/result.h>
++
+ namespace android {
+ namespace init {
+ 
+@@ -25,7 +27,8 @@ int SetupSelinux(char** argv);
+ // Restore the proper security context to files and directories on ramdisk, and
+ // those that were created before initial sepolicy load.
+ // This must happen before /dev is populated by ueventd.
+-void SelinuxRestoreContext();
++// Strict mode gates recovery startup; normal boot retains its existing restore sequence.
++android::base::Result<void> SelinuxRestoreContext(bool strict);
+ 
+ // Set up SELinux logging to be written to kmsg, to match init's logging.
+ void SelinuxSetupKernelLogging();
+diff --git a/init/subcontext.cpp b/init/subcontext.cpp
+index 37f9fadeaf681535ec3c59bb16b2580937dd5f5b..eaa453014657503d721b8031c1f5a3b04ca876b0 100644
+--- a/init/subcontext.cpp
++++ b/init/subcontext.cpp
+@@ -19,6 +19,7 @@
+ #include <fcntl.h>
+ #include <poll.h>
+ #include <signal.h>
++#include <stdlib.h>
+ #include <sys/resource.h>
+ #include <sys/time.h>
+ #include <unistd.h>
+@@ -181,7 +182,10 @@ int SubcontextMain(int argc, char** argv, const BuiltinFunctionMap* function_map
+     auto context = std::string(argv[2]);
+     auto init_fd = std::atoi(argv[3]);
+ 
+-    SelabelInitialize();
++    if (!SelabelInitialize()) {
++        LOG(ERROR) << "Could not initialize file-context handle after policy load";
++        return EXIT_FAILURE;
++    }
+ 
+     trigger_shutdown = [](const std::string& command) { shutdown_command = command; };
+ 
+diff --git a/init/ueventd.cpp b/init/ueventd.cpp
+index 28419d989d6ab3ae35859f8dd53be02df77cedaa..541bcdac6987344bb599fe0701b73f357ce69684 100644
+--- a/init/ueventd.cpp
++++ b/init/ueventd.cpp
+@@ -189,7 +189,10 @@ int ueventd_main(int argc, char** argv) {
+     LOG(INFO) << "ueventd started!";
+ 
+     SelinuxSetupKernelLogging();
+-    SelabelInitialize();
++    if (!SelabelInitialize()) {
++        LOG(ERROR) << "Could not initialize file-context handle after policy load";
++        return EXIT_FAILURE;
++    }
+ 
+     std::vector<std::shared_ptr<UeventHandler>> uevent_handlers;
+ 
+diff --git a/init/util.cpp b/init/util.cpp
+index 6241b6617cb56b03b6b772da33ab0d9ead4d1331..6638e6326028d24fae6177c507c3d7118f9546ec 100644
+--- a/init/util.cpp
++++ b/init/util.cpp
+@@ -223,11 +223,13 @@ bool mkdir_recursive(const std::string& path, mode_t mode) {
+         struct stat info;
+         if (stat(directory.c_str(), &info) != 0) {
+             auto ret = make_dir(directory, mode);
+-            if (!ret && errno != EEXIST) return false;
++            if (ret == MakeDirResult::kSetContextFailed ||
++                (ret == MakeDirResult::kMkdirFailed && errno != EEXIST)) return false;
+         }
+     }
+     auto ret = make_dir(path, mode);
+-    if (!ret && errno != EEXIST) return false;
++    if (ret == MakeDirResult::kSetContextFailed ||
++        (ret == MakeDirResult::kMkdirFailed && errno != EEXIST)) return false;
+     return true;
+ }
+ 
+@@ -245,21 +247,35 @@ int wait_for_file(const char* filename, std::chrono::nanoseconds timeout) {
+     return -1;
+ }
+ 
+-bool make_dir(const std::string& path, mode_t mode) {
++static void InitAborter(const char* abort_message);
++
++MakeDirResult make_dir(const std::string& path, mode_t mode) {
+     std::string secontext;
+     if (SelabelLookupFileContext(path, mode, &secontext) && !secontext.empty()) {
+-        setfscreatecon(secontext.c_str());
++        if (setfscreatecon(secontext.c_str()) != 0) {
++            PLOG(ERROR) << "Cannot set creation context before mkdir " << path;
++            return MakeDirResult::kSetContextFailed;
++        }
+     }
+ 
+     int rc = mkdir(path.c_str(), mode);
+ 
+     if (!secontext.empty()) {
+         int save_errno = errno;
+-        setfscreatecon(nullptr);
++        if (setfscreatecon(nullptr) != 0) {
++            // Returning an ordinary command error would allow the next action
++            // to create files with this thread's unrecovered creation context.
++            PLOG(FATAL) << "Cannot reset creation context after mkdir " << path
++                        << " (mkdir result " << rc << ", errno "
++                        << (rc == 0 ? 0 : save_errno) << ")";
++            // FATAL logging can be filtered by log.tag.*=S. Never resume with
++            // an unrecovered creation context, even if no log is emitted.
++            InitAborter("Cannot reset creation context after mkdir");
++        }
+         errno = save_errno;
+     }
+ 
+-    return rc == 0;
++    return rc == 0 ? MakeDirResult::kSuccess : MakeDirResult::kMkdirFailed;
+ }
+ 
+ /*
+diff --git a/init/util.h b/init/util.h
+index 52edfe321e8823d76e255e26105a211535a522d7..c85e9cb6aef07f4a22e7d83bccf977cf16313d15 100644
+--- a/init/util.h
++++ b/init/util.h
+@@ -60,7 +60,9 @@ Result<uid_t> DecodeUid(const std::string& name);
+ 
+ bool mkdir_recursive(const std::string& pathname, mode_t mode);
+ int wait_for_file(const char* filename, std::chrono::nanoseconds timeout);
+-bool make_dir(const std::string& path, mode_t mode);
++// Keep label-setting errors distinct from mkdir errno compatibility handling.
++enum class MakeDirResult { kSuccess, kMkdirFailed, kSetContextFailed };
++MakeDirResult make_dir(const std::string& path, mode_t mode);
+ bool is_dir(const char* pathname);
+ Result<std::string> ExpandProps(const std::string& src);
+ 
+diff --git a/libmodprobe/libmodprobe.cpp b/libmodprobe/libmodprobe.cpp
+index cbafb6c50e2d4522b1ab0bb5e24eeaf010eb2a53..8a31647c104855af713c5db2bb986258144d0bf0 100644
+--- a/libmodprobe/libmodprobe.cpp
++++ b/libmodprobe/libmodprobe.cpp
+@@ -161,6 +161,8 @@ bool Modprobe::IsBlocklisted(const std::string& module_name) {
+ // Discard all blocklist.
+ // Softdeps are taken care in InsmodWithDeps().
+ bool Modprobe::LoadModulesParallel(int num_threads, int mode, bool test_mode) {
++    // hardware_concurrency() may return 0 when the processor count is unknown.
++    num_threads = std::max(num_threads, 1);
+     std::map<std::string, std::vector<std::string>> mods_with_deps;
+     std::unordered_set<std::string> mods_loading;
+     std::vector<std::string> parallel_modules, sequential_modules;
+@@ -194,8 +196,9 @@ bool Modprobe::LoadModulesParallel(int num_threads, int mode, bool test_mode) {
+ 
+     // Consumers load modules in parallel or sequentially
+     auto thread_function = [&] {
+-        while (!mods_with_deps.empty() && ret.load()) {
++        while (true) {
+             std::unique_lock<std::mutex> lock(mods_to_load_lock);
++            if (mods_with_deps.empty() || !ret.load()) return;
+ 
+             if (sequential_modules.empty() && parallel_modules.empty()) {
+                 sleeping_threads++;
+@@ -206,17 +209,23 @@ bool Modprobe::LoadModulesParallel(int num_threads, int mode, bool test_mode) {
+                     cv_update_module.notify_one();
+ 
+                 cv_load_module.wait(lock, [&](){
+-                    return mods_with_deps.empty() ||
++                    return !ret.load() || mods_with_deps.empty() ||
+                            !parallel_modules.empty() ||
+                            !sequential_modules.empty(); });
+ 
+                 sleeping_threads--;
++                if (!ret.load() || mods_with_deps.empty()) return;
+             }
+ 
+             while (!sequential_modules.empty()) {
+                 auto mod_to_load = std::move(sequential_modules.back());
+                 sequential_modules.pop_back();
+-                ret.store(ret.load() && LoadWithAliases(mod_to_load, true));
++                if (!LoadWithAliases(mod_to_load, true)) {
++                    ret.store(false);
++                    cv_update_module.notify_one();
++                    cv_load_module.notify_all();
++                    return;
++                }
+             }
+ 
+             if (!parallel_modules.empty()) {
+@@ -224,7 +233,14 @@ bool Modprobe::LoadModulesParallel(int num_threads, int mode, bool test_mode) {
+                 parallel_modules.pop_back();
+ 
+                 lock.unlock();
+-                ret.store(ret.load() && LoadWithAliases(mod_to_load, true));
++                if (!LoadWithAliases(mod_to_load, true)) {
++                    // Publish failure under the waiters' mutex to avoid losing a wakeup.
++                    lock.lock();
++                    ret.store(false);
++                    cv_update_module.notify_one();
++                    cv_load_module.notify_all();
++                    return;
++                }
+             }
+         }
+     };
+@@ -270,8 +286,8 @@ bool Modprobe::LoadModulesParallel(int num_threads, int mode, bool test_mode) {
+ 
+         cv_load_module.notify_all();
+         cv_update_module.wait(lock, [&](){
+-            return parallel_modules.empty() &&
+-                   sequential_modules.empty(); });
++            return !ret.load() || (parallel_modules.empty() &&
++                                   sequential_modules.empty()); });
+ 
+         if (!ret.load())
+             break;

@@ -58,6 +58,10 @@ BOARD_PREBUILT_DTBOIMAGE := $(WARSAW_BOOT_DIR)/dtbo.img
 
 BOARD_DO_NOT_STRIP_VENDOR_RAMDISK_MODULES := true
 BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(wildcard $(WARSAW_BOOT_DIR)/vendor_ramdisk/lib/modules/*.ko)
+# Original OTA touch modules are needed only by the recovery load list.
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES += \
+    $(WARSAW_BOOT_DIR)/vendor_dlkm/lib/modules/xiaomi_touch.ko \
+    $(WARSAW_BOOT_DIR)/vendor_dlkm/lib/modules/goodix_core.ko
 BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := $(strip $(shell cat $(WARSAW_BOOT_CONFIG)/modules.load))
 BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(strip $(shell cat $(WARSAW_BOOT_CONFIG)/modules.load.recovery))
 BOARD_VENDOR_RAMDISK_KERNEL_MODULES_BLOCKLIST_FILE := $(WARSAW_BOOT_CONFIG)/modules.blocklist
@@ -79,3 +83,7 @@ BOARD_BOOTCONFIG += androidboot.selinux=permissive
 # Set it explicitly so recovery also requests permissive when booted separately.
 BOARD_RECOVERY_MKBOOTIMG_ARGS := $(BOARD_MKBOOTIMG_ARGS) --cmdline "androidboot.selinux=permissive"
 endif
+
+# Warsaw REC requires the verified MCA 99 percent PWM setting.
+# This only selects code linked into recovery and fastbootd.
+$(call soong_config_set_bool,warsaw_recovery,fan99,true)

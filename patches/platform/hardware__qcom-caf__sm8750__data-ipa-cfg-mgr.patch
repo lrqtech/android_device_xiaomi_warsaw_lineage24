@@ -1,0 +1,40 @@
+diff --git a/ipacm/Android.bp b/ipacm/Android.bp
+index 34007907f16d3e01d9670f9aebf375d29248437f..2e60262cf715fb4f8e0e98e82375d46f4c6f3cd5 100644
+--- a/ipacm/Android.bp
++++ b/ipacm/Android.bp
+@@ -37,7 +37,10 @@ cc_binary {
+         "src/IPACM_LanToLan.cpp",
+     ],
+ 
+-    init_rc: ["src/ipacm.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_ipacm_rc"],
++        default: ["src/ipacm.rc"],
++    }),
+     vintf_fragments: [
+         "src/vendor.qti.hardware.tetheroffload.service.xml",
+     ],
+@@ -65,7 +68,10 @@ prebuilt_etc {
+ 
+     vendor: true,
+     owner: "ipacm",
+-    src: "src/IPACM_cfg.xml",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_IPACM_cfg_xml",
++        default: "src/IPACM_cfg.xml",
++    }),
+ 
+ }
+ 
+@@ -74,7 +80,10 @@ prebuilt_etc {
+ 
+     vendor: true,
+     owner: "ipacm",
+-    src: "src/IPACM_Filter_cfg.xml",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_IPACM_Filter_cfg_xml",
++        default: "src/IPACM_Filter_cfg.xml",
++    }),
+ 
+ }
+ 

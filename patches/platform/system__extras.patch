@@ -1,0 +1,39 @@
+diff --git a/ext4_utils/Android.bp b/ext4_utils/Android.bp
+index 7195a855929678a10f21aff1508ac0423978e21c..7c6e2ca6c526cf0b9bbaafa091bf79e3936716ae 100644
+--- a/ext4_utils/Android.bp
++++ b/ext4_utils/Android.bp
+@@ -87,6 +87,7 @@ prebuilt_etc {
+     name: "mke2fs.conf.recovery",
+     recovery: true,
+     src: "mke2fs.conf",
++    filename: "mke2fs.conf",
+ }
+ 
+ // TODO(b/157625953): Can't embedded into the other package because of missing variant
+diff --git a/ext4_utils/wipe.cpp b/ext4_utils/wipe.cpp
+index 445c97391528ef712f68a9f39340da12df869dd1..54c7326d88305c076667c2d4a48167c26625069c 100644
+--- a/ext4_utils/wipe.cpp
++++ b/ext4_utils/wipe.cpp
+@@ -24,8 +24,10 @@
+ 
+ #if defined(__linux__)
+ 
++#include <errno.h>
+ #include <linux/fs.h>
+ #include <sys/ioctl.h>
++#include <unistd.h>
+ 
+ #include "helpers.h"
+ 
+@@ -63,7 +65,10 @@ int wipe_block_device(int fd, s64 len) {
+                 warn("Writing zeros failed\n");
+                 return 1;
+             }
+-            fsync(fd);
++            if (TEMP_FAILURE_RETRY(fsync(fd)) < 0) {
++                warn("Syncing zeros failed\n");
++                return 1;
++            }
+             warn("Wipe via secure discard failed, used discard instead\n");
+             return 0;
+         }

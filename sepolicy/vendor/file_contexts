@@ -741,6 +741,11 @@
 /data/vendor/misc/qti_fp(/.*)?                                      u:object_r:vendor_qfp-daemon_data_file:s0
 
 /sys/kernel/reserve_pool(/.*)? u:object_r:sysfs_perf:s0
+/sys/kernel/reserve_pool/config u:object_r:vendor_sysfs_reserve_pool_control:s0
+/sys/kernel/reserve_pool/enable u:object_r:vendor_sysfs_reserve_pool_control:s0
+/sys/kernel/reserve_pool/cam_reserved_pages u:object_r:vendor_sysfs_reserve_pool_control:s0
+/sys/kernel/reserve_pool/pid u:object_r:vendor_sysfs_reserve_pool_pid:s0
+/sys/kernel/mi_mempool/pids u:object_r:vendor_sysfs_mi_mempool_pids:s0
 
 /mnt/vendor/persist/rsmc(/.*)?                                   u:object_r:vendor_smc_cal_data:s0
 
@@ -2152,3 +2157,22 @@
 /dev/sp_keymaster_ssr                 u:object_r:vendor_sp_keymaster_ssr_device:s0
 
 /dev/socket/fpsensor_socket u:object_r:vendor_fpsensor_socket:s0
+
+# Dedicated labels for checked persistent filesystems on the Warsaw UFS controller.
+# ueventd selects these canonical aliases when labelling the actual block inode.
+/dev/block/platform/soc/1d84000\.ufshc/by-name/persist u:object_r:vendor_persist_block_device:s0
+/dev/block/platform/soc/1d84000\.ufshc/by-name/qmcs u:object_r:vendor_qmcs_block_device:s0
+/dev/block/platform/soc/1d84000\.ufshc/by-name/spunvm u:object_r:vendor_spunvm_block_device:s0
+/dev/block/platform/soc/1d84000\.ufshc/by-name/logfs u:object_r:vendor_logfs_block_device:s0
+
+# Keep the mountpoint consistent with the explicit spunvm vfat context= option.
+/mnt/vendor/spunvm(/.*)? u:object_r:vendor_spunvm_file:s0
+
+# Haptics calibration files are read-only to the HAL; its nv_flag is separate.
+/mnt/vendor/persist/haptics(/.*)? u:object_r:vendor_persist_haptics_file:s0
+/mnt/vendor/persist/haptics/nv_flag u:object_r:vendor_persist_haptics_nv_flag_file:s0
+
+# Selected eUSB2 repeater controls and read-only capability mask.
+/sys/devices/virtual/usb_enhance/usb_enhance/current_eye_tune u:object_r:vendor_sysfs_usb_enhance_status:s0
+/sys/devices/virtual/usb_enhance/usb_enhance/usb_enhance_state u:object_r:vendor_sysfs_usb_enhance_control:s0
+/sys/devices/virtual/usb_enhance/usb_enhance/usb_enhance_support_mode u:object_r:vendor_sysfs_usb_enhance_status:s0

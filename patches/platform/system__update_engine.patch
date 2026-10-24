@@ -1,0 +1,76 @@
+diff --git a/download_action.cc b/download_action.cc
+index 6f65006f55c458991a7810b828922ab8ed473aa3..fb81f2fee4822d34d0a8a5b888b0dd1dc4f6c224 100644
+--- a/download_action.cc
++++ b/download_action.cc
+@@ -78,11 +78,21 @@ void DownloadAction::PerformAction() {
+   if (!payload_)
+     payload_ = &install_plan_.payloads[0];
+ 
+-  LOG(INFO) << "Marking new slot as unbootable";
+-  if (!boot_control_->MarkSlotUnbootable(install_plan_.target_slot)) {
+-    LOG(WARNING) << "Unable to mark new slot "
++  // Slotless plans use BootControlStub and do not change boot metadata.
++  const bool slotless =
++      install_plan_.source_slot == BootControlInterface::kInvalidSlot &&
++      install_plan_.target_slot == BootControlInterface::kInvalidSlot &&
++      boot_control_->GetNumSlots() == 0;
++  if (!slotless) {
++    LOG(INFO) << "Marking new slot as unbootable";
++    if (!boot_control_->MarkSlotUnbootable(install_plan_.target_slot)) {
++      LOG(ERROR) << "Unable to mark new slot "
+                  << BootControlInterface::SlotName(install_plan_.target_slot)
+-                 << ". Proceeding with the update anyway.";
++                 << " as unbootable; aborting before writing the payload.";
++      processor_->ActionComplete(this,
++                                 ErrorCode::kDownloadStateInitializationError);
++      return;
++    }
+   }
+ 
+   StartDownloading();
+diff --git a/download_action_android_unittest.cc b/download_action_android_unittest.cc
+index 426d7fd2ff4c6ac4ce27abe244d30629f15e10e4..e403864e444a80b1c188a13efa2890ebc1af028b 100644
+--- a/download_action_android_unittest.cc
++++ b/download_action_android_unittest.cc
+@@ -30,6 +30,7 @@
+ #include "update_engine/common/download_action.h"
+ #include "update_engine/common/fake_hardware.h"
+ #include "update_engine/common/mock_action_processor.h"
++#include "update_engine/common/mock_boot_control.h"
+ #include "update_engine/common/mock_http_fetcher.h"
+ #include "update_engine/common/mock_prefs.h"
+ #include "update_engine/common/test_utils.h"
+@@ -54,6 +55,33 @@ class DownloadActionTest : public ::testing::Test {
+       new ActionPipe<InstallPlan>()};
+ };
+ 
++TEST_F(DownloadActionTest, UnbootableFailureStopsBeforeDownloading) {
++  for (const auto target : {BootControlInterface::Slot{1},
++                            BootControlInterface::kInvalidSlot}) {
++    MockPrefs prefs;
++    MockBootControl boot_control;
++    EXPECT_CALL(boot_control, MarkSlotUnbootable(target)).WillOnce(Return(false));
++    auto* http_fetcher = new MockHttpFetcher("payload", 7);
++    http_fetcher->set_never_use(true);
++    InstallPlan install_plan;
++    install_plan.source_slot = 0;
++    install_plan.target_slot = target;
++    auto& payload = install_plan.payloads.emplace_back();
++    payload.size = 7;
++    payload.payload_urls.emplace_back("http://fake_url.invalid");
++    action_pipe->set_contents(install_plan);
++    DownloadAction action(&prefs, &boot_control, nullptr, http_fetcher, false);
++    action.set_in_pipe(action_pipe);
++    MockActionProcessor processor;
++    action.SetProcessor(&processor);
++    EXPECT_CALL(processor,
++                ActionComplete(&action,
++                               ErrorCode::kDownloadStateInitializationError));
++    action.PerformAction();
++    EXPECT_EQ(action.http_fetcher()->GetBytesDownloaded(), 0UL);
++  }
++}
++
+ TEST_F(DownloadActionTest, CacheManifestInvalid) {
+   std::string data(METADATA_SIZE + SIGNATURE_SIZE, '-');
+   MockPrefs prefs;

@@ -1,57 +1,62 @@
 # Building LineageOS for warsaw
 
-Use Linux or WSL2 with a case-sensitive Linux filesystem. Install the
-LineageOS build dependencies, Repo and Git LFS, and configure Git access to
-the three private repositories.
+Use Linux or WSL2 with a case-sensitive Linux filesystem, the LineageOS build
+dependencies, Repo, Python 3.11 or newer, and Git LFS.
 
-## Get the sources
+## Sync the source set
 
-The supplied manifest selects the platform revisions required by the patch
-series and the `warsaw-20261015` tag for the device and vendor trees.
+The manifest pins the platform revisions and selects `warsaw-20261024` for the
+device and vendor trees. All three Warsaw repositories are public.
 
 ```sh
-git clone --branch lineage-24.0 https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24.git "$HOME/warsaw-device"
-mkdir -p "$HOME/android/lineage-24.0"
-cd "$HOME/android/lineage-24.0"
+git clone --branch warsaw-20261024 https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24.git "$HOME/warsaw-device"
+mkdir -p "$HOME/android/lineage-warsaw"
+cd "$HOME/android/lineage-warsaw"
 repo init --standalone-manifest --git-lfs -u "file://$HOME/warsaw-device/docs/lineage-24.0-pinned.xml"
 repo sync -c -j4
 git -C vendor/xiaomi/warsaw lfs pull
 git -C vendor/xiaomi/warsaw lfs fsck
+python3 vendor/xiaomi/warsaw/verify-files.py
 python3 device/xiaomi/warsaw/apply-platform-patches.py --source "$PWD" --check
 python3 device/xiaomi/warsaw/apply-platform-patches.py --source "$PWD" --apply
+python3 device/xiaomi/warsaw/patches/check-patches.py
+python3 device/xiaomi/warsaw/setup-makefiles.py --check
 ```
 
-The patch helper checks every affected project before applying changes.
-`lineage.dependencies` is empty because the manifest already includes the
-private repositories. The platform patches are required; an unmodified
-LineageOS checkout is not sufficient.
+The patch helper checks hashes, base revisions, and every affected worktree
+before applying changes. Already applied patches are left in place. Preserve
+the error output if a check fails; do not bypass it or apply the series twice.
+
+`lineage.dependencies` is empty because the manifest supplies the required
+projects. The platform patches are part of the source set.
 
 ## Build userdebug
 
 ```sh
 source build/envsetup.sh
-source vendor/lineage/vars/aosp_target_release
-lunch "lineage_warsaw-${aosp_target_release}-userdebug"
-m --no-skip-soong-tests -j32 bacon
+lunch lineage_warsaw-cp2a-userdebug
+m --no-skip-soong-tests -j24 bacon
 ```
 
-Adjust `-j32` for the build host. Keep `--no-skip-soong-tests` and neverallow
-checks enabled. The output directory is `out/target/product/warsaw/`.
+Adjust the job count to the host's memory and CPU capacity. Keep neverallow,
+dependency, and Soong tests enabled. Output is written to
+`out/target/product/warsaw/`. The default userdebug and eng configurations keep
+normal boot and recovery in SELinux permissive mode.
 
-`BUILD_DATETIME` defaults to the time of the build. Set it explicitly if
-reproducing an earlier build; a different timestamp changes the package hash.
+The October 24 clean build used `BUILD_DATETIME=1792804649`. Setting that value
+alone does not guarantee identical package bytes: source contents, signing keys,
+toolchains, and packaging inputs must also match. The published cleanup was
+checked with `m nothing` after that full build; no replacement OTA is attached
+to this source update.
 
-## Kernel
+## Kernel inputs
 
-The default input is `vendor/xiaomi/warsaw/boot/gki-no-kunit`. It contains the
-kernel Image, matching modules and their hash manifest. To rebuild it, follow
-the [kernel instructions](https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24#build)
-in a separate Kleaf workspace.
+The default kernel is `vendor/xiaomi/warsaw/boot/gki-no-kunit/Image`, paired
+with its 78 signed GKI modules. Follow the
+[kernel build instructions](https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24#build)
+in a separate Kleaf workspace to rebuild it.
 
-Replace the Image and all 78 signed GKI modules together, then regenerate
-the module indexes. Mixing modules from different kernel builds can prevent
-boot. The supplied set can be used directly when building Android.
-
-`WARSAW_USE_OTA_GKI=true` selects the stock GKI fallback. This is not the
-default and does not meet the no-KUnit configuration. Five IMS/data libraries
-require 4 KiB pages; `configs/boot/boot.mk` checks the kernel page size.
+Replace the Image and complete module set together, regenerate module indexes,
+and revalidate the OEM module ABI. The build requires 4 KiB pages for five
+retained IMS/data libraries. `WARSAW_USE_OTA_GKI=true` selects the stock fallback;
+that fallback is outside the no-KUnit configuration.

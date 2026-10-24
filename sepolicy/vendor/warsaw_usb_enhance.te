@@ -1,0 +1,13 @@
+# Actual attributes from repeater-qti-pmic-eusb2, used by the USB and charge HALs.
+# Both HAL binaries reference these exact paths. Current eye tuning and the
+# support mask have no store callback; only usb_enhance_state is writable.
+type vendor_sysfs_usb_enhance_control, fs_type, sysfs_type;
+type vendor_sysfs_usb_enhance_status, fs_type, sysfs_type;
+
+not_recovery(`
+allow { vendor_hal_usb_qti hal_micharge_default } vendor_sysfs_usb_enhance_control:file { getattr open read write };
+allow { vendor_hal_usb_qti hal_micharge_default } vendor_sysfs_usb_enhance_status:file { getattr open read };
+
+# The retained vendor RC actions set ownership and modes on these attributes.
+allow vendor_init { vendor_sysfs_usb_enhance_control vendor_sysfs_usb_enhance_status }:file setattr;
+')

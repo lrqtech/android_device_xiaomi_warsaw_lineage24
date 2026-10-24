@@ -61,6 +61,3 @@ SOONG_CONFIG_warsaw_stock_abi_enabled := true
 # Match the requested default IR client and its explicit opt-out.
 WARSAW_INCLUDE_MI_REMOTE ?= true
 SOONG_CONFIG_warsaw_stock_abi_include_mi_remote := $(if $(filter true,$(WARSAW_INCLUDE_MI_REMOTE)),true,false)
-
-# Retain cross-DSO CFI when building the recovered native IMS contracts.
-CFI_INCLUDE_PATHS += hardware/xiaomi/warsaw-ims/aidl

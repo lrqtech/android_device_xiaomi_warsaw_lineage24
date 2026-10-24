@@ -1,0 +1,12 @@
+# Authentication override used only by the explicit recovery Enable ADB action.
+system_internal_prop(warsaw_recovery_adbd_auth_prop)
+
+recovery_only(`
+  # The menu reads the value before an idempotent write; set_prop grants both.
+  set_prop(recovery, warsaw_recovery_adbd_auth_prop)
+  # adbd reads this before drop_privileges() can switch its domain to su.
+  get_prop(adbd, warsaw_recovery_adbd_auth_prop)
+
+  # Recovery requests root adbd on non-user builds through the existing property.
+  set_prop(recovery, shell_prop)
+')

@@ -1,0 +1,54 @@
+# Persistent filesystems retained from the Warsaw OTA fstab.  Keep raw block
+# access separate from generic block_device; only fsck checks/repairs these.
+type vendor_persist_block_device, dev_type;
+type vendor_qmcs_block_device, dev_type;
+type vendor_spunvm_block_device, dev_type;
+type vendor_logfs_block_device, dev_type;
+
+allow fsck {
+    vendor_persist_block_device
+    vendor_qmcs_block_device
+    vendor_spunvm_block_device
+    vendor_logfs_block_device
+}:blk_file rw_file_perms;
+
+# OTA persist restorecon semantics; other clients use the mounted filesystem.
+allow vendor_init vendor_persist_block_device:blk_file relabelto;
+
+# The retained fstabs use context= for these vfat filesystems. The kernel
+# checks relabelto, then relabelfrom and self-associate after replacing the
+# superblock SID, before checking mount. Match the OTA init mount authority.
+allow init { firmware_file bt_firmware_file }:dir mounton;
+allow init { firmware_file bt_firmware_file }:filesystem { getattr mount relabelfrom };
+allow firmware_file self:filesystem associate;
+allow bt_firmware_file self:filesystem associate;
+
+allow init vendor_qmcs_file:dir mounton;
+allow init vendor_qmcs_file:filesystem { mount unmount relabelfrom relabelto };
+allow vendor_qmcs_file self:filesystem associate;
+
+# The normal and recovery fstabs explicitly request this vfat context.  The
+# OEM SPU services are not shipped, so only the retained init mount operations
+# are allowed here; there is no raw partition access for a HAL.
+type vendor_spunvm_file, file_type;
+allow init vendor_spunvm_file:dir mounton;
+allow init vendor_spunvm_file:filesystem { mount unmount relabelfrom relabelto };
+allow vendor_spunvm_file self:filesystem associate;
+
+# vm-bootsys is mounted at /product/vm-system by second-stage init.
+# The owning product file_contexts labels the mountpoint with this type.
+# Keep access limited to directory lookup/stat and mounting, without writes
+# to the read-only VM firmware tree.
+allow init vendor_vm_qti_system_file:dir { getattr search mounton };
+
+# Recovery has the same explicit context= mount in its retained fstab.
+recovery_only(`
+# The recovery volume table exposes the same explicit-context mounts. These
+# grants cover mount/statfs/unmount and mountpoint traversal, not file writes.
+# Init creates and mounts the recovery firmware directories. Keep
+# vendor_file_type:dir mounton forbidden to recovery.
+allow recovery vendor_qmcs_file:dir { getattr search mounton };
+allow recovery { firmware_file bt_firmware_file vendor_qmcs_file }:filesystem { getattr mount unmount relabelfrom relabelto };
+allow recovery vendor_spunvm_file:dir { r_dir_perms mounton };
+allow recovery vendor_spunvm_file:filesystem { getattr mount unmount relabelfrom relabelto };
+')

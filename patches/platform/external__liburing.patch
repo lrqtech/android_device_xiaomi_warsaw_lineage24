@@ -1,0 +1,151 @@
+diff --git a/src/include/liburing.h b/src/include/liburing.h
+index c80bffd394418447d583aa3cdb050a62d49535e8..9c6a9d43123339440207055b02fc4450b64321af 100644
+--- a/src/include/liburing.h
++++ b/src/include/liburing.h
+@@ -221,6 +221,33 @@ int io_uring_queue_init_mem(unsigned entries, struct io_uring *ring,
+ 				void *buf, size_t buf_size) LIBURING_NOEXCEPT;
+ int io_uring_queue_init_params(unsigned entries, struct io_uring *ring,
+ 				struct io_uring_params *p) LIBURING_NOEXCEPT;
++/* Optional checked initializer for the default (flags=0) layout only.
++ * Legacy initialization interfaces retain their existing behavior.
++ * Return the primary -errno on failure. Each attempted cleanup records its
++ * raw 0/-errno result below; no cleanup error replaces the primary error.
++ * Failed mappings remain in ring for ownership tracking. A close is attempted
++ * exactly once, its FD is recorded here, and ring_fd/enter_ring_fd become -1.
++ * Never submit, queue_exit, retry close, or reuse a failed ring. If any cleanup
++ * result is negative, retain the ring and this receipt until process teardown.
++ * SQEs are mapped last: there is no failure path after a successful SQE map.
++ */
++enum io_uring_init_cleanup_attempt {
++	IO_URING_INIT_CLEANUP_SQ = 1U << 0,
++	IO_URING_INIT_CLEANUP_CQ = 1U << 1,
++	IO_URING_INIT_CLEANUP_CLOSE = 1U << 2,
++};
++
++struct io_uring_init_cleanup {
++	unsigned attempted;
++	int sq_ring_result;
++	int cq_ring_result;
++	int close_result;
++	int close_fd;
++};
++
++int io_uring_queue_init_checked(unsigned entries, struct io_uring *ring,
++			       struct io_uring_init_cleanup *cleanup) LIBURING_NOEXCEPT;
++
+ int io_uring_queue_init(unsigned entries, struct io_uring *ring,
+ 			unsigned flags) LIBURING_NOEXCEPT;
+ int io_uring_queue_mmap(int fd, struct io_uring_params *p,
+diff --git a/src/setup.c b/src/setup.c
+index 05bb3bf3694785eda14028610b818a049c014566..d249d48e43550cdaea1df01eece8e649bd2e1776 100644
+--- a/src/setup.c
++++ b/src/setup.c
+@@ -439,6 +439,108 @@ __cold int io_uring_queue_init(unsigned entries, struct io_uring *ring,
+ 	return io_uring_queue_init_params(entries, ring, &p);
+ }
+ 
++/* The opt-in default-layout path keeps an explicit receipt for failed
++ * initialization. No requests or SQPOLL thread can exist in this path.
++ */
++int io_uring_queue_init_checked(unsigned entries, struct io_uring *ring,
++			       struct io_uring_init_cleanup *cleanup)
++{
++	struct io_uring_params p = { 0 };
++	struct io_uring_sq *sq = &ring->sq;
++	struct io_uring_cq *cq = &ring->cq;
++	bool shared;
++	int fd, ret;
++	unsigned index;
++
++	memset(ring, 0, sizeof(*ring));
++	memset(cleanup, 0, sizeof(*cleanup));
++	ring->ring_fd = ring->enter_ring_fd = -1;
++	cleanup->close_fd = -1;
++	p.flags = IORING_SETUP_NO_SQARRAY;
++	fd = __sys_io_uring_setup(entries, &p);
++	/* Only an unsupported setup flag is eligible for fallback. Nothing has
++	 * been mapped or allocated by userspace at this point.
++	 */
++	if (fd == -EINVAL) {
++		memset(&p, 0, sizeof(p));
++		fd = __sys_io_uring_setup(entries, &p);
++	}
++	if (fd < 0)
++		return fd;
++
++	ring->ring_fd = ring->enter_ring_fd = fd;
++	ring->flags = p.flags;
++	ring->features = p.features;
++	sq->ring_sz = p.sq_off.array + p.sq_entries * sizeof(unsigned);
++	cq->ring_sz = p.cq_off.cqes + params_cq_size(&p, p.cq_entries);
++	shared = p.features & IORING_FEAT_SINGLE_MMAP;
++	if (shared) {
++		if (cq->ring_sz > sq->ring_sz)
++			sq->ring_sz = cq->ring_sz;
++		cq->ring_sz = sq->ring_sz;
++	}
++	sq->ring_ptr = __sys_mmap(0, sq->ring_sz, PROT_READ | PROT_WRITE,
++				MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_SQ_RING);
++	if (IS_ERR(sq->ring_ptr)) {
++		ret = PTR_ERR(sq->ring_ptr);
++		sq->ring_ptr = NULL;
++		goto err;
++	}
++	if (shared) {
++		cq->ring_ptr = sq->ring_ptr;
++	} else {
++		cq->ring_ptr = __sys_mmap(0, cq->ring_sz, PROT_READ | PROT_WRITE,
++					MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_CQ_RING);
++		if (IS_ERR(cq->ring_ptr)) {
++			ret = PTR_ERR(cq->ring_ptr);
++			cq->ring_ptr = NULL;
++			goto err;
++		}
++	}
++	sq->sqes = __sys_mmap(0, params_sqes_size(&p, p.sq_entries),
++			     PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
++			     fd, IORING_OFF_SQES);
++	if (IS_ERR(sq->sqes)) {
++		ret = PTR_ERR(sq->sqes);
++		sq->sqes = NULL;
++		goto err;
++	}
++
++	io_uring_setup_ring_pointers(&p, sq, cq);
++	if (!(p.flags & IORING_SETUP_NO_SQARRAY))
++		for (index = 0; index < sq->ring_entries; index++)
++			sq->array[index] = index;
++	return 0;
++
++err:
++	if (sq->ring_ptr) {
++		cleanup->attempted |= IO_URING_INIT_CLEANUP_SQ;
++		cleanup->sq_ring_result = __sys_munmap(sq->ring_ptr, sq->ring_sz);
++		if (!cleanup->sq_ring_result) {
++			sq->ring_ptr = NULL;
++			sq->ring_sz = 0;
++			if (shared) {
++				cq->ring_ptr = NULL;
++				cq->ring_sz = 0;
++			}
++		}
++	}
++	if (!shared && cq->ring_ptr) {
++		cleanup->attempted |= IO_URING_INIT_CLEANUP_CQ;
++		cleanup->cq_ring_result = __sys_munmap(cq->ring_ptr, cq->ring_sz);
++		if (!cleanup->cq_ring_result) {
++			cq->ring_ptr = NULL;
++			cq->ring_sz = 0;
++		}
++	}
++	cleanup->attempted |= IO_URING_INIT_CLEANUP_CLOSE;
++	cleanup->close_fd = fd;
++	/* A failed close must never be retried: the FD may already be consumed. */
++	ring->ring_fd = ring->enter_ring_fd = -1;
++	cleanup->close_result = __sys_close(fd);
++	return ret;
++}
++
+ __cold void io_uring_queue_exit(struct io_uring *ring)
+ {
+ 	struct io_uring_sq *sq = &ring->sq;

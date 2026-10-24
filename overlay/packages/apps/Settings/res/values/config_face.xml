@@ -3,5 +3,8 @@
     <!-- The stock AIDL v4 HAL opens the front camera and consumes surfacePreview. -->
     <bool name="config_face_enroll_hal_owns_camera">true</bool>
     <bool name="config_face_enroll_secure_preview">true</bool>
+    <!-- Match the stock HAL enrollment stream size. -->
+    <integer name="face_preview_width">640</integer>
+    <integer name="face_preview_height">480</integer>
     <string name="config_face_enroll" translatable="false"></string>
 </resources>

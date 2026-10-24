@@ -1,0 +1,74 @@
+diff --git a/composer/Android.bp b/composer/Android.bp
+index 2da4eaa7cd5642312a45d9ce3014d5fb19d50528..70da22b828961b5c3742c572c9ea8ba27b3f15f5 100644
+--- a/composer/Android.bp
++++ b/composer/Android.bp
+@@ -110,7 +110,10 @@ cc_binary {
+ 
+ prebuilt_etc {
+     name: "vendor.qti.hardware.display.composer-service.rc",
+-    src: "vendor.qti.hardware.display.composer-service.rc",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_vendor_qti_hardware_display_composer_service_rc",
++        default: "vendor.qti.hardware.display.composer-service.rc",
++    }),
+     filename_from_src: true,
+     sub_dir: "init",
+     vendor: true,
+diff --git a/gralloc/Android.bp b/gralloc/Android.bp
+index c68a7caec5ae1f447135ebbe7edcbc607c45ab82..8725b1aede41bb0a86e0f68b4a32bcace67870c2 100644
+--- a/gralloc/Android.bp
++++ b/gralloc/Android.bp
+@@ -342,7 +342,10 @@ cc_binary {
+         "QtiAllocatorAIDL.cpp",
+         "service.cpp",
+     ],
+-    init_rc: ["vendor.qti.hardware.display.allocator-service.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_vendor_qti_hardware_display_allocator_service_rc"],
++        default: ["vendor.qti.hardware.display.allocator-service.rc"],
++    }),
+     vintf_fragments: ["vendor.qti.hardware.display.allocator-service.xml"],
+ }
+ 
+diff --git a/init/Android.bp b/init/Android.bp
+index 560a3473dd22af551e3dc58e37363463bdc8b81a..07a9d431c0610bb7b9a10002b20fe1371199882c 100644
+--- a/init/Android.bp
++++ b/init/Android.bp
+@@ -1,6 +1,9 @@
+ prebuilt_etc {
+     name: "init.qti.display_boot.rc",
+-    src: "init.qti.display_boot.rc",
++    src: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": "//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_init_qti_display_boot_rc",
++        default: "init.qti.display_boot.rc",
++    }),
+     sub_dir: "init",
+     vendor: true,
+ }
+diff --git a/init/init.qti.display_boot.sh b/init/init.qti.display_boot.sh
+index 285ebf01e261125b4e01bff547fb4e66230a4ec9..65d06265cdadb0d401725fbd809dab23a58002aa 100644
+--- a/init/init.qti.display_boot.sh
++++ b/init/init.qti.display_boot.sh
+@@ -62,7 +62,6 @@ case "$target" in
+         setprop vendor.display.enable_idle_content_fps_hint 1
+         setprop vendor.display.enable_optimal_refresh_rate 1
+         setprop vendor.display.refresh_rate_changeable 1
+-        setprop debug.sf.enable_vrr_config 1
+         setprop vendor.display.enable_hal_self_refresh 1
+         setprop vendor.display.cpu_cluster_boost_mask 3
+         ;;
+diff --git a/oem_services/Android.bp b/oem_services/Android.bp
+index c292beb0926dcf101d17968ba85cca868b5ebe95..6fe2681b42d9aa38c03d378b6c6baf899907c058 100644
+--- a/oem_services/Android.bp
++++ b/oem_services/Android.bp
+@@ -76,6 +76,9 @@ cc_binary {
+     owner: "qti",
+     vendor: true,
+ 
+-    init_rc: ["vendor.qti.hardware.display.demura-service.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_vendor_qti_hardware_display_demura_service_rc"],
++        default: ["vendor.qti.hardware.display.demura-service.rc"],
++    }),
+     vintf_fragments: ["vendor.qti.hardware.display.demura-service.xml"],
+ }

@@ -1,40 +1,62 @@
 # Xiaomi warsaw
 
-Unofficial LineageOS 24 device tree for Xiaomi warsaw (Android 17, SDK 37).
-The product is `lineage_warsaw`; builds use the `userdebug` variant.
+Device configuration for unofficial LineageOS 24.0 (Android 17).
 
-## Source layout
-
-| Repository | Location |
+| Setting | Value |
 | --- | --- |
-| [Device tree](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24) | `device/xiaomi/warsaw` |
-| [Vendor files](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24) | `vendor/xiaomi/warsaw` |
+| Product | `lineage_warsaw-cp2a-userdebug` |
+| Platform | Qualcomm SM8750 / sun |
+| Firmware baseline | OS4.0.0.15.XHPCNXM |
+| Kernel | 6.6.118, 4 KiB pages, KUnit disabled |
+| SELinux | Permissive in normal boot and recovery |
+
+## Sources
+
+| Repository | Checkout path |
+| --- | --- |
+| [Device](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24) | `device/xiaomi/warsaw` |
+| [Vendor](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24) | `vendor/xiaomi/warsaw` |
 | [Kernel](https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24) | `common` in a separate Kleaf workspace |
 
-All three repositories use `lineage-24.0`. The `warsaw-20261015` tag records
-the original source set.
+The three repositories use `lineage-24.0`. The `warsaw-20261024` tag identifies
+this source set; `warsaw-20261015` preserves the earlier publication.
 
-## Building
+## Build
 
-See [BUILD.md](docs/BUILD.md). Use the supplied platform manifest and apply
-the 28 platform patches before building. The patches depend on the revisions
-in that manifest.
+Follow [BUILD.md](docs/BUILD.md) to sync the pinned platform, retrieve the vendor
+LFS files, and apply the 33 companion patches. Then run:
 
-The vendor tree supplies a source-built 4 KiB GKI kernel and 78 matching
-GKI modules, with KUnit disabled. The 538 OEM modules and six recovery
-variants come from OS4.0.0.15.XHPCNXM. Kernel builds run separately from the
-Android build.
+```sh
+source build/envsetup.sh
+lunch lineage_warsaw-cp2a-userdebug
+m --no-skip-soong-tests bacon
+```
 
-## Device settings
+The patch series includes the current recovery mount and sideload fixes,
+fastboot cleanup checks, startup ordering, and SELinux label repairs.
+Neverallow, ELF dependency, Treble labeling, and Soong checks remain enabled.
 
-Fan controls sit immediately above Apps in Settings, with an enable switch
-and a 0-100 PWM slider. Camera and Mi Remote are the only additional OEM
-consumer apps; the standard LineageOS apps and hardware services are retained.
-The lockscreen gesture, call-audio and gaming-display screens are omitted.
+The product retains fan controls. The optional call-audio, gaming-display, and
+gesture settings screens remain excluded.
 
-System and recovery boot with SELinux Permissive in userdebug and eng builds.
-Neverallow checks and Soong tests remain enabled. See [STATUS.md](docs/STATUS.md)
-for known issues and testing still needed.
+## Vendor tools
 
-Source origins and license information are listed in
-[PROVENANCE.md](docs/PROVENANCE.md).
+```sh
+device/xiaomi/warsaw/setup-makefiles.py --check
+device/xiaomi/warsaw/extract-files.py --check /path/to/prepared/vendor/warsaw
+```
+
+These tools verify the 5,589 prepared userspace files and reproduce the vendor
+build definitions. Raw OTA and running-device extraction are not yet supported.
+See [proprietary files](docs/proprietary-files.md) and
+[source dependencies](docs/dependencies.md).
+
+## Status
+
+A clean userdebug build and host image checks completed on October 24, 2026.
+The subsequent tree cleanup passed a full Soong/Make configuration build.
+Physical-device boot, recovery, and hardware acceptance remain outstanding.
+SELinux is intentionally permissive during bring-up; see [STATUS.md](docs/STATUS.md).
+
+Source origins and license scope are recorded in [PROVENANCE.md](docs/PROVENANCE.md)
+and [NOTICE](NOTICE). Existing per-file licenses and copyright notices apply.

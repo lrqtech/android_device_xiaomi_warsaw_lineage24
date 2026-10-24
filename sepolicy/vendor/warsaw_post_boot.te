@@ -1,0 +1,5 @@
+# Validate the resolved misc node before publishing its path to factory services.
+# The startup helper needs only the block node's metadata.
+not_recovery(`
+allow vendor_qti_init_shell misc_block_device:blk_file getattr;
+')

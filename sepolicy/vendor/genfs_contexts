@@ -1213,3 +1213,58 @@ genfscon proc /sys/kernel/printk_devkmsg u:object_r:vendor_proc_kernel_log:s0
 genfscon sysfs /devices/platform/soc/soc:xiaomi_fan/fan_support u:object_r:warsaw_fan_control:s0
 genfscon sysfs /devices/platform/soc/soc:xiaomi_fan/target_level u:object_r:warsaw_fan_control:s0
 genfscon sysfs /devices/platform/soc/soc:xiaomi_fan/pwm_duty u:object_r:warsaw_fan_control:s0
+
+# Actual qcom-haptics class attributes exported by the retained OTA driver.
+# Warsaw selects this class via ro.odm.mm.vibrator.sys_path.
+genfscon sysfs /class/qcom-haptics/lra_calibration u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/lra_frequency_hz u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/lra_impedance u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/lra_calibration_check u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/mi_f0_ctrl u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/mi_f0_check u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/mi_vmax_ctrl u:object_r:vendor_sysfs_haptics:s0
+genfscon sysfs /class/qcom-haptics/mi_custom_vmax_ctrl u:object_r:vendor_sysfs_haptics:s0
+
+# Recovery selects WALT only for the two CPU policy domains on Warsaw.
+recovery_only(`
+genfscon sysfs /devices/system/cpu/cpufreq/policy0/scaling_governor u:object_r:vendor_recovery_cpufreq_governor:s0
+genfscon sysfs /devices/system/cpu/cpufreq/policy6/scaling_governor u:object_r:vendor_recovery_cpufreq_governor:s0
+')
+
+# Exact proc nodes used by the retained normal-boot RC actions.
+not_recovery(`
+genfscon proc /sys/vm/swappiness u:object_r:vendor_proc_swappiness:s0
+genfscon proc /sys/vm/min_free_kbytes u:object_r:vendor_proc_min_free_kbytes:s0
+genfscon proc /sys/kernel/sched_boost u:object_r:vendor_proc_sched_boost:s0
+genfscon proc /bootprof u:object_r:vendor_proc_bootprof:s0
+genfscon proc /mikblockd_enable u:object_r:vendor_proc_mikblockd_enable:s0
+')
+
+# Physical target of /sys/class/backlight/panel0-backlight/brightness.
+recovery_only(`
+genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/backlight/panel0-backlight/brightness u:object_r:vendor_sysfs_graphics:s0
+')
+
+# Camera/display memory pools: exact attributes from the selected OTA modules.
+genfscon sysfs /kernel/reserve_pool u:object_r:sysfs_perf:s0
+genfscon sysfs /kernel/reserve_pool/config u:object_r:vendor_sysfs_reserve_pool_control:s0
+genfscon sysfs /kernel/reserve_pool/enable u:object_r:vendor_sysfs_reserve_pool_control:s0
+genfscon sysfs /kernel/reserve_pool/cam_reserved_pages u:object_r:vendor_sysfs_reserve_pool_control:s0
+genfscon sysfs /kernel/reserve_pool/pid u:object_r:vendor_sysfs_reserve_pool_pid:s0
+genfscon sysfs /kernel/mi_mempool/pids u:object_r:vendor_sysfs_mi_mempool_pids:s0
+
+# Keep selected touch/display/USB attributes stable before and after restorecon.
+genfscon sysfs /devices/virtual/touch/touch_dev/resolution_factor u:object_r:sysfs_touch_hostprocess:s0
+genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0 u:object_r:vendor_sysfs_displayfeature:s0
+genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-1 u:object_r:vendor_sysfs_displayfeature:s0
+genfscon sysfs /devices/virtual/usb_enhance/usb_enhance/current_eye_tune u:object_r:vendor_sysfs_usb_enhance_status:s0
+genfscon sysfs /devices/virtual/usb_enhance/usb_enhance/usb_enhance_state u:object_r:vendor_sysfs_usb_enhance_control:s0
+genfscon sysfs /devices/virtual/usb_enhance/usb_enhance/usb_enhance_support_mode u:object_r:vendor_sysfs_usb_enhance_status:s0
+
+# Match the existing physical file_contexts for selected thermal class attributes.
+genfscon sysfs /devices/virtual/thermal/thermal_message/wifi_limit u:object_r:sys_thermal_wifi_limit:s0
+genfscon sysfs /devices/virtual/thermal/thermal_message/flash_state u:object_r:sys_thermal_flash_state:s0
+genfscon sysfs /devices/virtual/thermal/thermal_message/torch_real_level u:object_r:sys_thermal_torch_real_level:s0
+
+# Match the OTA file label when the optional HDCP device creates this attribute.
+genfscon sysfs /devices/virtual/hdcp/msm_hdcp/min_level_change u:object_r:vendor_sysfs_graphics:s0

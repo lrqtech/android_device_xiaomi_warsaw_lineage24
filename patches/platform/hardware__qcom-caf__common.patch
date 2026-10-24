@@ -1,0 +1,16 @@
+diff --git a/memtrack/Android.bp b/memtrack/Android.bp
+index 1d073e599375859a0c6c156a49ee8b1d68c3dc44..70b423384e0eb6531d83fcc9e90c9fff3cc3b56f 100644
+--- a/memtrack/Android.bp
++++ b/memtrack/Android.bp
+@@ -1,7 +1,10 @@
+ cc_binary {
+     name: "vendor.qti.hardware.memtrack-service",
+     relative_install_path: "hw",
+-    init_rc: ["memtrack_qti.rc"],
++    init_rc: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//vendor/xiaomi/warsaw:warsaw_stock_config_vendor_etc_init_memtrack_qti_rc"],
++        default: ["memtrack_qti.rc"],
++    }),
+     vintf_fragments: ["memtrack_qti.xml"],
+     vendor: true,
+     cflags: [

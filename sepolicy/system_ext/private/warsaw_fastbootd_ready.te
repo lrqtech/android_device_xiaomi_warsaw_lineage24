@@ -1,0 +1,8 @@
+# Fastboot transport readiness is independent of the shared ADB FunctionFS marker.
+system_internal_prop(warsaw_fastbootd_ready_prop)
+
+recovery_only(`
+  set_prop(fastbootd, warsaw_fastbootd_ready_prop)
+')
+
+# init already reads/sets property_type; no additional init or ADB grant is needed.

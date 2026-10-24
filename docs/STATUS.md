@@ -1,41 +1,34 @@
-# Known issues
+# Development status
 
-## Hardware testing
+This is an unofficial LineageOS development tree.
 
-The last reported GPS test could not obtain an outdoor fix. IR transmission
-reached the driver, but the tested appliance did not respond. Changes for
-both are included; they still need to be retested on a device.
+## Verified on the build host
 
-Camera, face unlock, fingerprint, Bluetooth audio, GPS, NFC and IR also need
-regression testing on this revision. Build results alone do not establish
-that these functions work.
+- A clean `lineage_warsaw-cp2a-userdebug` build and target-files package completed
+  on October 24, 2026.
+- The OTA, boot and recovery images, policy labels, partition hashes, and package
+  signatures passed the recorded host checks.
+- The tree cleanup passed `m nothing` with normal dependency and policy checks.
+  Prepared import and metadata generation reproduced 5,589 userspace files and
+  2,277 Blueprint modules.
+- The published platform patches reproduce the modified source trees from their
+  pinned bases. The vendor hash manifest covers the prepared payloads.
 
-## SELinux
+These checks do not establish successful boot or hardware behavior on a phone.
 
-System and recovery use global Permissive. Enforcing has not been established
-across boot and hardware use.
+## Remaining work
 
-Hardware rules and node labels are based on OS4.0.0.15.XHPCNXM, with
-HyperOS-only services left out where they are unused. Device domains,
-platform isolation and neverallow checks remain in place. Recovery does not
-inherit the OTA permissions to execute writable VM data or associate procfs
-objects.
+- Normal boot and recovery remain SELinux permissive in userdebug and eng.
+  Enforcing boot, early-init behavior, mount transitions, and recovery operations
+  still need physical-device testing. Policy compilation and neverallow checks
+  remain enabled.
+- Camera capture/video, face enrollment, telephony, GNSS, D2 game enhancement,
+  and the remaining hardware support checklist need runtime qualification.
+- The 538 OEM modules are retained binaries. Source coverage and the full kernel
+  rebuild remain prerequisites for broader kernel qualification.
+- Raw OTA and running-device extraction with reproducible fixups remain
+  outstanding. The prepared-input importer accepts only the recorded baseline.
 
-## Vendor files
-
-- The 538 OEM modules and six recovery variants are OTA binaries. The GKI
-  repository does not provide the sources for these drivers.
-- `proprietary-files.txt` lists the inputs, but a portable extraction and
-  fixup script for the complete vendor tree is still missing.
-- Five IMS/data libraries require 4 KiB kernel pages. The per-library build
-  exceptions do not add 16 KiB support.
-- The retained OEM apps and camera/face dependencies need further source,
-  licensing and device-support review before an official submission.
-
-## Official support
-
-This device is not officially supported by LineageOS. Enforcing SELinux,
-hardware testing and the vendor source/extraction requirements above remain
-outstanding. Refer to the [device support requirements](https://github.com/LineageOS/charter/blob/main/device-support-requirements.md)
-and [submission guide](https://wiki.lineageos.org/submitting_device) before
-preparing a submission.
+Official support requires SELinux enforcing and the remaining
+[device support requirements](https://github.com/LineageOS/charter/blob/main/device-support-requirements.md).
+See the [submission guide](https://github.com/LineageOS/lineage_wiki/blob/main/pages/submitting_device.md).

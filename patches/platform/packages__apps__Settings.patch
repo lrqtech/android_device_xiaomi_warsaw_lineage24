@@ -1,0 +1,121 @@
+diff --git a/Android.bp b/Android.bp
+index 7f51f2e7c61c50de0e0e486d14aa00da40cb67a2..e4b47a7f7c7e123f7923bd771f66534ae3cd6f23 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -55,7 +55,10 @@ android_library {
+     srcs: [
+         "src/**/*.java",
+         "src/**/*.kt",
+-    ],
++    ] + select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//device/xiaomi/warsaw:warsaw-fan-settings-sources"],
++        default: [],
++    }),
+     exclude_srcs: [
+         "src/com/android/settings/biometrics/fingerprint2/lib/**/*.kt",
+     ],
+@@ -132,7 +135,10 @@ android_library {
+         // Lineage dependencies
+         "org.lineageos.platform.internal",
+         "LineagePreferenceLib",
+-    ],
++    ] + select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": ["//device/xiaomi/warsaw:warsaw-fan-settings-resources"],
++        default: [],
++    }),
+ 
+     plugins: [
+         "SettingsLibMetadata-processor",
+diff --git a/res/values/lineage_config.xml b/res/values/lineage_config.xml
+index c6aaf2d2556755271a080e008d2ab98dd51bc168..20b65fe988f5fe1c461dab1ef94aa3f6b1ffe914 100644
+--- a/res/values/lineage_config.xml
++++ b/res/values/lineage_config.xml
+@@ -41,6 +41,9 @@
+     <!-- Whether Settings should open a separate camera preview during face enrollment -->
+     <bool name="config_face_enroll_hal_owns_camera">false</bool>
+ 
++    <!-- The HAL supplies protected buffers and requires a secure SurfaceView consumer. -->
++    <bool name="config_face_enroll_secure_preview">false</bool>
++
+     <!-- HAL-owned face preview size, must match a supported camera size -->
+     <integer name="face_preview_width">1080</integer>
+     <integer name="face_preview_height">1080</integer>
+diff --git a/src/com/android/settings/biometrics/face/FaceEnrollPreviewFragment.java b/src/com/android/settings/biometrics/face/FaceEnrollPreviewFragment.java
+index d2106055a68afa7838abf60b842760ddf57c981c..e660faaf24d03a3ed2c33517fc35ddd996a1b467 100644
+--- a/src/com/android/settings/biometrics/face/FaceEnrollPreviewFragment.java
++++ b/src/com/android/settings/biometrics/face/FaceEnrollPreviewFragment.java
+@@ -93,12 +93,12 @@ public class FaceEnrollPreviewFragment extends InstrumentedPreferenceFragment
+     private final SurfaceHolder.Callback mSurfaceHolderCallback = new SurfaceHolder.Callback() {
+         @Override
+         public void surfaceCreated(SurfaceHolder holder) {
+-            mPreviewSurface = holder.getSurface();
+-            notifySurfaceReady();
++            updatePreviewSurface(holder);
+         }
+ 
+         @Override
+         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
++            updatePreviewSurface(holder);
+         }
+ 
+         @Override
+@@ -107,6 +107,14 @@ public class FaceEnrollPreviewFragment extends InstrumentedPreferenceFragment
+         }
+     };
+ 
++    private void updatePreviewSurface(SurfaceHolder holder) {
++        final Surface surface = holder.getSurface();
++        if (surface != null && surface.isValid()) {
++            mPreviewSurface = surface;
++            notifySurfaceReady();
++        }
++    }
++
+     private final TextureView.SurfaceTextureListener mSurfaceTextureListener =
+             new TextureView.SurfaceTextureListener() {
+ 
+@@ -223,6 +231,10 @@ public class FaceEnrollPreviewFragment extends InstrumentedPreferenceFragment
+             // The HAL renders into a SurfaceView buffer.
+             mTextureView.setVisibility(View.GONE);
+ 
++            // Protected HAL buffers require a secure SurfaceFlinger consumer.
++            mSurfaceView.setSecure(
++                    getResources().getBoolean(R.bool.config_face_enroll_secure_preview));
++
+             // The preview surface is a separate, opaque layer that is not affected by the page's
+             // enter animation, so creating it early briefly reveals an unmasked square through the
+             // still-fading page. Keep it hidden until the page has settled.
+@@ -255,10 +267,7 @@ public class FaceEnrollPreviewFragment extends InstrumentedPreferenceFragment
+             // The face HAL opens the camera itself and renders into this SurfaceView.
+             final SurfaceHolder holder = mSurfaceView.getHolder();
+             holder.addCallback(mSurfaceHolderCallback);
+-            if (holder.getSurface() != null && holder.getSurface().isValid()) {
+-                mPreviewSurface = holder.getSurface();
+-                notifySurfaceReady();
+-            }
++            updatePreviewSurface(holder);
+             return;
+         }
+ 
+@@ -316,7 +325,8 @@ public class FaceEnrollPreviewFragment extends InstrumentedPreferenceFragment
+     }
+ 
+     private void notifySurfaceReady() {
+-        if (mPreviewSurface != null && mSurfaceReadyListener != null) {
++        if (isResumed() && mPreviewSurface != null && mPreviewSurface.isValid()
++                && mSurfaceReadyListener != null) {
+             final Runnable listener = mSurfaceReadyListener;
+             mSurfaceReadyListener = null;
+             listener.run();
+diff --git a/src/com/android/settings/core/gateway/SettingsGateway.java b/src/com/android/settings/core/gateway/SettingsGateway.java
+index 2a05a30620ce5852437602d2bf2370f645463f55..51c4f3f193e733120a44a27eeb8e00ad91f49da3 100644
+--- a/src/com/android/settings/core/gateway/SettingsGateway.java
++++ b/src/com/android/settings/core/gateway/SettingsGateway.java
+@@ -229,6 +229,7 @@ public class SettingsGateway {
+      * security exception if the fragment it needs to display is not in this list.
+      */
+     public static final String[] ENTRY_FRAGMENTS = {
++            "org.lineageos.warsaw.fan.FanSettings",
+             AdvancedConnectedDeviceDashboardFragment.class.getName(),
+             CreateShortcut.class.getName(),
+             BluetoothPairingDetail.class.getName(),

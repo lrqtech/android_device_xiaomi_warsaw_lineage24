@@ -4819,7 +4819,7 @@ product/app/uimremoteclient/uimremoteclient.apk
 product/app/uimgbaservice/uimgbaservice.apk
 vendor/app/com.qualcomm.qti.gpudrivers.sun.api35/com.qualcomm.qti.gpudrivers.sun.api35.apk;PRESIGNED
 vendor/overlay/XpanResTarget_Vendor.apk;PRESIGNED;EXTRACT_ONLY
-product/data-app/XMRemoteController/XMRemoteController.apk;PRESIGNED
+product/data-app/XMRemoteController/XMRemoteController.apk;EXTRACT_ONLY
 product/priv-app/MiuiCamera/MiuiCamera.apk
 system_ext/app/CameraMind/CameraMind.apk
 system_ext/framework/extphonelib.jar
@@ -5602,3 +5602,10 @@ odm/lib64/libqll.so
 odm/lib64/libqllengine.so
 
 vendor/framework/androidx.camera.extensions.impl.jar
+
+# Prepared Warsaw compatibility inputs; see docs/proprietary-files.md.
+odm/lib64/libmiface_warsaw_face.so;EXTRACT_ONLY
+system/lib64/vendor.qti.hardware.perf2-V1-ndk.so;EXTRACT_ONLY
+system_ext/lib64/libqti-perfd-client_system.so;EXTRACT_ONLY
+system_ext/priv-app/WarsawCloudSettings/WarsawCloudSettings.apk;EXTRACT_ONLY
+vendor/lib64/libcamera2ndk_warsaw_face.so;EXTRACT_ONLY

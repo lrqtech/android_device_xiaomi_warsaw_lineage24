@@ -1,0 +1,1692 @@
+diff --git a/Android.bp b/Android.bp
+index 490fe0c8b890f2b04247049f7d3c7fd7229cb7d5..30e1c1dca6dc137bc229aef1e60484b775d64e2e 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -185,6 +185,7 @@ cc_binary {
+     ],
+ 
+     static_libs: [
++        "librecovery_fan_control",
+         "librecovery",
+         "librecovery_ui_default",
+     ],
+diff --git a/etc/init.rc b/etc/init.rc
+index 0475b38854f9c4dacb6be2e017af73da1c1c22e0..5a769e7f4b43bf2b637eac8fd73748b7466c0909 100644
+--- a/etc/init.rc
++++ b/etc/init.rc
+@@ -168,53 +168,59 @@ on property:sys.usb.config=fastboot
+ on property:sys.usb.config=none && property:sys.usb.configfs=0
+     stop adbd
+     stop fastbootd
++    setprop sys.fastbootd.ready none
+     write /sys/class/android_usb/android0/enable 0
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state none
+ 
+ on property:sys.usb.config=adb && property:sys.usb.configfs=0
+     write /sys/class/android_usb/android0/idProduct ${ro.recovery.usb.adb.pid}
+     write /sys/class/android_usb/android0/functions adb
+     write /sys/class/android_usb/android0/enable 1
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state adb
+ 
+ on property:sys.usb.config=sideload && property:sys.usb.configfs=0
+     write /sys/class/android_usb/android0/idProduct ${ro.recovery.usb.adb.pid}
+     write /sys/class/android_usb/android0/functions adb
+     write /sys/class/android_usb/android0/enable 1
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state sideload
+ 
+-on property:sys.usb.config=fastboot && property:sys.usb.configfs=0
++on property:sys.usb.config=fastboot && property:sys.fastbootd.ready=usb && property:sys.usb.configfs=0
+     write /sys/class/android_usb/android0/idProduct ${ro.recovery.usb.fastboot.pid}
+     write /sys/class/android_usb/android0/functions fastboot
+     write /sys/class/android_usb/android0/enable 1
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state fastboot
+ 
+ # Configfs triggers
+ on property:sys.usb.config=none && property:sys.usb.configfs=1
+     write /config/usb_gadget/g1/UDC "none"
+     stop adbd
+     stop fastbootd
++    setprop sys.fastbootd.ready none
+     setprop sys.usb.ffs.ready 0
+     rm /config/usb_gadget/g1/configs/b.1/f1
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state none
+ 
+ on property:sys.usb.config=sideload && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+     write /config/usb_gadget/g1/idProduct 0x${ro.recovery.usb.adb.pid}
+     write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "adb"
+     symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
+     write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state sideload
+ 
+ on property:sys.usb.config=adb && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+     write /config/usb_gadget/g1/idProduct 0x${ro.recovery.usb.adb.pid}
+     write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "adb"
+     symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
+     write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state adb
+ 
+-on property:sys.usb.config=fastboot && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
++on property:sys.usb.config=fastboot && property:sys.fastbootd.ready=usb && property:sys.usb.configfs=1
+     write /config/usb_gadget/g1/idProduct 0x${ro.recovery.usb.fastboot.pid}
+     write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "fastboot"
+     symlink /config/usb_gadget/g1/functions/ffs.fastboot /config/usb_gadget/g1/configs/b.1/f1
+     write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+-    setprop sys.usb.state ${sys.usb.config}
++    setprop sys.usb.state fastboot
++
++# TCP readiness does not publish FunctionFS readiness or bind a USB gadget.
++on property:sys.usb.config=fastboot && property:sys.fastbootd.ready=tcp
++    setprop sys.usb.state fastboot
+diff --git a/fan/Android.bp b/fan/Android.bp
+new file mode 100644
+index 0000000000000000000000000000000000000000..7b2055925289f3f0f121d43ba5dbf3022b7937ee
+--- /dev/null
++++ b/fan/Android.bp
+@@ -0,0 +1,10 @@
++cc_library_static {
++    name: "librecovery_fan_control",
++    recovery_available: true,
++    srcs: ["fan.cpp"],
++    export_include_dirs: ["include"],
++    cflags: ["-Wall", "-Wextra", "-Werror"] + select(soong_config_variable("warsaw_recovery", "fan99"), {
++        true: ["-DWARSAW_RECOVERY_FAN99"],
++        default: [],
++    }),
++}
+diff --git a/fan/fan.cpp b/fan/fan.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..d40f94206027e2eadd95ca23c08a33f7ee28aeeb
+--- /dev/null
++++ b/fan/fan.cpp
+@@ -0,0 +1,237 @@
++#include "recovery_fan/fan.h"
++
++#include <errno.h>
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <time.h>
++#include <unistd.h>
++
++#include <cstring>
++#include <string>
++
++namespace recovery_fan {
++namespace {
++constexpr const char* kRoot = "/sys/devices/platform/soc/soc:xiaomi_fan/";
++constexpr int kDuty = 99;
++constexpr int kAvailabilitySeconds = 10;
++
++bool Fail(std::string* error, const std::string& operation, int code) {
++  *error = operation + ": " + std::strerror(code);
++  errno = code;
++  return false;
++}
++
++bool FinishFd(int fd, bool ok, int saved, std::string* error, const std::string& name) {
++  // Linux consumes the fd even when close reports an error. Never retry it.
++  if (close(fd) != 0) {
++    const int close_error = errno;
++    if (ok) return Fail(error, "close " + name, close_error);
++    *error += "; close: " + std::string(std::strerror(close_error));
++  }
++  errno = saved;
++  return ok;
++}
++
++int OpenNode(const char* leaf, int flags, std::string* error) {
++  const std::string path = std::string(kRoot) + leaf;
++  int fd;
++  do {
++    fd = open(path.c_str(), flags | O_CLOEXEC | O_NOFOLLOW);
++  } while (fd < 0 && errno == EINTR);
++  if (fd < 0) {
++    Fail(error, "open " + path, errno);
++    return -1;
++  }
++  struct stat st {};
++  if (fstat(fd, &st) != 0) {
++    const int saved = errno;
++    Fail(error, "fstat " + path, saved);
++    FinishFd(fd, false, saved, error, path);
++    return -1;
++  }
++  if (!S_ISREG(st.st_mode)) {
++    Fail(error, "unexpected node type " + path, EINVAL);
++    FinishFd(fd, false, EINVAL, error, path);
++    return -1;
++  }
++  return fd;
++}
++
++bool Read(const char* leaf, int* out, std::string* error) {
++  int fd = OpenNode(leaf, O_RDONLY, error);
++  if (fd < 0) return false;
++  char buf[32];
++  size_t size = 0;
++  bool ok = true;
++  while (size < sizeof(buf)) {
++    ssize_t got;
++    do {
++      got = read(fd, buf + size, sizeof(buf) - size);
++    } while (got < 0 && errno == EINTR);
++    if (got < 0) {
++      ok = Fail(error, std::string("read ") + leaf, errno);
++      break;
++    }
++    if (got == 0) break;
++    size += got;
++  }
++  if (ok && (size == 0 || size == sizeof(buf))) {
++    ok = Fail(error, std::string("empty or oversized value ") + leaf, EINVAL);
++  }
++  int value = 0;
++  if (ok) {
++    size_t digits = size;
++    if (buf[digits - 1] == '\n') --digits;
++    if (digits == 0 || digits > 3) {
++      ok = Fail(error, std::string("invalid integer ") + leaf, EINVAL);
++    } else {
++      for (size_t i = 0; i < digits; ++i) {
++        if (buf[i] < '0' || buf[i] > '9') {
++          ok = Fail(error, std::string("invalid integer ") + leaf, EINVAL);
++          break;
++        }
++        value = value * 10 + buf[i] - '0';
++      }
++    }
++  }
++  const int saved = ok ? 0 : errno;
++  if (!FinishFd(fd, ok, saved, error, leaf)) return false;
++  *out = value;
++  return true;
++}
++
++bool Write(const char* leaf, const char* value, std::string* error) {
++  int fd = OpenNode(leaf, O_WRONLY, error);
++  if (fd < 0) return false;
++  const size_t size = std::strlen(value);
++  ssize_t wrote;
++  do {
++    wrote = write(fd, value, size);
++  } while (wrote < 0 && errno == EINTR);
++  bool ok = true;
++  if (wrote < 0) ok = Fail(error, std::string("write ") + leaf, errno);
++  else if (static_cast<size_t>(wrote) != size) {
++    // A sysfs store is one complete command; replaying a suffix is unsafe.
++    ok = Fail(error, std::string("short write ") + leaf, EIO);
++  }
++  return FinishFd(fd, ok, ok ? 0 : errno, error, leaf);
++}
++
++bool ReadState(int* target, int* duty, int* speed, std::string* error) {
++  int support;
++  if (!Read("fan_support", &support, error) || !Read("target_level", target, error) ||
++      !Read("pwm_duty", duty, error) || !Read("real_speed", speed, error)) return false;
++  if (support != 1) return Fail(error, "fan is unsupported", ENODEV);
++  if (*target < 0 || *target > 4 || *duty < 0 || *duty > 100) {
++    return Fail(error, "driver value outside documented range", ERANGE);
++  }
++  return true;
++}
++
++bool WaitForState(int* target, int* duty, int* speed, std::string* error) {
++  struct timespec begin {}, now {};
++  if (clock_gettime(CLOCK_MONOTONIC, &begin) != 0) return Fail(error, "clock_gettime", errno);
++  for (;;) {
++    if (ReadState(target, duty, speed, error)) return true;
++    if (errno != ENOENT) return false;
++    if (clock_gettime(CLOCK_MONOTONIC, &now) != 0) return Fail(error, "clock_gettime", errno);
++    if (now.tv_sec - begin.tv_sec > kAvailabilitySeconds ||
++        (now.tv_sec - begin.tv_sec == kAvailabilitySeconds && now.tv_nsec >= begin.tv_nsec)) {
++      return Fail(error, "fan nodes did not appear within 10 seconds", ETIMEDOUT);
++    }
++    struct timespec pause {0, 100000000};
++    while (nanosleep(&pause, &pause) != 0) {
++      if (errno != EINTR) return Fail(error, "nanosleep", errno);
++    }
++  }
++}
++// A sysfs store may apply a command and still fail on close, or swallow a
++// driver error. Once initialization has attempted a write, failure must request
++// an explicit stop; target_level=0 alone can skip stopping an already-zero
++// target with a positive raw duty in this driver.
++bool StopAfterFailure(std::string* error) {
++  const int primary_error = errno;
++  std::string cleanup_error;
++  // Clear debug overrides and the normal target before the final raw stop.
++  // The target transition synchronously drains the dynamic adjustment worker;
++  // a raw PWM write alone does not drain a worker already past its entry checks.
++  for (const char* target : {"100\n", "0\n"}) {
++    cleanup_error.clear();
++    if (!Write("target_level", target, &cleanup_error)) {
++      *error += "; stop target: " + cleanup_error;
++    }
++  }
++  cleanup_error.clear();
++  if (!Write("pwm_duty", "0\n", &cleanup_error)) {
++    *error += "; stop PWM: " + cleanup_error;
++  }
++  int target, duty;
++  cleanup_error.clear();
++  if (!Read("target_level", &target, &cleanup_error)) {
++    *error += "; stop target readback: " + cleanup_error;
++  } else if (target != 0) {
++    *error += "; stop target readback is not zero";
++  }
++  cleanup_error.clear();
++  if (!Read("pwm_duty", &duty, &cleanup_error)) {
++    *error += "; stop PWM readback: " + cleanup_error;
++  } else if (duty != 0) {
++    *error += "; stop PWM readback is not zero";
++  }
++  errno = primary_error;
++  return false;
++}
++}  // namespace
++
++bool Required() {
++#ifdef WARSAW_RECOVERY_FAN99
++  return true;
++#else
++  return false;
++#endif
++}
++
++bool Check(std::string* error) {
++  if (!Required()) return true;
++  int target, duty, speed;
++  if (!ReadState(&target, &duty, &speed, error)) return false;
++  // 2 is the driver's "measurement unavailable" sentinel. It is not an RPM.
++  // REC has no measured-speed writer; this makes the dynamic worker wait
++  // without changing duty. A different value must not silently enable it.
++  if (target != 4 || duty != kDuty || speed != 2) {
++    return Fail(error, "fan driver state is not target 4 / 99% PWM / unmeasured speed", EIO);
++  }
++  return true;
++}
++
++bool Initialize(std::string* error) {
++  if (!Required()) return true;
++  int target, duty, speed;
++  if (!WaitForState(&target, &duty, &speed, error)) return false;
++  if (speed != 2) return Fail(error, "fan speed state is not the unmeasured sentinel", EIO);
++
++  // The show() value hides the underlying normal target when a debug target
++  // is active. Always clear that override, even when effective target/duty
++  // already read 4/99. With an already-normal 4/99 state these writes are
++  // driver no-ops and do not power-cycle the fan.
++  if (!Write("target_level", "100\n", error)) return StopAfterFailure(error);
++  if (!ReadState(&target, &duty, &speed, error)) return StopAfterFailure(error);
++  if (speed != 2) {
++    Fail(error, "fan speed state changed during initialization", EIO);
++    return StopAfterFailure(error);
++  }
++  if (!Write("target_level", "4\n", error)) return StopAfterFailure(error);
++  if (!ReadState(&target, &duty, &speed, error)) return StopAfterFailure(error);
++  if (target != 4 || speed != 2) {
++    Fail(error, "normal fan target did not settle before PWM request", EIO);
++    return StopAfterFailure(error);
++  }
++  // Keeping the normal target nonzero is essential: OCP changes it to zero,
++  // so the selected driver's same-target shortcut cannot skip its stop.
++  // Separate sysfs commands are not atomic with OCP. A fault after this
++  // precheck can race the final write; failed final readback requests PWM0.
++  if (!Write("pwm_duty", "99\n", error)) return StopAfterFailure(error);
++  if (!Check(error)) return StopAfterFailure(error);
++  return true;
++}
++}  // namespace recovery_fan
+diff --git a/fan/include/recovery_fan/fan.h b/fan/include/recovery_fan/fan.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..a5e0f200ce437e28f65a64a707de56c35fa5b7e8
+--- /dev/null
++++ b/fan/include/recovery_fan/fan.h
+@@ -0,0 +1,12 @@
++#pragma once
++#include <string>
++
++namespace recovery_fan {
++// The selected device enables this in Soong. Other devices are a no-op.
++bool Required();
++// Initial node-availability wait is limited to 10s (not a syscall deadline).
++// Failed partial initialization requests PWM0 and reports any cleanup failure.
++bool Initialize(std::string* error);
++// Read-only normal-target/PWM/unmeasured-sentinel check; not measured RPM.
++bool Check(std::string* error);
++}  // namespace recovery_fan
+diff --git a/fuse_sideload/fuse_sideload.cpp b/fuse_sideload/fuse_sideload.cpp
+index cb1db1851239356a8656cdd9fd323ba351d1136d..e753384c65f9886eebaf559b908af22bc922a80a 100644
+--- a/fuse_sideload/fuse_sideload.cpp
++++ b/fuse_sideload/fuse_sideload.cpp
+@@ -446,6 +446,7 @@ int run_fuse_sideload(std::unique_ptr<FuseDataProvider>&& provider, const char*
+   uint64_t avail = mem - (INSTALL_REQUIRED_MEMORY + fd.file_blocks * sizeof(uint8_t*));
+ 
+   int result;
++  bool mounted = false;
+   if (fd.file_blocks > (1 << 18)) {
+     fprintf(stderr, "file has too many blocks (%u)\n", fd.file_blocks);
+     result = -1;
+@@ -505,6 +506,7 @@ int run_fuse_sideload(std::unique_ptr<FuseDataProvider>&& provider, const char*
+       perror("mount");
+       goto done;
+     }
++    mounted = true;
+   }
+ 
+   uint8_t request_buffer[sizeof(fuse_in_header) + PATH_MAX * 8];
+@@ -512,16 +514,14 @@ int run_fuse_sideload(std::unique_ptr<FuseDataProvider>&& provider, const char*
+     ssize_t len = TEMP_FAILURE_RETRY(read(fd.ffd, request_buffer, sizeof(request_buffer)));
+     if (len == -1) {
+       perror("read request");
+-      if (errno == ENODEV) {
+-        result = -1;
+-        break;
+-      }
+-      continue;
++      result = -1;
++      break;
+     }
+ 
+     if (static_cast<size_t>(len) < sizeof(fuse_in_header)) {
+       fprintf(stderr, "request too short: len=%zd\n", len);
+-      continue;
++      result = -1;
++      break;
+     }
+ 
+     fuse_in_header* hdr = reinterpret_cast<fuse_in_header*>(request_buffer);
+@@ -580,8 +580,9 @@ int run_fuse_sideload(std::unique_ptr<FuseDataProvider>&& provider, const char*
+ done:
+   provider->Close();
+ 
+-  if (umount2(mount_point, MNT_DETACH) == -1) {
++  if (mounted && umount2(mount_point, MNT_DETACH) == -1) {
+     fprintf(stderr, "fuse_sideload umount failed: %s\n", strerror(errno));
++    result = -1;
+   }
+ 
+   if (fd.block_cache) {
+diff --git a/install/adb_install.cpp b/install/adb_install.cpp
+index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8dbb1bf0c6e 100644
+--- a/install/adb_install.cpp
++++ b/install/adb_install.cpp
+@@ -29,6 +29,7 @@
+ #include <unistd.h>
+ 
+ #include <atomic>
++#include <chrono>
+ #include <functional>
+ #include <map>
+ #include <utility>
+@@ -55,8 +56,10 @@
+ using CommandFunction = std::function<std::pair<bool, bool>()>;
+ 
+ static bool SetUsbConfig(const std::string& state) {
+-  android::base::SetProperty("sys.usb.config", state);
+-  return android::base::WaitForProperty("sys.usb.state", state);
++  if (!android::base::SetProperty("sys.usb.config", state)) {
++    return false;
++  }
++  return android::base::WaitForProperty("sys.usb.state", state, std::chrono::seconds(10));
+ }
+ 
+ // Parses the minadbd command in |message|; returns MinadbdCommand::kError upon errors.
+@@ -156,22 +159,26 @@ static auto AdbRebootHandler(MinadbdCommand command, InstallResult* result,
+ // Parses and executes the command from minadbd. Returns whether the caller should keep waiting for
+ // next command.
+ static bool HandleMessageFromMinadbd(int socket_fd,
+-                                     const std::map<MinadbdCommand, CommandFunction>& command_map) {
++                                     const std::map<MinadbdCommand, CommandFunction>& command_map,
++                                     bool* transport_failed) {
+   char buffer[kMinadbdMessageSize];
+   if (!android::base::ReadFully(socket_fd, buffer, kMinadbdMessageSize)) {
+     PLOG(ERROR) << "Failed to read message from minadbd";
++    *transport_failed = true;
+     return false;
+   }
+ 
+   std::string message(buffer, buffer + kMinadbdMessageSize);
+   auto command_type = ParseMinadbdCommand(message);
+   if (command_type == MinadbdCommand::kError) {
++    *transport_failed = true;
+     return false;
+   }
+   if (!command_map.contains(command_type)) {
+     LOG(ERROR) << "Unsupported command: "
+                << android::base::get_unaligned<unsigned int>(
+                       message.substr(strlen(kMinadbdCommandPrefix)).c_str());
++    *transport_failed = true;
+     return false;
+   }
+ 
+@@ -181,22 +188,35 @@ static bool HandleMessageFromMinadbd(int socket_fd,
+   LOG(INFO) << "Command " << static_cast<uint32_t>(command_type) << " finished with " << result;
+   if (!WriteStatusToFd(result ? MinadbdCommandStatus::kSuccess : MinadbdCommandStatus::kFailure,
+                        socket_fd)) {
++    *transport_failed = true;
+     return false;
+   }
+   return should_continue;
+ }
+ 
+-// TODO(xunchang) add a wrapper function and kill the minadbd service there.
+-static void ListenAndExecuteMinadbdCommands(
++static bool StopMinadbd(pid_t minadbd_pid) {
++  if (kill(minadbd_pid, SIGKILL) == 0 || errno == ESRCH) {
++    return true;
++  }
++  PLOG(ERROR) << "Failed to stop minadbd";
++  return false;
++}
++
++static bool ListenAndExecuteMinadbdCommands(
+     RecoveryUI* ui, pid_t minadbd_pid, android::base::unique_fd&& socket_fd,
+-    const std::map<MinadbdCommand, CommandFunction>& command_map) {
++    const std::map<MinadbdCommand, CommandFunction>& command_map, bool* child_stopped,
++    bool* command_completed) {
++  auto finish = [&](bool success) {
++    *child_stopped = StopMinadbd(minadbd_pid);
++    // Unlike a queued key, an interrupt survives ShowMenu entry flushing keys.
++    ui->InterruptKey();
++    return success && *child_stopped;
++  };
+   android::base::unique_fd epoll_fd(epoll_create1(O_CLOEXEC));
+   if (epoll_fd == -1) {
+     PLOG(ERROR) << "Failed to create epoll";
+-    kill(minadbd_pid, SIGKILL);
+-    return;
++    return finish(false);
+   }
+-
+   constexpr int EPOLL_MAX_EVENTS = 10;
+   struct epoll_event ev = {};
+   ev.events = EPOLLIN | EPOLLHUP;
+@@ -204,41 +224,35 @@ static void ListenAndExecuteMinadbdCommands(
+   struct epoll_event events[EPOLL_MAX_EVENTS];
+   if (epoll_ctl(epoll_fd.get(), EPOLL_CTL_ADD, socket_fd.get(), &ev) == -1) {
+     PLOG(ERROR) << "Failed to add socket fd to epoll";
+-    kill(minadbd_pid, SIGKILL);
+-    return;
++    return finish(false);
+   }
+-
+-  // Set the timeout to be 300s when waiting for minadbd commands.
+   constexpr int TIMEOUT_MILLIS = 300 * 1000;
+   while (true) {
+-    // Reset the progress bar and the background image before each command.
+     ui->SetProgressType(RecoveryUI::EMPTY);
+     ui->SetBackground(RecoveryUI::NO_COMMAND);
+-
+-    // Poll for the status change of the socket_fd, and handle the message if the fd is ready to
+-    // read.
+     int event_count =
+         TEMP_FAILURE_RETRY(epoll_wait(epoll_fd.get(), events, EPOLL_MAX_EVENTS, TIMEOUT_MILLIS));
+-    if (event_count == -1) {
+-      PLOG(ERROR) << "Failed to wait for epoll events";
+-      kill(minadbd_pid, SIGKILL);
+-      return;
+-    }
+-    if (event_count == 0) {
+-      LOG(ERROR) << "Timeout waiting for messages from minadbd";
+-      kill(minadbd_pid, SIGKILL);
+-      return;
++    if (event_count <= 0) {
++      if (event_count < 0) {
++        PLOG(ERROR) << "Failed to wait for epoll events";
++      } else {
++        LOG(ERROR) << "Timeout waiting for messages from minadbd";
++      }
++      return finish(false);
+     }
+-
+     for (int n = 0; n < event_count; n++) {
+-      if (events[n].events & EPOLLHUP) {
+-        LOG(INFO) << "Socket has been closed";
+-        kill(minadbd_pid, SIGKILL);
+-        return;
++      // A final message may arrive with HUP. Process readable bytes first.
++      if (events[n].events & EPOLLIN) {
++        bool transport_failed = false;
++        bool keep_waiting = HandleMessageFromMinadbd(socket_fd.get(), command_map, &transport_failed);
++        if (transport_failed) return finish(false);
++        if (!keep_waiting) {
++          *command_completed = true;
++          return finish(true);
++        }
+       }
+-      if (!HandleMessageFromMinadbd(socket_fd.get(), command_map)) {
+-        kill(minadbd_pid, SIGKILL);
+-        return;
++      if (events[n].events & (EPOLLHUP | EPOLLERR)) {
++        return finish((events[n].events & EPOLLERR) == 0);
+       }
+     }
+   }
+@@ -277,22 +291,42 @@ static void ListenAndExecuteMinadbdCommands(
+ //      exit
+ //                               b11. exit the listening loop
+ //
+-static void CreateMinadbdServiceAndExecuteCommands(
++static bool CreateMinadbdServiceAndExecuteCommands(
+     Device* device, const std::map<MinadbdCommand, CommandFunction>& command_map,
+     bool rescue_mode) {
+-  signal(SIGPIPE, SIG_IGN);
+-
++  struct sigaction ignored_action = {}, original_action = {};
++  ignored_action.sa_handler = SIG_IGN;
++  sigemptyset(&ignored_action.sa_mask);
++  if (sigaction(SIGPIPE, &ignored_action, &original_action) != 0) {
++    PLOG(ERROR) << "Failed to ignore SIGPIPE";
++    return false;
++  }
++  auto finish = [&](bool success) {
++    if (sigaction(SIGPIPE, &original_action, nullptr) != 0) {
++      PLOG(ERROR) << "Failed to restore SIGPIPE";
++      return false;
++    }
++    return success;
++  };
++  auto reap = [&](pid_t child, bool stopped, int* status) {
++    // Do not hang if termination itself was rejected. Report an unreaped child.
++    pid_t waited = TEMP_FAILURE_RETRY(waitpid(child, status, stopped ? 0 : WNOHANG));
++    if (waited != child) {
++      PLOG(ERROR) << "Failed to reap minadbd (waitpid returned " << waited << ")";
++      return false;
++    }
++    return true;
++  };
+   android::base::unique_fd recovery_socket;
+   android::base::unique_fd minadbd_socket;
+   if (!android::base::Socketpair(AF_UNIX, SOCK_STREAM, 0, &recovery_socket, &minadbd_socket)) {
+     PLOG(ERROR) << "Failed to create socket";
+-    return;
++    return finish(false);
+   }
+-
+   pid_t child = fork();
+   if (child == -1) {
+     PLOG(ERROR) << "Failed to fork child process";
+-    return;
++    return finish(false);
+   }
+   if (child == 0) {
+     recovery_socket.reset();
+@@ -301,55 +335,64 @@ static void CreateMinadbdServiceAndExecuteCommands(
+       "--socket_fd",
+       std::to_string(minadbd_socket.release()),
+     };
+-    if (rescue_mode) {
+-      minadbd_commands.push_back("--rescue");
+-    }
++    if (rescue_mode) minadbd_commands.push_back("--rescue");
+     auto exec_args = StringVectorToNullTerminatedArray(minadbd_commands);
+     execv(exec_args[0], exec_args.data());
+     _exit(EXIT_FAILURE);
+   }
+-
+   minadbd_socket.reset();
+-
+-  // We need to call SetUsbConfig() after forking minadbd service. Because the function waits for
+-  // the usb state to be updated, which depends on sys.usb.ffs.ready=1 set in the adb daemon.
+   if (!SetUsbConfig("sideload")) {
+     LOG(ERROR) << "Failed to set usb config to sideload";
+-    return;
++    bool stopped = StopMinadbd(child);
++    int status = 0;
++    if (!reap(child, stopped, &status)) {
++      LOG(ERROR) << "USB setup failed and minadbd could not be reaped";
++    }
++    return finish(false);
+   }
+-
+   RecoveryUI* ui = device->GetUI();
+-  std::thread listener_thread(ListenAndExecuteMinadbdCommands, ui, child,
+-                              std::move(recovery_socket), std::ref(command_map));
+-
++  bool listener_ok = false;
++  bool child_stopped = false;
++  bool command_completed = false;
++  std::thread listener_thread([&]() {
++    listener_ok = ListenAndExecuteMinadbdCommands(ui, child, std::move(recovery_socket),
++                                                command_map, &child_stopped, &command_completed);
++  });
++  bool cancelled = false;
++  bool cancel_stopped = true;
+   if (ui->IsTextVisible()) {
+     std::vector<std::string> headers{ rescue_mode ? "Rescue mode" : "ADB Sideload" };
+     std::vector<std::string> entries{ "Cancel" };
+     size_t chosen_item = ui->ShowMenu(
+         headers, entries, 0, true,
+         std::bind(&Device::HandleMenuKey, device, std::placeholders::_1, std::placeholders::_2));
+-
+-    if (chosen_item != Device::kDoSideload) {
+-      // Kill minadbd if 'cancel' was selected, to abort sideload.
+-      kill(child, SIGKILL);
++    if (chosen_item != Device::kDoSideload &&
++        chosen_item != static_cast<size_t>(RecoveryUI::KeyError::INTERRUPTED)) {
++      cancelled = true;
++      cancel_stopped = StopMinadbd(child);
+     }
+   }
+-
+-  if (listener_thread.joinable()) {
+-    listener_thread.join();
++  if (listener_thread.joinable()) listener_thread.join();
++  // The listener can no longer publish an interrupt after this reset.
++  ui->ResetKeyInterruptStatus();
++  int status = 0;
++  if (!reap(child, child_stopped || (cancelled && cancel_stopped), &status)) {
++    return finish(false);
+   }
+-
+-  int status;
+-  waitpid(child, &status, 0);
+-  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+-    if (WEXITSTATUS(status) == MinadbdErrorCode::kMinadbdAdbVersionError) {
++  bool child_ok = WIFEXITED(status) && WEXITSTATUS(status) == 0;
++  if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL &&
++      ((cancelled && cancel_stopped) || (listener_ok && command_completed && child_stopped))) {
++    // Preserve intentional Cancel and successful command termination.
++    child_ok = true;
++  }
++  if (!child_ok) {
++    if (WIFEXITED(status) && WEXITSTATUS(status) == MinadbdErrorCode::kMinadbdAdbVersionError) {
+       LOG(ERROR) << "\nYou need adb 1.0.32 or newer to sideload\nto this device.\n";
+-    } else if (!WIFSIGNALED(status)) {
+-      LOG(ERROR) << "\n(adbd status " << WEXITSTATUS(status) << ")";
++    } else {
++      LOG(ERROR) << "minadbd exited abnormally (wait status " << status << ")";
+     }
+   }
+-
+-  signal(SIGPIPE, SIG_DFL);
++  return finish(child_ok && cancel_stopped && listener_ok);
+ }
+ 
+ InstallResult ApplyFromAdb(Device* device, bool rescue_mode, Device::BuiltinAction* reboot_action) {
+@@ -393,17 +436,21 @@ InstallResult ApplyFromAdb(Device* device, bool rescue_mode, Device::BuiltinActi
+     ui->Print("\n\nWaiting for rescue commands...\n");
+   }
+ 
+-  CreateMinadbdServiceAndExecuteCommands(device, command_map, rescue_mode);
++  if (!CreateMinadbdServiceAndExecuteCommands(device, command_map, rescue_mode)) {
++    install_result = INSTALL_ERROR;
++  }
+ 
+   // Clean up before switching to the older state, for example setting the state
+   // to none sets sys/class/android_usb/android0/enable to 0.
+   if (!SetUsbConfig("none")) {
+     LOG(ERROR) << "Failed to clear USB config";
++    return INSTALL_ERROR;
+   }
+ 
+   if (usb_state != "none") {
+     if (!SetUsbConfig(usb_state)) {
+       LOG(ERROR) << "Failed to set USB config to " << usb_state;
++      return INSTALL_ERROR;
+     }
+   }
+ 
+diff --git a/install/fuse_install.cpp b/install/fuse_install.cpp
+index 1e5c6e46a19f2db2f0a74181f6a1f3fbd2e7fec2..857cd31e86f179590a35063a4dcf96a3f1f9bbe9 100644
+--- a/install/fuse_install.cpp
++++ b/install/fuse_install.cpp
+@@ -51,12 +51,14 @@ static constexpr int SDCARD_INSTALL_TIMEOUT = 10;
+ 
+ // Set the BCB to reboot back into recovery (it won't resume the install from
+ // sdcard though).
+-static void SetSdcardUpdateBootloaderMessage() {
++static bool SetSdcardUpdateBootloaderMessage() {
+   std::vector<std::string> options;
+   std::string err;
+   if (!update_bootloader_message(options, &err)) {
+     LOG(ERROR) << "Failed to set BCB message: " << err;
++    return false;
+   }
++  return true;
+ }
+ 
+ // Returns the selected filename, or an empty string.
+@@ -69,20 +71,28 @@ std::string BrowseDirectory(const std::string& path, Device* device, RecoveryUI*
+   std::vector<std::string> dirs;
+   std::vector<std::string> entries{ "../" };  // "../" is always the first entry.
+ 
+-  for (const auto& entry : fs::directory_iterator(path)) {
++  std::error_code ec;
++  fs::directory_iterator it(path, ec), end;
++  while (!ec && it != end) {
++    const auto& entry = *it;
+     std::string name = entry.path().filename().string();
+-
+-    // Skip "." and ".." entries.
+-    if (name == "." || name == "..") continue;
+-
+-    if (entry.is_directory()) {
+-      dirs.push_back(name + "/");
+-    } else if (entry.is_regular_file()) {
+-      if (android::base::EndsWithIgnoreCase(name, ".zip") ||
+-          android::base::EndsWithIgnoreCase(name, ".map")) {
++    auto status = entry.status(ec);
++    if (ec) break;
++
++    if (name != "." && name != "..") {
++      if (fs::is_directory(status)) {
++        dirs.push_back(name + "/");
++      } else if (fs::is_regular_file(status) &&
++                 (android::base::EndsWithIgnoreCase(name, ".zip") ||
++                  android::base::EndsWithIgnoreCase(name, ".map"))) {
+         entries.push_back(name);
+       }
+     }
++    it.increment(ec);
++  }
++  if (ec) {
++    LOG(ERROR) << "Failed to browse " << path << ": " << ec.message();
++    return "";
+   }
+ 
+   std::sort(dirs.begin(), dirs.end());
+@@ -152,21 +162,30 @@ InstallResult InstallWithFuseFromPath(std::string_view path, Device* device) {
+   // through fuse involves going from kernel to userspace to kernel, it leads
+   // to deadlock when a page fault occurs. (Bug: 26313124)
+   auto ui = device->GetUI();
+-  pid_t child;
+-  if ((child = fork()) == 0) {
++  pid_t child = fork();
++  if (child == -1) {
++    PLOG(ERROR) << "Failed to fork the fuse process";
++    return INSTALL_ERROR;
++  }
++  if (child == 0) {
+     bool status = StartInstallPackageFuse(path);
+-
+     _exit(status ? EXIT_SUCCESS : EXIT_FAILURE);
+   }
+ 
+-  // FUSE_SIDELOAD_HOST_PATHNAME will start to exist once the fuse in child process is ready.
+   InstallResult result = INSTALL_ERROR;
+-  int status;
+-  bool waited = false;
++  int status = 0;
++  bool reaped = false;
++  bool fuse_ready = false;
+   for (int i = 0; i < SDCARD_INSTALL_TIMEOUT; ++i) {
+-    if (waitpid(child, &status, WNOHANG) == -1) {
+-      result = INSTALL_ERROR;
+-      waited = true;
++    pid_t waited = TEMP_FAILURE_RETRY(waitpid(child, &status, WNOHANG));
++    if (waited == -1) {
++      PLOG(ERROR) << "Failed to wait for the fuse process";
++      // Do not signal a PID after losing ownership of the child (ECHILD).
++      return INSTALL_ERROR;
++    }
++    if (waited == child) {
++      reaped = true;
++      LOG(ERROR) << "The fuse process exited before the package was ready";
+       break;
+     }
+ 
+@@ -175,59 +194,77 @@ InstallResult InstallWithFuseFromPath(std::string_view path, Device* device) {
+       if (errno == ENOENT && i < SDCARD_INSTALL_TIMEOUT - 1) {
+         sleep(1);
+         continue;
+-      } else {
+-        LOG(ERROR) << "Timed out waiting for the fuse-provided package.";
+-        result = INSTALL_ERROR;
+-        kill(child, SIGKILL);
+-        break;
+       }
++      PLOG(ERROR) << "Failed waiting for the fuse-provided package";
++      break;
+     }
++    fuse_ready = true;
+     auto package =
+         Package::CreateFilePackage(FUSE_SIDELOAD_HOST_PATHNAME,
+                                    std::bind(&RecoveryUI::SetProgress, ui, std::placeholders::_1));
+-    result = InstallPackage(package.get(), FUSE_SIDELOAD_HOST_PATHNAME, false, 0 /* retry_count */,
+-                            device);
++    if (package) {
++      result = InstallPackage(package.get(), FUSE_SIDELOAD_HOST_PATHNAME, false, 0 /* retry_count */,
++                              device);
++    } else {
++      LOG(ERROR) << "Failed to open the fuse-provided package";
++    }
+     break;
+   }
+ 
+-  if (!waited) {
+-    // Calling stat() on this magic filename signals the fuse
+-    // filesystem to shut down.
+-    struct stat sb;
+-    stat(FUSE_SIDELOAD_HOST_EXIT_PATHNAME, &sb);
+-
+-    waitpid(child, &status, 0);
++  if (!reaped) {
++    if (fuse_ready) {
++      // This lookup asks the server to exit. If it fails, do not wait for a
++      // server that may never have received the request.
++      struct stat sb;
++      if (stat(FUSE_SIDELOAD_HOST_EXIT_PATHNAME, &sb) == -1) {
++        PLOG(ERROR) << "Failed to request fuse shutdown";
++        result = INSTALL_ERROR;
++        if (kill(child, SIGKILL) == -1 && errno != ESRCH) {
++          PLOG(ERROR) << "Failed to stop the fuse process";
++        }
++      }
++    } else if (kill(child, SIGKILL) == -1 && errno != ESRCH) {
++      PLOG(ERROR) << "Failed to stop the fuse process";
++    }
++    if (TEMP_FAILURE_RETRY(waitpid(child, &status, 0)) != child) {
++      PLOG(ERROR) << "Failed to reap the fuse process";
++      return INSTALL_ERROR;
++    }
+   }
+ 
+-  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
++  if (!WIFEXITED(status)) {
++    LOG(ERROR) << "The fuse process did not exit normally (status " << status << ")";
++    return INSTALL_ERROR;
++  }
++  if (WEXITSTATUS(status) != EXIT_SUCCESS) {
+     LOG(ERROR) << "Error exit from the fuse process: " << WEXITSTATUS(status);
++    return INSTALL_ERROR;
+   }
+-
+   return result;
+ }
+ 
+ InstallResult ApplyFromStorage(Device* device, VolumeInfo& vi) {
+   auto ui = device->GetUI();
+   if (!VolumeManager::Instance()->volumeMount(vi.mId)) {
+-    return INSTALL_NONE;
++    LOG(ERROR) << "Failed to mount install volume " << vi.mId;
++    return INSTALL_ERROR;
+   }
+ 
++  InstallResult result = INSTALL_NONE;
+   std::string path = BrowseDirectory(vi.mPath, device, ui);
+-  if (path.empty()) {
+-    VolumeManager::Instance()->volumeUnmount(vi.mId);
+-    return INSTALL_NONE;
++  // BrowseDirectory uses '@' to request the home screen, not a block map install.
++  if (!path.empty() && path != "@") {
++    if (android::base::EndsWithIgnoreCase(path, ".map")) {
++      path = "@" + path;
++    }
++    ui->Print("\n-- Install %s ...\n", path.c_str());
++    result = SetSdcardUpdateBootloaderMessage() ? InstallWithFuseFromPath(path, device)
++                                               : INSTALL_ERROR;
+   }
+ 
+-  // Hint the install function to read from a block map file.
+-  if (android::base::EndsWithIgnoreCase(path, ".map")) {
+-    path = "@" + path;
++  if (!VolumeManager::Instance()->volumeUnmount(vi.mId)) {
++    LOG(ERROR) << "Failed to unmount install volume " << vi.mId;
++    return INSTALL_ERROR;
+   }
+-
+-  ui->Print("\n-- Install %s ...\n", path.c_str());
+-  SetSdcardUpdateBootloaderMessage();
+-
+-  auto result = InstallWithFuseFromPath(path, device);
+-
+-  VolumeManager::Instance()->volumeUnmount(vi.mId);
+   return result;
+ }
+diff --git a/install/install.cpp b/install/install.cpp
+index 2e8b7655aecc816b3348c5d8ca9f0dca76a1a05d..e50ace866b2d319b02a4d1871940e99d3130b543 100644
+--- a/install/install.cpp
++++ b/install/install.cpp
+@@ -473,8 +473,14 @@ static InstallResult TryUpdateBinary(Package* package, bool* wipe_cache,
+   }
+ 
+   if (!package_is_ab && !logical_partitions_mapped()) {
+-    CreateSnapshotPartitions();
+-    map_logical_partitions();
++    if (!CreateSnapshotPartitions()) {
++      LOG(ERROR) << "Virtual A/B: snapshot partitions creation failed.";
++      return INSTALL_ERROR;
++    }
++    if (!map_logical_partitions()) {
++      LOG(ERROR) << "Failed to map logical partitions for installation.";
++      return INSTALL_ERROR;
++    }
+   } else if (package_is_ab && device_supports_virtual_ab && logical_partitions_mapped()) {
+     LOG(ERROR) << "Logical partitions are mapped. "
+                << "Please reboot recovery before installing an OTA update.";
+@@ -620,13 +626,18 @@ static InstallResult TryUpdateBinary(Package* package, bool* wipe_cache,
+   }
+   fclose(from_child);
+ 
+-  int status;
+-  waitpid(pid, &status, 0);
++  int status = 0;
++  const pid_t wait_result = TEMP_FAILURE_RETRY(waitpid(pid, &status, 0));
++  const int wait_error = errno;
+ 
+   logger_finished.store(true);
+   finish_log_temperature.notify_one();
+   temperature_logger.join();
+ 
++  if (wait_result != pid) {
++    LOG(ERROR) << "Failed to wait for update binary: " << strerror(wait_error);
++    return INSTALL_ERROR;
++  }
+   if (retry_update) {
+     return INSTALL_RETRY;
+   }
+@@ -643,7 +654,10 @@ static InstallResult TryUpdateBinary(Package* package, bool* wipe_cache,
+   }
+   if (package_is_ab) {
+     ab_package_installed = true;
+-    PerformPowerwashIfRequired(zip, device);
++    if (!PerformPowerwashIfRequired(zip, device)) {
++      LOG(ERROR) << "Post-install powerwash failed.";
++      return INSTALL_ERROR;
++    }
+     if (!ui->IsSideloadAutoReboot() && ask_to_ab_reboot(device)) {
+       return INSTALL_REBOOT_RECOVERY;
+     }
+diff --git a/install/wipe_data.cpp b/install/wipe_data.cpp
+index 6cce36c62b8ab6e848342a4f56b1a76333f0904b..59cf3672d9a3d29c9ad59a190ebd78ce2b6dfd04 100644
+--- a/install/wipe_data.cpp
++++ b/install/wipe_data.cpp
+@@ -57,7 +57,10 @@ static bool EraseVolume(const char* volume, RecoveryUI* ui, std::string_view new
+   if (vol->fs_mgr_flags.logical) {
+     android::dm::DeviceMapper& dm = android::dm::DeviceMapper::Instance();
+ 
+-    map_logical_partitions();
++    if (!map_logical_partitions()) {
++      LOG(ERROR) << "Failed to map logical partitions for formatting.";
++      return false;
++    }
+     // map_logical_partitions is non-blocking, so check for some limited time
+     // if it succeeded
+     for (int i = 0; i < 500; i++) {
+diff --git a/recovery.cpp b/recovery.cpp
+index 44c7261f021c11bb3c02cd4e282879ae52662c97..cd5d432591a2a25d87e58e1c655e82848ac915eb 100644
+--- a/recovery.cpp
++++ b/recovery.cpp
+@@ -17,6 +17,7 @@
+ #include "recovery.h"
+ 
+ #include <errno.h>
++#include <fcntl.h>
+ #include <getopt.h>
+ #include <linux/input.h>
+ #include <stdio.h>
+@@ -26,6 +27,7 @@
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
++#include <chrono>
+ #include <functional>
+ #include <iterator>
+ #include <memory>
+@@ -39,6 +41,7 @@
+ #include <android-base/properties.h>
+ #include <android-base/stringprintf.h>
+ #include <android-base/strings.h>
++#include <android-base/unique_fd.h>
+ #include <cutils/properties.h> /* for property_list */
+ #include <fs_mgr/roots.h>
+ #include <volume_manager/VolumeManager.h>
+@@ -130,7 +133,7 @@ static bool IsRoDebuggable() {
+ // Clear the recovery command and prepare to boot a (hopefully working) system,
+ // copy our log file to cache as well (for the system to read). This function is
+ // idempotent: call it as many times as you like.
+-static void FinishRecovery(RecoveryUI* ui) {
++static bool FinishRecovery(RecoveryUI* ui) {
+   std::string locale = ui->GetLocale();
+   // Save the locale to cache, so if recovery is next started up without a '--locale' argument
+   // (e.g., directly from the bootloader) it will use the last-known locale.
+@@ -147,19 +150,88 @@ static void FinishRecovery(RecoveryUI* ui) {
+ 
+   // Reset to normal system boot so recovery won't cycle indefinitely.
+   std::string err;
+-  if (!clear_bootloader_message(&err)) {
++  bool cleared = clear_bootloader_message(&err);
++  if (!cleared) {
+     LOG(ERROR) << "Failed to clear BCB message: " << err;
+   }
+ 
+   // Remove the command file, so recovery won't repeat indefinitely.
+   if (HasCache()) {
+-    if (ensure_path_mounted(COMMAND_FILE) != 0 || (unlink(COMMAND_FILE) && errno != ENOENT)) {
+-      LOG(WARNING) << "Can't unlink " << COMMAND_FILE;
++    if (ensure_path_mounted(COMMAND_FILE) != 0) {
++      LOG(ERROR) << "Can't mount " << COMMAND_FILE;
++      cleared = false;
++    } else if (unlink(COMMAND_FILE) != 0 && errno != ENOENT) {
++      PLOG(ERROR) << "Can't unlink " << COMMAND_FILE;
++      cleared = false;
++    } else {
++      // Sync even after ENOENT: a previous attempt may have removed the file
++      // but failed to persist the directory change.
++      const auto command_dir = android::base::Dirname(COMMAND_FILE);
++      android::base::unique_fd dir_fd(open(command_dir.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC));
++      if (dir_fd == -1 && errno == ENOENT) {
++        dir_fd.reset(open(CACHE_ROOT, O_RDONLY | O_DIRECTORY | O_CLOEXEC));
++      }
++      if (dir_fd == -1 || TEMP_FAILURE_RETRY(fsync(dir_fd.get())) != 0) {
++        PLOG(ERROR) << "Can't persist removal of " << COMMAND_FILE;
++        cleared = false;
++      }
++    }
++    // A successful directory fsync already persisted the removal. An occupied
++    // cache mount does not make that cleanup fail.
++    if (ensure_path_unmounted(CACHE_ROOT) != 0) {
++      LOG(WARNING) << "Can't unmount " << CACHE_ROOT;
+     }
+-    ensure_path_unmounted(CACHE_ROOT);
+   }
+ 
+   sync();  // For good measure.
++  if (!cleared) {
++    ui->ShowText(true);
++    ui->Print("Unable to clear pending recovery actions.\n");
++  }
++  return cleared;
++}
++
++static Device::BuiltinAction FinishRecoveryOrWait(Device* device,
++                                                 Device::BuiltinAction next_action) {
++  auto ui = device->GetUI();
++  while (!FinishRecovery(ui)) {
++    ui->ShowText(true);
++    ui->SetSideloadAutoReboot(false);
++    ui->SetBackground(RecoveryUI::ERROR);
++    if (next_action == Device::REBOOT_BOOTLOADER || next_action == Device::SHUTDOWN ||
++        next_action == Device::SHUTDOWN_FROM_FASTBOOT) {
++      return next_action;
++    }
++
++    const std::vector<std::string> headers{
++      "Unable to clear pending recovery actions.",
++      "Restarting Android or recovery could repeat the previous operation.",
++    };
++    const std::vector<std::string> items{
++      "Retry cleanup and continue",
++      "Reboot to bootloader",
++      "Power off",
++    };
++    for (;;) {
++      const size_t chosen = ui->ShowMenu(
++          headers, items, 0, true,
++          std::bind(&Device::HandleMenuKey, device, std::placeholders::_1,
++                    std::placeholders::_2));
++      if (chosen == 0) {
++        break;
++      }
++      if (chosen == 1) {
++        return Device::REBOOT_BOOTLOADER;
++      }
++      if (chosen == 2) {
++        return Device::SHUTDOWN;
++      }
++      if (chosen == static_cast<size_t>(RecoveryUI::KeyError::INTERRUPTED)) {
++        ui->ResetKeyInterruptStatus();
++      }
++    }
++  }
++  return next_action;
+ }
+ 
+ static bool yes_no(Device* device, const char* question1, const char* question2) {
+@@ -648,13 +720,27 @@ change_menu:
+         choose_recovery_file(device);
+         break;
+ 
+-      case Device::ENABLE_ADB:
+-        android::base::SetProperty("ro.adb.secure.recovery", "0");
+-        android::base::SetProperty("ctl.restart", "adbd");
++      case Device::ENABLE_ADB: {
++        // Reconfigure from a stopped daemon so a previous USB state cannot
++        // make this attempt appear successful before adbd has restarted.
++        if ((android::base::GetProperty("ro.adb.secure.recovery", "") != "0" &&
++             !android::base::SetProperty("ro.adb.secure.recovery", "0")) ||
++            !android::base::SetProperty("sys.usb.config", "none") ||
++            !android::base::WaitForProperty("sys.usb.state", "none", std::chrono::seconds(10)) ||
++            !android::base::WaitForProperty("init.svc.adbd", "stopped", std::chrono::seconds(10)) ||
++            (android::base::GetBoolProperty("sys.usb.configfs", false) &&
++             !android::base::WaitForProperty("sys.usb.ffs.ready", "0", std::chrono::seconds(10))) ||
++            !android::base::SetProperty("sys.usb.config", "adb") ||
++            !android::base::WaitForProperty("init.svc.adbd", "running", std::chrono::seconds(10)) ||
++            !android::base::WaitForProperty("sys.usb.state", "adb", std::chrono::seconds(10))) {
++          ui->Print("Failed to enable ADB. Please retry.\n");
++          break;
++        }
+         device->RemoveMenuItemForAction(Device::ENABLE_ADB);
+         device->GoHome();
+         ui->Print("Enabled ADB.\n");
+         break;
++      }
+ 
+       case Device::RUN_GRAPHICS_TEST:
+         run_graphics_test(ui);
+@@ -1071,7 +1157,7 @@ Device::BuiltinAction start_recovery(Device* device, const std::vector<std::stri
+   }
+ 
+   // Save logs and clean up before rebooting or shutting down.
+-  FinishRecovery(ui);
++  next_action = FinishRecoveryOrWait(device, next_action);
+ 
+   volmgr->unmountAll();
+   volmgr->stop();
+diff --git a/recovery_main.cpp b/recovery_main.cpp
+index 3dc4c4002b2ad17b99e9a146693741d1a6428979..1630c3b22ea8f5858afda0391d3d724078c92a83 100644
+--- a/recovery_main.cpp
++++ b/recovery_main.cpp
+@@ -32,6 +32,7 @@
+ #include <unistd.h>
+ 
+ #include <atomic>
++#include <chrono>
+ #include <filesystem>
+ #include <string>
+ #include <thread>
+@@ -56,6 +57,7 @@
+ #include "otautil/paths.h"
+ #include "otautil/sysutil.h"
+ #include "recovery.h"
++#include <recovery_fan/fan.h>
+ #include "recovery_ui/device.h"
+ #include "recovery_ui/stub_ui.h"
+ #include "recovery_ui/ui.h"
+@@ -110,7 +112,7 @@ static std::vector<std::string> get_args(const int argc, char** const argv, std:
+     boot = {};
+   }
+   if (stage) {
+-    *stage = std::string(boot.stage);
++    *stage = std::string(boot.stage, strnlen(boot.stage, sizeof(boot.stage)));
+   }
+ 
+   std::string boot_command;
+@@ -218,8 +220,10 @@ static void copy_userdata_files() {
+ 
+ // Sets the usb config to 'state'.
+ static bool SetUsbConfig(const std::string& state) {
+-  android::base::SetProperty("sys.usb.config", state);
+-  return android::base::WaitForProperty("sys.usb.state", state);
++  if (!android::base::SetProperty("sys.usb.config", state)) {
++    return false;
++  }
++  return android::base::WaitForProperty("sys.usb.state", state, std::chrono::seconds(10));
+ }
+ 
+ static void ListenRecoverySocket(RecoveryUI* ui, std::atomic<Device::BuiltinAction>& action) {
+@@ -350,6 +354,33 @@ static void redirect_stdio(const char* filename) {
+   }
+ }
+ 
++// A fan initialization failure is an interactive startup gate, not a log-only
++// exec_start failure. Pending recovery commands remain unexecuted here.
++static void WaitForFanOrSafeExit(Device* device, bool ready, std::string error) {
++  if (!recovery_fan::Required()) return;
++  auto fan_ui = device->GetUI();
++  while (!ready) {
++    fan_ui->ShowText(true);
++    fan_ui->SetBackground(RecoveryUI::ERROR);
++    fan_ui->Print("Fan 99%% PWM setup failed: %s\n", error.c_str());
++    fan_ui->Print("No recovery operation will start. PWM readback is not an RPM measurement.\n");
++    const std::vector<std::string> headers {"Cooling fan setup failed"};
++    const std::vector<std::string> items {"Retry fan setup", "Power off", "Reboot to bootloader"};
++    fan_ui->ResetKeyInterruptStatus();
++    size_t chosen = fan_ui->ShowMenu(
++        headers, items, 0, true,
++        std::bind(&Device::HandleMenuKey, device, std::placeholders::_1, std::placeholders::_2));
++    if (chosen == 0) {
++      ready = recovery_fan::Initialize(&error);
++    } else if (chosen == 1) {
++      Shutdown("userrequested,recovery");
++    } else if (chosen == 2) {
++      Reboot("bootloader");
++    }
++    // Timeout, interruption and failed shutdown/reboot never authorize work.
++  }
++}
++
+ int main(int argc, char** argv) {
+   // We don't have logcat yet under recovery; so we'll print error on screen and log to stdout
+   // (which is redirected to recovery.log) as we used to do.
+@@ -374,6 +405,11 @@ int main(int argc, char** argv) {
+   // instances with different timestamps.
+   redirect_stdio(Paths::Get().temporary_log_file().c_str());
+ 
++  // Start the fan before UI/volume setup. Only absence of probe-created nodes
++  // is retried, with a bounded availability wait; failed writes need user retry.
++  std::string fan_error;
++  bool fan_ready = recovery_fan::Initialize(&fan_error);
++
+   load_volume_table();
+ 
+   std::string stage;
+@@ -461,12 +497,17 @@ int main(int argc, char** argv) {
+     device = (*make_device_func)();
+   }
+ 
+-  if (android::base::GetBoolProperty("ro.boot.quiescent", false)) {
++  if (!recovery_fan::Required() &&
++      android::base::GetBoolProperty("ro.boot.quiescent", false)) {
+     printf("Quiescent recovery mode.\n");
+     device->ResetUI(new StubRecoveryUI());
+   } else {
+     if (!device->GetUI()->Init(locale)) {
+       printf("Failed to initialize UI; using stub UI instead.\n");
++      if (recovery_fan::Required()) {
++        printf("Fan failure menus cannot be displayed; operations remain blocked on fan failure. "
++               "Use hardware power or bootloader recovery if needed.\n");
++      }
+       device->ResetUI(new StubRecoveryUI());
+     }
+   }
+@@ -474,6 +515,8 @@ int main(int argc, char** argv) {
+   BootState boot_state(reason, stage);  // recovery_main owns the state of boot.
+   device->SetBootState(&boot_state);
+   ui = device->GetUI();
++  WaitForFanOrSafeExit(device, fan_ready, fan_error);
++
+ 
+   if (!HasCache()) {
+     device->RemoveMenuItemForAction(Device::WIPE_CACHE);
+@@ -534,6 +577,10 @@ int main(int argc, char** argv) {
+ 
+   Device::BuiltinAction next_recovery_action = Device::NO_ACTION;
+   while (true) {
++    // Check each entry without rewriting a working fan or interrupting a
++    // running flash. Failure returns to the explicit safe-exit/retry menu.
++    fan_ready = recovery_fan::Check(&fan_error);
++    WaitForFanOrSafeExit(device, fan_ready, fan_error);
+     // We start adbd in recovery for the device with userdebug build or a unlocked bootloader.
+     std::string usb_config =
+         fastboot ? "fastboot" : IsRoDebuggable() || IsDeviceUnlocked() ? "adb" : "none";
+diff --git a/recovery_ui/include/recovery_ui/ui.h b/recovery_ui/include/recovery_ui/ui.h
+index 1ed0a4ef16b67573f1318b7885579932ed8c300f..b14a272cfcc7377a687fa068bea5d54a444a4f4b 100644
+--- a/recovery_ui/include/recovery_ui/ui.h
++++ b/recovery_ui/include/recovery_ui/ui.h
+@@ -344,7 +344,8 @@ class RecoveryUI {
+ 
+   void OnTouchDeviceDetected(int fd);
+   void OnKeyDetected(int key_code);
+-  void CalibrateTouch(int fd);
++  void ResetTouch();
++  bool CalibrateTouch(int fd);
+   void OnTouchPress();
+   void OnTouchTrack();
+   void OnTouchRelease();
+@@ -391,6 +392,7 @@ class RecoveryUI {
+   };
+ 
+   // Touch event related variables. See the comments in RecoveryUI::OnInputEvent().
++  int touch_device_fd_ = -1;
+   int touch_slot_;
+   bool touch_finger_down_;
+   bool touch_saw_x_;
+diff --git a/recovery_ui/screen_ui.cpp b/recovery_ui/screen_ui.cpp
+index 0dcc4c6dde9f9fb3f217d8786bc7e20b0812ee75..f5581572b4d9700180ca6c02d02b0c72425e635e 100644
+--- a/recovery_ui/screen_ui.cpp
++++ b/recovery_ui/screen_ui.cpp
+@@ -883,7 +883,7 @@ void ScreenRecoveryUI::draw_menu_and_text_buffer_locked(
+   SetColor(UIElement::LOG);
+   int row = text_row_;
+   size_t count = 0;
+-  for (int ty = ScreenHeight() - margin_height_ - char_height_; ty >= y && count < text_rows_;
++  for (int ty = ScreenHeight() - margin_height_ - 2 * char_height_; ty >= y && count < text_rows_;
+        ty -= char_height_, ++count) {
+     DrawTextLine(margin_width_, ty, text_[row], false);
+     --row;
+@@ -1161,8 +1161,6 @@ static bool InitGraphics() {
+ }
+ 
+ bool ScreenRecoveryUI::Init(const std::string& locale) {
+-  RecoveryUI::Init(locale);
+-
+   if (!InitGraphics()) {
+     return false;
+   }
+@@ -1221,6 +1219,11 @@ bool ScreenRecoveryUI::Init(const std::string& locale) {
+   LoadAnimation();
+ 
+   is_battery_less = android::base::GetBoolProperty("ro.recovery.batteryless", false);
++
++  // Input callbacks may query the framebuffer or draw text immediately.
++  if (!RecoveryUI::Init(locale)) {
++    return false;
++  }
+   if (!is_battery_less)
+     // Keep the battery capacity updated.
+     batt_monitor_thread_ = std::thread(&ScreenRecoveryUI::BattMonitorThreadLoop, this);
+diff --git a/recovery_ui/ui.cpp b/recovery_ui/ui.cpp
+index ead4c51c46e80adce467294617eaf91916a8edb4..7d27832aa8e3c12dbba62445a5fb84eecc13db44 100644
+--- a/recovery_ui/ui.cpp
++++ b/recovery_ui/ui.cpp
+@@ -28,6 +28,7 @@
+ 
+ #include <chrono>
+ #include <functional>
++#include <limits>
+ #include <string>
+ #include <thread>
+ 
+@@ -107,19 +108,20 @@ RecoveryUI::~RecoveryUI() {
+ void RecoveryUI::OnTouchDeviceDetected(int fd) {
+   char name[256];
+   char path[PATH_MAX];
+-  char buf[4096];
++  char buf[4097];
+ 
+   memset(name, 0, sizeof(name));
+   if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) {
+     return;
+   }
+-  sprintf(path, "/sys/board_properties/virtualkeys.%s", name);
++  name[sizeof(name) - 1] = '\0';
++  snprintf(path, sizeof(path), "/sys/board_properties/virtualkeys.%s", name);
+   int vkfd = open(path, O_RDONLY);
+   if (vkfd < 0) {
+     LOG(INFO) << "vkeys: could not open " << path;
+     return;
+   }
+-  ssize_t len = read(vkfd, buf, sizeof(buf));
++  ssize_t len = read(vkfd, buf, sizeof(buf) - 1);
+   close(vkfd);
+   if (len <= 0) {
+     LOG(ERROR) << "vkeys: could not read " << path;
+@@ -127,23 +129,71 @@ void RecoveryUI::OnTouchDeviceDetected(int fd) {
+   }
+   buf[len] = '\0';
+ 
++  const char* const end = buf + len;
+   char* p = buf;
+-  char* endp;
+-  for (; p < buf + len && *p == '0';) {
++  std::vector<vkey_t> parsed;
++  while (p < end) {
++    // Sysfs attributes may end in a newline, including a final CR/LF pair.
++    if (*p == '\n' || *p == '\r') {
++      while (p < end && (*p == '\n' || *p == '\r')) ++p;
++      if (p == end) break;
++    }
+     int val[6];
+-    int f;
+-    for (f = 0; *p && f < 6; ++f) {
+-      val[f] = strtol(p, &endp, 0);
+-      if (p == endp) break;
+-      p = endp + 1;
++    for (size_t f = 0; f < 6; ++f) {
++      if (p >= end) {
++        LOG(ERROR) << "vkeys: incomplete record in " << path;
++        return;
++      }
++      char* endp = nullptr;
++      errno = 0;
++      const long value = strtol(p, &endp, 0);
++      if (p == endp || errno == ERANGE || value < std::numeric_limits<int>::min() ||
++          value > std::numeric_limits<int>::max()) {
++        LOG(ERROR) << "vkeys: invalid number in " << path;
++        return;
++      }
++      val[f] = static_cast<int>(value);
++      p = endp;
++      if (f < 5) {
++        if (p >= end || *p != ':') {
++          LOG(ERROR) << "vkeys: missing field separator in " << path;
++          return;
++        }
++        ++p;
++      }
++    }
++    if (val[0] != EV_KEY || val[1] <= KEY_RESERVED || val[1] > KEY_MAX ||
++        val[4] <= 0 || val[5] <= 0) {
++      LOG(ERROR) << "vkeys: invalid type, key or size in " << path;
++      return;
++    }
++    const int64_t min_x = static_cast<int64_t>(val[2]) - val[4] / 2;
++    const int64_t min_y = static_cast<int64_t>(val[3]) - val[5] / 2;
++    const int64_t max_x = static_cast<int64_t>(val[2]) + val[4] / 2;
++    const int64_t max_y = static_cast<int64_t>(val[3]) + val[5] / 2;
++    if (min_x < std::numeric_limits<int>::min() || min_y < std::numeric_limits<int>::min() ||
++        max_x > std::numeric_limits<int>::max() || max_y > std::numeric_limits<int>::max() ||
++        min_x >= max_x || min_y >= max_y) {
++      LOG(ERROR) << "vkeys: invalid rectangle in " << path;
++      return;
+     }
+-    if (f != 6 || val[0] != 0x01) break;
+     vkey_t vk;
+     vk.keycode = val[1];
+-    vk.min_ = Point(val[2] - val[4] / 2, val[3] - val[5] / 2);
+-    vk.max_ = Point(val[2] + val[4] / 2, val[3] + val[5] / 2);
+-    virtual_keys_.push_back(vk);
++    vk.min_ = Point(static_cast<int>(min_x), static_cast<int>(min_y));
++    vk.max_ = Point(static_cast<int>(max_x), static_cast<int>(max_y));
++    parsed.push_back(vk);
++    if (p < end && *p == ':') {
++      ++p;
++      if (p == end) {
++        LOG(ERROR) << "vkeys: trailing separator in " << path;
++        return;
++      }
++    } else if (p < end && *p != '\n' && *p != '\r') {
++      LOG(ERROR) << "vkeys: invalid record separator in " << path;
++      return;
++    }
+   }
++  virtual_keys_.insert(virtual_keys_.end(), parsed.begin(), parsed.end());
+ }
+ 
+ void RecoveryUI::OnKeyDetected(int key_code) {
+@@ -207,8 +257,11 @@ bool RecoveryUI::InitScreensaver() {
+ }
+ 
+ bool RecoveryUI::Init(const std::string& /* locale */) {
+-  ev_init(std::bind(&RecoveryUI::OnInputEvent, this, std::placeholders::_1, std::placeholders::_2),
+-          touch_screen_allowed_);
++  if (ev_init(std::bind(&RecoveryUI::OnInputEvent, this, std::placeholders::_1,
++                        std::placeholders::_2), touch_screen_allowed_) < 0) {
++    PLOG(ERROR) << "Failed to initialize recovery input";
++    return false;
++  }
+ 
+   ev_iterate_available_keys(std::bind(&RecoveryUI::OnKeyDetected, this, std::placeholders::_1));
+ 
+@@ -247,24 +300,43 @@ bool RecoveryUI::Init(const std::string& /* locale */) {
+   return true;
+ }
+ 
+-void RecoveryUI::CalibrateTouch(int fd) {
+-  struct input_absinfo info;
+-  static bool calibrated = false;
++void RecoveryUI::ResetTouch() {
++  touch_slot_ = 0;
++  touch_finger_down_ = touch_saw_x_ = touch_saw_y_ = touch_reported_ = false;
++}
+ 
+-  if (calibrated) return;
++bool RecoveryUI::CalibrateTouch(int fd) {
++  if (touch_device_fd_ == fd) return true;
+ 
+-  memset(&info, 0, sizeof(info));
+-  if (ioctl(fd, EVIOCGABS(ABS_MT_POSITION_X), &info) == 0) {
+-    touch_min_.x(info.minimum);
+-    touch_max_.x(info.maximum);
++  // Do not combine an incomplete gesture or calibration from different input devices.
++  touch_device_fd_ = -1;
++  ResetTouch();
++  input_absinfo x_info = {}, y_info = {};
++  if (ioctl(fd, EVIOCGABS(ABS_MT_POSITION_X), &x_info) < 0 ||
++      ioctl(fd, EVIOCGABS(ABS_MT_POSITION_Y), &y_info) < 0) {
++    PLOG(ERROR) << "Failed to query touch axes for fd " << fd;
++    return false;
+   }
+-  memset(&info, 0, sizeof(info));
+-  if (ioctl(fd, EVIOCGABS(ABS_MT_POSITION_Y), &info) == 0) {
+-    touch_min_.y(info.minimum);
+-    touch_max_.y(info.maximum);
++  if (x_info.maximum <= x_info.minimum || y_info.maximum <= y_info.minimum) {
++    LOG(ERROR) << "Invalid touch axis range for fd " << fd;
++    return false;
+   }
++  touch_min_ = Point(x_info.minimum, y_info.minimum);
++  touch_max_ = Point(x_info.maximum, y_info.maximum);
++  touch_device_fd_ = fd;
++  return true;
++}
+ 
+-  calibrated = true;
++static bool ScaleTouchAxis(int value, int minimum, int maximum, int dimension, int* coordinate) {
++  if (dimension <= 0) return false;
++  const int64_t scaled = (static_cast<int64_t>(value) - minimum) * dimension /
++                         (static_cast<int64_t>(maximum) - minimum);
++  // Retain coordinates beyond the display for virtual keys, without narrowing overflow.
++  if (scaled < std::numeric_limits<int>::min() || scaled > std::numeric_limits<int>::max()) {
++    return false;
++  }
++  *coordinate = static_cast<int>(scaled);
++  return true;
+ }
+ 
+ void RecoveryUI::OnTouchPress() {
+@@ -374,7 +446,7 @@ int RecoveryUI::OnInputEvent(int fd, uint32_t epevents) {
+   // Touch input events will only be available if touch_screen_allowed_ is set.
+ 
+   if (ev.type == EV_SYN) {
+-    if (touch_screen_allowed_ && ev.code == SYN_REPORT) {
++    if (touch_screen_allowed_ && fd == touch_device_fd_ && ev.code == SYN_REPORT) {
+       // There might be multiple SYN_REPORT events. Only report press/release once.
+       if (!touch_reported_ && touch_finger_down_) {
+         if (touch_saw_x_ && touch_saw_y_) {
+@@ -413,18 +485,33 @@ int RecoveryUI::OnInputEvent(int fd, uint32_t epevents) {
+   }
+ 
+   if (touch_screen_allowed_ && ev.type == EV_ABS) {
+-    CalibrateTouch(fd);
++    if (ev.code != ABS_MT_SLOT && ev.code != ABS_MT_POSITION_X &&
++        ev.code != ABS_MT_POSITION_Y && ev.code != ABS_MT_TRACKING_ID) {
++      return 0;
++    }
++    if (!CalibrateTouch(fd)) return -1;
+     if (ev.code == ABS_MT_SLOT) {
+       touch_slot_ = ev.value;
+     }
+     // Ignore other fingers.
+-    if (touch_slot_ > 0) return 0;
+-
++    if (touch_slot_ != 0) return 0;
++
++    int coordinate;
++    if ((ev.code == ABS_MT_POSITION_X &&
++         !ScaleTouchAxis(ev.value, touch_min_.x(), touch_max_.x(), gr_fb_width_real(),
++                         &coordinate)) ||
++        (ev.code == ABS_MT_POSITION_Y &&
++         !ScaleTouchAxis(ev.value, touch_min_.y(), touch_max_.y(), gr_fb_height_real(),
++                         &coordinate))) {
++      LOG(ERROR) << "Invalid scaled touch coordinate for fd " << fd;
++      ResetTouch();
++      return -1;
++    }
+     switch (ev.code) {
+       case ABS_MT_POSITION_X:
+         touch_finger_down_ = true;
+         touch_saw_x_ = true;
+-        touch_pos_.x(ev.value * gr_fb_width_real() / (touch_max_.x() - touch_min_.x()));
++        touch_pos_.x(coordinate);
+         if (touch_reported_ && touch_saw_y_) {
+           OnTouchTrack();
+           touch_saw_x_ = touch_saw_y_ = false;
+@@ -434,7 +521,7 @@ int RecoveryUI::OnInputEvent(int fd, uint32_t epevents) {
+       case ABS_MT_POSITION_Y:
+         touch_finger_down_ = true;
+         touch_saw_y_ = true;
+-        touch_pos_.y(ev.value * gr_fb_height_real() / (touch_max_.y() - touch_min_.y()));
++        touch_pos_.y(coordinate);
+         if (touch_reported_ && touch_saw_x_) {
+           OnTouchTrack();
+           touch_saw_x_ = touch_saw_y_ = false;
+@@ -452,6 +539,10 @@ int RecoveryUI::OnInputEvent(int fd, uint32_t epevents) {
+   if (ev.type == EV_KEY && ev.code <= KEY_MAX) {
+     if (touch_screen_allowed_) {
+       if (ev.code == BTN_TOUCH) {
++        if (fd != touch_device_fd_) {
++          if (ev.value != 1) return 0;
++          if (!CalibrateTouch(fd)) return -1;
++        }
+         // A BTN_TOUCH with value 1 indicates the start of contact (protocol A), with 0 means
+         // lifting the contact.
+         touch_finger_down_ = (ev.value == 1);
+diff --git a/recovery_utils/include/recovery_utils/roots.h b/recovery_utils/include/recovery_utils/roots.h
+index aa7b0eeb214307429081ec53ef6a7619797ceba4..10c31e7da92445fcac86804fe6ded1e67205dc0c 100644
+--- a/recovery_utils/include/recovery_utils/roots.h
++++ b/recovery_utils/include/recovery_utils/roots.h
+@@ -62,6 +62,7 @@ int setup_install_mounts();
+ // Returns true if there is /cache in the volumes.
+ bool HasCache();
+ 
+-void map_logical_partitions();
++// Returns false if required logical partition creation fails.
++bool map_logical_partitions();
+ 
+ bool logical_partitions_mapped();
+diff --git a/recovery_utils/roots.cpp b/recovery_utils/roots.cpp
+index 50f6cc44aea2a2fb6d11acdfbf7c7aba8333494c..d0f01b43c1774f6ab637e6b0bc512ca279a8f934 100644
+--- a/recovery_utils/roots.cpp
++++ b/recovery_utils/roots.cpp
+@@ -176,12 +176,25 @@ static int exec_cmd(const std::vector<std::string>& args) {
+     _exit(EXIT_FAILURE);
+   }
+ 
+-  int status;
+-  waitpid(child, &status, 0);
+-  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+-    LOG(ERROR) << args[0] << " failed with status " << WEXITSTATUS(status);
++  if (child < 0) {
++    PLOG(ERROR) << "Failed to fork " << args[0];
++    return -1;
++  }
++
++  int status = 0;
++  if (TEMP_FAILURE_RETRY(waitpid(child, &status, 0)) != child) {
++    PLOG(ERROR) << "Failed to wait for " << args[0];
++    return -1;
++  }
++  if (!WIFEXITED(status)) {
++    LOG(ERROR) << args[0] << " did not exit normally";
++    return -1;
++  }
++  const int exit_status = WEXITSTATUS(status);
++  if (exit_status != 0) {
++    LOG(ERROR) << args[0] << " failed with status " << exit_status;
+   }
+-  return WEXITSTATUS(status);
++  return exit_status;
+ }
+ 
+ static int64_t get_file_size(int fd, uint64_t reserve_len) {
+@@ -481,16 +494,17 @@ bool HasCache() {
+ 
+ static bool logical_partitions_auto_mapped = false;
+ 
+-void map_logical_partitions() {
++bool map_logical_partitions() {
+   if (android::base::GetBoolProperty("ro.boot.dynamic_partitions", false) &&
+       !logical_partitions_mapped()) {
+     std::string super_name = fs_mgr_get_super_partition_name();
+     if (!android::fs_mgr::CreateLogicalPartitions("/dev/block/by-name/" + super_name)) {
+       LOG(ERROR) << "Failed to map logical partitions";
+-    } else {
+-      logical_partitions_auto_mapped = true;
++      return false;
+     }
++    logical_partitions_auto_mapped = true;
+   }
++  return true;
+ }
+ 
+ bool dm_find_system() {

@@ -12,7 +12,6 @@ DEVICE_MANIFEST_FILE += \
     device/xiaomi/warsaw/vintf/vendor/manifest/android.hardware.wifi-service.xml \
     device/xiaomi/warsaw/vintf/vendor/manifest/audioeffectservice_qti.xml \
     device/xiaomi/warsaw/vintf/vendor/manifest/bluetooth_audio.xml \
-    device/xiaomi/warsaw/vintf/vendor/manifest/boot-service.qti.xml \
     device/xiaomi/warsaw/vintf/vendor/manifest/manifest_audio_qti_services.xml \
     device/xiaomi/warsaw/vintf/vendor/manifest/mapper.qti.xml \
     device/xiaomi/warsaw/vintf/vendor/manifest/memtrack_qti.xml \

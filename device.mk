@@ -7,6 +7,9 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_ENFORCE_SELINUX_TREBLE_LABELING := true
 
+# No system_other odex is built; match OTA and skip its first-boot copy request.
+PRODUCT_SYSTEM_EXT_PROPERTIES += ro.cp_system_other_odex=0
+
 PRODUCT_EXTRA_VNDK_VERSIONS += 34
 
 PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := lz4
@@ -42,6 +45,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES_DEBUG += \
     update_engine_client
 
+# Retained OTA camera and MIMD memory controls require the v1 hierarchy.
+# Override only memory; retain the platform CPU, cpuset, I/O and freezer setup.
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/configs/boot/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json
+
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
     $(DEVICE_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom \
@@ -51,6 +59,12 @@ PRODUCT_COPY_FILES += \
 
 # Preserve the OTA recovery kernel objects at their original paths.
 PRODUCT_PACKAGES += warsaw_recovery_adsp_modules
+
+# The touch probe requests these files before second-stage ueventd exists.
+# Keep the original OTA bytes at the kernel direct firmware search path.
+PRODUCT_COPY_FILES += \
+    vendor/xiaomi/warsaw/proprietary/odm/firmware/goodix_firmware_warsaw.bin:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/firmware/goodix_firmware_warsaw.bin \
+    vendor/xiaomi/warsaw/proprietary/odm/firmware/goodix_cfg_group_warsaw.bin:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/firmware/goodix_cfg_group_warsaw.bin
 
 # Match the USB IDs used by the OTA recovery init.rc.
 PRODUCT_VENDOR_PROPERTIES += \

@@ -30,17 +30,26 @@ for module_dir do
         continue
     fi
 
+    # Keep completed jobs below Android mksh's CHILD_MAX while checking every exit.
     module_pids=""
-    for module do
-        ( "${MODPROBE}" -b -s -d "${module_dir}" -a "${module}" ) &
-        module_pids="${module_pids} $!"
-    done
+    pending=0
     failed=0
-    for module_pid in ${module_pids}; do
-        if ! wait "${module_pid}"; then
-            failed=1
-        fi
+    reap_modules() {
+        for module_pid in ${module_pids}; do
+            if ! wait "${module_pid}"; then
+                failed=1
+            fi
+        done
+        module_pids=""
+        pending=0
+    }
+    for module do
+        "${MODPROBE}" -b -s -d "${module_dir}" -a "${module}" &
+        module_pids="${module_pids} $!"
+        pending=$((pending + 1))
+        [ "${pending}" -lt 16 ] || reap_modules
     done
+    reap_modules
     exit "${failed}"
 done
 

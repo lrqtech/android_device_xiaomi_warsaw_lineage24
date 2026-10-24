@@ -1,0 +1,17 @@
+diff --git a/apex/Android.bp b/apex/Android.bp
+index 42f9e2a8df47d32e48bf8c64d9cd84032911510b..ac9433e9de6d15502d5876121873967c76ba3118 100644
+--- a/apex/Android.bp
++++ b/apex/Android.bp
+@@ -174,7 +174,11 @@ cc_prebuilt_binary {
+         "keystore2_use_latest_aidl_ndk_shared",
+     ],
+ 
+-    prefer: true,
++    // The prebuilt uses SVE; compile the existing source for this device CPU.
++    prefer: select(soong_config_variable("warsaw_stock_abi", "enabled"), {
++        "true": false,
++        default: true,
++    }),
+     enabled: false,
+ 
+     arch: {

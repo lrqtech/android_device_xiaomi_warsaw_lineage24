@@ -1,3 +1,14 @@
-# Unified patches require blank context lines; binary patches require a blank terminator.
-# Preserve their original bytes; validate patch syntax and added source lines separately.
-*.patch whitespace=-blank-at-eol,-blank-at-eof
+# Keep source/configuration line endings compatible with the Linux build tools.
+*.bp text eol=lf
+*.mk text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.rc text eol=lf
+*.te text eol=lf
+*.xml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Unified patch context prefixes precede tabs; blank lines and binary terminators are required.
+# Preserve their original bytes and validate them with the patch tools.
+*.patch whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab

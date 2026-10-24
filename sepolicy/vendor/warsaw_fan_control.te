@@ -5,3 +5,9 @@ allow init warsaw_fan_control:file { getattr setattr open read write };
 
 # The parent directory type is vendor-private; keep this rule in vendor policy.
 allow system_app vendor_sysfs_xm_power:dir search;
+
+# REC-only canonical fan attributes: main recovery configures; fastbootd checks.
+recovery_only(`
+  allow recovery warsaw_fan_control:file { getattr open read write };
+  allow fastbootd warsaw_fan_control:file { getattr open read };
+')

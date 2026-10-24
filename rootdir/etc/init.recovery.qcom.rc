@@ -1,4 +1,8 @@
 on early-init
+    # QTI health owns battery monitoring and replaces charger.recovery.
+    # Stop the legacy default service before class_start can try its absent binary.
+    stop charger
+
     insmod /vendor/lib/modules/q6_pdr_dlkm.ko
     insmod /vendor/lib/modules/q6_notifier_dlkm.ko
     insmod /vendor/lib/modules/snd_event_dlkm.ko
@@ -27,6 +31,10 @@ on fs
     wait /sys/kernel/boot_adsp/ssr
     write /sys/kernel/boot_adsp/ssr 1
     wait /sys/class/power_supply/battery
+
+# Start the boot-control HAL after servicemanager is started in the init phase.
+on early-boot
+    class_start early_hal
 
 # The stock recovery selects WALT after loading sched-walt. The two policy
 # domains are CPU 0-5 and CPU 6-7, verified against the device's cpufreq sysfs.

@@ -1,0 +1,14 @@
+{
+  "Android.mk": {
+    "input_sha256": "7a5e9b2a048ce3b454ca66d2be7775eaf808c0cdac69b680a5deeb072ca08eb0",
+    "output_sha256": "b5bb3f59494b600438287628a2506a8545402bdf988f98b41a13f0039a671c0c"
+  },
+  "BoardConfigVendor.mk": {
+    "input_sha256": "31932b8ede523a06046fb6287bdaf6495bf50508dd849cb619aec7ea7d61bdec",
+    "output_sha256": "31932b8ede523a06046fb6287bdaf6495bf50508dd849cb619aec7ea7d61bdec"
+  },
+  "warsaw-vendor.mk": {
+    "input_sha256": "8f94fc654c56111eac1227fd6ae6fbf3dc068365aceca24e640be7ec62fc2d94",
+    "output_sha256": "af90d20869d268da64ef3aca204bfb6f23870d0ad11e92b332f6dbafbaad8a41"
+  }
+}

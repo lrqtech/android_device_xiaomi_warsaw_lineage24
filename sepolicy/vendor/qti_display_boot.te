@@ -1,0 +1,4 @@
+# The selected display boot script reads soc_id to select the Sun properties.
+# Restore only the needed read/traverse subset of the official OTA permissions.
+allow qti_display_boot vendor_sysfs_soc:dir search;
+allow qti_display_boot vendor_sysfs_public:file { getattr open read };

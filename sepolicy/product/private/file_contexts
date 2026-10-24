@@ -1,2 +1,5 @@
 # Preserve the OS4 OTA firmware label in the owning product partition.
 /product/firmware/vm-system(/.*)? u:object_r:vendor_vm_qti_system_file:s0
+
+# The retained vm-bootsys partition is mounted here by both fstabs.
+/product/vm-system(/.*)? u:object_r:vendor_vm_qti_system_file:s0

@@ -29,3 +29,12 @@ sys.camera.fgcpushare_factor               u:object_r:warsaw_cameramind_prop:s0
 sys.camera.mind.dropcache                  u:object_r:warsaw_cameramind_prop:s0
 sys.camera.mind.swappiness                 u:object_r:warsaw_cameramind_prop:s0
 persist.sys.miui.camera.cameramind.supported u:object_r:warsaw_cameramind_prop:s0 exact bool
+
+# Match the OTA label for the public USB/product market name.
+ro.product.marketname u:object_r:build_prop:s0 exact string
+
+# Recovery authentication override; never use the default property label.
+ro.adb.secure.recovery u:object_r:warsaw_recovery_adbd_auth_prop:s0 exact bool
+
+# Per-transport readiness is independent of the ADB FunctionFS marker.
+sys.fastbootd.ready u:object_r:warsaw_fastbootd_ready_prop:s0 exact enum none usb tcp

@@ -37,3 +37,7 @@ allow vendor_cacertservice_app self:qipcrtr_socket { read write create getattr s
 allow vendor_cacertservice_app vendor_location_xtra_daemon:binder { transfer };
 
 type_transition vendor_cacertservice_app tmpfs:file appdomain_tmpfs;
+
+# The retained CACert APK registers the AIDL service advertised in VINTF.
+# Match the official OTA server permission in this dedicated application domain.
+allow vendor_cacertservice_app vendor_hal_cacert_aidlservice:service_manager { add find };

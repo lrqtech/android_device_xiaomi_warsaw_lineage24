@@ -1,0 +1,95 @@
+diff --git a/libselinux/src/android/android_device.c b/libselinux/src/android/android_device.c
+index 9339e8abf12f51150efbd55c82a657792bd91a53..10070d437f4ea4b5437087a3718f421479e507ca 100644
+--- a/libselinux/src/android/android_device.c
++++ b/libselinux/src/android/android_device.c
+@@ -450,6 +450,7 @@ static int selinux_android_restorecon_common(const char* pathname_orig,
+ 	char * paths[2] = { NULL , NULL };
+ 	int ftsflags = FTS_NOCHDIR | FTS_PHYSICAL;
+ 	int error, sverrno;
++	int traversal_errno = 0;
+ 	struct dir_hash_node *current = NULL;
+ 	struct dir_hash_node *head = NULL;
+ 
+@@ -529,29 +530,35 @@ static int selinux_android_restorecon_common(const char* pathname_orig,
+ 	}
+ 
+ 	error = 0;
+-	while ((ftsent = fts_read(fts)) != NULL) {
++	while (true) {
++		/* Only errno from fts_read distinguishes EOF from a failed traversal. */
++		errno = 0;
++		ftsent = fts_read(fts);
++		if (ftsent == NULL) {
++			if (errno != 0) {
++				traversal_errno = errno;
++				error = -1;
++				selinux_log(SELINUX_ERROR, "SELinux: Error traversing %s: %s.\n",
++						pathname, strerror(traversal_errno));
++			}
++			break;
++		}
+ 		switch (ftsent->fts_info) {
+ 		case FTS_DC:
+ 			selinux_log(SELINUX_ERROR,
+ 						"SELinux:  Directory cycle on %s.\n", ftsent->fts_path);
+-			errno = ELOOP;
++			traversal_errno = ELOOP;
+ 			error = -1;
+ 			goto out;
+ 		case FTS_DP:
+ 			continue;
+ 		case FTS_DNR:
+-			selinux_log(SELINUX_ERROR,
+-						"SELinux:  Could not read %s: %s.\n", ftsent->fts_path, strerror(errno));
+-			fts_set(fts, ftsent, FTS_SKIP);
+-			continue;
+ 		case FTS_NS:
+-			selinux_log(SELINUX_ERROR,
+-						"SELinux:  Could not stat %s: %s.\n", ftsent->fts_path, strerror(errno));
+-			fts_set(fts, ftsent, FTS_SKIP);
+-			continue;
+ 		case FTS_ERR:
+-			selinux_log(SELINUX_ERROR,
+-						"SELinux:  Error on %s: %s.\n", ftsent->fts_path, strerror(errno));
++			traversal_errno = ftsent->fts_errno ? ftsent->fts_errno : EIO;
++			selinux_log(SELINUX_ERROR, "SELinux: Could not traverse %s: %s.\n",
++					ftsent->fts_path, strerror(traversal_errno));
++			error = -1;
+ 			fts_set(fts, ftsent, FTS_SKIP);
+ 			continue;
+ 		case FTS_D:
+@@ -598,11 +605,23 @@ static int selinux_android_restorecon_common(const char* pathname_orig,
+ 			}
+ 			/* fall through */
+ 		default:
+-			error |= restorecon_sb(ftsent->fts_path, ftsent->fts_statp, nochange, verbose, seinfo, uid);
++			if (restorecon_sb(ftsent->fts_path, ftsent->fts_statp, nochange, verbose, seinfo, uid) < 0) {
++				error = -1;
++				traversal_errno = errno ? errno : EIO;
++			}
+ 			break;
+ 		}
+ 	}
+ 
++out:
++	sverrno = traversal_errno ? traversal_errno : errno;
++	if (fts_close(fts) == -1) {
++		sverrno = errno;
++		error = -1;
++		selinux_log(SELINUX_ERROR, "SELinux: Could not close traversal of %s: %s.\n",
++				pathname, strerror(sverrno));
++	}
++
+ 	// Labeling successful. Write the partial match digests for subdirectories.
+ 	// TODO: Write the digest upon FTS_DP if no error occurs in its descents.
+ 	if (setrestoreconlast && !nochange && !error) {
+@@ -619,9 +638,6 @@ static int selinux_android_restorecon_common(const char* pathname_orig,
+ 		}
+ 	}
+ 
+-out:
+-	sverrno = errno;
+-	(void) fts_close(fts);
+ 	errno = sverrno;
+ cleanup:
+ 	free(pathdnamer);

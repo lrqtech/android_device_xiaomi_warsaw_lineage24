@@ -1,0 +1,1616 @@
+diff --git a/android/variable.go b/android/variable.go
+index baaa7f616c415a75726e77cf0b6d62f35a1a78bc..0a1f2a301d9eb352424e39f1e4fbbc7f4bb8f63d 100644
+--- a/android/variable.go
++++ b/android/variable.go
+@@ -449,7 +449,8 @@ type ProductVariables struct {
+ 	BoardKernelBinaries                []string `json:",omitempty"`
+ 	BoardKernelModuleInterfaceVersions []string `json:",omitempty"`
+ 
+-	BoardMoveRecoveryResourcesToVendorBoot *bool `json:",omitempty"`
++	BoardMoveRecoveryResourcesToVendorBoot  *bool `json:",omitempty"`
++	BoardIncludeRecoveryRamdiskInVendorBoot *bool `json:",omitempty"`
+ 
+ 	PrebuiltHiddenApiDir *string `json:",omitempty"`
+ 
+@@ -574,6 +575,7 @@ type CompatibilityTestcaseJSON struct {
+ type PartitionQualifiedVariablesType struct {
+ 	BuildingImage               bool   `json:",omitempty"`
+ 	PrebuiltImage               bool   `json:",omitempty"`
++	PrebuiltImagePath           string `json:",omitempty"`
+ 	BoardErofsCompressor        string `json:",omitempty"`
+ 	BoardErofsCompressHints     string `json:",omitempty"`
+ 	BoardErofsPclusterSize      string `json:",omitempty"`
+@@ -604,6 +606,7 @@ type BoardSuperPartitionGroupProps struct {
+ }
+ 
+ type ChainedAvbPartitionProps struct {
++	ImageSize             string   `json:",omitempty"`
+ 	Partitions            []string `json:",omitempty"`
+ 	Key                   string   `json:",omitempty"`
+ 	Algorithm             string   `json:",omitempty"`
+@@ -726,12 +729,15 @@ type PartitionVariables struct {
+ 	BoardSuperImageInUpdatePackage    bool                                     `json:",omitempty"`
+ 
+ 	// Avb (android verified boot) stuff
+-	BoardAvbEnable          bool                                `json:",omitempty"`
+-	BoardAvbAlgorithm       string                              `json:",omitempty"`
+-	BoardAvbKeyPath         string                              `json:",omitempty"`
+-	BoardAvbRollbackIndex   string                              `json:",omitempty"`
+-	BuildingVbmetaImage     bool                                `json:",omitempty"`
+-	ChainedVbmetaPartitions map[string]ChainedAvbPartitionProps `json:",omitempty"`
++	BoardAvbEnable             bool                                `json:",omitempty"`
++	BoardAvbAlgorithm          string                              `json:",omitempty"`
++	BoardAvbKeyPath            string                              `json:",omitempty"`
++	BoardAvbRollbackIndex      string                              `json:",omitempty"`
++	BuildingVbmetaImage        bool                                `json:",omitempty"`
++	ChainedVbmetaPartitions    map[string]ChainedAvbPartitionProps `json:",omitempty"`
++	BoardAvbVbmetaImageSize    string                              `json:",omitempty"`
++	BoardAvbVbmetaExtraImages  []string                            `json:",omitempty"`
++	AvbIncludeRecoveryInVbmeta bool                                `json:",omitempty"`
+ 
+ 	ProductPackagesSet      map[string]ProductPackagesVariables `json:",omitempty"`
+ 	VendorLinkerConfigSrcs  []string                            `json:",omitempty"`
+diff --git a/cc/Android.bp b/cc/Android.bp
+index 95fc17d8f4438273be8993781e7d42494651efeb..82d760840b5a9ef814fd76756341a6bfa16a1944 100644
+--- a/cc/Android.bp
++++ b/cc/Android.bp
+@@ -100,6 +100,8 @@ bootstrap_go_package {
+         "stub_library.go",
+     ],
+     testSrcs: [
++        "stub_library_test.go",
++        "prebuilt_cfi_test.go",
+         "afdo_test.go",
+         "artless_denylist_test.go",
+         "binary_test.go",
+diff --git a/cc/prebuilt.go b/cc/prebuilt.go
+index 94be5c4601b0e0525b7882398c67569a53c071a0..17860c3cc88b06fca41e3f78fbe3786f7b35801e 100644
+--- a/cc/prebuilt.go
++++ b/cc/prebuilt.go
+@@ -52,6 +52,14 @@ type prebuiltLinkerProperties struct {
+ 
+ 	Sanitized Sanitized `android:"arch_variant"`
+ 
++	Target struct {
++		Vendor, Product, Recovery struct {
++			// Prebuilt input for this image. When present it replaces the base
++			// input, since each library or binary consumes exactly one ELF file.
++			Srcs []string `android:"path,arch_variant"`
++		} `android:"arch_variant"`
++	} `android:"arch_variant"`
++
+ 	// Check the prebuilt ELF files (e.g. DT_SONAME, DT_NEEDED, resolution of undefined
+ 	// symbols, etc), default true.
+ 	Check_elf_files *bool `android:"arch_variant"`
+@@ -75,6 +83,21 @@ func (p *prebuiltLinker) prebuilt() *android.Prebuilt {
+ 	return &p.Prebuilt
+ }
+ 
++func (p *prebuiltLinker) imageSrcs(ctx android.BaseModuleContext) []string {
++	module := ctx.Module().(*Module)
++	srcs := p.properties.Srcs.GetOrDefault(ctx, nil)
++	if module.InVendor() && p.properties.Target.Vendor.Srcs != nil {
++		return p.properties.Target.Vendor.Srcs
++	}
++	if module.InProduct() && p.properties.Target.Product.Srcs != nil {
++		return p.properties.Target.Product.Srcs
++	}
++	if module.InRecovery() && p.properties.Target.Recovery.Srcs != nil {
++		return p.properties.Target.Recovery.Srcs
++	}
++	return srcs
++}
++
+ type prebuiltLibraryInterface interface {
+ 	libraryInterface
+ 	prebuiltLinkerInterface
+@@ -243,7 +266,7 @@ func (p *prebuiltLibraryLinker) link(ctx ModuleContext,
+ 
+ func (p *prebuiltLibraryLinker) prebuiltSrcs(ctx android.BaseModuleContext) []string {
+ 	sanitize := ctx.Module().(*Module).sanitize
+-	srcs := p.properties.Srcs.GetOrDefault(ctx, nil)
++	srcs := p.imageSrcs(ctx)
+ 	srcs = append(srcs, srcsForSanitizer(sanitize, p.properties.Sanitized)...)
+ 	if p.static() {
+ 		srcs = append(srcs, p.libraryDecorator.StaticProperties.Static.Srcs.GetOrDefault(ctx, nil)...)
+@@ -266,6 +289,9 @@ func (p *prebuiltLibraryLinker) nativeCoverage() bool {
+ 
+ func (p *prebuiltLibraryLinker) disablePrebuilt() {
+ 	p.properties.Srcs = proptools.NewConfigurable[[]string](nil, nil)
++	p.properties.Target.Vendor.Srcs = nil
++	p.properties.Target.Product.Srcs = nil
++	p.properties.Target.Recovery.Srcs = nil
+ 	p.properties.Sanitized.None.Srcs = nil
+ 	p.properties.Sanitized.Address.Srcs = nil
+ 	p.properties.Sanitized.Hwaddress.Srcs = nil
+@@ -440,7 +466,7 @@ func (p *prebuiltBinaryLinker) hostToolPath() android.OptionalPath {
+ func (p *prebuiltBinaryLinker) link(ctx ModuleContext,
+ 	flags Flags, deps PathDeps, objs Objects) android.Path {
+ 	// TODO(ccross): verify shared library dependencies
+-	if len(p.properties.Srcs.GetOrDefault(ctx, nil)) > 0 {
++	if len(p.imageSrcs(ctx)) > 0 {
+ 		fileName := p.getStem(ctx) + flags.Toolchain.ExecutableSuffix()
+ 		in := p.Prebuilt.SingleSourcePath(ctx)
+ 		outputFile := android.PathForModuleOut(ctx, fileName)
+@@ -529,7 +555,9 @@ func NewPrebuiltBinary(hod android.HostOrDeviceSupported) (*Module, *binaryDecor
+ 
+ 	module.AddProperties(&prebuilt.properties)
+ 
+-	android.InitConfigurablePrebuiltModule(module, &prebuilt.properties.Srcs)
++	android.InitPrebuiltModuleWithSrcSupplier(module, func(ctx android.BaseModuleContext, _ android.Module) []string {
++		return prebuilt.imageSrcs(ctx)
++	}, "srcs")
+ 	return module, binary
+ }
+ 
+diff --git a/cc/prebuilt_cfi_test.go b/cc/prebuilt_cfi_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..64bdc7a1721ffff5668d225ea137d08ba870a8a2
+--- /dev/null
++++ b/cc/prebuilt_cfi_test.go
+@@ -0,0 +1,81 @@
++// Copyright (C) 2026 The Android Open Source Project
++// SPDX-License-Identifier: Apache-2.0
++package cc
++
++import (
++	"android/soong/android"
++	"testing"
++)
++
++func TestPreferredCfiPrebuiltReplacesSharedLibrary(t *testing.T) {
++	ctx := testPrebuilt(t, `
++        cc_library {
++            name: "libcfi_test",
++            vendor: true,
++            sanitize: { cfi: true },
++        }
++        cc_prebuilt_library_shared {
++            name: "libcfi_test",
++            srcs: ["libcfi_test.so"],
++            vendor: true,
++            sanitize: { cfi: true },
++            prefer: true,
++        }
++        cc_library_shared {
++            name: "libclient",
++            vendor: true,
++            shared_libs: ["libcfi_test"],
++        }
++    `, android.MockFS{"libcfi_test.so": nil})
++	source := ctx.ModuleForTests(t, "libcfi_test", "android_vendor_arm64_armv8-a_shared_cfi").Module().(*Module)
++	prebuilt := ctx.ModuleForTests(t, "prebuilt_libcfi_test", "android_vendor_arm64_armv8-a_shared_cfi").Module().(*Module)
++	android.AssertBoolEquals(t, "CFI source shared variant must be replaced", true, source.IsReplacedByPrebuilt())
++	android.AssertBoolEquals(t, "CFI prebuilt has paired source", true, android.GetEmbeddedPrebuilt(prebuilt).SourceExists())
++	android.AssertBoolEquals(t, "CFI prebuilt must be selected", true, android.GetEmbeddedPrebuilt(prebuilt).UsePrebuilt())
++}
++
++func TestPreferredCfiPrebuiltAcrossNamespaces(t *testing.T) {
++	ctx := testPrebuilt(t, `
++        cc_library_shared {
++            name: "libclient",
++            vendor: true,
++            shared_libs: ["//source:libcfi_test"],
++        }
++    `, android.MockFS{
++		"source/Android.bp": []byte(`
++            soong_namespace {}
++            cc_library {
++                name: "libcfi_test",
++                vendor: true,
++                sanitize: { cfi: true },
++            }
++        `),
++		"blobs/Android.bp": []byte(`
++            soong_namespace { imports: ["source", "shadow_defaults"] }
++            cc_prebuilt_library_shared {
++                name: "libcfi_test",
++                source_module_name: "libcfi_test",
++                target: { android_arm64: { srcs: ["libcfi_test.so"] } },
++                compile_multilib: "64",
++                vendor: true,
++                stl: "none",
++                sanitize: { cfi: true },
++                prefer: true,
++            }
++        `),
++		"shadow_defaults/Android.bp": []byte(`
++            soong_namespace {}
++            cc_defaults { name: "libcfi_test" }
++        `),
++		"blobs/libcfi_test.so": nil,
++	}, android.PrepareForTestWithNamespace,
++		android.FixtureModifyProductVariables(func(vars android.FixtureProductVariables) {
++			vars.NamespacesToExport = []string{"source", "blobs", "shadow_defaults"}
++		}),
++	)
++	source := ctx.ModuleForTests(t, "libcfi_test", "android_vendor_arm64_armv8-a_shared_cfi").Module().(*Module)
++	prebuilt := ctx.ModuleForTests(t, "prebuilt_libcfi_test", "android_vendor_arm64_armv8-a_shared_cfi").Module().(*Module)
++	android.AssertBoolEquals(t, "CFI source must be replaced across namespaces", true, source.IsReplacedByPrebuilt())
++	android.AssertBoolEquals(t, "CFI prebuilt has paired source", true, android.GetEmbeddedPrebuilt(prebuilt).SourceExists())
++	android.AssertBoolEquals(t, "CFI prebuilt must be selected", true, android.GetEmbeddedPrebuilt(prebuilt).UsePrebuilt())
++}
+diff --git a/cc/prebuilt_test.go b/cc/prebuilt_test.go
+index 8a03a18938500cbf34a000b02c3c55e2b6d46927..51ea47eca77ff7fbee0a6779264387085cf79dc5 100644
+--- a/cc/prebuilt_test.go
++++ b/cc/prebuilt_test.go
+@@ -606,3 +606,58 @@ func TestMissingVariantInModuleSdk(t *testing.T) {
+ 	android.AssertBoolEquals(t, fmt.Sprintf("expected dependency from libfoo to source libbar"), true,
+ 		android.HasDirectDep(ctx, libfoo, sourceLibBar))
+ }
++
++func TestPrebuiltVendorOnlyInput(t *testing.T) {
++	ctx := testPrebuilt(t, `
++        cc_library {
++            name: "bar",
++            vendor_available: true,
++            split_all_variants: true,
++        }
++        cc_prebuilt_library_shared {
++            name: "bar",
++            vendor_available: true,
++            split_all_variants: true,
++            prefer: true,
++            strip: { none: true },
++            target: {
++                vendor: { srcs: ["vendor/libbar.so"] },
++            },
++        }
++        cc_library_shared {
++            name: "consumer",
++            vendor_available: true,
++            split_all_variants: true,
++            shared_libs: ["bar"],
++        }
++    `, map[string][]byte{"vendor/libbar.so": nil})
++	coreConsumer := ctx.ModuleForTests(t, "consumer", "android_arm64_armv8-a_shared").Module()
++	coreSource := ctx.ModuleForTests(t, "bar", "android_arm64_armv8-a_shared").Module()
++	android.AssertBoolEquals(t, "core must retain source without a core prebuilt", true,
++		android.HasDirectDep(ctx, coreConsumer, coreSource))
++	vendorConsumer := ctx.ModuleForTests(t, "consumer", vendorVariant).Module()
++	vendorPrebuilt := ctx.ModuleForTests(t, "prebuilt_bar", vendorVariant).Module()
++	android.AssertBoolEquals(t, "vendor must select its declared ELF", true,
++		android.HasDirectDep(ctx, vendorConsumer, vendorPrebuilt))
++	rule := ctx.ModuleForTests(t, "prebuilt_bar", vendorVariant).Rule("CpExecutable")
++	android.AssertStringEquals(t, "vendor ELF input", "vendor/libbar.so", rule.Input.String())
++}
++
++func TestPrebuiltDistinctImageInputs(t *testing.T) {
++	ctx := testPrebuilt(t, `
++        cc_prebuilt_library_shared {
++            name: "bar",
++            vendor_available: true,
++            split_all_variants: true,
++            srcs: ["core/libbar.so"],
++            strip: { none: true },
++            target: {
++                vendor: { srcs: ["vendor/libbar.so"] },
++            },
++        }
++    `, map[string][]byte{"core/libbar.so": nil, "vendor/libbar.so": nil})
++	core := ctx.ModuleForTests(t, "bar", "android_arm64_armv8-a_shared").Rule("CpExecutable")
++	vendor := ctx.ModuleForTests(t, "bar", vendorVariant).Rule("CpExecutable")
++	android.AssertStringEquals(t, "core input", "core/libbar.so", core.Input.String())
++	android.AssertStringEquals(t, "vendor input", "vendor/libbar.so", vendor.Input.String())
++}
+diff --git a/cc/stub_library.go b/cc/stub_library.go
+index db9e1e1ea233dd8bfca5e0c161315e0c51f32341..b9dcba7af573baacd5c39124fe03f7d95fff679a 100644
+--- a/cc/stub_library.go
++++ b/cc/stub_library.go
+@@ -59,7 +59,10 @@ func (s *stubLibraries) GenerateBuildActions(ctx android.SingletonContext) {
+ 			if IsStubTarget(linkableInfo) {
+ 				if name := getInstalledFileName(ctx, module); name != "" {
+ 					stubLibraryMap[name] = true
+-					if linkableInfo.InVendor {
++					// LLNDK vendor variants are link-time stubs for system APIs.
++					// They must not export a same-named private vendor library
++					// as another provider of the system interface.
++					if linkableInfo.InVendor && !linkableInfo.IsLlndk {
+ 						vendorStubLibraryMap[name] = true
+ 					}
+ 				}
+diff --git a/cc/stub_library_test.go b/cc/stub_library_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..ead4a227b1af55d4e5eceb42555c9b1ca287b880
+--- /dev/null
++++ b/cc/stub_library_test.go
+@@ -0,0 +1,46 @@
++// Copyright (C) 2026 The Android Open Source Project
++// SPDX-License-Identifier: Apache-2.0
++package cc
++
++import (
++	"android/soong/android"
++	"testing"
++)
++
++// LLNDK vendor variants describe interfaces supplied by the system. A private
++// vendor implementation with the same installed name must not turn that
++// interface into an additional vendor-provided library in linker.config.pb.
++func TestLlndkNotProvidedByVendor(t *testing.T) {
++	t.Parallel()
++	result := android.GroupFixturePreparers(
++		prepareForCcTest,
++		android.FixtureRegisterWithContext(func(ctx android.RegistrationContext) {
++			ctx.RegisterParallelSingletonType("stublibraries", stubLibrariesSingleton)
++		}),
++	).RunTestWithBp(t, `
++        cc_library_shared {
++            name: "libtest_llndk",
++            llndk: { symbol_file: "libtest_llndk.map.txt" },
++        }
++        cc_library_shared {
++            name: "libtest_llndk_vendor_private",
++            stem: "libtest_llndk",
++            vendor: true,
++        }
++        cc_library_shared {
++            name: "libtest_vendor_api",
++            vendor: true,
++            stubs: { symbol_file: "libtest_vendor_api.map.txt", versions: ["1"] },
++            split_all_variants: true,
++        }
++        cc_library_shared {
++            name: "libtest_vendor_client",
++            vendor: true,
++            shared_libs: ["libtest_llndk", "libtest_llndk_vendor_private", "libtest_vendor_api"],
++        }
++    `)
++	singleton := result.SingletonForTests(t, "stublibraries").Singleton().(*stubLibraries)
++	android.AssertStringListContains(t, "LLNDK stays in system interface list", singleton.stubLibraries, "libtest_llndk.so")
++	android.AssertStringListDoesNotContain(t, "vendor consumes LLNDK, it does not provide it", singleton.vendorStubLibraries, "libtest_llndk.so")
++	android.AssertStringListContains(t, "actual vendor API stays exported", singleton.vendorStubLibraries, "libtest_vendor_api.so")
++}
+diff --git a/etc/prebuilt_etc.go b/etc/prebuilt_etc.go
+index b7f04e231f79a2ce91823cdf13400b07a6daf909..08c043dc8e6faf934ff1154c42bbf68a87d3bf70 100644
+--- a/etc/prebuilt_etc.go
++++ b/etc/prebuilt_etc.go
+@@ -70,6 +70,7 @@ func RegisterPrebuiltEtcBuildComponents(ctx android.RegistrationContext) {
+ 	ctx.RegisterModuleType("prebuilt_gpu", PrebuiltGPUFactory)
+ 	ctx.RegisterModuleType("prebuilt_dsp", PrebuiltDSPFactory)
+ 	ctx.RegisterModuleType("prebuilt_rfsa", PrebuiltRFSAFactory)
++	ctx.RegisterModuleType("prebuilt_dsp_rfs", PrebuiltDspRfsFactory)
+ 	ctx.RegisterModuleType("prebuilt_renderscript_bitcode", PrebuiltRenderScriptBitcodeFactory)
+ 	ctx.RegisterModuleType("prebuilt_media", PrebuiltMediaFactory)
+ 	ctx.RegisterModuleType("prebuilt_voicepack", PrebuiltVoicepackFactory)
+@@ -1209,3 +1210,14 @@ func PrebuiltAddonDFactory() android.Module {
+ 	android.InitDefaultableModule(module)
+ 	return module
+ }
++
++// prebuilt_dsp_rfs installs Hexagon firmware at the RFS location used by
++// Qualcomm DSP clients. The lib64 path is part of the remote filesystem ABI,
++// not the ELF class or architecture of these firmware files.
++func PrebuiltDspRfsFactory() android.Module {
++	module := &PrebuiltEtc{}
++	InitPrebuiltEtcModule(module, "lib64/rfs/dsp")
++	android.InitAndroidArchModule(module, android.DeviceSupported, android.MultilibCommon)
++	android.InitDefaultableModule(module)
++	return module
++}
+diff --git a/etc/prebuilt_etc_test.go b/etc/prebuilt_etc_test.go
+index 081b5137069d7ccead4546cbb43a2f2b24d0b13d..61d3f413c41b7bb1caa88f9b5d7067f4a359c1f9 100644
+--- a/etc/prebuilt_etc_test.go
++++ b/etc/prebuilt_etc_test.go
+@@ -680,3 +680,25 @@ func TestPrebuiltAddonDDirPath(t *testing.T) {
+ 		})
+ 	}
+ }
++
++func TestPrebuiltDspRfsInstallPath(t *testing.T) {
++	for _, test := range []struct{ name, property, partition string }{
++		{"vendor", "soc_specific", "vendor"},
++		{"odm", "device_specific", "odm"},
++	} {
++		t.Run(test.name, func(t *testing.T) {
++			result := prepareForPrebuiltEtcTest.RunTestWithBp(t, `
++                prebuilt_dsp_rfs {
++                    name: "dsp_firmware",
++                    src: "foo.conf",
++                    filename: "skeleton.so",
++                    `+test.property+`: true,
++                }
++            `)
++			p := result.Module("dsp_firmware", "android_vendor_common").(*PrebuiltEtc)
++			expected := "out/target/product/test_device/" + test.partition + "/lib64/rfs/dsp"
++			android.AssertPathRelativeToTopEquals(t, "DSP firmware install path", expected, p.installDirPaths[0])
++			android.AssertStringEquals(t, "DSP filename preserved", "skeleton.so", p.outputFilePaths[0].Base())
++		})
++	}
++}
+diff --git a/filesystem/Android.bp b/filesystem/Android.bp
+index 0ca5dd898eca7c791603b6ee740e3b281bd0741d..9cf12df21acdb1a5468ff1e3b280b8f6fbedca6e 100644
+--- a/filesystem/Android.bp
++++ b/filesystem/Android.bp
+@@ -55,6 +55,7 @@ bootstrap_go_package {
+         "tzsw.go",
+     ],
+     testSrcs: [
++        "vbmeta_test.go",
+         "filesystem_test.go",
+         "find_shareduid_violation_check_test.go",
+         "host_init_verifier_check_test.go",
+diff --git a/filesystem/prebuilt.go b/filesystem/prebuilt.go
+index d25d28ecacc1040c297692575105aa76815ad18c..75162562faf627e03f472a479348335590c01d61 100644
+--- a/filesystem/prebuilt.go
++++ b/filesystem/prebuilt.go
+@@ -44,21 +44,34 @@ func (p *prebuiltFilesystem) GenerateAndroidBuildActions(ctx android.ModuleConte
+ 	rootDir := android.PathForModuleOut(ctx, p.rootDirString()).OutputPath
+ 	output := android.PathForModuleOut(ctx, p.installFileName())
+ 	p.output = output
++	ctx.SetOutputFiles(android.Paths{output}, "")
++	p.setVbmetaPartitionProvider(ctx)
++	fileList := android.PathForModuleOut(ctx, "fileList")
+ 
+ 	// TODO: implement FilesystemInfo correctly to replace entire android_filesystem.
+ 	fsInfo := FilesystemInfo{
+ 		ModuleName:       ctx.ModuleName(),
+ 		PartitionName:    p.partitionName(),
+ 		RootDir:          rootDir,
++		RebasedDir:       rootDir,
++		FileListFile:     fileList,
+ 		Output:           p.OutputPath(),
+ 		SignedOutputPath: p.SignedOutputPath(),
+ 		Prebuilt:         true,
++		UseAvb:           proptools.Bool(p.properties.Use_avb),
+ 	}
+ 	android.SetProvider(ctx, FilesystemProvider, fsInfo)
+ 
+ 	builder := android.NewRuleBuilder(pctx, ctx).SandboxDisabled()
+ 	rootdirTimestamp := android.PathForModuleOut(ctx, p.rootDirString()+".timestamp")
+ 
++	if proptools.Bool(p.properties.Use_avb) {
++		cmd := builder.Command().BuiltTool("avbtool").Text("verify_image").FlagWithInput("--image ", input)
++		if p.properties.Avb_private_key != nil {
++			cmd.FlagWithInput("--key ", android.PathForModuleSrc(ctx, *p.properties.Avb_private_key))
++		}
++	}
++
+ 	switch p.fsType(ctx) {
+ 	case erofsType:
+ 		builder.Command().Textf("rm -rf %s && ", rootDir.String()).BuiltTool("fsck.erofs").Textf("--extract=%s", rootDir.String()).Input(input)
+@@ -69,6 +82,8 @@ func (p *prebuiltFilesystem) GenerateAndroidBuildActions(ctx android.ModuleConte
+ 		return
+ 	}
+ 
++	builder.Command().Text("find").Text(rootDir.String()).
++		Text("-mindepth 1 ! -type d -printf '%P\\n' | LC_ALL=C sort >").Output(fileList)
+ 	builder.Command().Text("touch").Output(rootdirTimestamp)
+ 
+ 	apexKeys := android.PathForModuleOut(ctx, "apexkeys.txt")
+diff --git a/filesystem/vbmeta.go b/filesystem/vbmeta.go
+index 626db7b6bb02741582f89919911fb0560bad7ae9..3d87b449f13d4137f3e432386793e1246ff24c71 100644
+--- a/filesystem/vbmeta.go
++++ b/filesystem/vbmeta.go
+@@ -56,6 +56,14 @@ type vbmeta struct {
+ }
+ 
+ type VbmetaProperties struct {
++	// Padded OTA image length, not physical partition capacity. Defaults to 64 KiB.
++	// Must be a positive multiple of 4096, at most the libavb metadata limit.
++	Image_size *int64
++
++	// Additional existing AVB images whose descriptors belong to this vbmeta.
++	// Their signatures and payload hashes are verified before extracting descriptors.
++	Descriptor_images []string `android:"path"`
++
+ 	// Name of the partition stored in vbmeta desc. Defaults to the name of this module.
+ 	Partition_name *string
+ 
+@@ -218,7 +226,16 @@ var includeDescriptorsFromImgOrder = []string{
+ }
+ 
+ func (v *vbmeta) GenerateAndroidBuildActions(ctx android.ModuleContext) {
++	imageSize := proptools.IntDefault(v.properties.Image_size, vbmetaMaxSize)
++	if imageSize <= 0 || imageSize > vbmetaMaxSize || imageSize%4096 != 0 {
++		ctx.PropertyErrorf("image_size", "must be a positive multiple of 4096 no greater than 65536")
++		return
++	}
+ 	builder := android.NewRuleBuilder(pctx, ctx).SandboxDisabled()
++	extraImages := android.PathsForModuleSrc(ctx, v.properties.Descriptor_images)
++	for _, image := range extraImages {
++		builder.Command().BuiltTool("avbtool").Text("verify_image").FlagWithInput("--image ", image)
++	}
+ 	cmd := builder.Command().BuiltTool("avbtool").Text("make_vbmeta_image")
+ 
+ 	key := android.PathForModuleSrc(ctx, proptools.String(v.properties.Private_key))
+@@ -392,13 +409,20 @@ func (v *vbmeta) GenerateAndroidBuildActions(ctx android.ModuleContext) {
+ 		cmd.Implicit(publicKey)
+ 	}
+ 
++	// Keep descriptor ordering identical to Make, including additional images last.
++	for _, image := range extraImages {
++		cmd.FlagWithInput("--include_descriptors_from_image ", image)
++	}
++
+ 	output := android.PathForModuleOut(ctx, v.installFileName())
+ 	cmd.FlagWithOutput("--output ", output)
+ 
+-	// libavb expects to be able to read the maximum vbmeta size, so we must provide a partition
+-	// which matches this or the read will fail.
++	// Never let padding truncate valid metadata. The physical partition can be larger
++	// than the OTA image, which is why image_size is independent of its capacity.
++	builder.Command().Text("test $(stat -c %s").Input(output).
++		Textf(") -le %d || { echo 'vbmeta image exceeds configured image_size'; exit 1; }", imageSize)
+ 	builder.Command().Text("truncate").
+-		FlagWithArg("-s ", strconv.Itoa(vbmetaMaxSize)).
++		FlagWithArg("-s ", strconv.Itoa(imageSize)).
+ 		Output(output)
+ 
+ 	builder.Build("vbmeta", fmt.Sprintf("vbmeta %s", ctx.ModuleName()))
+@@ -442,6 +466,14 @@ func (v *vbmeta) buildPropFileForMiscInfo(ctx android.ModuleContext) android.Pat
+ 		addStr(fmt.Sprintf("avb_%s_rollback_index_location", v.partitionName()), strconv.FormatInt(*v.properties.Rollback_index_location, 10))
+ 	}
+ 
++	if v.properties.Image_size != nil {
++		addStr(fmt.Sprintf("avb_%s_image_size", v.partitionName()), strconv.FormatInt(*v.properties.Image_size, 10))
++	}
++	extraImages := android.PathsForModuleSrc(ctx, v.properties.Descriptor_images)
++	if len(extraImages) > 0 {
++		addStr(fmt.Sprintf("avb_%s_extra_images", v.partitionName()), strings.Join(extraImages.Strings(), " "))
++	}
++
+ 	var partitionDepNames []string
+ 	var bootloaderPartitions []android.Path
+ 	ctx.VisitDirectDepsProxyWithTag(vbmetaPartitionDep, func(child android.ModuleProxy) {
+@@ -490,7 +522,7 @@ func (v *vbmeta) buildPropFileForMiscInfo(ctx android.ModuleContext) android.Pat
+ 	sort.Strings(lines)
+ 
+ 	propFile := android.PathForModuleOut(ctx, "prop_file_for_misc_info")
+-	android.WriteFileRule(ctx, propFile, strings.Join(lines, "\n"), bootloaderPartitions...)
++	android.WriteFileRule(ctx, propFile, strings.Join(lines, "\n"), append(bootloaderPartitions, extraImages...)...)
+ 	return propFile
+ }
+ 
+diff --git a/filesystem/vbmeta_test.go b/filesystem/vbmeta_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..845f5f0fd4abc08f34b81fccc56e7382675bcd92
+--- /dev/null
++++ b/filesystem/vbmeta_test.go
+@@ -0,0 +1,87 @@
++// Copyright (C) 2026 The Android Open Source Project
++// SPDX-License-Identifier: Apache-2.0
++
++package filesystem
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++
++	"android/soong/android"
++)
++
++var vbmetaFixture = android.GroupFixturePreparers(
++	fixture,
++	android.FixtureRegisterWithContext(func(ctx android.RegistrationContext) {
++		ctx.RegisterModuleType("vbmeta", VbmetaFactory)
++	}),
++)
++
++func TestVbmetaImageSizeAndDescriptorInputs(t *testing.T) {
++	for _, size := range []int{0, 4096, 12288, 65536} {
++		t.Run(fmt.Sprint(size), func(t *testing.T) {
++			sizeProperty := ""
++			expected := size
++			if size == 0 {
++				expected = 65536
++			} else {
++				sizeProperty = fmt.Sprintf("image_size: %d,", size)
++			}
++			result := android.GroupFixturePreparers(vbmetaFixture, android.FixtureMergeMockFs(android.MockFS{
++				"key.pem":   nil,
++				"pvmfw.img": nil,
++			})).RunTestWithBp(t, `
++                vbmeta {
++                    name: "test_vbmeta",
++                    private_key: "key.pem",
++                    rollback_index: 0,
++                    descriptor_images: ["pvmfw.img"],
++                    `+sizeProperty+`
++                }
++            `)
++			rule := result.ModuleForTests(t, "test_vbmeta", "android_common").Output("test_vbmeta.img")
++			command := rule.RuleParams.Command
++			meta := android.ContentFromFileRuleForTests(t, result.TestContext,
++				result.ModuleForTests(t, "test_vbmeta", "android_common").Output("prop_file_for_misc_info"))
++			android.AssertStringDoesContain(t, "extra image survives target-files metadata", meta,
++				"avb_test_vbmeta_extra_images=pvmfw.img")
++			if size != 0 {
++				android.AssertStringDoesContain(t, "size survives target-files metadata", meta,
++					fmt.Sprintf("avb_test_vbmeta_image_size=%d", size))
++			} else {
++				android.AssertStringDoesNotContain(t, "unset size preserves legacy release-tool behavior", meta,
++					"avb_test_vbmeta_image_size=")
++			}
++			verify := strings.Index(command, "verify_image --image pvmfw.img")
++			create := strings.Index(command, "make_vbmeta_image")
++			guard := strings.Index(command, fmt.Sprintf(") -le %d ||", expected))
++			pad := strings.Index(command, fmt.Sprintf("truncate -s %d ", expected))
++			if verify < 0 || create <= verify || guard <= create || pad <= guard {
++				t.Fatalf("verification and overflow guard must precede padding: %s", command)
++			}
++			android.AssertStringDoesContain(t, "include the verified descriptors", command,
++				"--include_descriptors_from_image pvmfw.img")
++			inputs := append(rule.Inputs.Strings(), rule.Implicits.Strings()...)
++			android.AssertStringListContains(t, "rebuild if descriptor image changes", inputs, "pvmfw.img")
++		})
++	}
++}
++
++func TestVbmetaRejectsInvalidImageSize(t *testing.T) {
++	for _, size := range []int{-4096, 0, 4095, 65537, 69632} {
++		t.Run(fmt.Sprint(size), func(t *testing.T) {
++			android.GroupFixturePreparers(vbmetaFixture, android.FixtureMergeMockFs(android.MockFS{"key.pem": nil})).
++				ExtendWithErrorHandler(android.FixtureExpectsAtLeastOneErrorMatchingPattern(
++					`image_size: must be a positive multiple of 4096 no greater than 65536`)).
++				RunTestWithBp(t, fmt.Sprintf(`
++                    vbmeta {
++                        name: "test_vbmeta",
++                        private_key: "key.pem",
++                        rollback_index: 0,
++                        image_size: %d,
++                    }
++                `, size))
++		})
++	}
++}
+diff --git a/fsgen/Android.bp b/fsgen/Android.bp
+index 773383a70c077d7adcbe2a6616d7aa1e6c59ceae..58ad2046436f1402d49df67ab006bfac6def72d4 100644
+--- a/fsgen/Android.bp
++++ b/fsgen/Android.bp
+@@ -32,6 +32,7 @@ bootstrap_go_package {
+         "vbmeta_partitions.go",
+     ],
+     testSrcs: [
++        "vbmeta_layout_test.go",
+         "filesystem_creator_test.go",
+     ],
+     pluginFor: ["soong_build"],
+diff --git a/fsgen/filesystem_creator.go b/fsgen/filesystem_creator.go
+index 01d2c3f6156b8083123293b4025b089fa4e287b0..42f5f7865c17662ce70c1e33bb0cf2aa7aa9520e 100644
+--- a/fsgen/filesystem_creator.go
++++ b/fsgen/filesystem_creator.go
+@@ -240,13 +240,13 @@ func generatedPartitions(ctx android.EarlyModuleContext) allGeneratedPartitionDa
+ 	if ctx.DeviceConfig().BuildingUserdataImage() && ctx.DeviceConfig().UserdataPath() == "data" {
+ 		addGenerated("userdata")
+ 	}
+-	if partitionVars.BuildingSystemDlkmImage {
++	if partitionVars.BuildingSystemDlkmImage || partitionVars.PartitionQualifiedVariables["system_dlkm"].PrebuiltImage {
+ 		addGenerated("system_dlkm")
+ 	}
+-	if partitionVars.BuildingVendorDlkmImage {
++	if partitionVars.BuildingVendorDlkmImage || partitionVars.PartitionQualifiedVariables["vendor_dlkm"].PrebuiltImage {
+ 		addGenerated("vendor_dlkm")
+ 	}
+-	if partitionVars.BuildingOdmDlkmImage {
++	if partitionVars.BuildingOdmDlkmImage || partitionVars.PartitionQualifiedVariables["odm_dlkm"].PrebuiltImage {
+ 		addGenerated("odm_dlkm")
+ 	}
+ 	if partitionVars.BuildingRamdiskImage {
+@@ -776,10 +776,17 @@ func getPvmfwProperties(ctx android.LoadHookContext) *filesystem.PvmfwProperties
+ 		avbkey = partitionVars.BoardPvmfwEmbeddedAvbkeyPrebuilt
+ 	}
+ 
++	// A fully qualified module reference must not receive a leading colon.
++	moduleRef := func(name string) string {
++		if strings.HasPrefix(name, "//") {
++			return name
++		}
++		return ":" + name
++	}
+ 	return &filesystem.PvmfwProperties{
+-		Image:          proptools.StringPtr(":" + image),
++		Image:          proptools.StringPtr(moduleRef(image)),
+ 		Binary_name:    proptools.StringPtr(bin),
+-		Avbkey:         proptools.StringPtr(":" + avbkey),
++		Avbkey:         proptools.StringPtr(moduleRef(avbkey)),
+ 		Partition_size: partitionSize,
+ 	}
+ }
+@@ -818,6 +825,29 @@ func createRamdisk16k(ctx android.LoadHookContext) string {
+ 	return name
+ }
+ 
++// Match Make's vendor ramdisk composition. A dedicated recovery partition or
++// a separate recovery ramdisk fragment must not be folded into the platform ramdisk.
++func recoveryForVendorRamdisk(config android.Config, partitions allGeneratedPartitionData) string {
++	vars := config.ProductVariables()
++	if !proptools.Bool(vars.BoardMoveRecoveryResourcesToVendorBoot) ||
++		proptools.Bool(vars.BoardIncludeRecoveryRamdiskInVendorBoot) {
++		return ""
++	}
++	return partitions.nameForType("recovery")
++}
++
++func genericRamdiskDirectories(config android.Config) []string {
++	dirs := []string{"debug_ramdisk", "dev", "metadata", "mnt", "proc", "second_stage_resources", "sys"}
++	vars := config.ProductVariables()
++	if vars.PartitionVarsForSoongMigrationOnlyDoNotUse.BoardUsesGenericKernelImage &&
++		(proptools.Bool(vars.BoardUsesRecoveryAsBoot) || proptools.Bool(vars.BoardMoveRecoveryResourcesToVendorBoot)) {
++		for _, dir := range append([]string(nil), dirs...) {
++			dirs = append(dirs, filepath.Join("first_stage_ramdisk", dir))
++		}
++	}
++	return dirs
++}
++
+ func partitionSpecificFsProps(ctx android.EarlyModuleContext, partitions allGeneratedPartitionData, fsProps *filesystem.FilesystemProperties, partitionType string) {
+ 	partitionVars := ctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse
+ 	switch partitionType {
+@@ -991,27 +1021,7 @@ func partitionSpecificFsProps(ctx android.EarlyModuleContext, partitions allGene
+ 		}
+ 
+ 	case "ramdisk":
+-		// Following the logic in https://cs.android.com/android/platform/superproject/main/+/c3c5063df32748a8806ce5da5dd0db158eab9ad9:build/make/core/Makefile;l=1307
+-		fsProps.Dirs = android.NewSimpleConfigurable([]string{
+-			"debug_ramdisk",
+-			"dev",
+-			"metadata",
+-			"mnt",
+-			"proc",
+-			"second_stage_resources",
+-			"sys",
+-		})
+-		if partitionVars.BoardUsesGenericKernelImage {
+-			fsProps.Dirs.AppendSimpleValue([]string{
+-				"first_stage_ramdisk/debug_ramdisk",
+-				"first_stage_ramdisk/dev",
+-				"first_stage_ramdisk/metadata",
+-				"first_stage_ramdisk/mnt",
+-				"first_stage_ramdisk/proc",
+-				"first_stage_ramdisk/second_stage_resources",
+-				"first_stage_ramdisk/sys",
+-			})
+-		}
++		fsProps.Dirs = android.NewSimpleConfigurable(genericRamdiskDirectories(ctx.Config()))
+ 		fsProps.Stem = proptools.StringPtr("ramdisk.img")
+ 	case "recovery":
+ 		dirs := append(commonPartitionDirs, []string{
+@@ -1039,7 +1049,7 @@ func partitionSpecificFsProps(ctx android.EarlyModuleContext, partitions allGene
+ 		fsProps.Security_patch = proptools.StringPtr(partitionVars.OdmDlkmSecurityPatch)
+ 		fsProps.Stem = proptools.StringPtr("odm_dlkm.img")
+ 	case "vendor_ramdisk":
+-		if recoveryName := partitions.nameForType("recovery"); recoveryName != "" {
++		if recoveryName := recoveryForVendorRamdisk(ctx.Config(), partitions); recoveryName != "" {
+ 			fsProps.Include_files_of = []string{recoveryName}
+ 		}
+ 		fsProps.Stem = proptools.StringPtr("vendor_ramdisk.img")
+@@ -1048,7 +1058,7 @@ func partitionSpecificFsProps(ctx android.EarlyModuleContext, partitions allGene
+ 			fsProps.Include_files_of,
+ 			generatedModuleNameForPartition(ctx.Config(), "vendor_ramdisk"),
+ 		)
+-		if recoveryName := partitions.nameForType("recovery"); recoveryName != "" {
++		if recoveryName := recoveryForVendorRamdisk(ctx.Config(), partitions); recoveryName != "" {
+ 			fsProps.Include_files_of = append(
+ 				fsProps.Include_files_of,
+ 				recoveryName,
+@@ -1064,7 +1074,7 @@ func partitionSpecificFsProps(ctx android.EarlyModuleContext, partitions allGene
+ 			fsProps.Include_files_of,
+ 			generatedModuleNameForPartition(ctx.Config(), "vendor_ramdisk"),
+ 		)
+-		if recoveryName := partitions.nameForType("recovery"); recoveryName != "" {
++		if recoveryName := recoveryForVendorRamdisk(ctx.Config(), partitions); recoveryName != "" {
+ 			fsProps.Include_files_of = append(
+ 				fsProps.Include_files_of,
+ 				recoveryName,
+@@ -1105,6 +1115,38 @@ func (f *filesystemCreator) createPartition(ctx android.LoadHookContext, partiti
+ 
+ 	baseProps := generateBaseProps(proptools.StringPtr(partition.moduleName), ctx.Config())
+ 
++	partitionVars := ctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse
++	specificVars := partitionVars.PartitionQualifiedVariables[partition.partitionType]
++	if specificVars.PrebuiltImage && android.InList(partition.partitionType, []string{"system_dlkm", "vendor_dlkm", "odm_dlkm"}) {
++		if specificVars.PrebuiltImagePath == "" {
++			ctx.ModuleErrorf("prebuilt %s image requires an input path", partition.partitionType)
++			return
++		}
++		if specificVars.BoardFileSystemType != "erofs" && specificVars.BoardFileSystemType != "ext4" {
++			ctx.ModuleErrorf("prebuilt %s image requires erofs or ext4, got %q", partition.partitionType, specificVars.BoardFileSystemType)
++			return
++		}
++		avb := getAvbInfo(ctx.Config(), partition.partitionType)
++		// A prebuilt image already owns its module layout and depmod metadata.
++		// Do not generate a second, flattened kernel module installation.
++		// Unlike generated source images, this complete input can participate in checkbuild.
++		baseProps.Unchecked_module = nil
++		module := ctx.CreateModuleInDirectory(filesystem.PrebuiltFilesystemFactory, ".", baseProps,
++			&struct{ Src *string }{Src: proptools.StringPtr(specificVars.PrebuiltImagePath)},
++			&filesystem.FilesystemProperties{
++				Partition_name:          proptools.StringPtr(partition.partitionType),
++				Partition_type:          proptools.StringPtr(partition.partitionType),
++				Stem:                    proptools.StringPtr(partition.partitionType + ".img"),
++				Type:                    proptools.NewSimpleConfigurable(specificVars.BoardFileSystemType),
++				Use_avb:                 avb.avbEnable,
++				Avb_private_key:         avb.avbkeyFilegroup,
++				Rollback_index_location: avb.avbRollbackIndexLocation,
++				Is_auto_generated:       proptools.BoolPtr(true),
++			})
++		module.HideFromMake()
++		return
++	}
++
+ 	fsProps, supported := generateFsProps(ctx, partitions, partition.partitionType)
+ 	if !supported {
+ 		partition.supported = false
+@@ -1796,6 +1838,19 @@ func getAvbInfo(config android.Config, partitionType string) avbInfo {
+ }
+ 
+ func (f *filesystemCreator) createSoongMakeFileListDiffTest(ctx android.ModuleContext, partitionType string, partitionModuleName string) android.Path {
++	module := ctx.GetDirectDepProxyWithTag(partitionModuleName, generatedFilesystemDepTag)
++	info := android.OtherModuleProviderOrDefault(ctx, module, filesystem.FilesystemProvider)
++	if info.Prebuilt {
++		// Make copies a complete prebuilt image instead of assembling a staging
++		// directory. Compare the image bytes, including metadata and AVB data.
++		makeImage := android.PathForArbitraryOutput(ctx, fmt.Sprintf("target/product/%s/%s.img", ctx.Config().DeviceName(), partitionType))
++		diffTestTimestamp := android.PathForModuleOut(ctx, fmt.Sprintf("diff_test_%s.timestamp", partitionModuleName))
++		builder := android.NewRuleBuilder(pctx, ctx).SandboxDisabled()
++		builder.Command().Text("cmp").Input(makeImage).Input(info.Output)
++		builder.Command().Text("touch").Output(diffTestTimestamp)
++		builder.Build(partitionModuleName+" image diff test", "Prebuilt filesystem image comparison")
++		return diffTestTimestamp
++	}
+ 	fileListFile := filesystem.GetFileListFile(ctx, partitionModuleName, generatedFilesystemDepTag)
+ 	makeFileList := android.PathForArbitraryOutput(ctx, fmt.Sprintf("target/product/%s/obj/PACKAGING/%s_intermediates/file_list.txt", ctx.Config().DeviceName(), partitionType))
+ 	diffTestTimestamp := android.PathForModuleOut(ctx, fmt.Sprintf("diff_test_%s.timestamp", partitionModuleName))
+diff --git a/fsgen/filesystem_creator_test.go b/fsgen/filesystem_creator_test.go
+index 9e87f0f6daa6fea80461a244054b85c88e50f955..7cb5068dedeab9d40ec9ad2f3af3c97c0abe91f9 100644
+--- a/fsgen/filesystem_creator_test.go
++++ b/fsgen/filesystem_creator_test.go
+@@ -1298,3 +1298,90 @@ cc_binary {
+ 		exists,
+ 	)
+ }
++
++func TestFileSystemCreatorPrebuiltDlkm(t *testing.T) {
++	for _, partition := range []string{"system_dlkm", "vendor_dlkm", "odm_dlkm"} {
++		for _, fsType := range []string{"erofs", "ext4"} {
++			t.Run(partition+"_"+fsType, func(t *testing.T) {
++				result := android.GroupFixturePreparers(
++					android.PrepareForIntegrationTestWithAndroid,
++					android.PrepareForTestWithAndroidBuildComponents,
++					android.PrepareForTestWithAllowMissingDependencies,
++					filesystem.PrepareForTestWithFilesystemBuildComponents,
++					prepareForTestWithFsgenBuildComponents,
++					prepareMockRamdiksNodeList,
++					android.FixtureModifyConfig(func(config android.Config) {
++						vars := &config.TestProductVariables.PartitionVarsForSoongMigrationOnlyDoNotUse
++						vars.BoardAvbEnable = true
++						vars.BuildingVbmetaImage = true
++						vars.PartitionQualifiedVariables = map[string]android.PartitionQualifiedVariablesType{
++							partition: {
++								PrebuiltImage:       true,
++								PrebuiltImagePath:   "prebuilts/" + partition + ".img",
++								BoardFileSystemType: fsType,
++							},
++						}
++					}),
++					android.FixtureMergeMockFs(android.MockFS{
++						"prebuilts/" + partition + ".img":            nil,
++						"external/avb/test/data/testkey_rsa4096.pem": nil,
++						"build/soong/fsgen/Android.bp":               []byte(`soong_filesystem_creator { name: "foo" }`),
++					}),
++				).RunTest(t)
++				image := result.ModuleForTests(t, "test_product_generated_"+partition+"_image", "android_common")
++				copyRule := image.Output(partition + ".img")
++				android.AssertStringEquals(t, "copy the original image", "prebuilts/"+partition+".img", copyRule.Input.String())
++				info := android.OtherModuleProviderOrDefault(result.TestContext, image.Module(), filesystem.FilesystemProvider)
++				android.AssertBoolEquals(t, "prebuilt filesystem metadata", true, info.Prebuilt)
++				android.AssertBoolEquals(t, "prebuilt retains AVB", true, info.UseAvb)
++				android.AssertStringEquals(t, "partition identity", partition, info.PartitionName)
++				android.AssertStringEquals(t, "AVB uses the preserved image", copyRule.Output.String(), info.SignedOutputPath.RelativeToTop().String())
++			})
++		}
++	}
++}
++
++func TestFileSystemCreatorPrebuiltDlkmInSuper(t *testing.T) {
++	result := android.GroupFixturePreparers(
++		android.PrepareForIntegrationTestWithAndroid,
++		android.PrepareForTestWithAndroidBuildComponents,
++		android.PrepareForTestWithAllowMissingDependencies,
++		filesystem.PrepareForTestWithFilesystemBuildComponents,
++		prepareForTestWithFsgenBuildComponents,
++		prepareMockRamdiksNodeList,
++		android.FixtureModifyConfig(func(config android.Config) {
++			vars := &config.TestProductVariables.PartitionVarsForSoongMigrationOnlyDoNotUse
++			vars.BoardAvbEnable = true
++			vars.BuildingVbmetaImage = true
++			vars.ProductUseDynamicPartitions = true
++			vars.ProductBuildSuperPartition = true
++			vars.BoardSuperPartitionSize = "134217728"
++			vars.BoardSuperPartitionGroups = map[string]android.BoardSuperPartitionGroupProps{
++				"test": {GroupSize: "125829120", PartitionList: []string{"system_dlkm", "vendor_dlkm"}},
++			}
++			vars.PartitionQualifiedVariables = map[string]android.PartitionQualifiedVariablesType{}
++			for _, partition := range []string{"system_dlkm", "vendor_dlkm"} {
++				vars.PartitionQualifiedVariables[partition] = android.PartitionQualifiedVariablesType{
++					PrebuiltImage:       true,
++					PrebuiltImagePath:   "prebuilts/" + partition + ".img",
++					BoardFileSystemType: "erofs",
++				}
++			}
++		}),
++		android.FixtureMergeMockFs(android.MockFS{
++			"external/avb/test/data/testkey_rsa4096.pem": nil,
++			"prebuilts/system_dlkm.img":                  nil,
++			"prebuilts/vendor_dlkm.img":                  nil,
++			"build/soong/fsgen/Android.bp":               []byte(`soong_filesystem_creator { name: "foo" }`),
++		}),
++	).RunTest(t)
++	super := result.ModuleForTests(t, "test_product_generated_super_image", "android_common")
++	info := android.OtherModuleProviderOrDefault(result.TestContext, super.Module(), filesystem.SuperImageProvider)
++	for _, partition := range []string{"system_dlkm", "vendor_dlkm"} {
++		fsInfo, found := info.SubImageInfo[partition]
++		android.AssertBoolEquals(t, partition+" included in super", true, found)
++		android.AssertBoolEquals(t, partition+" keeps prebuilt content", true, fsInfo.Prebuilt)
++		image := result.ModuleForTests(t, "test_product_generated_"+partition+"_image", "android_common")
++		android.AssertStringEquals(t, partition+" uses input image", "prebuilts/"+partition+".img", image.Output(partition+".img").Input.String())
++	}
++}
+diff --git a/fsgen/fsgen_mutators.go b/fsgen/fsgen_mutators.go
+index 080cb39dc92ac4410cb4b5320aa30101559c3499..c32b3f31ce2a91329669dbd8cfbd08bdfaa6907e 100644
+--- a/fsgen/fsgen_mutators.go
++++ b/fsgen/fsgen_mutators.go
+@@ -353,14 +353,14 @@ func createFsGenState(ctx android.LoadHookContext, generatedPrebuiltEtcModuleNam
+ 
+ 		if ctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse.BuildingSystemDlkmImage {
+ 			(*fsGenState.fsDeps["system_dlkm"])["system_dlkm-build.prop"] = defaultDepCandidateProps(ctx.Config())
+-		} else {
++		} else if !ctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse.PartitionQualifiedVariables["system_dlkm"].PrebuiltImage {
+ 			// system_dlkm build.prop is installed in system partition if system_dlkm.img is not available
+ 			(*fsGenState.fsDeps["system"])["system_dlkm-build.prop"] = defaultDepCandidateProps(ctx.Config())
+ 		}
+ 
+ 		if ctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse.BuildingOdmDlkmImage {
+ 			(*fsGenState.fsDeps["odm_dlkm"])["odm_dlkm-build.prop"] = defaultDepCandidateProps(ctx.Config())
+-		} else {
++		} else if !ctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse.PartitionQualifiedVariables["odm_dlkm"].PrebuiltImage {
+ 			// odm_dlkm build.prop is installed in vendor partition if odm_dlkm.img is not available
+ 			(*fsGenState.fsDeps["vendor"])["odm_dlkm-build.prop"] = defaultDepCandidateProps(ctx.Config())
+ 		}
+@@ -605,6 +605,12 @@ func setDepsMutator(mctx android.BottomUpMutatorContext) {
+ 			return
+ 		}
+ 
++		if android.InList(partition, []string{"system_dlkm", "vendor_dlkm", "odm_dlkm"}) &&
++			mctx.Config().ProductVariables().PartitionVarsForSoongMigrationOnlyDoNotUse.PartitionQualifiedVariables[partition].PrebuiltImage {
++			// The complete filesystem is supplied by the prebuilt image.
++			return
++		}
++
+ 		var overriddenDeps []string
+ 		if deps, ok := fsGenState.overriddenModuleNames[partition]; ok {
+ 			overriddenDeps = deps
+diff --git a/fsgen/recovery_ramdisk_test.go b/fsgen/recovery_ramdisk_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..66df3bb7826b0e8e3667dcb0c57d34196dc48241
+--- /dev/null
++++ b/fsgen/recovery_ramdisk_test.go
+@@ -0,0 +1,69 @@
++// Copyright 2026 The Android Open Source Project
++// SPDX-License-Identifier: Apache-2.0
++
++package fsgen
++
++import (
++	"android/soong/android"
++	"github.com/google/blueprint/proptools"
++	"testing"
++)
++
++func TestRecoveryRamdiskPlacement(t *testing.T) {
++	for _, tc := range []struct {
++		name                                          string
++		move, fragment, available, supported, diffRef bool
++		want                                          string
++	}{
++		{name: "dedicated_partition", available: true, supported: true},
++		{name: "embedded_platform_ramdisk", move: true, available: true, supported: true, want: "stock_recovery"},
++		{name: "separate_recovery_fragment", move: true, fragment: true, available: true, supported: true},
++		{name: "fragment_without_move", fragment: true, available: true, supported: true},
++		{name: "no_recovery_image", move: true},
++		{name: "unsupported_recovery", move: true, available: true},
++		{name: "comparison_only_image", move: true, available: true, supported: true, diffRef: true},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			config := android.TestConfig(t.TempDir(), nil, "", nil)
++			config.TestProductVariables.BoardMoveRecoveryResourcesToVendorBoot = proptools.BoolPtr(tc.move)
++			config.TestProductVariables.BoardIncludeRecoveryRamdiskInVendorBoot = proptools.BoolPtr(tc.fragment)
++			var partitions allGeneratedPartitionData
++			if tc.available {
++				partitions = append(partitions, generatedPartitionData{
++					partitionType: "recovery", moduleName: "stock_recovery",
++					supported: tc.supported, diffRef: tc.diffRef,
++				})
++			}
++			if got := recoveryForVendorRamdisk(config, partitions); got != tc.want {
++				t.Fatalf("recovery included in platform vendor ramdisk: got %q, want %q", got, tc.want)
++			}
++		})
++	}
++}
++
++func TestGenericRamdiskDirectoriesForRecoveryLayout(t *testing.T) {
++	for _, tc := range []struct {
++		name                              string
++		gki, recoveryAsBoot, moveRecovery bool
++		wantCount                         int
++	}{
++		{"non_gki", false, false, false, 7},
++		{"dedicated_recovery", true, false, false, 7},
++		{"recovery_as_boot", true, true, false, 14},
++		{"vendor_boot_recovery", true, false, true, 14},
++		{"non_gki_vendor_recovery", false, false, true, 7},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			config := android.TestConfig(t.TempDir(), nil, "", nil)
++			config.TestProductVariables.PartitionVarsForSoongMigrationOnlyDoNotUse.BoardUsesGenericKernelImage = tc.gki
++			config.TestProductVariables.BoardUsesRecoveryAsBoot = proptools.BoolPtr(tc.recoveryAsBoot)
++			config.TestProductVariables.BoardMoveRecoveryResourcesToVendorBoot = proptools.BoolPtr(tc.moveRecovery)
++			dirs := genericRamdiskDirectories(config)
++			android.AssertIntEquals(t, "directory count for boot layout", tc.wantCount, len(dirs))
++			android.AssertDeepEquals(t, "early init root mounts", []string{"debug_ramdisk", "dev", "metadata", "mnt", "proc", "second_stage_resources", "sys"}, dirs[:7])
++			if tc.wantCount == 14 {
++				android.AssertDeepEquals(t, "force-normal-boot mounts", []string{"first_stage_ramdisk/debug_ramdisk", "first_stage_ramdisk/dev", "first_stage_ramdisk/metadata", "first_stage_ramdisk/mnt", "first_stage_ramdisk/proc", "first_stage_ramdisk/second_stage_resources", "first_stage_ramdisk/sys"}, dirs[7:])
++			}
++		})
++	}
++}
+diff --git a/fsgen/vbmeta_layout_test.go b/fsgen/vbmeta_layout_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..7bf9ed1f2680818fa485c6a33230b906f0b2a0ca
+--- /dev/null
++++ b/fsgen/vbmeta_layout_test.go
+@@ -0,0 +1,63 @@
++// Copyright (C) 2026 The Android Open Source Project
++// SPDX-License-Identifier: Apache-2.0
++
++package fsgen
++
++import (
++	"testing"
++
++	"android/soong/android"
++	"android/soong/filesystem"
++)
++
++func TestVbmetaConfiguredPayloadLayout(t *testing.T) {
++	result := android.GroupFixturePreparers(
++		android.PrepareForIntegrationTestWithAndroid,
++		android.PrepareForTestWithAndroidBuildComponents,
++		android.PrepareForTestWithAllowMissingDependencies,
++		prepareForTestWithFsgenBuildComponents,
++		prepareMockRamdiksNodeList,
++		filesystem.PrepareForTestWithFilesystemBuildComponents,
++		android.FixtureMergeMockFs(android.MockFS{
++			"external/avb/test/data/testkey_rsa4096.pem": nil,
++			"prebuilts/system_dlkm.img":                  nil,
++			"prebuilts/pvmfw.img":                        nil,
++			"build/soong/fsgen/Android.bp":               []byte(`soong_filesystem_creator { name: "foo" }`),
++		}),
++		android.FixtureModifyConfig(func(config android.Config) {
++			vars := &config.TestProductVariables.PartitionVarsForSoongMigrationOnlyDoNotUse
++			vars.BoardAvbEnable = true
++			vars.BuildingVbmetaImage = true
++			vars.BoardAvbVbmetaImageSize = "12288"
++			vars.BoardAvbVbmetaExtraImages = []string{"prebuilts/pvmfw.img"}
++			vars.ChainedVbmetaPartitions = map[string]android.ChainedAvbPartitionProps{
++				"system": {
++					Partitions:            []string{"system_dlkm"},
++					Key:                   "external/avb/test/data/testkey_rsa4096.pem",
++					Algorithm:             "SHA256_RSA4096",
++					RollbackIndex:         "0",
++					RollbackIndexLocation: "2",
++					ImageSize:             "4096",
++				},
++			}
++			vars.PartitionQualifiedVariables = map[string]android.PartitionQualifiedVariablesType{
++				"vbmeta_system": {BoardAvbKeyPath: "external/avb/test/data/testkey_rsa4096.pem"},
++				"system_dlkm": {
++					PrebuiltImage:       true,
++					PrebuiltImagePath:   "prebuilts/system_dlkm.img",
++					BoardFileSystemType: "erofs",
++				},
++			}
++		}),
++	).RunTest(t)
++	root := result.ModuleForTests(t, "test_product_generated_vbmeta_image", "android_common").Output("vbmeta.img")
++	chain := result.ModuleForTests(t, "test_product_generated_vbmeta_system_image", "android_common").Output("vbmeta_system.img")
++	android.AssertStringDoesContain(t, "root OTA payload size", root.RuleParams.Command, "truncate -s 12288 ")
++	android.AssertStringDoesContain(t, "chain OTA payload size", chain.RuleParams.Command, "truncate -s 4096 ")
++	android.AssertStringDoesContain(t, "verify external descriptor input", root.RuleParams.Command,
++		"verify_image --image prebuilts/pvmfw.img")
++	android.AssertStringDoesContain(t, "root includes raw firmware descriptor", root.RuleParams.Command,
++		"--include_descriptors_from_image prebuilts/pvmfw.img")
++	android.AssertStringDoesContain(t, "chain uses expected rollback index location", root.RuleParams.Command,
++		"--chain_partition vbmeta_system:2:")
++}
+diff --git a/fsgen/vbmeta_partitions.go b/fsgen/vbmeta_partitions.go
+index fb910c282e647495c5ae7daad5170a3a6e247986..344d0cf4c6ff77b37af07e183caef6c52f1b202e 100644
+--- a/fsgen/vbmeta_partitions.go
++++ b/fsgen/vbmeta_partitions.go
+@@ -126,6 +126,7 @@ func (f *filesystemCreator) createVbmetaPartitions(ctx android.LoadHookContext,
+ 			filesystem.VbmetaFactory,
+ 			".", // Create in the root directory for now so its easy to get the key
+ 			&filesystem.VbmetaProperties{
++				Image_size:                vbmetaImageSize(ctx, props.ImageSize),
+ 				Partition_name:            proptools.StringPtr(chainedName),
+ 				Filesystem_partition_type: proptools.StringPtr(filesystemPartitionType),
+ 				Stem:                      proptools.StringPtr(chainedName + ".img"),
+@@ -172,11 +173,12 @@ func (f *filesystemCreator) createVbmetaPartitions(ctx android.LoadHookContext,
+ 	}
+ 
+ 	// --chain_partition argument is only set for partitions that set
+-	// `BOARD_AVB_<partition name>_KEY_PATH` value and is not "recovery"
++	// `BOARD_AVB_<partition name>_KEY_PATH`. Recovery is chained when non-A/B
++	// OTA support is explicitly disabled, matching Make.
+ 	// https://cs.android.com/android/platform/superproject/main/+/main:build/make/core/Makefile;l=4823;drc=62e20f0d218f60bae563b4ee742d88cca1fc1901
+ 	includeAsChainedPartitionInVbmeta := func(partition string) bool {
+ 		val, ok := partitionVars.PartitionQualifiedVariables[partition]
+-		return ok && len(val.BoardAvbKeyPath) > 0 && partition != "recovery"
++		return ok && len(val.BoardAvbKeyPath) > 0 && (partition != "recovery" || partitionVars.AvbIncludeRecoveryInVbmeta)
+ 	}
+ 
+ 	// --include_descriptors_from_image is passed if both conditions are met:
+@@ -287,6 +289,8 @@ func (f *filesystemCreator) createVbmetaPartitions(ctx android.LoadHookContext,
+ 		filesystem.VbmetaFactory,
+ 		".", // Create in the root directory for now so its easy to get the key
+ 		&filesystem.VbmetaProperties{
++			Image_size:         vbmetaImageSize(ctx, partitionVars.BoardAvbVbmetaImageSize),
++			Descriptor_images:  partitionVars.BoardAvbVbmetaExtraImages,
+ 			Stem:               proptools.StringPtr("vbmeta.img"),
+ 			Algorithm:          algorithm,
+ 			Private_key:        key,
+@@ -308,3 +312,15 @@ func (f *filesystemCreator) createVbmetaPartitions(ctx android.LoadHookContext,
+ 	})
+ 	return result
+ }
++
++func vbmetaImageSize(ctx android.LoadHookContext, value string) *int64 {
++	if value == "" {
++		return nil
++	}
++	size, err := strconv.ParseInt(value, 10, 64)
++	if err != nil {
++		ctx.ModuleErrorf("VBMeta image size must be an integer, got %q", value)
++		return nil
++	}
++	return &size
++}
+diff --git a/java/app_test.go b/java/app_test.go
+index 3b002c994bf1d2054fe44aecf20bb706e24021fe..df1b84d257d1cc2efcddc2c5af7b538e2eb65ec3 100644
+--- a/java/app_test.go
++++ b/java/app_test.go
+@@ -816,6 +816,7 @@ func TestAppJavaResources(t *testing.T) {
+ 
+ func TestAndroidResourceProcessor(t *testing.T) {
+ 	t.Parallel()
++	// SDK resource imports include both Android and LineageOS platform resources.
+ 	testCases := []struct {
+ 		name                            string
+ 		appUsesRP                       bool
+@@ -888,6 +889,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			appImports: []string{
+ 				"out/soong/.intermediates/shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 			},
+ 			appSrcJars: []string{"out/soong/.intermediates/app/android_common/gen/android/R.srcjar"},
+ 			appClasspath: []string{
+@@ -918,7 +920,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 				"out/soong/.intermediates/transitive_import/android_common/package-res.apk",
+ 				"out/soong/.intermediates/direct/android_common/aapt2/direct/res/values_strings.arsc.flat",
+ 			},
+-			directImports: []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk"},
++			directImports: []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk", "out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk"},
+ 			directSrcJars: []string{"out/soong/.intermediates/direct/android_common/gen/android/R.srcjar"},
+ 			directClasspath: []string{
+ 				"out/soong/.intermediates/default/java/android_stubs_current/android_common/turbine/android_stubs_current.jar",
+@@ -935,7 +937,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 
+ 			transitiveResources: []string{"out/soong/.intermediates/transitive/android_common/aapt2/transitive/res/values_strings.arsc.flat"},
+ 			transitiveOverlays:  nil,
+-			transitiveImports:   []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk"},
++			transitiveImports:   []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk", "out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk"},
+ 			transitiveSrcJars:   []string{"out/soong/.intermediates/transitive/android_common/gen/android/R.srcjar"},
+ 			transitiveClasspath: []string{"out/soong/.intermediates/default/java/android_stubs_current/android_common/turbine/android_stubs_current.jar"},
+ 			transitiveCombined:  nil,
+@@ -948,6 +950,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			sharedImports: []string{
+ 				"out/soong/.intermediates/shared_transitive_shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 			},
+ 			sharedSrcJars: []string{"out/soong/.intermediates/shared/android_common/gen/android/R.srcjar"},
+ 			sharedClasspath: []string{
+@@ -964,6 +967,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			directImportOverlays:  []string{"out/soong/.intermediates/direct_import/android_common/flat-res/gen_res.flata"},
+ 			directImportImports: []string{
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/direct_import_dep/android_common/package-res.apk",
+ 			},
+ 
+@@ -971,6 +975,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			transitiveImportOverlays:  []string{"out/soong/.intermediates/transitive_import/android_common/flat-res/gen_res.flata"},
+ 			transitiveImportImports: []string{
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive_import_dep/android_common/package-res.apk",
+ 			},
+ 		},
+@@ -997,6 +1002,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			appImports: []string{
+ 				"out/soong/.intermediates/shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 			},
+ 			appSrcJars: nil,
+ 			appClasspath: []string{
+@@ -1026,6 +1032,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			directOverlays:  []string{"out/soong/.intermediates/direct/android_common/aapt2/direct/res/values_strings.arsc.flat"},
+ 			directImports: []string{
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive_import/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive_import_dep/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive/android_common/package-res.apk",
+@@ -1050,7 +1057,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 
+ 			transitiveResources: []string{"out/soong/.intermediates/transitive/android_common/aapt2/transitive/res/values_strings.arsc.flat"},
+ 			transitiveOverlays:  nil,
+-			transitiveImports:   []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk"},
++			transitiveImports:   []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk", "out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk"},
+ 			transitiveSrcJars:   nil,
+ 			transitiveClasspath: []string{
+ 				"out/soong/.intermediates/default/java/android_stubs_current/android_common/turbine/android_stubs_current.jar",
+@@ -1063,6 +1070,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			sharedImports: []string{
+ 				"out/soong/.intermediates/shared_transitive_shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/shared_transitive_static/android_common/package-res.apk",
+ 			},
+ 			sharedSrcJars: nil,
+@@ -1083,6 +1091,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			directImportOverlays:  []string{"out/soong/.intermediates/direct_import/android_common/flat-res/gen_res.flata"},
+ 			directImportImports: []string{
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/direct_import_dep/android_common/package-res.apk",
+ 			},
+ 
+@@ -1090,6 +1099,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			transitiveImportOverlays:  []string{"out/soong/.intermediates/transitive_import/android_common/flat-res/gen_res.flata"},
+ 			transitiveImportImports: []string{
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive_import_dep/android_common/package-res.apk",
+ 			},
+ 		}, {
+@@ -1113,6 +1123,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			appImports: []string{
+ 				"out/soong/.intermediates/shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 			},
+ 			appSrcJars: nil,
+ 			appClasspath: []string{
+@@ -1165,6 +1176,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			appImports: []string{
+ 				"out/soong/.intermediates/shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 			},
+ 			appSrcJars: []string{"out/soong/.intermediates/app/android_common/gen/android/R.srcjar"},
+ 			appClasspath: []string{
+@@ -1192,6 +1204,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			directOverlays:  []string{"out/soong/.intermediates/direct/android_common/aapt2/direct/res/values_strings.arsc.flat"},
+ 			directImports: []string{
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive_import/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive_import_dep/android_common/package-res.apk",
+ 				"out/soong/.intermediates/transitive/android_common/package-res.apk",
+@@ -1238,6 +1251,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 			appImports: []string{
+ 				"out/soong/.intermediates/shared/android_common/package-res.apk",
+ 				"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk",
++				"out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk",
+ 			},
+ 			appSrcJars: []string{"out/soong/.intermediates/app/android_common/gen/android/R.srcjar"},
+ 			appClasspath: []string{
+@@ -1268,7 +1282,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 				"out/soong/.intermediates/transitive_import/android_common/package-res.apk",
+ 				"out/soong/.intermediates/direct/android_common/aapt2/direct/res/values_strings.arsc.flat",
+ 			},
+-			directImports: []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk"},
++			directImports: []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk", "out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk"},
+ 			directSrcJars: []string{"out/soong/.intermediates/direct/android_common/gen/android/R.srcjar"},
+ 			directClasspath: []string{
+ 				"out/soong/.intermediates/default/java/android_stubs_current/android_common/turbine/android_stubs_current.jar",
+@@ -1285,7 +1299,7 @@ func TestAndroidResourceProcessor(t *testing.T) {
+ 
+ 			transitiveResources: []string{"out/soong/.intermediates/transitive/android_common/aapt2/transitive/res/values_strings.arsc.flat"},
+ 			transitiveOverlays:  nil,
+-			transitiveImports:   []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk"},
++			transitiveImports:   []string{"out/soong/.intermediates/default/java/framework-res/android_common/package-res.apk", "out/soong/.intermediates/default/java/org.lineageos.platform-res/android_common/package-res.apk"},
+ 			transitiveSrcJars:   nil,
+ 			transitiveClasspath: []string{
+ 				"out/soong/.intermediates/default/java/android_stubs_current/android_common/turbine/android_stubs_current.jar",
+diff --git a/kernel/kernel_modules_builder/kernel_modules_builder.go b/kernel/kernel_modules_builder/kernel_modules_builder.go
+index 8b44b9e026f3216699b4d32f70871ca325831cc5..6bbb4dc0fce0685e2e026790f119d508f21350cf 100644
+--- a/kernel/kernel_modules_builder/kernel_modules_builder.go
++++ b/kernel/kernel_modules_builder/kernel_modules_builder.go
+@@ -3,6 +3,9 @@ package main
+ import (
+ 	"android/soong/kernel/common"
+ 	"archive/zip"
++	"bytes"
++	"crypto/sha256"
++	"debug/elf"
+ 	"encoding/json"
+ 	"errors"
+ 	"flag"
+@@ -17,6 +20,11 @@ import (
+ )
+ 
+ var (
++	validateModule   = flag.String("validate-module", "", "validate and preserve one insmod-loaded kernel object")
++	moduleArch       = flag.String("module-arch", "", "target CPU architecture for the kernel object")
++	outModule        = flag.String("out-module", "", "validated kernel object output")
++	moduleSHA256     = flag.String("module-sha256", "", "expected input SHA-256, when pinned")
++	moduleVermagic   = flag.String("module-vermagic", "", "expected kernel vermagic, when pinned")
+ 	soongZip         = flag.String("soong_zip", "", "path to soong_zip executable")
+ 	zipSync          = flag.String("zipsync", "", "path to zipsync executable")
+ 	mergeZips        = flag.String("merge_zips", "", "path to merge_zips executable")
+@@ -34,6 +42,24 @@ func main() {
+ 
+ 	flag.Parse()
+ 
++	if *validateModule != "" {
++		if flag.NArg() != 0 || *outModule == "" || *moduleArch == "" {
++			fmt.Fprintln(os.Stderr, "--validate-module requires --module-arch and --out-module, without positional arguments")
++			os.Exit(1)
++		}
++		data, err := os.ReadFile(*validateModule)
++		if err == nil {
++			err = validateKernelObject(data, *moduleArch, *moduleSHA256, *moduleVermagic)
++		}
++		if err != nil {
++			fmt.Fprintf(os.Stderr, "%s: %v\n", *validateModule, err)
++			os.Exit(1)
++		}
++		must(os.MkdirAll(filepath.Dir(*outModule), 0o755))
++		must(os.WriteFile(*outModule, data, 0o644))
++		return
++	}
++
+ 	if len(flag.Args()) != 5 {
+ 		flag.Usage()
+ 		os.Exit(1)
+@@ -424,3 +450,59 @@ func BoolDefault(b *bool, def bool) bool {
+ 	}
+ 	return *b
+ }
++
++func validateKernelObject(data []byte, arch, expectedHash, expectedVermagic string) error {
++	if expectedHash != "" && fmt.Sprintf("%x", sha256.Sum256(data)) != expectedHash {
++		return fmt.Errorf("SHA-256 does not match the pinned kernel object")
++	}
++	f, err := elf.NewFile(bytes.NewReader(data))
++	if err != nil {
++		return fmt.Errorf("invalid kernel ELF: %w", err)
++	}
++	defer f.Close()
++	if f.Type != elf.ET_REL {
++		return fmt.Errorf("kernel object must be ET_REL, got %s", f.Type)
++	}
++	want, ok := map[string]struct {
++		machine elf.Machine
++		class   elf.Class
++	}{
++		"arm64":   {elf.EM_AARCH64, elf.ELFCLASS64},
++		"arm":     {elf.EM_ARM, elf.ELFCLASS32},
++		"x86":     {elf.EM_386, elf.ELFCLASS32},
++		"x86_64":  {elf.EM_X86_64, elf.ELFCLASS64},
++		"riscv64": {elf.EM_RISCV, elf.ELFCLASS64},
++	}[arch]
++	if !ok || f.Machine != want.machine || f.Class != want.class || f.Data != elf.ELFDATA2LSB {
++		return fmt.Errorf("kernel object architecture %s/%s/%s does not match %q", f.Machine, f.Class, f.Data, arch)
++	}
++	syms, err := f.Symbols()
++	if err != nil || len(syms) == 0 {
++		return fmt.Errorf("kernel object requires a readable symbol table: %v", err)
++	}
++	modinfo := f.Section(".modinfo")
++	if modinfo == nil {
++		return fmt.Errorf("kernel object has no .modinfo section")
++	}
++	info, err := modinfo.Data()
++	if err != nil {
++		return fmt.Errorf("invalid .modinfo: %w", err)
++	}
++	values := map[string]string{}
++	for _, entry := range strings.Split(string(info), "\x00") {
++		key, value, found := strings.Cut(entry, "=")
++		if found && (key == "name" || key == "vermagic") {
++			if _, exists := values[key]; exists {
++				return fmt.Errorf("duplicate module %s", key)
++			}
++			values[key] = value
++		}
++	}
++	if values["name"] == "" || strings.TrimSpace(values["vermagic"]) == "" {
++		return fmt.Errorf("kernel object requires module name and vermagic")
++	}
++	if expectedVermagic != "" && strings.TrimSpace(values["vermagic"]) != expectedVermagic {
++		return fmt.Errorf("kernel vermagic %q does not match %q", values["vermagic"], expectedVermagic)
++	}
++	return nil
++}
+diff --git a/kernel/prebuilt_kernel_modules.go b/kernel/prebuilt_kernel_modules.go
+index de88aaa402c839617a8e4830bdbc4c4fed77a540..9f0db7bd88068a539fac3dc67ed819a5120dcc70 100644
+--- a/kernel/prebuilt_kernel_modules.go
++++ b/kernel/prebuilt_kernel_modules.go
+@@ -15,6 +15,8 @@
+ package kernel
+ 
+ import (
++	"strings"
++
+ 	"android/soong/android"
+ 	"android/soong/cc/config"
+ 	"android/soong/kernel/common"
+@@ -34,6 +36,7 @@ func init() {
+ 
+ func registerKernelBuildComponents(ctx android.RegistrationContext) {
+ 	ctx.RegisterModuleType("prebuilt_kernel_modules", PrebuiltKernelModulesFactory)
++	ctx.RegisterModuleType("prebuilt_kernel_module", PrebuiltKernelModuleFactory)
+ }
+ 
+ var PrepareForTestWithPrebuiltKernelModules = android.FixtureRegisterWithContext(registerKernelBuildComponents)
+@@ -297,3 +300,78 @@ func partition(ctx android.ModuleContext) string {
+ 		return "other"
+ 	}
+ }
++
++// prebuilt_kernel_module preserves an individual kernel object loaded explicitly
++// by insmod. Unlike a modprobe collection, it has no generated load/dep indexes.
++// Validation is a dependency of the copied output, never an optional check.
++type prebuiltKernelModule struct {
++	android.ModuleBase
++	properties struct {
++		Src *string `android:"path"`
++		// Directory below the partition root, before lib/modules (for example vendor).
++		Relative_install_path *string
++		// Optional pins for a kernel/OTA pairing. The ELF checks always run.
++		Sha256   *string
++		Vermagic *string
++	}
++	output     android.Path
++	installDir android.InstallPath
++}
++
++func PrebuiltKernelModuleFactory() android.Module {
++	m := &prebuiltKernelModule{}
++	m.AddProperties(&m.properties)
++	android.InitAndroidArchModule(m, android.DeviceSupported, android.MultilibFirst)
++	return m
++}
++
++func (m *prebuiltKernelModule) InstallInRoot() bool { return true }
++
++func (m *prebuiltKernelModule) DepsMutator(ctx android.BottomUpMutatorContext) {
++	ctx.AddHostToolDependencies("kernel_modules_builder")
++}
++
++func (m *prebuiltKernelModule) GenerateAndroidBuildActions(ctx android.ModuleContext) {
++	if proptools.String(m.properties.Src) == "" {
++		ctx.PropertyErrorf("src", "a kernel module input is required")
++		return
++	}
++	src := android.PathForModuleSrc(ctx, *m.properties.Src)
++	if !strings.HasSuffix(src.Base(), ".ko") {
++		ctx.PropertyErrorf("src", "individual kernel modules must use the .ko suffix")
++		return
++	}
++	out := android.PathForModuleOut(ctx, src.Base())
++	builder := android.NewRuleBuilder(pctx, ctx)
++	cmd := builder.Command().BuiltTool("kernel_modules_builder").
++		FlagWithInput("--validate-module ", src).
++		FlagWithArg("--module-arch ", ctx.Arch().ArchType.String()).
++		FlagWithOutput("--out-module ", out)
++	if hash := proptools.String(m.properties.Sha256); hash != "" {
++		cmd.FlagWithArg("--module-sha256 ", hash)
++	}
++	if vermagic := proptools.String(m.properties.Vermagic); vermagic != "" {
++		cmd.FlagWithArg("--module-vermagic ", proptools.ShellEscapeIncludingSpaces(vermagic))
++	}
++	builder.Build("validate_kernel_module", "validate kernel object "+src.Base())
++	m.output = out
++	m.installDir = android.PathForModuleInstall(ctx, proptools.String(m.properties.Relative_install_path), "lib", "modules")
++	installed := ctx.InstallFile(m.installDir, src.Base(), out)
++	ctx.SetOutputFiles(android.Paths{out}, "")
++	android.SetProvider(ctx, android.PrebuiltKernelModulesComplianceMetadataProvider,
++		android.PrebuiltKernelModulesComplianceMetadata{
++			Srcs: []string{src.String()}, Dests: []string{installed.String()},
++		})
++}
++
++func (m *prebuiltKernelModule) AndroidMkEntries() []android.AndroidMkEntries {
++	return []android.AndroidMkEntries{{
++		Class: "ETC", OutputFile: android.OptionalPathForPath(m.output),
++		ExtraEntries: []android.AndroidMkExtraEntriesFunc{
++			func(ctx android.AndroidMkExtraEntriesContext, entries *android.AndroidMkEntries) {
++				entries.SetString("LOCAL_MODULE_PATH", m.installDir.String())
++				entries.SetString("LOCAL_INSTALLED_MODULE_STEM", m.output.Base())
++			},
++		},
++	}}
++}
+diff --git a/kernel/prebuilt_kernel_modules_test.go b/kernel/prebuilt_kernel_modules_test.go
+index 239c2d60c5bfa8625e754af512b07cb59cb47a26..abc223fd15a60c6b66ceeef6ea6c5bf6a93131cd 100644
+--- a/kernel/prebuilt_kernel_modules_test.go
++++ b/kernel/prebuilt_kernel_modules_test.go
+@@ -70,3 +70,32 @@ func TestKernelModulesFilelist(t *testing.T) {
+ func TestMain(m *testing.M) {
+ 	os.Exit(m.Run())
+ }
++
++func TestIndividualRecoveryKernelModule(t *testing.T) {
++	result := android.GroupFixturePreparers(
++		cc.PrepareForTestWithCcDefaultModules,
++		android.PrepareForTestWithHostTools("kernel_modules_builder"),
++		android.FixtureRegisterWithContext(registerKernelBuildComponents),
++		android.MockFS{"adsp.ko": nil}.AddToFixture(),
++	).RunTestWithBp(t, `
++		prebuilt_kernel_module {
++			name: "recovery_adsp",
++			src: "adsp.ko",
++			recovery: true,
++			relative_install_path: "vendor",
++			sha256: "0123456789abcdef",
++			vermagic: "6.6.57 SMP",
++		}
++	`)
++	mod := result.ModuleForTests(t, "recovery_adsp", "android_arm64_armv8-a")
++	var paths []string
++	for _, spec := range android.GetInstallFiles(result, mod.Module()).PackagingSpecs {
++		paths = append(paths, spec.RelPathInPackage())
++	}
++	android.AssertDeepEquals(t, "stock recovery vendor path", []string{"vendor/lib/modules/adsp.ko"}, paths)
++	android.AssertStringDoesContain(t, "recovery install root", mod.Module().(*prebuiltKernelModule).installDir.String(), "/recovery/root/vendor/lib/modules")
++	command := mod.Rule("validate_kernel_module").RuleParams.Command
++	for _, required := range []string{"--validate-module adsp.ko", "--module-arch arm64", "--module-sha256 0123456789abcdef", "--module-vermagic '6.6.57 SMP'"} {
++		android.AssertStringDoesContain(t, "required kernel validation", command, required)
++	}
++}
+diff --git a/rust/image_test.go b/rust/image_test.go
+index 2cb741298535920be3740944737b45761c9b3bf9..ac107f272bbc0412ae57ac8b1badb9572f2128cb 100644
+--- a/rust/image_test.go
++++ b/rust/image_test.go
+@@ -129,9 +129,9 @@ func TestVendorRamdiskLinkage(t *testing.T) {
+ 	}
+ }
+ 
+-// Test that prebuilt libraries cannot be made vendor available.
+-func TestForbiddenVendorLinkage(t *testing.T) {
+-	testRustError(t, "Rust prebuilt modules not supported for non-system images.", `
++// Test that vendor Rust prebuilts stay in the vendor image on both target architectures.
++func TestPrebuiltVendorLinkage(t *testing.T) {
++	ctx := testRust(t, `
+ 		rust_prebuilt_library {
+ 			name: "librust_prebuilt",
+ 			crate_name: "rust_prebuilt",
+@@ -144,6 +144,9 @@ func TestForbiddenVendorLinkage(t *testing.T) {
+ 			vendor: true,
+ 		}
+        `)
++
++	checkInstallPartition(t, ctx, "librust_prebuilt", "android_vendor_arm64_armv8-a_rlib", "vendor")
++	checkInstallPartition(t, ctx, "librust_prebuilt", "android_vendor_arm_armv7-a-neon_rlib", "vendor")
+ }
+ 
+ func checkInstallPartition(t *testing.T, ctx *android.TestContext, name, variant, expected string) {

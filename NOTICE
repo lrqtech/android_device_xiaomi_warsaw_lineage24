@@ -1,0 +1,8 @@
+Existing files retain their original copyright and license notices.
+
+The Apache License in LICENSE applies to files explicitly marked
+SPDX-License-Identifier: Apache-2.0, including the new Python maintenance tools.
+It does not relicense third-party source, kernel UAPI headers, retained patches,
+OEM configuration data or proprietary inputs. Their original notices and terms
+remain applicable. Proprietary binaries are maintained in the separate vendor
+repository and are not licensed by this device tree.

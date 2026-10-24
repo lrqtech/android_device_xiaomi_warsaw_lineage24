@@ -1,0 +1,87 @@
+# Retained normal-boot RC actions tune VM/WALT and access Xiaomi proc nodes.
+# Exact labels avoid granting init/vendor_init writes to generic proc files.
+# Recovery has no such actions, so its labels and access remain unchanged.
+not_recovery(`
+type vendor_proc_swappiness, fs_type, proc_type;
+type vendor_proc_min_free_kbytes, fs_type, proc_type;
+type vendor_proc_sched_boost, fs_type, proc_type;
+type vendor_proc_bootprof, fs_type, proc_type;
+type vendor_proc_mikblockd_enable, fs_type, proc_type;
+
+# Preserve existing proc:file access for each retained service while assigning
+# these five nodes precise labels. New writes below are limited to the RC
+# execution domains; no generic proc permission is expanded.
+allow {
+    hal_mimd_default
+    vendor_hal_perf_default
+} {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { append getattr ioctl lock map open read watch watch_reads write };
+
+allow hal_misys_vendor_default {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { getattr ioctl lock map open read setattr watch watch_reads write };
+
+allow {
+    hal_audio_default
+    hal_mtdservice_default
+    init
+    vendor_hal_poweroptservice_qti
+    vold
+} {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { getattr ioctl lock map open read watch watch_reads };
+
+allow vendor_qti_init_shell {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { getattr ioctl lock map open read watch watch_reads write };
+
+allow mi_ric {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { getattr open read };
+
+allow hal_miperf_default {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { getattr open read setattr write };
+
+allow vendor_init {
+    vendor_proc_swappiness
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file { map open read setattr };
+
+# New writes follow the actual RC execution domains.
+allow init vendor_proc_swappiness:file write;
+allow vendor_init {
+    vendor_proc_min_free_kbytes
+    vendor_proc_sched_boost
+    vendor_proc_bootprof
+    vendor_proc_mikblockd_enable
+}:file write;
+')

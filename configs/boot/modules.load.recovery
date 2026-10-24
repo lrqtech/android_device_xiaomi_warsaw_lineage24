@@ -427,3 +427,5 @@ smmu_proxy_dlkm.ko
 smcinvoke_dlkm.ko
 synx-driver.ko
 ipclite.ko
+xiaomi_touch.ko
+goodix_core.ko
