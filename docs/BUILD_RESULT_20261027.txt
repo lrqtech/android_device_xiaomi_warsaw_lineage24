@@ -1,0 +1,59 @@
+Warsaw LineageOS 24.0 / Android 17
+Unofficial userdebug build, public test keys
+
+Build timestamp (Asia/Shanghai): 2026-10-27T01:36:28+08:00
+Full build finished (Asia/Shanghai): 2026-10-27T05:27:11.285796+08:00
+UTC date in OTA filename: 20261026
+Target: lineage_warsaw-cp2a-userdebug
+Command: m --no-skip-soong-tests -j24 bacon
+Result: exit 0 on the first clean attempt
+Firmware baseline: OS4.0.0.15.XHPCNXM
+Kernel input: paired 6.6.118 GKI, 4 KiB pages, KUnit disabled, 78 signed GKI modules
+OTA SHA256: 27e019371af7da1dd17e02ef7f2aae656746c068de284963aa62bfaab4b88e71
+
+Source set:
+device: 223347139585b877a083972140529f2581ad21ab
+https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24/tree/warsaw-20261027
+vendor: 0f20789ce0c4c292ff0ce600613d4daaff67ee84
+https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24/tree/warsaw-20261027
+kernel: 20ef509272df2099dbec9d5e59665fd3f7be3e90
+https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24/tree/warsaw-20261027
+
+Completed host validation:
+- OTA ZIP CRC, metadata, payload properties, metadata and whole-payload hashes.
+- Recovery whole-file signature with the certificate trusted by the built system and recovery.
+- Upstream C++ payload signature verification; Python payload operation, extent, hash and signature checks.
+- All 45 payload partition sizes and SHA256 values match final target-files images.
+- AVB signatures, hash descriptors and hashtrees, including boot, recovery and vbmeta_system chains.
+- Target-files VINTF compatibility; seven EROFS integrity checks and extraction.
+- Complete regular-file and symlink content comparison for six installed filesystem trees and ramdisk file content comparison.
+- Embedded normal and recovery SELinux policies match the strictly reviewed policies. Global enforcing remains enabled.
+- Normal userdebug permissive domains: su, backuptool. Recovery additionally has the upstream recovery domain exception.
+- GKI kernel and all 78 modules match the paired vendor input. OEM vendor_dlkm image is unchanged.
+- Compiled Settings fan entry precedes Apps; fan components and APK signature are present and verified.
+- IConsumerIr/default AIDL registration, executable, init service, feature declaration and OEM HAL are installed.
+- Removed Vega/SenseTime payloads and obsolete init services/triggers remain absent.
+
+The full build retained Soong tests, SELinux neverallow, Treble, VINTF and ELF dependency checks.
+No phone was connected or flashed. Boot, recovery and hardware behavior are not qualified by these host results.
+
+Validation tool maintenance:
+The old Python payload checker called HasField for four legacy protobuf fields removed from the current schema.
+A validation-local compatibility patch checks schema presence only for those four fields. Present legacy/current fields still fail, unrelated invalid fields still raise, and all operation/signature tests remain enabled.
+Eight targeted regression cases and the real full payload pass. Independent C++ signature verification also passes.
+No platform or ROM source was changed for this host-tool adjustment. Failed diagnostics are retained in the local build record.
+The custom CPIO reader was corrected to accept an identical repeated empty directory, while rejecting conflicting entries.
+
+Image selection:
+Use the bundled images together. The final OTA packaging pass rebuilds some images and uses its own AVB salts;
+intermediate product-out images can differ. Every bundled image comes from the authoritative target-files used for this OTA.
+
+Vega / SenseTime:
+Libraries, models, Mi FD/ECD consumers, face ROI encoding filter and portrait-repair plugin are removed.
+Related facial attributes, closed-eye selection, ROI processing and portrait restoration are disabled.
+Qti FD and original sensor, crop and AWB configuration remain. Image quality and real IR transmission require device testing.
+
+First-install archive: Warsaw-LineageOS24-首次安装包-20261027.zip
+Archive SHA256: 88559c7779c2de2827ac3ab12514963217f20e4cba88bc0f766bf114aede8bc6
+Archive bytes: 4194951350
+All 13 ZIP member CRCs and SHA256 values passed after writing.

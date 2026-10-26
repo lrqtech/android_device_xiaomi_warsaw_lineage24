@@ -11,8 +11,14 @@ by the legacy radio debug property; modem-log chmod-777 triggers are removed.
 Prepared extraction and metadata checks now cover 5,559 inputs and 2,265 modules.
 See [SELINUX_AUDIT.md](SELINUX_AUDIT.md) for the current policy and startup checks.
 
-These source changes have not been packaged into a new ROM. Physical-device boot,
-Recovery, crop/AWB, infrared output and the hardware checklist remain outstanding.
+These source changes are included in the clean full build completed on October 27.
+The full OTA, seven matching first-install images, Chinese installation guide and
+SHA256 manifest are packaged together. OTA/payload signatures, AVB chains, all 45
+payload partition hashes, VINTF and actual normal/recovery policies pass host
+verification. See [build results](BUILD_RESULT_20261027.txt).
+Physical-device boot, Recovery, crop/AWB, infrared output and the hardware
+checklist remain outstanding. Older sections below record the checks available
+at the time of each source repair; their no-build statements are historical.
 
 ## Earlier build results
 

@@ -65,9 +65,11 @@ dependencies, and the Settings fan path. It also removes obsolete service
 definitions and debug triggers that stopped thermal control or changed modem
 log permissions to 777. See [SELinux and startup review](docs/SELINUX_AUDIT.md).
 
-The last complete Android build is from October 24. Later source repairs have
-host verification only and are not included in those images. Current enforcing
-boot, recovery, updates and hardware behavior have not been qualified on a phone.
+A clean full Android build from `warsaw-20261027` completed on October 27.
+The full OTA and seven matching first-install images passed signature, AVB,
+partition-content, VINTF and embedded-policy checks. See
+[build results](docs/BUILD_RESULT_20261027.txt) for the archive and OTA hashes.
+Boot, recovery, updates and hardware behavior have not been qualified on a phone.
 Reported original-camera crop/AWB and IR appliance response remain unconfirmed.
 
 This tree is not ready for official admission. Installed-system extraction,
