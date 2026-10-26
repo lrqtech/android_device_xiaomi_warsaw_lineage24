@@ -25,7 +25,7 @@ call. Each input passes 12 cases; each old input reproduces three invalid reads.
 Six unsupported inputs are rejected across the pair. Tests cover empty tables,
 missing IDs, first/second matches, another logical-camera entry, all mapping
 modes, invalid IDs and the packed return values. Byte-change bounds and exact
-reproduction are checked. This does not establish the device's runtime table.
+reproduction are checked.
 
 Run from the device tree with originals retained outside the public repository:
 
@@ -47,9 +47,7 @@ The dump identifies framework physical camera 2 as 4096x3072 and physical camera
 active-array denominator. Framework IDs and CHI internal IDs are not assumed
 to be interchangeable.
 
-The `Invalid logicalCameraId 15` diagnostic comes from a separate NZSL config
-map lookup at 0x153e60. That path reports an absent entry; the captured log does
-not prove it reaches the repaired RemapCameraId failure branch. The source-level
-memory-safety defect is reproduced and repaired, while crop-coordinate ownership,
-AWB limits and runtime acceptance remain open. No crop clamp, fake ID, weakened
-validation, Android build, package or flashing is included.
+The `Invalid logicalCameraId 15` diagnostic originates in the separate NZSL
+config lookup at `0x153e60`. The RemapCameraId repair targets its reproduced
+out-of-bounds read. Crop ownership, AWB limits, valid IDs and error handling
+are retained.

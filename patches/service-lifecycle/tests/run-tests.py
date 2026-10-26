@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Compile actual display/fingerprint lifecycle classes with fault-injectable host APIs.
 
-No Android build or device I/O. Binder transport, Handler queues, system services
-and parcels are modeled; the selected source classes are compiled in full.
+Binder transport, Handler queues, system services and parcels are modeled;
+the selected source classes are compiled in full.
 Only the three selected framework paths are tested; removed components have
 no retained test suites or source dependencies.
 """

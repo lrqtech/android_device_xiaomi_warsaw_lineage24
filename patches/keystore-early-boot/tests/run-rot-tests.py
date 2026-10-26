@@ -1,6 +1,6 @@
 from pathlib import Path
 import argparse,subprocess,tempfile,json,hashlib
-parser=argparse.ArgumentParser(description='Test RootOfTrust transfer source with HAL doubles; no Android build.')
+parser=argparse.ArgumentParser(description='Test RootOfTrust transfer source with host HAL doubles.')
 parser.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[6])
 parser.add_argument('--report-dir',type=Path,default=None)
 a=parser.parse_args();R=a.source.resolve();report_workspace=tempfile.TemporaryDirectory(prefix="warsaw-rot-report-");N=a.report_dir or Path(report_workspace.name);N.mkdir(parents=True,exist_ok=True)

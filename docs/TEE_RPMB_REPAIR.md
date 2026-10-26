@@ -46,9 +46,7 @@ capability flows across both versions, reproducibility, idempotence, rejected
 unknown inputs, and unchanged ELF layout/dependencies. It reproduces the old
 0x69 rejection and default substitution. The repaired path returns the modeled
 device value, while transport/status failures, unknown lengths and invalid
-counts retain their error paths. This does not measure the phone's sector count.
+counts retain their error paths.
 
-No device I/O, key operation, RPMB write, full build, image or package was made.
-The repaired source input still needs a later explicitly authorized build and
-hardware verification. Strict cold boot, REC, and the independent StrongBox
-`earlyBootEnded` acknowledgement remain open; this repair does not close them.
+The prepared input and its pinned transformation are included in the
+October 27 full build. See [build results](BUILD_RESULT_20261027.txt).

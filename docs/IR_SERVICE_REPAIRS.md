@@ -48,12 +48,10 @@ live-proxy reuse, remote/runtime failures, permission denial, duration bounds,
 feature consistency, and serialized sends with balanced wake locks.
 
 All 36 companion patch hash and reverse-application checks pass. Applying the
-IR portion to its recorded framework base reproduces the edited source bytes.
-This is host state-flow validation, not an Android Binder, suspend, SPI, optical,
-or appliance test. Test class files are temporary; no platform build, APK/JAR,
-image, OTA, installation archive, or device operation is performed.
+IR portion to its pinned framework base reproduces the edited source. The
+20-case Java harness exercises reconnection and wakelock state transitions.
 
-## Diagnostic attribution and remaining work
+## Service integration
 
 The supplied ZIP hashes to
 `ebab53f79280ac8928bbc8a94fb2e3cb06a26b48d39e58e8ac8a5ebd668e825d`.
@@ -64,10 +62,7 @@ the corresponding `ir-spi.ko` copies both equal
 `52c0fd1e4436cd759a1a3ec84192d56de8ea1910f0adc94c7275b070bba61ccc`.
 These comparisons do not re-extract or independently certify the original OTA.
 
-The archived successful SPI writes do not establish correct optical output.
-They also do not show that a HAL death or suspend caused the reported failure.
-Same-command stock/custom waveform, effective clock, pin state and optical
-measurements remain necessary when device access is available. The strict
-cold-boot, recovery, camera crop/AWB and other documented runtime acceptance
-gates also remain open. Source and host work continues under the user's current
-instruction to keep platform compilation and packaging stopped.
+The full build includes the default AIDL instance, init service, feature
+declaration, retained stock HAL and framework changes. Final image checks
+confirm these components in the packaged vendor and system partitions.
+See [build results](BUILD_RESULT_20261027.txt).

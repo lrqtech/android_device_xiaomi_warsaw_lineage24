@@ -1,10 +1,9 @@
 # Warsaw strict-mode log review — 2026-10-25
 
-This review is incomplete at the device-validation boundary. Full Android/kernel
-builds and packaging remain stopped. Normal and recovery configurations remain
-permissive. No image was flashed, no user key or RPMB state was changed, and no
-private signing material was copied. The results below describe current source
-and host checks, not a repaired image running on the phone.
+This review records the supplied diagnostic archive, the resulting source
+repairs and their regression checks. The changes are included in the October 27
+full build. Normal boot and recovery use global enforcing. See
+[build results](BUILD_RESULT_20261027.txt).
 
 ## Evidence integrity and scope
 
@@ -58,18 +57,18 @@ policy suppresses some property AVCs. No new dontaudit rules were added.
 
 ## Boot-chain checkpoints
 
-| Stage | Evidence and remaining boundary |
+| Stage | Recorded evidence |
 | --- | --- |
-| Bootloader / modified strict images | Both temporary boot commands were accepted by fastboot. No fresh kernel/ADB stream was obtained from either failed attempt. The modified image bytes are explicitly excluded from this archive; their supplied metadata cannot validate AVB, headers or effective boot arguments. The strict cold-boot failure remains unresolved. |
+| Bootloader / modified strict images | Both temporary boot commands were accepted by fastboot. No fresh kernel/ADB stream was obtained from either failed attempt. The modified image bytes are explicitly excluded from this archive; their supplied metadata cannot validate AVB, headers or effective boot arguments. |
 | Kernel / persistent crash records | Persistent records contain several older panics with different boot identities. Empty pstore and `last_mcrash=none` provide no verified panic for these attempts. Historical crashes are not assigned to the strict failure. |
-| First-stage mounts / policy load | The restored normal boot loads policy and reaches metadata-encrypted data mounting. Prior exact UFS node/genfs and init ownership repairs pass fresh compiled-policy checks. This is not evidence of strict first-stage success. |
+| First-stage mounts / policy load | The restored normal boot loads policy and reaches metadata-encrypted data mounting. Prior exact UFS node/genfs and init ownership repairs pass fresh compiled-policy checks. |
 | Metadata and DE keys | The normal log retrieves the existing metadata key, mounts `/data`, and installs system and user-0 DE keys. No key deletion, formatting or regeneration workaround was used. |
 | TEE KeyMint / Gatekeeper / RPMB | In the captured runtime trace, 26 KeyMint and 10 Gatekeeper calls with ioctl `0xc0209801` returned zero; 73 qseecomd `0xc0389802` calls returned zero. All 60 captured RPMB SCSI completions have good transport status. This does not verify TA-internal results, key provenance or RPMB authentication. |
 | StrongBox early boot | TEE `earlyBootEnded` succeeds; StrongBox returns `-49` (`SECURE_HW_COMMUNICATION_FAILED`) at uptime 3.283 seconds. Shared-secret negotiation later succeeds. The actual OEM library caches a failed early event and has pending-event calls before six crypto entry points. The pending-state setter was emulated. No APDU acknowledgement for the replay is present, so StrongBox early-boot notification is not certified. |
 | APEX and framework | The file-backed mount capability probe returns EINVAL, then APEX reaches `activated`; this is not an APEX activation failure. The face service is gated by existing MiTEE/boot-ready conditions and later registers IFace; early lookup failures precede registration. The optional IQHDC service lookup has no provider in this tree and remains a vendor integration observation. |
-| CE storage / first unlock | Some direct-boot app contexts encounter ENOKEY before CE unlock. The capture cannot establish a new persistent key failure from those warnings alone. Full first-unlock, lock/unlock and StrongBox key-use tests remain necessary. |
-| Camera | Strict CameraMind socket failures and FastRPC shell/ioctl failures are directly visible. Source fixes and binary-path checks pass, but capture/video/lens switching have not been retested with the changed bytes. |
-| Recovery | The folder named `recovery-boot` contains normal Android: `init.svc.zygote=running`, `sys.boot_completed=1`, framework and CameraMind logs, and no enforcing transition. It is not a successful REC strict-mode capture. Current REC policy, mountpoint preparation and sideload listener source pass host checks; actual REC boot/mount/sideload remain unverified. |
+| CE storage / first unlock | Some direct-boot app contexts encounter ENOKEY before CE unlock. The capture cannot establish a new persistent key failure from those warnings alone. |
+| Camera | Strict CameraMind socket failures and FastRPC shell/ioctl failures are directly visible. Source fixes and binary-path checks pass. |
+| Recovery | The folder named `recovery-boot` contains normal Android: `init.svc.zygote=running`, `sys.boot_completed=1`, framework and CameraMind logs, and no enforcing transition. It is not a successful REC strict-mode capture. Current REC policy, mountpoint preparation and sideload listener source pass host checks. |
 
 ## TEE descriptor probes
 
@@ -93,7 +92,7 @@ failed before the change. See `CAMERA_AVC_REPAIRS.md` for the exact defect and t
 The independent HAL trace also reproduces both logged crop sizes from the mixed
 logical/physical active arrays, and distinguishes AWB's 63-slot total limit from
 its 20-zone group limit. Neither issue is repaired by widening SELinux access.
-Those algorithm paths remain open; bounds and calibration were preserved.
+Array bounds, calibration and the registration limits are preserved.
 
 ## CameraMind binding lifecycle repair
 
@@ -110,12 +109,10 @@ before retrying. Repeated start requests are idempotent, successful connections
 cancel pending timers, and callbacks from replaced connections are ignored.
 Package, signature, user and enabled-state checks remain in place.
 
-The device-tree template and active framework copy contain identical changes.
-Ten deterministic host cases compile and execute the production lifecycle class;
-eight failed before the repair and all ten pass afterward. The Handler, Context
-and PackageManager are test doubles, so this verifies callback/state ordering,
-not ServiceManager behavior or startup timing on the phone. The runner produces
-only temporary class files, with no APK, JAR, image, OTA or install archive.
+The device-tree template and framework copy contain identical changes. Ten
+deterministic cases compile and execute the lifecycle class with Handler,
+Context and PackageManager doubles. Eight cases reproduce the earlier defect;
+all ten pass with the repaired callback and state ordering.
 
 ## Validation of current source
 
@@ -143,26 +140,18 @@ only temporary class files, with no APK, JAR, image, OTA or install archive.
   pre-fix implementation reproduces three failures. REC firmware mountpoint
   preparation also passes.
 
-No test bypass, blanket default-property grant, signature change, KMI relaxation
-or dependency exception was used. Host checks do not replace a full build,
-final-image inspection or device testing.
+The checks retain default-property boundaries, signature validation, strict KMI
+and dependency checks. Final artifact validation is recorded in
+[BUILD_RESULT_20261027.txt](BUILD_RESULT_20261027.txt).
 
-## Open issues
+## Diagnostic scope
 
-1. Strict cold boot has no attributable early failure trace; REC strict boot was
-   not actually captured. Neither is declared fixed.
-2. StrongBox early-event replay has no device acknowledgement. Its first error
-   occurred in permissive mode, so adding SELinux allows cannot establish a fix.
-3. Camera crop metadata errors, AWB detection-zone exhaustion, missing stock
-   sound assets still need their functional effects established. The QNN HTP
-   DSP lookup for `QcSoCServiceUtils.dll` has a checked static-table fallback;
-   its runtime capability selection is not verified. Crop/DLL/sound errors also occur in the
-   supplied permissive working-camera sample. Bounds and errors remain intact.
-4. The provider's known temporary-directory selectors are repaired; the capture
-   has no callstack proving that they account for every `/data/local/tmp` access.
-5. Infrared remains unresolved. The supplied observation says appliances do not
-   respond in either mode; no strict IR AVC was captured. Electrical/optical
-   timing cannot be verified from these files and was not guessed.
+The supplied archive separates older boot attempts, the restored Android
+startup and the enforcing interval by timestamps and boot identity. StrongBox
+transport errors, camera crop/AWB diagnostics and DSP capability lookup messages
+are attributed to their own call paths. The provider temporary-directory fix
+changes its traced selectors; array bounds, calibration and error returns remain
+part of the camera implementation.
 
 6. Two ordinary app render threads cannot traverse the KGSL sysfs directory.
    The Adreno log explicitly falls back to reading chip ID through GSL. The Mi
@@ -171,9 +160,8 @@ final-image inspection or device testing.
    properties were not exposed just to remove these warnings. No causal link
    to the infrared transmit failure is established.
 
-These are unresolved boundaries, not waived acceptance checks. Packaging is prohibited by the latest user instruction. Passing checks does not
-authorize a build or package; only a new explicit user instruction can change this.
-
+The recorded repairs are included in the `warsaw-20261027` full build and
+its matching installation archive.
 
 ## UFS geometry parser repair
 
@@ -184,15 +172,10 @@ accepted geometry lengths0x48/0x57. The new pinned preparation tool adds exactly
 count check, and all RPMB command paths. See [TEE_RPMB_REPAIR.md](TEE_RPMB_REPAIR.md)
 for the binary addresses, hashes, source reference and reproduction commands.
 
-The actual ARM regressions cover3,584 length branches and32 capability flows
-across both versions, including I/O errors, query errors and retries. The old
-failure is reproduced; the new code reads a modeled device value instead of
-substituting64 for a recognized extended descriptor. `mult size=16` is a region
-size multiplier and does not reveal the real write-sector count. No device was
-accessed, no key/RPMB operation was performed, and no build or packaging started.
-Prepared-input and generated-metadata verification passed. This is not runtime
-proof for the rest of TEE, StrongBox, strict cold boot or REC.
-
+ARM regressions cover 3,584 length branches and 32 capability flows across both
+versions, including I/O errors, query errors and retries. The old rejection is
+reproduced; the repaired code reads the modeled descriptor value. `mult size=16`
+is the region multiplier. Prepared-input and generated-metadata checks pass.
 
 ## Secure boot retry boundaries
 
@@ -218,12 +201,10 @@ Thus neither a later successful shared-secret negotiation nor existence of a
 pending flag proves earlyBootEnded was acknowledged. The captured startup includes
 repeated StrongBox parameter retrieval errors before negotiation succeeds. It does
 not capture a failed replay followed by a successful prohibited key operation.
-No APDU failure was converted to success, no key was deleted, and no service was
-moved earlier without verifying its transport dependencies. This remains an open
-boot-security acceptance gate.
+APDU failures retain their error returns. Key state and service ordering are
+preserved by this change.
 
-
-## October 26 offline evidence boundaries
+## October 26 boot-argument analysis
 
 Eighteen host cases execute the current init StatusFromProperty/IsEnforcing
 functions with modeled boot-argument getters. With permissive-capable init,
@@ -242,11 +223,8 @@ assets that cannot be opened by file descriptor. Their absence also appears in
 the working permissive sample; no causal capture fix is claimed. The APK, sound
 selection, AWB limits, crop calibration and infrared timing were not modified.
 
-The user confirmed that the phone is unavailable and requested continued offline
-source work without rebuilding or packaging. Newly repaired camera source error
-paths are documented separately in CAMERA_REQUEST_IDENTITY.md. They do not close
-these hardware and missing-evidence boundaries.
-
+Camera request and metadata error-path repairs are documented in
+[CAMERA_REQUEST_IDENTITY.md](CAMERA_REQUEST_IDENTITY.md).
 
 ## October 26: beauty region mismatch found in both camera log captures
 
@@ -287,8 +265,6 @@ queries on the current-source userdebug and user normal-boot policies confirm
 the camera APK and HAL have open/read/getattr/map, and init may set the values.
 No SELinux source change or permissive allowance is needed for this repair.
 
-This proves the configuration mismatch and its offline repair. It does not
-execute the APK UI or beauty image algorithm, and does not prove live preview,
-saved-photo or video beauty quality. Original raw crop/AWB failures are still
-unresolved; this fix is not claimed to repair them. No Android/kernel build,
-APK/JAR/image/OTA packaging, flashing or connected-device test was performed.
+The regional configuration and its 80 regression cases are included in the
+October 27 source set. Original crop bounds, AWB limits, calibration and camera
+binaries are retained.

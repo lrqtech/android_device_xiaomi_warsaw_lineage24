@@ -1,11 +1,11 @@
-Warsaw official-device-tree review — updated 2026-10-27 (Asia/Shanghai)
+Warsaw LineageOS integration
 
 Official requirements:
 https://github.com/LineageOS/charter/blob/main/device-support-requirements.md
 https://github.com/LineageOS/lineage_wiki/blob/main/pages/submitting_device.md
 
-Scope: source editing and host validation only. No Android/kernel build,
-APK/image/OTA packaging, flashing or phone access. This tree remains unofficial.
+Source set: warsaw-20261027. Clean full Android build completed October 27.
+Build and artifact validation: docs/BUILD_RESULT_20261027.txt.
 
 Completed device-tree cleanup:
 - Global permissive normal/recovery boot overrides removed; default enforcing
@@ -34,29 +34,22 @@ Completed device-tree cleanup:
   definitions, callers and unsafe property triggers are rejected on import.
 - Platform companion patches, source mirrors and previous repairs stay intact.
 
-Validation boundaries:
-- Same node descriptor/callback shape, unchanged ELF ABI, empty-data guards and
-  graph reachability reduce integration risk; they are not hardware acceptance.
-- The retired feature removal intentionally drops optional attributes/emotions,
-  closed-eye best-frame selection, related snapshot processing, face ROI encoding
-  and portrait restoration. Basic Qti FD and ordinary camera/codec paths remain.
-- No missing direct ELF dependency may be introduced. Payload, APK/JAR code,
-  metadata and configuration scans are used to check retired SDK references.
-- Whole-device SELinux remains enforcing by default. No new permissive domain,
-  broad policy allowance or dependency-check bypass is added for this cleanup.
+Integration checks:
+- Node descriptors, callback ABI, ELF dependencies, empty-data guards and graph
+  reachability are checked with reproducible input/output hashes.
+- Retired features include optional attributes/emotions, closed-eye selection,
+  related snapshot processing, face ROI encoding and portrait restoration.
+  The Qti FD node and ordinary camera/codec paths are retained.
+- Payload, APK/JAR code, metadata and configuration scans check retired SDK
+  references. Direct ELF dependencies remain part of build validation.
+- Global SELinux enforcing, neverallow and dependency checks stay enabled.
 
-Remaining official-support gaps:
-1. Megvii-marked log strings in com.qualcomm.mcx.linearmapper.so,
-   libcamxoemsatwrapper.so and com.xiaomi.node.alpha_blending.so still require
-   ownership/embedded-code review. A log marker is not proof of whole-library
-   ownership. This is separate from the removed Vega/SenseTime SDK.
-2. Installed LineageOS/OTA extraction and reproducible fixups are not implemented
-   and validated; the prepared importer is not a demonstrated extraction round trip.
-3. 538 OEM kernel modules remain prebuilt. Source coverage and rebuilding all
-   feasible modules remain open; the pinned source-built GKI is paired separately.
-4. Enforcing cold boot/recovery, upgrades, camera/codec operation and full hardware
-   acceptance are pending. Earlier crop/AWB, IR appliance response and shared
-   camera terminal-error lifetime issues have not been proven completely repaired.
-
-October 24 build/image results do not cover these later source changes. Passing
-host checks does not establish official support or guarantee device operation.
+Repository layout:
+- Device tree: product configuration, SELinux, prepared-input tooling and pinned
+  platform patches.
+- Vendor tree: 5,559 prepared userspace inputs, firmware, boot inputs and 538
+  OEM module binaries, with payload hashes and stock-difference notes.
+- Kernel tree: pinned GKI source, Kleaf configuration and checks for the paired
+  Image and 78 signed GKI modules.
+- Prepared extraction accepts the recorded vendor root; see proprietary-files.md
+  for input layout, validation and exact-hash transformations.

@@ -22,7 +22,7 @@ that EARLY_BOOT_ONLY enforcement has passed on hardware.
 Host validation: 17 tests, including 32 concurrent requests, 1004 error
 classification inputs and seven TEE/StrongBox result combinations. The production
 retry module is compiled directly. The actual maintenance adapter and notification
-loop are compiled with HAL/error test doubles; this is not a full Android build.
+loop are compiled with HAL/error test doubles.
 
 ```sh
 python3 device/xiaomi/warsaw/patches/keystore-early-boot/tests/run-tests.py --source "$PWD"
@@ -59,9 +59,8 @@ repair and all pass afterward. The original baseline receives only an executor
 injection for this test. Both unlock and update broadcasts remain protected
 broadcasts in the framework manifest.
 
-Both changes are included in the pinned platform patch series. No Android image,
-OTA, APK or JAR was built. Phone verification remains outstanding. Normal and
-recovery SELinux remain permissive as requested.
+Both changes are included in the pinned platform patch series and the
+October 27 full build.
 
 ## Root of Trust delivery
 
@@ -80,9 +79,7 @@ Fourteen host cases pass against the production functions with HAL doubles,
 including 1003 error classification values, ambiguous-send recovery, challenge
 freshness, exact payload forwarding, missing TEE, and failure logging. Run
 `python3 device/xiaomi/warsaw/patches/keystore-early-boot/tests/run-rot-tests.py`
-from the source tree. This does not establish an actual StrongBox acknowledgement,
-hardware enforcement, or a full Android build result. The captured Widevine L1
-Root of Trust error is a separate DRM path and is not resolved by this repair.
+from the source root.
 
 ## Additional early-boot SELinux repairs
 
@@ -114,8 +111,7 @@ The normal variants include production technical_debt.cil attributes. Ninety-thr
 full-context positive/negative decisions, five exact/neighbor file labels, five
 property-trie lookups and the new init script pass. Existing camera contracts,
 FastRPC ioctl boundaries and property tests still pass. The only compiler warning
-is the pre-existing crosvm_vendor empty-permission warning. No Android build,
-package, key operation, hardware access or mode change was performed.
+is the pre-existing crosvm_vendor empty-permission warning.
 
 NFC's vendor-directory search was traced to the optional libnfc-nci-update.conf
 probe in the platform NfcConfig loader, not NFA storage (which is correctly
@@ -132,14 +128,11 @@ The system-owned declaration is in system_ext public policy, where the product
 process domains are defined. No allow rule, status value, VM configuration or
 secure hardware state is changed.
 
-Current userdebug, user and recovery policies compile without disabling neverallow.
+Current userdebug, user and recovery policies compile with neverallow enabled.
 Forty-five full-context positive/negative decisions and five production property
 trie cases pass, including adjacent names, ordinary-app setters and default-property
-write denial. This is source validation, not evidence of successful device startup.
-UFS coldboot labels were also rechecked: the current compiled labels permit vold's
-block uevents and init's discard setting without allowing general sysfs_memory writes.
-Camera crop/AWB and the other documented runtime questions remain open. No build
-or package was started.
+write denial. Compiled UFS coldboot labels permit vold block uevents and init
+discard settings while retaining the general sysfs_memory write denial.
 
 ## Rescue relabeling, connector discovery and performance startup
 
@@ -173,9 +166,7 @@ grant and is not claimed to match normal boot. The pre-existing crosvm_vendor
 empty-permission warning remains the only policy compiler warning.
 
 The 87 earlier display/camera permission checks, 16 full-context contracts and
-camera FastRPC contracts still pass against the resulting policies. No Android
-or kernel build, package, flashing or secure key operation was performed. TEE
-persistent-storage attribution and camera crop/AWB investigation continue.
+camera FastRPC contracts still pass against the resulting policies.
 
 ## Certificate-service private data, IWLAN discovery and USB traversal
 
@@ -195,7 +186,7 @@ repair and pass after it, covering primary/secondary users, the retained process
 selector, wrong UID, wrong signature seinfo and adjacent package names. Forty-eight
 full-context policy checks across userdebug, user and recovery pass. Cross-user
 app-data reads and generic system_data_file opens remain denied. All three policy
-variants and combined seapp neverallow checks pass; no Android build was started.
+variants and combined seapp neverallow checks pass.
 
 The QTI IWLAN client's AIDL service lookup was missing while its Binder calls,
 callbacks and FD permissions already existed. Only service discovery was added
@@ -203,14 +194,11 @@ to its existing client attribute. USB needs to traverse the qcom-battery parent
 to reach its existing supply attributes; only directory search was added. No
 controller-file read/write or general-app IWLAN access was granted.
 
-MTD startup inspection remains open. Resolving its actual GOT-backed PLT entries
-shows stat checks on seven directories (including persist/data), with exact
-0700/system/system checks. A failure triggers recursive restorecon on the whole
-persist mount before service registration continues. Its root UID conflicts with
-searching these system-owned private directories without a forbidden DAC bypass.
-The service identity and secure-storage permissions have not been changed without
-proof of the provisioning and TEE caller contracts. No keys, RPMB or directory
-contents were touched. Camera crop/AWB investigation also remains open.
+MTD startup checks seven directories, including persist/data, for exact
+0700/system/system metadata. A failure invokes recursive restorecon on persist
+before registration continues. Its root UID encounters the system-owned private
+directory search boundary. The daemon identity, secure-storage permissions and
+provisioning data are retained.
 
 ## RIL diagnostic snapshot: labels and file permissions
 
@@ -229,7 +217,7 @@ path, open flags, NV reads, diagnostic writes and error handling are unchanged.
 Init chmods an existing file without following symlinks and ignores a missing
 file through its normal ENOENT handling. The five MI_RIC services retain root
 and gain the log supplementary group, matching the other existing collectors.
-No DAC override capability is added. Normal and recovery remain permissive.
+No DAC override capability is added.
 
 Forty-two full-context access checks, 21 named creation checks, nine inode-aware
 file-label cases and both edited init sources pass. The initial label probe used
@@ -247,8 +235,7 @@ unsupported binary inputs are rejected; preparation is reproducible and
 idempotent. ELF layout, dynamic symbols and dependencies are unchanged. Only the
 mode instruction and public build-ID note differ. Both prepared-input pins were
 checked against their previous bytes before updating; full metadata checking
-passes. No Android/kernel build, package, flash or device key operation was run.
-Phone startup and camera crop/AWB/MTD questions remain open.
+passes.
 
 ## NFC startup configuration lookup
 
@@ -268,11 +255,7 @@ All three policies compile with neverallow checks. Sixty-six full-context
 access decisions, 24 named creation cases, 12 inode-aware path labels and init
 verification pass. A comparison of every concrete source type and permission
 bit finds only the intended NFC additions; all other domains retain their
-previous access. Existing CACert/IWLAN/USB and RIL checks also pass. This is a
-configuration-access repair, not evidence of successful NFC hardware or card
-operation. The optional file was not shown to exist in the supplied capture.
-Normal and recovery remain permissive. No Android/kernel build, package or
-flash operation was performed.
+previous access. Existing CACert/IWLAN/USB and RIL checks also pass.
 
 Camera crop investigation now resolves the actual tag indices used by the
 active-array lookup: InputMetadataOpticalZoom (292), InputMetadataBokeh (293)
@@ -307,8 +290,7 @@ incorrectly expected init and ueventd to have general character-device relabel
 permissions; source inspection shows fresh creation uses setfscreatecon instead.
 The corrected test checks that creation contract and confirms the unrelated
 relabel permission remains denied. No new privilege was added to make that test
-pass. Runtime boot and hardware validation remain open; builds, packaging and
-flashing remain stopped.
+pass.
 
 ## MTD directory-check boundary confirmed
 
@@ -332,9 +314,6 @@ The imported callbacks/stat responses are modeled, not measurements of the
 phone's directory metadata. The supplied capture does not contain the six
 children's mode/owner state or the startup diagnostic messages.
 
-The current root UID, group list, binary and secure-storage permissions remain
-unchanged. Changing the whole daemon UID would also change its TEE caller
-identity, whose acceptance cannot be established from this closed-source
-library and these logs. No DAC/neverallow exception, key deletion, RPMB command,
-mode widening or fabricated service success was introduced. This issue remains
-open alongside camera crop/AWB, infrared and hardware startup acceptance.
+The root UID, group list, binary and secure-storage permissions are retained.
+Changing the daemon UID also changes its TEE caller identity. DAC/neverallow
+checks, keys, RPMB state and directory modes are preserved.

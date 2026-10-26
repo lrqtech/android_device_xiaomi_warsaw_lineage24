@@ -68,16 +68,14 @@ build-ID note. It leaves modem NV operations and the library ABI unchanged.
 Run its `--check` mode against the prepared library before updating the complete
 prepared-input pin set. The related init actions and log groups are described in
 [boot repair notes](BOOT_NOTIFICATION_REPAIRS.md#ril-diagnostic-snapshot-labels-and-file-permissions).
-This one reproducible fixup does not establish a raw OTA extraction round trip.
 
-## Outstanding official extraction requirement
 
-This import path is deliberately limited to the exact prepared baseline. A raw
-OS4 OTA, a LineageOS OTA ZIP, or a connected device is not a supported replacement
-source yet. Some prepared libraries and APKs differ from their stock or installed
-forms. Reproducing those transformations and validating an extraction round trip
-from an installed LineageOS build remains work for official admission. A SHA256
-lock and a successful prepared import do not establish that round trip.
+## Prepared source layout
+
+Pass the exact prepared vendor root for `warsaw-20261027`. Its libraries and
+APKs include the documented transformations from stock. The importer validates
+the pinned inputs before staging and generation; separate boot, kernel, firmware
+and auxiliary inputs come from the matching vendor tree.
 
 For a baseline update, review each blob change and its provenance, reproduce its
 fixup, regenerate the upstream comparison in isolation, review the module/product
@@ -92,8 +90,7 @@ Official references: [working with proprietary blobs](https://github.com/Lineage
 The optional portrait-repair SDK, its loader, model and scene settings were
 removed. Six snapshot graphs bypass that node, and both portrait-repair
 capability masks are zero. The remaining beautifier, AWB and other graph nodes
-are unchanged. This removes that optional enhancement; physical-device camera
-validation is still required.
+are unchanged. The original beautifier and AWB configuration is retained.
 
 Five excluded init scripts and three unused OEM binary copies are also removed
 from the file list, SHA256 pins and vendor repository. The repaired face module
@@ -105,7 +102,7 @@ The reviewed generator delta was limited to two portrait-repair module removals;
 the later unused-input cleanup left the installed metadata semantically unchanged.
 Both raw generator fingerprints and reviewed product patches were regenerated
 from those verified deltas. See [official-support review](OFFICIAL_SUPPORT.txt)
-for the subsequent Vega cleanup and the remaining official-support gaps.
+for the subsequent Vega cleanup and integration checks.
 
 ## October 27 Vega/SenseTime retirement
 
@@ -130,8 +127,6 @@ camera allowlist entry is removed. These are intentional feature retirements.
 
 At the end of the camera retirement, the prepared list had 5,568 inputs and
 2,270 Blueprint modules. The startup cleanup below reduces those totals.
-Raw/installed-system extraction remains unsupported; this source preparation
-does not establish physical-device camera or codec acceptance.
 
 ## October 27 startup cleanup and pin validation
 

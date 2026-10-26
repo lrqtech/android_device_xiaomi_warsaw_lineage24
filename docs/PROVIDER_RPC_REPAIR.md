@@ -49,9 +49,8 @@ python3 configs/camera/tests/test-provider-rpc.py \
 
 The host environment requires pyelftools and Unicorn. Optional `--python-path`
 and `--report` select an existing dependency directory and a JSON result file.
-No Android build, package, image, archive, flashing or device operation is needed.
 
-## Attribution limits
+## Handle-map attribution
 
 The supplied logs do not contain matching open records for the specific missing
 handles. This repair reproduces a concrete missing-map path and repairs unsafe
@@ -59,6 +58,5 @@ failure handling; it does not prove all 6,338 messages have the same cause.
 The original missing-map branch still invokes the real RPC operation and returns
 its status, so the warning alone is not proof of a failed DSP request.
 
-Camera crop coordinate mismatches and AWB zone exhaustion are separate unresolved
-issues. No crop clamp, zone-limit increase, error suppression or fabricated
-successful hardware result is included. Device behavior remains unverified.
+This change is restricted to the provider handle-map path. Crop coordinates,
+AWB limits and the existing error results are retained.

@@ -1,6 +1,6 @@
 {
   "source_set": "warsaw-20261027",
-  "scope": "Host-only source checks; no Android/kernel build, APK/image/OTA packaging or device execution",
+  "scope": "Source and policy checks for warsaw-20261027; final build results are recorded in BUILD_RESULT_20261027.txt",
   "policies": [
     {
       "variant": "userdebug",
@@ -93,7 +93,7 @@
     "declarations": 390,
     "new_entrypoint_issues": 0,
     "existing_special_cases": 7,
-    "selection": "Recorded product graph reconciled with current RC copy rules; no fresh product-configuration build"
+    "selection": "Recorded product graph reconciled with RC copy rules"
   },
   "init_grammar_files": 190,
   "vintf_assembly_groups": 4,

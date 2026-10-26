@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Compile only the lifecycle class with deterministic Android test doubles.
+"""Compile the lifecycle class with deterministic Android API doubles.
 
-No platform build, APK, JAR, image or install archive is produced. These checks
-exercise state/callback ordering, not an actual Android ServiceManager process.
+The harness exercises connection, timeout and callback ordering with temporary
+host Java classes.
 """
 from pathlib import Path
 import argparse

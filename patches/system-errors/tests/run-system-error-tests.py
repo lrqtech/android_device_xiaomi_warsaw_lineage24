@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Host fault injection for actual vold/update_engine functions; no device I/O."""
+"""Host fault injection for vold/update_engine functions with modeled I/O."""
 from pathlib import Path
 import argparse, hashlib, json, subprocess, tempfile
 

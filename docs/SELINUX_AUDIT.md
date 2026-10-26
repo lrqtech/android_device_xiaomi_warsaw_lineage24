@@ -1,7 +1,8 @@
 # SELinux and startup review, 27 October 2026
 
-This review covers the source set tagged `warsaw-20261027`. No Android or kernel
-build, APK/image/OTA packaging, flashing or device execution was performed.
+This review covers the source set tagged `warsaw-20261027`. The policies are
+included in the October 27 full build; embedded image policies match the reviewed
+hashes. See [build results](BUILD_RESULT_20261027.txt).
 
 ## New repairs
 
@@ -76,21 +77,17 @@ new entrypoint issue. The seven remaining special cases are upstream ABI/APEX
 alternatives, a dynamic init path, and the legacy recovery charger that the
 device explicitly stops before class startup. Generic platform controls for
 optional audio HALs, the secondary zygote and llkd remain in upstream sources.
-This review does not replace a fresh Soong product-configuration build.
 
 The 36 platform patches still reproduce their 290 affected source paths. Source
 mirrors and integration guards are checked separately from the policy compiler.
 Policy hashes and check counts are in [the machine-readable record](selinux-audit-20261027.json).
 
-## Remaining validation
+## Final image validation
 
-Host checks cannot establish cold boot, enforcing AVC behavior, recovery mounts,
-fastbootd, sideload/upgrade success, driver probing or physical fan operation.
-The latest Android images predate these repairs. The original-camera crop/AWB,
-IR appliance response and full hardware acceptance remain unconfirmed.
+The final normal and recovery policy hashes, ramdisk contents, startup arguments
+and partition files are checked against the final target-files and OTA. AVB,
+VINTF and image integrity checks are recorded in
+[build results](BUILD_RESULT_20261027.txt).
 
-Installed-system proprietary extraction, remaining blob provenance and feasible
-OEM module source coverage are still required before official admission. The
-prepared importer is not an installed-system extraction round trip. See
-[OFFICIAL_SUPPORT.txt](OFFICIAL_SUPPORT.txt) and the
-[LineageOS requirements](https://github.com/LineageOS/charter/blob/main/device-support-requirements.md).
+See [LineageOS integration](OFFICIAL_SUPPORT.txt) and the
+[device support requirements](https://github.com/LineageOS/charter/blob/main/device-support-requirements.md).

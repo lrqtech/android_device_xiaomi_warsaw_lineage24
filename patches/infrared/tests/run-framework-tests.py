@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Run the production ConsumerIrService with host Android API doubles.
 
-Only temporary Java classes are compiled. No platform build, APK, JAR, image,
-OTA, device access, or hardware IR transmission is performed.
+The harness compiles temporary Java classes and exercises IR service
+reconnection and wakelock state transitions.
 """
 import argparse
 import hashlib

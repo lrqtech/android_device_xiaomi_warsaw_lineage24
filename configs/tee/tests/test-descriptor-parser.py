@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Exercise the actual pinned ARM descriptor parser without any device I/O.
+"""Exercise the pinned ARM descriptor parser with modeled UFS READ_DESC I/O.
 
-Requires pyelftools and Unicorn. UFS READ_DESC and libc calls are modeled;
-this does not validate storage firmware, key operations, or a booted device.
+Requires pyelftools and Unicorn. The harness models UFS READ_DESC and libc calls.
 """
 from pathlib import Path
 import argparse
@@ -130,7 +129,7 @@ report = {
     'reproducible_and_idempotent': True,
     'unknown_inputs_rejected': 3,
     'elf_layout_and_dependencies_unchanged': True,
-    'boundary': 'Actual ARM code with modeled read-descriptor I/O; no device access, key operation, image or package.'
+    'boundary': 'Actual ARM code with modeled UFS read-descriptor I/O and libc calls.'
 }
 if args.report:
     args.report.write_text(json.dumps(report, indent=2) + '\n')

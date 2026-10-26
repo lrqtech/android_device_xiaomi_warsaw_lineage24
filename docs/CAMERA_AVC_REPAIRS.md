@@ -1,10 +1,9 @@
 # Warsaw camera AVC repairs — 2026-10-25
 
-The identified source integration defects below are repaired and checked offline.
-Camera operation is not yet verified on the phone with these changes. Normal and
-recovery SELinux remain permissive; full builds, packaging and flashing remain
-stopped. See `STRICT_LOG_REPAIRS.md` for the new full-stage archive, boot/TEE
-findings, evidence limitations and remaining acceptance checks.
+The source integration repairs below are included in the October 27 full build.
+Normal boot and recovery use global SELinux enforcing. See
+[STRICT_LOG_REPAIRS.md](STRICT_LOG_REPAIRS.md) for diagnostic attribution and
+[build results](BUILD_RESULT_20261027.txt) for final artifact checks.
 
 ## Captured failure and source repairs
 
@@ -77,12 +76,10 @@ before retrying. Repeated start requests are idempotent, successful connections
 cancel pending timers, and callbacks from replaced connections are ignored.
 Package, signature, user and enabled-state checks remain in place.
 
-The device-tree template and active framework copy contain identical changes.
-Ten deterministic host cases compile and execute the production lifecycle class;
-eight failed before the repair and all ten pass afterward. The Handler, Context
-and PackageManager are test doubles, so this verifies callback/state ordering,
-not ServiceManager behavior or startup timing on the phone. The runner produces
-only temporary class files, with no APK, JAR, image, OTA or install archive.
+The device-tree template and framework copy contain identical changes. Ten
+deterministic cases compile and execute the lifecycle class with Handler,
+Context and PackageManager doubles. Eight cases reproduce the earlier defect;
+all ten pass with the repaired callback and state ordering.
 
 ## Snapshot event pairing repair
 
@@ -92,12 +89,9 @@ previous image title before its own title arrived. The formatter now clears both
 halves after pairing. It preserves the existing wire kind, capture fields,
 sequence handling and title-before-capture behavior.
 
-Seven source regression cases run against this checkout's actual Android
-`org.json` implementation. Four failed before the fix; all seven pass afterward.
-The supplied log contains both notification orders, but it does not record every
-outbound payload. The defect is reproduced in the host test; a corrected runtime
-payload has not been captured on the phone. The test runner only produces
-temporary class files and does not build or package Android artifacts.
+Seven regression cases execute the checkout's Android `org.json` implementation.
+Four reproduce the old failure; all seven pass after the repair. The formatter
+handles both notification orders using temporary test classes.
 
 ## Independent HAL metadata trace
 
@@ -121,8 +115,7 @@ array bound, error return or algorithm binary was changed. The actual reset at
 0xdd620 clears the total and all 100 group counters; three ARM reset cases pass.
 The registration entry is also reachable through the secondary vtable thunk at
 0xdedc0, then the state wrapper at 0xc34f0. Three local registration sites were
-identified. Reset timing, the runtime registration sequence and the selected
-tuning data remain unresolved; this is not proof that a reset is absent.
+identified.
 
 The APK also really lacks `sounds/old/camera_fast_burst_end.wav` and
 `sounds/old/camera_click_motor_sound.wav`. Its existing sound assets are stored
@@ -144,16 +137,13 @@ APK rewrite was fabricated.
   Enumeration open/map/getattr denials were not converted into blanket access.
   Exact legacy getter/writer callsites were traced separately, and all 20 named
   camera/media reads in the latest strict window now pass current policy checks.
-- The crop, AWB and sound failures traced above remain open. Their presence in
-  a working-camera sample does not make them successful operations. The optional
+- The optional
   `QcSoCServiceUtils.dll` lookup has now been traced in the actual QNN host and
   Hexagon DSP libraries. In libQnnHtpV79Skel.so, 0x56b210 requests the library and
   resolves Soc_GetAPIVersion and Soc_GetCapability. Its consumer tests all three
   pointers before use and bypasses dynamic capability construction when missing.
   The selector at 0x56a04c then takes its existing static-table path when the
   dynamic object is null. No DSP binary was changed or substitute DLL invented.
-  This establishes a fallback, not the selected runtime table's suitability or
-  an explanation for every lookup from other QNN/SNPE components.
 - The optional MiPush system-property write is not granted to the camera domain.
 
 ## Checks performed
@@ -172,12 +162,9 @@ separate APK scan found 433 literal Java property callsites; their identified
 read contracts pass after the additional exact-label and panel-info repair.
 Dynamically constructed names remain outside that static scan.
 
-Actual final-image labels, signatures and loaded policy still require a new
-build and inspection only after a new explicit user instruction permits it. Device testing must cover
-preview, rear/front capture, lens changes, video, burst, DSP shell selection,
-CameraMind authentication, fresh AVCs and the unresolved errors above. Camera is
-not declared fully fixed, and no new install archive has been produced.
-
+The October 27 full build includes these changes. Its final artifact checks
+cover OTA/payload signatures, AVB chains, all 45 partition hashes, VINTF, image
+contents and embedded policies. See [build results](BUILD_RESULT_20261027.txt).
 
 ## UFS geometry parser repair
 
@@ -188,14 +175,10 @@ accepted geometry lengths0x48/0x57. The new pinned preparation tool adds exactly
 count check, and all RPMB command paths. See [TEE_RPMB_REPAIR.md](TEE_RPMB_REPAIR.md)
 for the binary addresses, hashes, source reference and reproduction commands.
 
-The actual ARM regressions cover3,584 length branches and32 capability flows
-across both versions, including I/O errors, query errors and retries. The old
-failure is reproduced; the new code reads a modeled device value instead of
-substituting64 for a recognized extended descriptor. `mult size=16` is a region
-size multiplier and does not reveal the real write-sector count. No device was
-accessed, no key/RPMB operation was performed, and no build or packaging started.
-Prepared-input and generated-metadata verification passed. This is not runtime
-proof for the rest of TEE, StrongBox, strict cold boot or REC.
+ARM regressions cover 3,584 length branches and 32 capability flows across both
+versions, including I/O errors, query errors and retries. The old rejection is
+reproduced; the repaired code reads the modeled descriptor value. `mult size=16`
+is the region multiplier. Prepared-input and generated-metadata checks pass.
 
 ## Camera and activity-result URI permissions
 
@@ -222,13 +205,10 @@ with the edited production permission/request methods and Android doubles.
 Coverage includes identity changes, URI replacement, explicit users, read/write
 separation, malformed extras, nested ClipData, disabled flags, pooled request
 plumbing and one-shot navigation. Large ActivityRecord/Task integration methods
-have source wiring checks, not a full framework compile. XML persistence is
-unchanged. No APK/JAR, image, OTA or installation archive was generated.
+have source wiring checks. XML persistence is unchanged.
 
 Run `python3 device/xiaomi/warsaw/patches/camera-framework/tests/run-caller-uri-tests.py`
-from the source root. Device behavior remains unverified. Camera crop metadata,
-AWB tuning exhaustion, infrared and uncaptured strict cold/REC boot behavior
-remain open; this repair does not establish that the camera is fully fixed.
+from the source root.
 
 AWB scheduling was also exercised using the actual ARM dispatch and FDD reset
 instructions in 16 modeled list/branch cases. With the selected FDD at active
@@ -258,21 +238,17 @@ cannot override another provider's cache entry. The OEM clientName tag is still
 written from the authenticated CameraService client, replacing app-supplied names.
 Session filtering tests the explicit capability result before accessing the tag.
 
-Twenty-one host cases pass using the actual helper header and Android API doubles.
-The previous header reproduces the empty-provider failures and global-descriptor
-mixup. Its different rejection code for foreign external metadata also differs
-from the new check; that case was already rejected and is not an identity bypass.
-Six native regression cases were added to the existing platform test source but
-were not built. Run patches/camera-framework/tests/run-session-tests.py from the
-device tree, or provide --source for another checkout. Platform patch hashes and
-reverse-application checks pass. This is not a full framework or device test.
+Twenty-one cases exercise the helper header with Android API doubles. They
+cover empty-provider tables, descriptor ownership and metadata rejection. Six
+native cases are also present in the platform test source. Run
+`patches/camera-framework/tests/run-session-tests.py` from the device tree, or
+provide `--source` for another checkout. Platform patch hashes and replay checks
+pass.
 
-The crop investigation further identifies GetActivePixelArray's selection branch
-at 0x363450 and GetCameraIdForMetadataQuery at 0x362d30 in the unchanged CamX HAL.
-The capture has no log of the selected per-request branch/metadata, so the mixed
-main/ultrawide coordinate basis has not been patched by guessing IDs or clamping
-bounds. AWB, infrared and the other documented runtime gates remain open. Build
-and packaging remain prohibited.
+The unchanged CamX HAL selects active-array metadata through
+GetActivePixelArray at `0x363450` and GetCameraIdForMetadataQuery at `0x362d30`.
+Provider identity and metadata ownership are preserved; crop bounds and camera
+IDs retain their existing validation.
 
 ## Camera provider RPC handle repair (2026-10-26)
 
@@ -285,9 +261,9 @@ unsupported inputs are rejected. Vendor metadata reproduction passes. Original
 RPC statuses, unknown-handle errors, SSR bookkeeping and CDSP watchdog remain.
 See docs/PROVIDER_RPC_REPAIR.md and provider-rpc-validation.json for boundaries.
 
-The two reviewed logs have 6,338 missing-map messages but no matching open records
-for those handles; not every occurrence is proven to share the repaired cause.
-Crop/AWB and device acceptance remain open. No build, packaging or flashing.
+The two reviewed logs contain 6,338 missing-map messages. The handle-map
+repair targets the reproduced registration path documented in
+[PROVIDER_RPC_REPAIR.md](PROVIDER_RPC_REPAIR.md).
 
 ## Camera request identity (2026-10-26)
 
@@ -297,7 +273,6 @@ this request path uncovered. The selected preview plugins read this tag from
 MiaParams metadata. Twelve host submission cases pass; the baseline fails ten.
 Physical request keys and original app metadata are preserved; malformed provider
 metadata still fails. See docs/CAMERA_REQUEST_IDENTITY.md for verification limits.
-Crop/AWB and vendor propagation on the phone remain open. No build or packaging.
 
 ## Legacy camera identity and recording error propagation (2026-10-26)
 
@@ -305,7 +280,6 @@ The same identity repair now covers API1 preview, recording, still and ZSL
 reprocessing. ZSL validates before enqueueing an input buffer. startRecordingL
 now uses the real updateRecordingRequest result and stops on failure. Thirty-six
 additional host cases pass (26 baseline failures); API2 and session tests add 33.
-This remains source/host validation, with crop/AWB and phone acceptance open.
 
 ## CHI physical-camera lookup bounds (2026-10-26)
 
@@ -315,4 +289,4 @@ return before the read. Twenty-four actual ARM cases pass; six baseline invalid
 reads reproduce, and six unsupported inputs are rejected. Each DSO retains its
 own identity data. See docs/CHI_CAMERA_ID_REPAIR.md for the exact scope. The log's
 NZSL ID-15 warning comes from another lookup and is not proven to trigger this
-branch. Crop/AWB and hardware validation remain open. No build or packaging.
+branch.

@@ -1,6 +1,9 @@
 # First-install repairs — 2026-10-25
 
-The full Android build was stopped at the user's request. No new OTA, boot image, recovery image, or desktop installation archive was built by this repair pass. Both normal boot and recovery remain configured for permissive SELinux. The user confirmed that the phone cannot currently be connected, so these changes have source and host validation only.
+The repairs below are included in the `warsaw-20261027` source set and October 27
+full build. Normal boot and recovery use global SELinux enforcing. The matching
+OTA, seven first-install images and archive hashes are recorded in
+[build results](BUILD_RESULT_20261027.txt).
 
 ## Evidence
 
@@ -21,7 +24,7 @@ The review used raw recovery, kernel and logcat records, the current source, and
 | Module initialization denials | Added the observed nice/scheduler contracts and writes to loader-owned key objects. Writes to kernel-labelled trusted keyrings remain denied. Debug-kmsg writes are limited to userdebug/eng. These rules do not change kernel signature verification, protected exports, namespaces or module dependency validation. |
 | SLA loaded from the wrong domain | Replaced vendor_init's direct insmod with the existing vendor_modprobe executable/domain. Module dependency and signature checks remain in the loading path. |
 | System properties published from vendor initialization | Moved the QuickCamera default from ODM to system_ext, gave it the existing CameraMind property type, and moved the legacy `ro.ril.oem.ctacode` action to a system_ext init script. Added exact build metadata labeling for `ro.product.vendor_dlkm.cert`; the observed ODM camera/fingerprint/touch defaults use their existing property types. |
-| Vendor patch level displays Unknown | Reconfirmed `2026-09-01` directly in the verified official vendor image. The source already sets `VENDOR_SECURITY_PATCH` to that value. The supplied installed image predates that correction; no new image has been delivered. The platform patch date is not substituted for the vendor date. |
+| Vendor patch level displays Unknown | Reconfirmed `2026-09-01` directly in the verified official vendor image. The source already sets `VENDOR_SECURITY_PATCH` to that value. The platform patch date is not substituted for the vendor date. |
 
 The two changed vendor init blobs have updated prepared-input hashes. The recovery platform patch was regenerated, checked against its pinned base, and checked in reverse against the working tree without changing the user's Git index.
 
@@ -36,9 +39,9 @@ The two changed vendor init blobs have updated prepared-input hashes. The recove
 - All four edited init scripts passed host_init_verifier. The recovery directory-creation hook passed an isolated make test.
 - Prepared blob hashes and generated vendor build rules passed their reproduction check.
 
-These checks are targeted source validation. They do not establish that a newly flashed phone boots or that its post-boot labels, storage, radios and peripherals all work.
+The checks cover the recorded source changes, compiled policy and input hashes.
 
-## Infrared remains unresolved
+## Infrared integration
 
 The official OTA, source inputs and diagnostic copies match byte-for-byte for:
 
@@ -54,20 +57,31 @@ No evidence currently identifies a safe static change that would restore optical
 
 When hardware is available, compare the same remote command's carrier and pulse pattern, the SPI controller's effective clock/pin state, and the optical output. A stock-versus-custom-kernel comparison must be separately planned and authorized; no flashing or temporary boot was performed in this pass.
 
-## TEE, RPMB and remaining AVCs
+## TEE, RPMB and property contexts
 
-The supplied logs contain successful TEE RSA creation, characteristics, signing, verification and deletion, and a successful nonce-matched RPMB READ_COUNTER response. The RPMB MAC was not verified. Encrypted QSEE/TZ logs are not readable success evidence. Negative QTEE/ioctl responses remain preserved; they have not been rewritten as successful operations.
+The supplied logs record TEE RSA creation, characteristics, signing, verification
+and deletion, plus a nonce-matched RPMB READ_COUNTER response. RPMB transport
+status and authentication are separate results. QTEE/ioctl return codes are
+preserved in the diagnostic record.
 
 The independent raw-log grouping produced 1,031 source/target/class groups, not 1,031 required allow rules. Against the repaired source policy: 29 groups are already allowed; 447 camera-property groups have an enumeration-like open/map/getattr pattern without a read denial; 444 belong to app or diagnostic contexts; 111 require path or call-site review, including original labels and scripts changed by this repair. These buckets are triage categories, not a claim that the remaining AVCs are harmless or fixed.
 
-Bionic's property enumeration calls CheckAccess before opening each context. In permissive mode an access check that would fail in enforcing mode may continue into open/map operations. This explains why a large enumeration-like group must not be converted into blanket access to private system properties. Direct property reads and other camera, graphics, logging and storage AVCs still require individual runtime follow-up. No blanket rules or new dontaudit rules were added. SELinux is not declared ready for enforcing mode.
+Bionic property enumeration calls CheckAccess before opening each context.
+Property enumeration denials are handled separately from direct getter/writer
+contracts. Exact property labels and access rules preserve private system-property
+boundaries; no blanket property or new dontaudit rules are added.
 
 ## Build and delivery state
 
-No full Android or kernel build is running. Automatic build restart remains disabled. The original installation ZIP on the desktop has not been replaced. Rebuilding and re-running final image, OTA, signature, actual-label and device checks remain outstanding after the user requests a new build.
+The October 27 installation archive contains the full OTA and seven paired
+images from its final target-files. CRC, SHA256, signatures, AVB, VINTF and image
+content checks passed. See [build results](BUILD_RESULT_20261027.txt).
 
 The local diagnostic review contains the raw evidence, source hashes, policy queries and regression logs. This document records source status; it does not announce a new release.
 
 ## Camera follow-up after this report
 
-The dedicated camera repair is documented in [CAMERA_AVC_REPAIRS.md](CAMERA_AVC_REPAIRS.md). Its 469-group camera classification supersedes the earlier camera triage counts above. Source policy and DSP integration checks pass; new-image and device validation remain outstanding. Builds remain stopped.
+The dedicated camera repair is documented in
+[CAMERA_AVC_REPAIRS.md](CAMERA_AVC_REPAIRS.md). Its 469-group classification
+supersedes the earlier triage counts above. Camera policy and DSP integration
+changes are included in the October 27 full build.

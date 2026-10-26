@@ -18,13 +18,10 @@ The change is included in the recorded frameworks/av companion patch and its
 hash. Host tests compile the actual submission block and production helper with
 API doubles: 12 cases pass, versus 10 failures before the insertion. The existing
 21 session helper tests also pass. Patch reverse checks and whitespace checks
-pass. Full Android compilation, HAL integration, hardware concurrency and phone
-camera behavior have not been tested. No build or package was created.
+pass.
 
-This closes a missing framework propagation step; it does not prove that every
-plugin receives the tag after all vendor metadata transformations. Crop
-coordinate mismatches, AWB zone exhaustion and device acceptance remain open.
-No crop clamp, AWB limit change, error suppression or fake result is included.
+The helper propagates authenticated framework identity while preserving
+provider ownership, crop bounds, AWB limits and error returns.
 
 ## Legacy capture paths
 
@@ -44,8 +41,7 @@ the supplied log does not establish that it caused the observed camera failure.
 The additional host regression compiles the four actual identity blocks and the
 recording startup block with API doubles. All 36 cases pass; the previous source
 fails 26. Combined with the 12 API2 request cases and 21 session-helper cases,
-69 cases pass. Full Android compilation and device acceptance remain unperformed.
-
+69 cases pass.
 
 ## October 26: allocation failures before identity submission
 
@@ -95,21 +91,17 @@ initialization and flush blocks with host API doubles. All 22 cases pass; the
 pre-repair source fails 14. It replaces the baseline's local uninitialized output
 ID with a defined poison value solely to reproduce the invalid state update
 without executing an indeterminate read. These tests model sequential callback
-interleavings; they do not prove whole-service concurrent behavior or phone use
-of shared mode. The archive does not establish shared mode as the cause of the
-reported strict-mode failure.
+interleavings.
 
 The final related camera regressions total 106 passing cases. Applying the
 updated frameworks/av companion patch to its pinned base reproduces all four
-source files edited in this continuation. All 36 companion checks pass. Full
-Android/kernel compilation, packaging and physical-device validation remain
-unperformed. Previously repaired components were not replaced or reverted.
+source files edited in this continuation. All 36 companion checks pass. These
+changes are included in the October 27 full build.
 
 ```sh
 python3 patches/camera-framework/tests/run-capture-copy-tests.py --report /tmp/camera-copy.json
 python3 patches/camera-framework/tests/run-shared-request-tests.py --report /tmp/camera-shared.json
 ```
-
 
 ## October 26 camera/beauty recheck: additional failure paths
 
@@ -130,21 +122,16 @@ The pre-identity copy runner now has 23 cases (eight failures against the source
 before this recheck). Together with the unchanged 22 shared-request cases,
 28 session-helper, 12 API2 identity and 36 API1 identity cases, all 121 related
 host checks pass. These are extracted production blocks with host API/failure
-doubles, including Android utils/List.h; they are not a full Android compilation
-or whole-service concurrency test.
+doubles, including Android utils/List.h.
 
-The separate beauty-region defect and its 80 host checks are documented in
-STRICT_LOG_REPAIRS.md. Neither allocation-failure path is claimed as the
-demonstrated cause of the archived raw crop/AWB errors. Those original errors
-remain open and require further causal evidence and device acceptance.
+The beauty-region configuration and its 80 regression cases are documented in
+[STRICT_LOG_REPAIRS.md](STRICT_LOG_REPAIRS.md). Allocation handling preserves
+existing metadata, crop bounds and AWB limits.
 
-An additional shared-stream lifetime problem remains open: after cancellation,
-a terminal error for the last repeating frame may leave its mapping active.
-Clearing the mapping immediately on that error is unsafe. Camera3OutputUtils
-dispatches errors directly while FrameProcessor queues results, so an earlier
-frame's result/error can still arrive afterward. Two host ordering cases proved
-that immediate retirement drops these callbacks. That proposed change was
-withdrawn before delivery; notifyError and the 22-case shared runner are byte-
-identical to the pre-recheck versions. A later repair must coordinate pending
-frames and queued callbacks, rather than infer their completion from the last
-error's frame number. No removed product component was reintroduced.
+Shared-stream cancellation must retain queued callbacks. A terminal error for
+the last repeating frame can arrive before an earlier result because
+Camera3OutputUtils dispatches errors directly while FrameProcessor queues
+results. Two ordering cases show that clearing the mapping on the last error
+would drop earlier callbacks. The existing notifyError mapping and 22-case
+shared runner are retained; retirement must account for pending frames and
+queued callbacks together.

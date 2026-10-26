@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2026 The LineageOS Project
 # SPDX-License-Identifier: Apache-2.0
-"""Import the prepared Warsaw blob baseline; raw OEM OTA fixups are not implicit."""
+"""Import and verify the pinned prepared Warsaw vendor baseline."""
 
 import argparse
 from pathlib import Path

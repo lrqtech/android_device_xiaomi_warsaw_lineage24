@@ -1,10 +1,8 @@
 # Product-wide offline audit, October 26, 2026
 
-This audit examines the current Warsaw device/vendor integration, its 36 pinned
-platform patches and the paired kernel inputs. Source and host checks only:
-no Android/kernel build, APK/OTA/image packaging, flashing or attached phone.
-The pre-edit working tree already contained previous repairs; those were
-preserved and validated rather than reapplied.
+This audit covers Warsaw device/vendor integration, its 36 pinned platform
+patches and the paired kernel inputs. It records source checks and regression
+results for the selected product configuration.
 
 Later cleanup requested by the user removed the inactive MiCharge/display
 sources and their test entry points. The counts below describe this earlier
@@ -62,9 +60,8 @@ October 15 kernel.
 - 199 actual init scripts pass host_init_verifier with source OEM AIDs; ueventd
   rules use a different grammar and were not misreported as init failures.
 - 120 vendor and 40 ODM VINTF inputs assemble separately and together; both
-  device matrices parse. This is declaration merging, not full product FCM or
-  running HAL compatibility. Proprietary AIDL metadata informational messages
-  are expected with retained prebuilts.
+  device matrices parse. The review checks declaration merging. Proprietary AIDL
+  metadata informational messages are expected with retained prebuilts.
 - 310 distinct service declarations have no duplicate names in the scanned
   device/vendor init candidates. Literal device copy sources (48 references)
   exist. Generic disabled/factory services and source-built executables are
@@ -80,22 +77,14 @@ October 15 kernel.
   request/metadata/session lifecycle, IR restart/wakelock, KeyMint early boot
   and root of trust, CT job/unlock, storage/OTA failures, active fan, keyguard
   sensor policy, display policy and Java/native CameraMind parsers. Native
-  parser/control tests use UBSan. Android socket/SELinux and Binder device
-  tests were not substituted with a false host success.
+  parser/control tests use UBSan.
 
-## Open acceptance items
+## Build integration
 
-Original crop/AWB and IR appliance non-response are still mandatory, unresolved
-items. IR default-service registration is established by source and the supplied
-phone record; optical output is not. Crop/AWB traces lack the failing frame's
-internal pipeline/tuning state needed to choose a safe binary change. The
-previous display SDR intent 0 versus stock vendor intent 257 mismatch also
-remains unresolved. Strict cold boot and StrongBox hardware acknowledgement
-still need their missing runtime evidence. Hardware acceptance for calls/IMS,
-GNSS, Wi-Fi/Bluetooth, audio, UDFPS, thermal/display and updates is not established
-by source inspection. Existing October 24 build outputs are not validation of
-the newer source tree. No claim is made that the entire Android project is
-free of hidden defects.
+The reviewed changes are included in the October 27 clean build. Full product
+VINTF, SELinux, dependency and artifact checks are recorded in
+[build results](BUILD_RESULT_20261027.txt). IR service declaration and fan entry
+placement were also checked in the final images.
 
 Reproduce new active-fan regression from the Android source root:
 

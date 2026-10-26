@@ -41,14 +41,14 @@ m --no-skip-soong-tests -j24 bacon
 Adjust the job count to the host's memory and CPU capacity. Keep neverallow,
 dependency, and Soong tests enabled. Output is written to
 `out/target/product/warsaw/`. Normal boot and recovery use the platform default
-SELinux enforcing mode in every build variant. Physical-device qualification
-of the current source is still outstanding.
+SELinux enforcing mode in every build variant.
 
-The October 24 clean build used `BUILD_DATETIME=1792804649`. Setting that value
-alone does not guarantee identical package bytes: source contents, signing keys,
-toolchains, and packaging inputs must also match. The published cleanup was
-checked with `m nothing` after that full build; no replacement OTA is attached
-to this source update.
+The October 27 clean build used the `warsaw-20261027` source set and completed
+with Soong tests, neverallow, Treble, VINTF and ELF dependency checks enabled.
+The OTA contains 45 partitions; the first-install archive pairs it with seven
+images from the final target-files. See [build results](BUILD_RESULT_20261027.txt)
+for timestamps, signatures and SHA256 values. Reproducing package bytes requires
+the same source, toolchain, keys, timestamps and packaging inputs.
 
 ## Kernel inputs
 

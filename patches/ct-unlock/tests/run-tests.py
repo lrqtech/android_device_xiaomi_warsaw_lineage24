@@ -4,7 +4,7 @@ from pathlib import Path
 import subprocess, tempfile, json, hashlib
 
 import argparse
-parser=argparse.ArgumentParser(description="Run CT unlock ordering host tests without building an APK.")
+parser=argparse.ArgumentParser(description="Run CT unlock ordering host tests with modeled Android lifecycle events.")
 parser.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[6])
 parser.add_argument('--report-dir',type=Path)
 args=parser.parse_args()

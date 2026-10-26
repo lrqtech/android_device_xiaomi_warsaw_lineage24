@@ -3,7 +3,7 @@
 from pathlib import Path
 import subprocess,json,hashlib
 import argparse, tempfile
-parser=argparse.ArgumentParser(description="Run the earlyBootEnded host regression tests without building Android.")
+parser=argparse.ArgumentParser(description="Run the earlyBootEnded host regression tests with modeled HAL responses.")
 parser.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[6])
 parser.add_argument('--report-dir',type=Path)
 args=parser.parse_args()

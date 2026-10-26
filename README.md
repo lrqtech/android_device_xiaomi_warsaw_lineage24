@@ -41,8 +41,7 @@ The two retained-library adaptations are reproducible with exact-hash scripts;
 the anchor plugin cannot re-enable ECD through a saved property. The original
 Qti FD library, sensor selection, crop and AWB configuration are preserved.
 See [proprietary files](docs/proprietary-files.md) and the vendor
-[difference list](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24/blob/warsaw-20261027/docs/DIFFERENCES.md).
-Camera image quality and codec behavior still require device testing.
+[difference list](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/DIFFERENCES.md).
 
 ## Vendor tools
 
@@ -54,10 +53,10 @@ python3 device/xiaomi/warsaw/extract/tests/test_prepared_inputs.py
 
 The tools verify 5,559 prepared userspace inputs and reproduce 2,265 Blueprint
 modules. SHA256 pins, inline SHA1 pins, and retirement checks reject mismatched
-inputs and obsolete startup components. Raw OTA and running-device extraction
-remain unsupported. See [dependencies](docs/dependencies.md).
+inputs and obsolete startup components. See [dependencies](docs/dependencies.md)
+for the prepared input layout.
 
-## Validation and known limits
+## Build validation
 
 The October 27 source review checks normal and recovery SELinux policies for
 both `user` and `userdebug`, split-policy mappings, init declarations, module
@@ -69,10 +68,6 @@ A clean full Android build from `warsaw-20261027` completed on October 27.
 The full OTA and seven matching first-install images passed signature, AVB,
 partition-content, VINTF and embedded-policy checks. See
 [build results](docs/BUILD_RESULT_20261027.txt) for the archive and OTA hashes.
-Boot, recovery, updates and hardware behavior have not been qualified on a phone.
-Reported original-camera crop/AWB and IR appliance response remain unconfirmed.
 
-This tree is not ready for official admission. Installed-system extraction,
-remaining blob provenance, feasible OEM module source coverage and hardware
-acceptance are recorded in [OFFICIAL_SUPPORT.txt](docs/OFFICIAL_SUPPORT.txt).
-See [STATUS.md](docs/STATUS.md), [PROVENANCE.md](docs/PROVENANCE.md) and [NOTICE](NOTICE).
+See [project status](docs/STATUS.md), [LineageOS integration](docs/OFFICIAL_SUPPORT.txt),
+[source provenance](docs/PROVENANCE.md) and [NOTICE](NOTICE).

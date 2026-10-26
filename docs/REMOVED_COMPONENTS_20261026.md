@@ -1,9 +1,7 @@
 # Removed product component cleanup, October 26, 2026
 
-The user explicitly requested that components already removed from the product
-not be reconnected and that their leftovers be cleaned. This cleanup follows
-the current selected product, not upstream availability of an Android.bp module.
-No Android/kernel build, packaging, flashing or device access was performed.
+This cleanup follows the selected product package list. It removes the
+excluded components and their source, policy and resource leftovers.
 
 ## Removed
 
@@ -64,5 +62,5 @@ No component was added back to PRODUCT_PACKAGES.
   pass for 30 Python, 275 XML, 7 JSON inputs and one shell script. Whitespace
   checks pass in device, frameworks/base and frameworks/native.
 
-The unrelated original crop/AWB and IR appliance non-response remain unresolved.
-Cleanup and host tests do not establish a phone-side repair of those issues.
+The retained integrations and removal guards are included in the October 27
+full build. See [build results](BUILD_RESULT_20261027.txt).

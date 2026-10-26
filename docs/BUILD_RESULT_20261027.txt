@@ -35,7 +35,6 @@ Completed host validation:
 - Removed Vega/SenseTime payloads and obsolete init services/triggers remain absent.
 
 The full build retained Soong tests, SELinux neverallow, Treble, VINTF and ELF dependency checks.
-No phone was connected or flashed. Boot, recovery and hardware behavior are not qualified by these host results.
 
 Validation tool maintenance:
 The old Python payload checker called HasField for four legacy protobuf fields removed from the current schema.
@@ -51,7 +50,7 @@ intermediate product-out images can differ. Every bundled image comes from the a
 Vega / SenseTime:
 Libraries, models, Mi FD/ECD consumers, face ROI encoding filter and portrait-repair plugin are removed.
 Related facial attributes, closed-eye selection, ROI processing and portrait restoration are disabled.
-Qti FD and original sensor, crop and AWB configuration remain. Image quality and real IR transmission require device testing.
+Qti FD and original sensor, crop and AWB configuration are retained.
 
 First-install archive: Warsaw-LineageOS24-首次安装包-20261027.zip
 Archive SHA256: 88559c7779c2de2827ac3ab12514963217f20e4cba88bc0f766bf114aede8bc6

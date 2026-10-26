@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Run the source formatter against this checkout's org.json without an Android build."""
+"""Run the source formatter against this checkout's org.json with host Java tools."""
 from pathlib import Path
 import argparse
 import subprocess

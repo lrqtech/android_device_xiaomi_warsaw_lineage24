@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Run stock ARM64 beauty selection and Android org.json on the selected OEM tables.
 
-Only temporary host executables/classes are used. No APK or Android product build.
-The app parser contract is transcribed, not an execution of the APK UI.
+The harness uses temporary host executables/classes and a transcription of the
+app parser contract.
 """
 from pathlib import Path
 import argparse, hashlib, io, json, re, struct, subprocess, sys, tempfile

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Run the actual provider RPC hooks with modeled external services.
 
-Requires pyelftools and Unicorn. Does not build or access a device.
+Requires pyelftools and Unicorn for host execution.
 """
 from pathlib import Path
 import argparse

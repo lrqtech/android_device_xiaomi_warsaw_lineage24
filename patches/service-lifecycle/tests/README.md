@@ -6,12 +6,9 @@ Run from the Android source root:
 python3 device/xiaomi/warsaw/patches/service-lifecycle/tests/run-tests.py --report /tmp/warsaw-service-lifecycle.json
 ```
 
-The host JDK compiles complete selected source files with modeled Android APIs.
-No Android build, device connection or hardware write occurs. The JSON includes
-source hashes and individual outcomes for 28 active-framework cases: thermal
-callback (8), biometric registry (10) and camera vibration gain (10).
-Removed components have no test cases or source dependencies in this runner.
-Passing these tests does not establish Android linkage, HAL ABI or device
-behavior. Optional `--baseline DIR --allow-failures` uses saved pre-edit source
-under the relative keys in the production map; unchanged dependencies may use
+The host JDK compiles the selected source files with modeled Android APIs.
+The JSON records source hashes and outcomes for 28 cases: thermal callback (8),
+biometric registry (10) and camera vibration gain (10). Removed components have
+no dependencies in this runner. Optional `--baseline DIR --allow-failures` uses
+saved pre-edit source under the production-map keys; unchanged dependencies use
 current source when absent from the baseline.
