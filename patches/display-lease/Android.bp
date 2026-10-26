@@ -1,8 +1,0 @@
-cc_test {
-    name: "warsaw_game_frame_rate_lease_test",
-    srcs: ["tests/WarsawGameFrameRateLeaseTest.cpp"],
-    local_include_dirs: ["."],
-    shared_libs: ["libbinder", "libutils", "liblog"],
-    cflags: ["-Wall", "-Werror"],
-    test_suites: ["device-tests"],
-}

@@ -2746,6 +2746,24 @@ index 1a41bfd6fce5cf3bce5d7b65bac898b853b034a2..bc2b9737e2f345ca2b01ce84c8b1ae4e
  
  // Set up SELinux logging to be written to kmsg, to match init's logging.
  void SelinuxSetupKernelLogging();
+diff --git a/init/snapuserd_transition.cpp b/init/snapuserd_transition.cpp
+index 1d535b56baadecf1f6c907625438cfc1684ee18b..2214b24deab296a8e02d49190bf5f4d0384e3352 100644
+--- a/init/snapuserd_transition.cpp
++++ b/init/snapuserd_transition.cpp
+@@ -325,9 +325,11 @@ bool SnapuserdSelinuxHelper::TestSnapuserdIsReady() {
+         return false;
+     }
+ 
+-    void* addr;
++    void* addr = nullptr;
+     ssize_t page_size = getpagesize();
+-    if (posix_memalign(&addr, page_size, page_size) < 0) {
++    const int allocation_error = posix_memalign(&addr, page_size, page_size);
++    if (allocation_error != 0) {
++        errno = allocation_error;
+         PLOG(ERROR) << "posix_memalign with page size " << page_size;
+         return false;
+     }
 diff --git a/init/subcontext.cpp b/init/subcontext.cpp
 index 37f9fadeaf681535ec3c59bb16b2580937dd5f5b..eaa453014657503d721b8031c1f5a3b04ca876b0 100644
 --- a/init/subcontext.cpp

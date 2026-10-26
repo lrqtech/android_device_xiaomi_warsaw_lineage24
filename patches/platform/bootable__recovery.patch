@@ -414,7 +414,7 @@ index cb1db1851239356a8656cdd9fd323ba351d1136d..e753384c65f9886eebaf559b908af22b
  
    if (fd.block_cache) {
 diff --git a/install/adb_install.cpp b/install/adb_install.cpp
-index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8dbb1bf0c6e 100644
+index 24b937b3d6deeebd101147b2c3db43d5fa831707..e1c0bc79caa14d7b61ba019da7b2e61241978b4a 100644
 --- a/install/adb_install.cpp
 +++ b/install/adb_install.cpp
 @@ -29,6 +29,7 @@
@@ -425,7 +425,15 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
  #include <functional>
  #include <map>
  #include <utility>
-@@ -55,8 +56,10 @@
+@@ -43,6 +44,7 @@
+ 
+ #include "fuse_sideload.h"
+ #include "install/install.h"
++#include "install/minadbd_io.h"
+ #include "install/wipe_data.h"
+ #include "minadbd/types.h"
+ #include "otautil/sysutil.h"
+@@ -55,8 +57,10 @@
  using CommandFunction = std::function<std::pair<bool, bool>()>;
  
  static bool SetUsbConfig(const std::string& state) {
@@ -438,15 +446,30 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
  }
  
  // Parses the minadbd command in |message|; returns MinadbdCommand::kError upon errors.
-@@ -156,22 +159,26 @@ static auto AdbRebootHandler(MinadbdCommand command, InstallResult* result,
+@@ -82,7 +86,7 @@ static bool WriteStatusToFd(MinadbdCommandStatus status, int fd) {
+   android::base::put_unaligned(message + strlen(kMinadbdStatusPrefix), status);
+ 
+   if (!android::base::WriteFully(fd, message, kMinadbdMessageSize)) {
+-    PLOG(ERROR) << "Failed to write message " << message;
++    PLOG(ERROR) << "Failed to write minadbd status";
+     return false;
+   }
+   return true;
+@@ -156,22 +160,31 @@ static auto AdbRebootHandler(MinadbdCommand command, InstallResult* result,
  // Parses and executes the command from minadbd. Returns whether the caller should keep waiting for
  // next command.
  static bool HandleMessageFromMinadbd(int socket_fd,
 -                                     const std::map<MinadbdCommand, CommandFunction>& command_map) {
-+                                     const std::map<MinadbdCommand, CommandFunction>& command_map,
-+                                     bool* transport_failed) {
++                                    const std::map<MinadbdCommand, CommandFunction>& command_map,
++                                    bool* transport_failed, bool* peer_closed) {
    char buffer[kMinadbdMessageSize];
-   if (!android::base::ReadFully(socket_fd, buffer, kMinadbdMessageSize)) {
+-  if (!android::base::ReadFully(socket_fd, buffer, kMinadbdMessageSize)) {
++  auto read_result = recovery::ReadMinadbdMessage(socket_fd, buffer, sizeof(buffer));
++  if (read_result == recovery::MinadbdReadResult::kEof) {
++    *peer_closed = true;
++    return false;
++  }
++  if (read_result == recovery::MinadbdReadResult::kError) {
      PLOG(ERROR) << "Failed to read message from minadbd";
 +    *transport_failed = true;
      return false;
@@ -466,7 +489,7 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
      return false;
    }
  
-@@ -181,22 +188,35 @@ static bool HandleMessageFromMinadbd(int socket_fd,
+@@ -181,22 +194,35 @@ static bool HandleMessageFromMinadbd(int socket_fd,
    LOG(INFO) << "Command " << static_cast<uint32_t>(command_type) << " finished with " << result;
    if (!WriteStatusToFd(result ? MinadbdCommandStatus::kSuccess : MinadbdCommandStatus::kFailure,
                         socket_fd)) {
@@ -508,7 +531,7 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
    constexpr int EPOLL_MAX_EVENTS = 10;
    struct epoll_event ev = {};
    ev.events = EPOLLIN | EPOLLHUP;
-@@ -204,41 +224,35 @@ static void ListenAndExecuteMinadbdCommands(
+@@ -204,41 +230,49 @@ static void ListenAndExecuteMinadbdCommands(
    struct epoll_event events[EPOLL_MAX_EVENTS];
    if (epoll_ctl(epoll_fd.get(), EPOLL_CTL_ADD, socket_fd.get(), &ev) == -1) {
      PLOG(ERROR) << "Failed to add socket fd to epoll";
@@ -519,6 +542,7 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
 -
 -  // Set the timeout to be 300s when waiting for minadbd commands.
    constexpr int TIMEOUT_MILLIS = 300 * 1000;
++  bool command_acknowledged = false;
    while (true) {
 -    // Reset the progress bar and the background image before each command.
      ui->SetProgressType(RecoveryUI::EMPTY);
@@ -551,25 +575,38 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
 -        LOG(INFO) << "Socket has been closed";
 -        kill(minadbd_pid, SIGKILL);
 -        return;
++      if (events[n].events & EPOLLERR) return finish(false);
 +      // A final message may arrive with HUP. Process readable bytes first.
 +      if (events[n].events & EPOLLIN) {
 +        bool transport_failed = false;
-+        bool keep_waiting = HandleMessageFromMinadbd(socket_fd.get(), command_map, &transport_failed);
++        bool peer_closed = false;
++        bool keep_waiting = HandleMessageFromMinadbd(socket_fd.get(), command_map, &transport_failed,
++                                                     &peer_closed);
 +        if (transport_failed) return finish(false);
++        if (peer_closed) {
++          // minadbd closes this socket after receiving the install status.
++          *command_completed = command_acknowledged;
++          return finish(command_acknowledged);
++        }
++        command_acknowledged = true;
 +        if (!keep_waiting) {
 +          *command_completed = true;
 +          return finish(true);
 +        }
++        // Drain any remaining bytes before accepting HUP as a clean close.
++        continue;
        }
 -      if (!HandleMessageFromMinadbd(socket_fd.get(), command_map)) {
 -        kill(minadbd_pid, SIGKILL);
 -        return;
 +      if (events[n].events & (EPOLLHUP | EPOLLERR)) {
-+        return finish((events[n].events & EPOLLERR) == 0);
++        bool clean_close = command_acknowledged;
++        *command_completed = clean_close;
++        return finish(clean_close);
        }
      }
    }
-@@ -277,22 +291,42 @@ static void ListenAndExecuteMinadbdCommands(
+@@ -277,22 +311,42 @@ static void ListenAndExecuteMinadbdCommands(
  //      exit
  //                               b11. exit the listening loop
  //
@@ -618,7 +655,7 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
    }
    if (child == 0) {
      recovery_socket.reset();
-@@ -301,55 +335,64 @@ static void CreateMinadbdServiceAndExecuteCommands(
+@@ -301,55 +355,64 @@ static void CreateMinadbdServiceAndExecuteCommands(
        "--socket_fd",
        std::to_string(minadbd_socket.release()),
      };
@@ -711,7 +748,7 @@ index 24b937b3d6deeebd101147b2c3db43d5fa831707..b2dc84ea447adaf5168c53f433ecf8db
  }
  
  InstallResult ApplyFromAdb(Device* device, bool rescue_mode, Device::BuiltinAction* reboot_action) {
-@@ -393,17 +436,21 @@ InstallResult ApplyFromAdb(Device* device, bool rescue_mode, Device::BuiltinActi
+@@ -393,17 +456,21 @@ InstallResult ApplyFromAdb(Device* device, bool rescue_mode, Device::BuiltinActi
      ui->Print("\n\nWaiting for rescue commands...\n");
    }
  
@@ -941,6 +978,57 @@ index 1e5c6e46a19f2db2f0a74181f6a1f3fbd2e7fec2..857cd31e86f179590a35063a4dcf96a3
 -  VolumeManager::Instance()->volumeUnmount(vi.mId);
    return result;
  }
+diff --git a/install/include/install/minadbd_io.h b/install/include/install/minadbd_io.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..80dcc98704b53d7a017ec8ff033c1b82fefed6b3
+--- /dev/null
++++ b/install/include/install/minadbd_io.h
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++#pragma once
++
++#include <errno.h>
++#include <stddef.h>
++#include <unistd.h>
++
++namespace recovery {
++
++enum class MinadbdReadResult { kMessage, kEof, kError };
++
++// A clean close is different from a truncated command. EPOLLIN can report either.
++inline MinadbdReadResult ReadMinadbdMessage(int fd, char* buffer, size_t size) {
++  size_t received = 0;
++  while (received < size) {
++    ssize_t count = read(fd, buffer + received, size - received);
++    if (count < 0) {
++      if (errno == EINTR) continue;
++      return MinadbdReadResult::kError;
++    }
++    if (count == 0) {
++      if (received == 0) return MinadbdReadResult::kEof;
++      errno = ENODATA;
++      return MinadbdReadResult::kError;
++    }
++    received += static_cast<size_t>(count);
++  }
++  return MinadbdReadResult::kMessage;
++}
++
++}  // namespace recovery
 diff --git a/install/install.cpp b/install/install.cpp
 index 2e8b7655aecc816b3348c5d8ca9f0dca76a1a05d..e50ace866b2d319b02a4d1871940e99d3130b543 100644
 --- a/install/install.cpp
@@ -1690,3 +1778,95 @@ index 50f6cc44aea2a2fb6d11acdfbf7c7aba8333494c..d0f01b43c1774f6ab637e6b0bc512ca2
  }
  
  bool dm_find_system() {
+diff --git a/tests/unit/minadbd_io_test.cpp b/tests/unit/minadbd_io_test.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..d51655928d39686ca17cd8985adbe7936d0152d2
+--- /dev/null
++++ b/tests/unit/minadbd_io_test.cpp
+@@ -0,0 +1,86 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include "install/minadbd_io.h"
++
++#include <gtest/gtest.h>
++#include <sys/socket.h>
++
++#include <string>
++#include <thread>
++
++namespace {
++class MinadbdIoTest : public ::testing::Test {
++ protected:
++  void SetUp() override {
++    ASSERT_EQ(0, socketpair(AF_UNIX, SOCK_STREAM, 0, sockets));
++  }
++  void TearDown() override {
++    for (int fd : sockets)
++      if (fd >= 0) close(fd);
++  }
++  void ClosePeer() {
++    close(sockets[1]);
++    sockets[1] = -1;
++  }
++  int sockets[2] = { -1, -1 };
++};
++
++TEST_F(MinadbdIoTest, FinalMessageFollowedByClose) {
++  constexpr char message[] = "12345678";
++  ASSERT_EQ(8, write(sockets[1], message, 8));
++  ClosePeer();
++  char buffer[8];
++  EXPECT_EQ(recovery::MinadbdReadResult::kMessage,
++            recovery::ReadMinadbdMessage(sockets[0], buffer, sizeof(buffer)));
++  EXPECT_EQ(std::string(message, 8), std::string(buffer, 8));
++  EXPECT_EQ(recovery::MinadbdReadResult::kEof,
++            recovery::ReadMinadbdMessage(sockets[0], buffer, sizeof(buffer)));
++}
++
++TEST_F(MinadbdIoTest, EmptyConnectionCloseIsNotAMessage) {
++  ClosePeer();
++  char buffer[8];
++  EXPECT_EQ(recovery::MinadbdReadResult::kEof,
++            recovery::ReadMinadbdMessage(sockets[0], buffer, sizeof(buffer)));
++}
++
++TEST_F(MinadbdIoTest, TruncatedCommandIsAnError) {
++  ASSERT_EQ(3, write(sockets[1], "123", 3));
++  ClosePeer();
++  char buffer[8];
++  EXPECT_EQ(recovery::MinadbdReadResult::kError,
++            recovery::ReadMinadbdMessage(sockets[0], buffer, sizeof(buffer)));
++  EXPECT_EQ(ENODATA, errno);
++}
++
++TEST_F(MinadbdIoTest, FragmentedCommandIsReassembled) {
++  ASSERT_EQ(3, write(sockets[1], "123", 3));
++  std::thread writer([&]() { EXPECT_EQ(5, write(sockets[1], "45678", 5)); });
++  char buffer[8];
++  EXPECT_EQ(recovery::MinadbdReadResult::kMessage,
++            recovery::ReadMinadbdMessage(sockets[0], buffer, sizeof(buffer)));
++  writer.join();
++  EXPECT_EQ("12345678", std::string(buffer, 8));
++}
++
++TEST(MinadbdIoErrors, InvalidDescriptorFails) {
++  char buffer[8];
++  EXPECT_EQ(recovery::MinadbdReadResult::kError,
++            recovery::ReadMinadbdMessage(-1, buffer, sizeof(buffer)));
++  EXPECT_EQ(EBADF, errno);
++}
++}  // namespace

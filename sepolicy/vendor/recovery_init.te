@@ -3,3 +3,12 @@
 recovery_only(`
 allow init vendor_sysfs_usb_device:file { open write };
 ')
+
+recovery_only(`
+# Filesystem capability and block-layout detection during format/install.
+allow recovery sysfs_fs_f2fs:file r_file_perms;
+allow recovery sysfs_memory:dir search;
+allow recovery sysfs_memory:file r_file_perms;
+allow recovery proc_meminfo:file r_file_perms;
+get_prop(recovery, test_harness_prop)
+')

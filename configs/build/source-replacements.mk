@@ -109,3 +109,6 @@ PRODUCT_PACKAGES += \
     vendor_firmware_mnt_mountpoint \
     warsaw_vendor_modem_firmware_mountpoint \
     warsaw_product_vm_system_mountpoint
+
+# MI_RIC invokes awk through PATH during boot-time diagnostics.
+PRODUCT_PACKAGES += awk_vendor

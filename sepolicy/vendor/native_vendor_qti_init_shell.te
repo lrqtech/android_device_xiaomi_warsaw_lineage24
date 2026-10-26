@@ -56,9 +56,7 @@ allow vendor_qti_init_shell vendor_ipacm_prop:property_service { set };
 
 allow vendor_qti_init_shell vendor_ipacm_prop:file { read getattr map open };
 
-allow vendor_qti_init_shell vendor_msm_irqbalance_prop:property_service { set };
 
-allow vendor_qti_init_shell vendor_msm_irqbalance_prop:file { read getattr map open };
 
 allow vendor_qti_init_shell vendor_dataqti_prop:property_service { set };
 
@@ -284,7 +282,6 @@ allow vendor_qti_init_shell vendor_sysfs_usbpd_device:file { setattr };
 
 allow vendor_qti_init_shell vendor_sysfs_msm_power:file { ioctl read write getattr lock append map open watch watch_reads };
 
-allow vendor_qti_init_shell vendor_msm_irqbalanced_exec:file { getattr };
 
 allow vendor_qti_init_shell vendor_wifi_prop:property_service { set };
 

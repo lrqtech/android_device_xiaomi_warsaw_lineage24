@@ -78,3 +78,12 @@ get_prop({ cameraserver platform_app system_app system_server }, warsaw_camerami
 
 # The dedicated camera domain reads the CameraMind enablement property.
 get_prop(warsaw_camera_app, warsaw_cameramind_prop)
+
+# The camera APK has its own domain instead of platform_app. It uses the same
+# authenticated intentaware socket as the other CameraMind clients.
+allow warsaw_camera_app cameramind_app:unix_stream_socket connectto;
+
+# Thermal zones are reached through /sys/class/thermal symlinks.
+allow cameramind_app sysfs_thermal:lnk_file read;
+# app_domain already supplies Binder access to gpuservice.
+allow cameramind_app gpu_service:service_manager find;

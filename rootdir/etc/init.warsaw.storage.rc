@@ -1,0 +1,3 @@
+# fstab mounts rescue during fs; its cache/update-engine labels belong to init.
+on post-fs
+    restorecon_recursive /mnt/rescue

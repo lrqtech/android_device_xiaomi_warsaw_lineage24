@@ -1,0 +1,688 @@
+diff --git a/keystore2/src/lib.rs b/keystore2/src/lib.rs
+index fc53b91e..0a9f4474 100644
+--- a/keystore2/src/lib.rs
++++ b/keystore2/src/lib.rs
+@@ -45,6 +45,7 @@ pub mod utils;
+ 
+ mod attestation_key_utils;
+ mod audit_log;
++mod early_boot_notification;
+ mod gc;
+ mod km_compat;
+ mod super_key;
+diff --git a/keystore2/src/maintenance.rs b/keystore2/src/maintenance.rs
+index b192f843..e892fc17 100644
+--- a/keystore2/src/maintenance.rs
++++ b/keystore2/src/maintenance.rs
+@@ -15,6 +15,7 @@
+ //! This module implements IKeystoreMaintenance AIDL interface.
+ 
+ use crate::database::{KeyEntryLoadBits, KeyType};
++use crate::early_boot_notification::{BootNotification, Notification};
+ use crate::error::into_logged_binder;
+ use crate::error::map_km_error;
+ use crate::error::Error;
+@@ -92,6 +93,36 @@ pub trait DeleteListener {
+     fn delete_user(&self, user: AndroidUserId) -> Result<()>;
+ }
+ 
++static TEE_EARLY_BOOT: BootNotification = BootNotification::new();
++static STRONGBOX_EARLY_BOOT: BootNotification = BootNotification::new();
++
++#[derive(Clone)]
++struct EarlyBootDevice(SecurityLevel);
++
++impl Notification for EarlyBootDevice {
++    type Error = anyhow::Error;
++
++    fn send(&self) -> Result<()> {
++        Maintenance::call_with_watchdog(self.0, "earlyBootEnded", &|dev| dev.earlyBootEnded(), None)
++    }
++
++    fn retryable(error: &anyhow::Error) -> bool {
++        error.downcast_ref::<Error>()
++            == Some(&Error::Km(ErrorCode::SECURE_HW_COMMUNICATION_FAILED))
++    }
++
++    fn record(&self, result: &Result<()>) {
++        match result {
++            Ok(()) => info!("earlyBootEnded acknowledged by {:?}", self.0),
++            Err(error) => error!("earlyBootEnded failed for {:?}: {error:?}", self.0),
++        }
++    }
++
++    fn spawn_failed(&self, error: &std::io::Error) {
++        error!("Cannot start earlyBootEnded retry for {:?}: {error}", self.0);
++    }
++}
++
+ /// This struct is defined to implement the aforementioned AIDL interface.
+ pub struct Maintenance {
+     delete_listener: Box<dyn DeleteListener + Send + Sync + 'static>,
+@@ -239,7 +270,32 @@ impl Maintenance {
+         {
+             error!("SUPER_KEY.set_up_boot_level_cache failed: {e:?}");
+         }
+-        Maintenance::call_on_all_security_levels("earlyBootEnded", |dev| dev.earlyBootEnded(), None)
++        Self::notify_early_boot_ended()
++    }
++
++    fn notify_early_boot_ended() -> Result<()> {
++        let mut first_error = None;
++        for (level, notification) in [
++            (SecurityLevel::TRUSTED_ENVIRONMENT, &TEE_EARLY_BOOT),
++            (SecurityLevel::STRONGBOX, &STRONGBOX_EARLY_BOOT),
++        ] {
++            let result = notification.notify(EarlyBootDevice(level), format!("early-boot-{}", level.0));
++            if let Err(error) = result {
++                if level == SecurityLevel::STRONGBOX
++                    && error.downcast_ref::<Error>()
++                        == Some(&Error::Km(ErrorCode::HARDWARE_TYPE_UNAVAILABLE))
++                {
++                    info!("earlyBootEnded: no StrongBox device is available");
++                    continue;
++                }
++                // Notify both devices even if one fails. Return the original failure to vold;
++                // a background transport retry must not turn it into a successful acknowledgement.
++                if first_error.is_none() {
++                    first_error = Some(error);
++                }
++            }
++        }
++        first_error.map_or(Ok(()), Err)
+     }
+ 
+     /// Spawns a thread to send module info if it hasn't already been sent. The thread first waits
+@@ -419,6 +475,14 @@ impl Maintenance {
+         }
+         writeln!(f)?;
+ 
++        writeln!(
++            f,
++            "earlyBootEnded: TEE={:?}, StrongBox={:?}",
++            TEE_EARLY_BOOT.status(),
++            STRONGBOX_EARLY_BOOT.status()
++        )?;
++        writeln!(f)?;
++
+         // Display module attestation information
+         {
+             let info = ENCODED_MODULE_INFO.read().unwrap();
+diff --git a/keystore2/src/shared_secret_negotiation.rs b/keystore2/src/shared_secret_negotiation.rs
+index 24919529..91cef308 100644
+--- a/keystore2/src/shared_secret_negotiation.rs
++++ b/keystore2/src/shared_secret_negotiation.rs
+@@ -14,8 +14,9 @@
+ 
+ //! This module implements the shared secret negotiation.
+ 
+-use crate::error::{map_binder_status, map_binder_status_code, Error};
++use crate::error::{map_binder_status, map_binder_status_code, map_km_error, Error};
+ use crate::globals::get_keymint_device;
++use android_hardware_security_keymint::aidl::android::hardware::security::keymint::ErrorCode::ErrorCode;
+ use android_hardware_security_keymint::aidl::android::hardware::security::keymint::SecurityLevel::SecurityLevel;
+ use android_hardware_security_keymint::binder::Strong;
+ use android_hardware_security_sharedsecret::aidl::android::hardware::security::sharedsecret::{
+@@ -23,7 +24,7 @@ use android_hardware_security_sharedsecret::aidl::android::hardware::security::s
+     SharedSecretParameters::SharedSecretParameters,
+ };
+ use android_security_compat::aidl::android::security::compat::IKeystoreCompatService::IKeystoreCompatService;
+-use anyhow::Result;
++use anyhow::{Context, Result};
+ use binder::get_declared_instances;
+ use keystore2_hal_names::get_hidl_instances;
+ use log::{error, info, warn};
+@@ -39,13 +40,24 @@ use std::time::Duration;
+ /// During the first phase of the negotiation it will again try every second until
+ /// all instances have responded successfully to account for instances that register early but
+ /// are not fully functioning at this time due to hardware delays or boot order dependency issues.
+-/// An error during the second phase or a checksum mismatch leads to a panic.
++/// An error during the second phase or a checksum mismatch stops the sequence before
++/// RootOfTrust transfer.
+ pub fn perform_shared_secret_negotiation() {
+     std::thread::spawn(|| {
+         let participants = list_participants()
+             .expect("In perform_shared_secret_negotiation: Trying to list participants.");
+         let connected = connect_participants(participants);
+-        negotiate_shared_secret(connected);
++        if let Err(e) = negotiate_shared_secret(connected) {
++            error!("Shared secret negotiation failed: {e:?}");
++            if let SharedSecretError::Checksum(_) = e {
++                error!(concat!(
++                    "This device is not provisioned correctly. ",
++                    "User authorization and other security functions may not work. ",
++                    "Contact the OEM for provisioning instructions.",
++                ));
++            }
++            return;
++        }
+         info!("Shared secret negotiation concluded successfully.");
+ 
+         // Once shared secret negotiation is done, the StrongBox and TEE have a common key that
+@@ -229,7 +241,7 @@ fn connect_participants(
+ 
+ fn negotiate_shared_secret(
+     participants: Vec<(Strong<dyn ISharedSecret>, SharedSecretParticipant)>,
+-) {
++) -> Result<(), SharedSecretError> {
+     // Phase 1: Get the sharing parameters from all participants.
+     let mut params = loop {
+         let result: Result<Vec<SharedSecretParameters>, SharedSecretError> = participants
+@@ -267,59 +279,95 @@ fn negotiate_shared_secret(
+         }
+     });
+ 
+-    if let Err(e) = negotiation_result {
+-        error!("In negotiate_shared_secret: {e:?}");
+-        if let SharedSecretError::Checksum(_) = e {
+-            error!(concat!(
+-                "This means that this device is NOT PROVISIONED CORRECTLY.\n",
+-                "User authorization and other security functions will not work\n",
+-                "as expected. Please contact your OEM for instructions.",
+-            ));
+-        }
+-    }
++    negotiation_result.map(|_| ())
+ }
+ 
+-/// Perform RootOfTrust transfer from TEE to StrongBox (if available).
+-pub fn transfer_root_of_trust() {
+-    let strongbox = match get_keymint_device(&SecurityLevel::STRONGBOX) {
+-        Ok((s, _, _)) => s,
+-        Err(_e) => {
+-            info!("No StrongBox Keymint available, so no RoT transfer");
+-            return;
++/// Distinguish a verified transfer from devices that do not use this protocol.
++#[derive(Debug, PartialEq, Eq)]
++enum RootOfTrustTransfer {
++    Transferred,
++    AlreadySet,
++    NotSupported,
++    NoStrongBox,
++}
++
++/// Each attempt obtains a fresh challenge. A failed reply to sendRootOfTrust can
++/// mean that StrongBox accepted the data but the acknowledgement was lost; the
++/// old challenge must not be reused in that case.
++fn transfer_root_of_trust_once() -> Result<RootOfTrustTransfer> {
++    let (strongbox, hardware_info, _) = match get_keymint_device(&SecurityLevel::STRONGBOX) {
++        Ok(device) => device,
++        Err(e) => {
++            if matches!(
++                e.root_cause().downcast_ref::<Error>(),
++                Some(Error::Km(ErrorCode::HARDWARE_TYPE_UNAVAILABLE))
++            ) {
++                return Ok(RootOfTrustTransfer::NoStrongBox);
++            }
++            return Err(e).context("Connecting to StrongBox for RootOfTrust transfer");
+         }
+     };
+-    // Ask the StrongBox KeyMint for a challenge.
+-    let challenge = match strongbox.getRootOfTrustChallenge() {
++    // get_keymint_device normalizes this to the AIDL version times 100.
++    // The RootOfTrust transfer methods were added in KeyMint v2.
++    if hardware_info.versionNumber < 200 {
++        return Ok(RootOfTrustTransfer::NotSupported);
++    }
++    let challenge = match map_km_error(strongbox.getRootOfTrustChallenge()) {
+         Ok(data) => data,
+-        Err(e) => {
+-            // If StrongBox doesn't provide a challenge, it might be because:
+-            // - it already has RootOfTrust information
+-            // - it's a KeyMint v1 implementation that doesn't understand the method.
+-            // In either case, we're done.
+-            info!("StrongBox does not provide a challenge, so no RoT transfer: {e:?}");
+-            return;
++        Err(Error::Km(ErrorCode::UNIMPLEMENTED)) => {
++            return Ok(RootOfTrustTransfer::NotSupported);
+         }
+-    };
+-    // Get the RoT info from the TEE
+-    let tee = match get_keymint_device(&SecurityLevel::TRUSTED_ENVIRONMENT) {
+-        Ok((s, _, _)) => s,
+-        Err(e) => {
+-            error!("No TEE KeyMint implementation found! {e:?}");
+-            return;
++        Err(Error::Km(ErrorCode::ROOT_OF_TRUST_ALREADY_SET)) => {
++            return Ok(RootOfTrustTransfer::AlreadySet);
+         }
++        Err(e) => return Err(e).context("Requesting a StrongBox RootOfTrust challenge"),
+     };
+-    let root_of_trust = match tee.getRootOfTrust(&challenge) {
+-        Ok(rot) => rot,
+-        Err(e) => {
+-            error!("TEE KeyMint failed to return RootOfTrust info: {e:?}");
+-            return;
++    let (tee, _, _) = get_keymint_device(&SecurityLevel::TRUSTED_ENVIRONMENT)
++        .context("Connecting to TEE for RootOfTrust transfer")?;
++    let root_of_trust = map_km_error(tee.getRootOfTrust(&challenge))
++        .context("Retrieving authenticated RootOfTrust data from TEE")?;
++    // Forward the authenticated CBOR unchanged. Validation belongs to StrongBox.
++    map_km_error(strongbox.sendRootOfTrust(&root_of_trust))
++        .context("Delivering RootOfTrust data to StrongBox")?;
++    Ok(RootOfTrustTransfer::Transferred)
++}
++
++fn transfer_root_of_trust_with_retry(
++    mut attempt: impl FnMut() -> Result<RootOfTrustTransfer>,
++    mut wait: impl FnMut(Duration),
++) -> Result<RootOfTrustTransfer> {
++    let mut delay = Duration::from_secs(1);
++    loop {
++        match attempt() {
++            Err(e)
++                if matches!(
++                    e.root_cause().downcast_ref::<Error>(),
++                    Some(Error::Km(ErrorCode::SECURE_HW_COMMUNICATION_FAILED))
++                ) =>
++            {
++                warn!("RootOfTrust transport failed; retrying in {delay:?}: {e:?}");
++                wait(delay);
++                delay = (delay * 2).min(Duration::from_secs(30));
++            }
++            result => return result,
+         }
+-    };
+-    // The RootOfTrust information is CBOR-serialized data, but we don't need to parse it.
+-    // Just pass it on to the StrongBox KeyMint instance.
+-    let result = strongbox.sendRootOfTrust(&root_of_trust);
+-    if let Err(e) = result {
+-        error!("Failed to send RootOfTrust to StrongBox: {e:?}");
+     }
+-    info!("RootOfTrust transfer process complete");
++}
++
++/// Called on the shared-secret negotiation thread only after successful
++/// negotiation. A temporary transport failure must not discard this boot event.
++pub fn transfer_root_of_trust() {
++    match transfer_root_of_trust_with_retry(transfer_root_of_trust_once, std::thread::sleep) {
++        Ok(RootOfTrustTransfer::Transferred) => {
++            info!("RootOfTrust transfer acknowledged by StrongBox")
++        }
++        Ok(RootOfTrustTransfer::AlreadySet) => info!("StrongBox reports RootOfTrust already set"),
++        Ok(RootOfTrustTransfer::NotSupported) => {
++            info!("StrongBox does not use RootOfTrust transfer")
++        }
++        Ok(RootOfTrustTransfer::NoStrongBox) => {
++            info!("No StrongBox KeyMint available for RootOfTrust transfer")
++        }
++        Err(e) => error!("RootOfTrust transfer failed: {e:?}"),
++    }
+ }
+diff --git a/keystore2/src/early_boot_notification.rs b/keystore2/src/early_boot_notification.rs
+new file mode 100644
+index 00000000..27cd0fea
+--- /dev/null
++++ b/keystore2/src/early_boot_notification.rs
+@@ -0,0 +1,126 @@
++// Copyright 2026 The Android Open Source Project
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++//! Retry an explicitly requested early-boot notification after transport recovery.
++
++use std::io;
++use std::sync::Mutex;
++use std::time::Duration;
++
++pub(crate) trait Notification: Clone + Send + 'static {
++    type Error;
++
++    fn send(&self) -> Result<(), Self::Error>;
++    fn retryable(error: &Self::Error) -> bool;
++    fn record(&self, result: &Result<(), Self::Error>);
++    fn spawn_failed(&self, error: &io::Error);
++
++    fn wait(&self, delay: Duration) {
++        std::thread::sleep(delay);
++    }
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub(crate) enum Status {
++    NotRequested,
++    Pending,
++    Acknowledged,
++    Failed,
++}
++
++struct State {
++    status: Status,
++    worker_running: bool,
++}
++
++pub(crate) struct BootNotification {
++    state: Mutex<State>,
++}
++
++impl BootNotification {
++    pub(crate) const fn new() -> Self {
++        Self { state: Mutex::new(State { status: Status::NotRequested, worker_running: false }) }
++    }
++
++    pub(crate) fn status(&self) -> Status {
++        self.state.lock().unwrap().status
++    }
++
++    pub(crate) fn notify<D: Notification>(
++        &'static self,
++        driver: D,
++        thread_name: String,
++    ) -> Result<(), D::Error> {
++        self.notify_with_spawn(driver, |work| {
++            std::thread::Builder::new().name(thread_name).spawn(work).map(|_| ())
++        })
++    }
++
++    fn notify_with_spawn<D: Notification>(
++        &'static self,
++        driver: D,
++        spawn: impl FnOnce(Box<dyn FnOnce() + Send>) -> io::Result<()>,
++    ) -> Result<(), D::Error> {
++        // Serialize this security level only. The retry worker never holds this lock while
++        // waiting, and no caller waits for the hardware to recover after a failed transaction.
++        let mut state = self.state.lock().unwrap();
++        let result = driver.send();
++        driver.record(&result);
++        state.status = Self::result_status::<D>(&result);
++        if state.status == Status::Pending && !state.worker_running {
++            state.worker_running = true;
++            let retry_driver = driver.clone();
++            if let Err(error) = spawn(Box::new(move || self.retry(retry_driver))) {
++                state.worker_running = false;
++                driver.spawn_failed(&error);
++            }
++        }
++        // A scheduled retry is not an acknowledgement: preserve the initial HAL error.
++        result
++    }
++
++    fn result_status<D: Notification>(result: &Result<(), D::Error>) -> Status {
++        match result {
++            Ok(()) => Status::Acknowledged,
++            Err(error) if D::retryable(error) => Status::Pending,
++            Err(_) => Status::Failed,
++        }
++    }
++
++    fn retry<D: Notification>(&self, driver: D) {
++        let mut delay = Duration::from_secs(1);
++        loop {
++            driver.wait(delay);
++            let mut state = self.state.lock().unwrap();
++            // An explicit call may have acknowledged the event or returned a terminal error
++            // while this worker was asleep. Do not replay an obsolete pending notification.
++            if state.status != Status::Pending {
++                state.worker_running = false;
++                return;
++            }
++            let result = driver.send();
++            driver.record(&result);
++            state.status = Self::result_status::<D>(&result);
++            if state.status != Status::Pending {
++                state.worker_running = false;
++                return;
++            }
++            delay = (delay * 2).min(Duration::from_secs(30));
++        }
++    }
++}
++
++#[cfg(test)]
++#[path = "early_boot_notification_tests.rs"]
++mod tests;
+diff --git a/keystore2/src/early_boot_notification_tests.rs b/keystore2/src/early_boot_notification_tests.rs
+new file mode 100644
+index 00000000..ff5b3529
+--- /dev/null
++++ b/keystore2/src/early_boot_notification_tests.rs
+@@ -0,0 +1,239 @@
++// SPDX-License-Identifier: Apache-2.0
++
++use super::*;
++use std::collections::VecDeque;
++use std::sync::Arc;
++
++#[derive(Clone)]
++struct Device(Arc<Mutex<Calls>>);
++
++#[derive(Default)]
++struct Calls {
++    replies: VecDeque<Result<(), i32>>,
++    sent: usize,
++    recorded: Vec<Result<(), i32>>,
++    delays: Vec<u64>,
++    spawn_errors: usize,
++}
++
++impl Device {
++    fn new(replies: impl IntoIterator<Item = Result<(), i32>>) -> Self {
++        Self(Arc::new(Mutex::new(Calls {
++            replies: replies.into_iter().collect(),
++            ..Calls::default()
++        })))
++    }
++}
++
++impl Notification for Device {
++    type Error = i32;
++    fn send(&self) -> Result<(), i32> {
++        let mut calls = self.0.lock().unwrap();
++        calls.sent += 1;
++        calls.replies.pop_front().expect("unexpected HAL transaction")
++    }
++    fn retryable(error: &i32) -> bool {
++        *error == -49
++    }
++    fn record(&self, result: &Result<(), i32>) {
++        self.0.lock().unwrap().recorded.push(*result);
++    }
++    fn spawn_failed(&self, _: &io::Error) {
++        self.0.lock().unwrap().spawn_errors += 1;
++    }
++    fn wait(&self, delay: Duration) {
++        self.0.lock().unwrap().delays.push(delay.as_secs());
++    }
++}
++
++type Work = Box<dyn FnOnce() + Send>;
++
++fn state() -> &'static BootNotification {
++    Box::leak(Box::new(BootNotification::new()))
++}
++
++fn notify(s: &'static BootNotification, d: &Device, workers: &mut Vec<Work>) -> Result<(), i32> {
++    s.notify_with_spawn(d.clone(), |work| {
++        workers.push(work);
++        Ok(())
++    })
++}
++
++#[test]
++fn no_notification_before_request() {
++    let s = state();
++    assert_eq!(s.status(), Status::NotRequested);
++    assert!(!s.state.lock().unwrap().worker_running);
++}
++
++#[test]
++fn immediate_acknowledgement_never_starts_worker() {
++    let (s, d, mut workers) = (state(), Device::new([Ok(())]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Ok(()));
++    assert!(workers.is_empty());
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn original_error_survives_scheduling_and_recovery() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Ok(())]), vec![]);
++    let returned = notify(s, &d, &mut workers);
++    assert_eq!(returned, Err(-49));
++    assert_eq!(s.status(), Status::Pending);
++    workers.pop().unwrap()();
++    assert_eq!(returned, Err(-49));
++    assert_eq!(s.status(), Status::Acknowledged);
++    assert_eq!(d.0.lock().unwrap().recorded, [Err(-49), Ok(())]);
++    assert!(!s.state.lock().unwrap().worker_running);
++}
++
++#[test]
++fn prolonged_transport_failure_uses_capped_backoff() {
++    let d = Device::new(std::iter::repeat_n(Err(-49), 9).chain([Ok(())]));
++    let (s, mut workers) = (state(), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    workers.pop().unwrap()();
++    assert_eq!(d.0.lock().unwrap().delays, [1, 2, 4, 8, 16, 30, 30, 30, 30]);
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn permanent_failure_is_not_retried_or_acknowledged() {
++    for error in [-1, -1000, -68] {
++        let (s, d, mut workers) = (state(), Device::new([Err(error)]), vec![]);
++        assert_eq!(notify(s, &d, &mut workers), Err(error));
++        assert!(workers.is_empty());
++        assert_eq!(s.status(), Status::Failed);
++    }
++}
++
++#[test]
++fn terminal_retry_error_stays_visible_and_stops_worker() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Err(-1000)]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    workers.pop().unwrap()();
++    assert_eq!(s.status(), Status::Failed);
++    assert_eq!(d.0.lock().unwrap().recorded, [Err(-49), Err(-1000)]);
++    assert!(!s.state.lock().unwrap().worker_running);
++}
++
++#[test]
++fn repeated_requests_share_one_retry_worker() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Err(-49), Ok(())]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    assert_eq!(workers.len(), 1);
++    workers.pop().unwrap()();
++    assert_eq!(d.0.lock().unwrap().sent, 3);
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn explicit_success_cancels_sleeping_retry() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Ok(())]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    assert_eq!(notify(s, &d, &mut workers), Ok(()));
++    workers.pop().unwrap()();
++    assert_eq!(d.0.lock().unwrap().sent, 2);
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn explicit_terminal_error_cancels_sleeping_retry() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Err(-1000)]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    assert_eq!(notify(s, &d, &mut workers), Err(-1000));
++    workers.pop().unwrap()();
++    assert_eq!(d.0.lock().unwrap().sent, 2);
++    assert_eq!(s.status(), Status::Failed);
++}
++
++#[test]
++fn later_failure_does_not_reuse_cached_acknowledgement() {
++    let (s, d, mut workers) = (state(), Device::new([Ok(()), Err(-49), Ok(())]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Ok(()));
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    workers.pop().unwrap()();
++    assert_eq!(d.0.lock().unwrap().sent, 3);
++}
++
++#[test]
++fn new_failure_while_old_worker_is_asleep_is_not_lost() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Ok(()), Err(-49), Ok(())]), vec![]);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    assert_eq!(notify(s, &d, &mut workers), Ok(()));
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    assert_eq!(workers.len(), 1);
++    workers.pop().unwrap()();
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn spawn_failure_preserves_pending_error_and_allows_another_request() {
++    let (s, d, mut workers) = (state(), Device::new([Err(-49), Err(-49), Ok(())]), vec![]);
++    assert_eq!(s.notify_with_spawn(d.clone(), |_| Err(io::Error::other("thread limit"))), Err(-49));
++    assert_eq!(s.status(), Status::Pending);
++    assert!(!s.state.lock().unwrap().worker_running);
++    assert_eq!(d.0.lock().unwrap().spawn_errors, 1);
++    assert_eq!(notify(s, &d, &mut workers), Err(-49));
++    workers.pop().unwrap()();
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn security_levels_have_independent_workers_and_results() {
++    let (tee, sb, a, b, mut workers) = (
++        state(),
++        state(),
++        Device::new([Err(-49), Ok(())]),
++        Device::new([Err(-49), Err(-1000)]),
++        vec![],
++    );
++    assert_eq!(notify(tee, &a, &mut workers), Err(-49));
++    assert_eq!(notify(sb, &b, &mut workers), Err(-49));
++    workers.pop().unwrap()();
++    workers.pop().unwrap()();
++    assert_eq!(tee.status(), Status::Acknowledged);
++    assert_eq!(sb.status(), Status::Failed);
++}
++
++#[test]
++fn real_thread_entrypoint_can_recover() {
++    let s = state();
++    let d = Device::new([Err(-49), Ok(())]);
++    assert_eq!(s.notify(d.clone(), "early-boot-test".into()), Err(-49));
++    let deadline = std::time::Instant::now() + Duration::from_secs(5);
++    while s.status() == Status::Pending {
++        assert!(std::time::Instant::now() < deadline, "worker did not finish");
++        std::thread::yield_now();
++    }
++    assert_eq!(s.status(), Status::Acknowledged);
++}
++
++#[test]
++fn concurrent_callers_create_one_worker() {
++    let s = state();
++    let d = Device::new(std::iter::repeat_n(Err(-49), 32).chain([Ok(())]));
++    let workers = Arc::new(Mutex::new(Vec::<Work>::new()));
++    let barrier = Arc::new(std::sync::Barrier::new(33));
++    let mut threads = Vec::new();
++    for _ in 0..32 {
++        let (d, workers, barrier) = (d.clone(), workers.clone(), barrier.clone());
++        threads.push(std::thread::spawn(move || {
++            barrier.wait();
++            s.notify_with_spawn(d, |work| {
++                workers.lock().unwrap().push(work);
++                Ok(())
++            })
++        }));
++    }
++    barrier.wait();
++    for thread in threads {
++        assert_eq!(thread.join().unwrap(), Err(-49));
++    }
++    assert_eq!(workers.lock().unwrap().len(), 1);
++    let work = workers.lock().unwrap().pop().unwrap();
++    work();
++    assert_eq!(s.status(), Status::Acknowledged);
++    assert_eq!(d.0.lock().unwrap().sent, 33);
++}

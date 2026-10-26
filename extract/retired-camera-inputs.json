@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "reason": "Vega/SenseTime feature retirement; these files must not remain in a prepared Warsaw input tree.",
+  "paths": [
+    "odm/etc/camera/SensePR_scene_configs.json",
+    "odm/etc/camera/facefocus_models/Vega_Attribute_Face_RGB_qnn2.24.15_int8_3.2.6_arm64.model",
+    "odm/etc/camera/facefocus_models/Vega_Detect.model",
+    "odm/etc/camera/facefocus_models/Vega_Detect_Sculpture.model",
+    "odm/etc/camera/facesr_ff_v6.0.25_qcom8750_rQsQ_hd@nb_20250311YuvQnn2.24.19x64Q35.3_20260318.model",
+    "odm/lib64/camera/components/com.mi.node.fd.so",
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.ecdsnapshotdet.so",
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.portraitrepair.so",
+    "odm/lib64/com.xiaomi.plugin.ecdengine.so",
+    "odm/lib64/libecdpreproc.so",
+    "odm/lib64/libportrait_repair_qnn.so",
+    "odm/lib64/libvega_common.so",
+    "vendor/lib64/libqcodec2_roiencfilter.so"
+  ]
+}

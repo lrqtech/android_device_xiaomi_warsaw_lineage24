@@ -215,3 +215,7 @@ allow tee otrp_data_file:file { ioctl read write create getattr setattr lock app
 allowxperm tee vendor_rpmb_device:chr_file ioctl { 0xb301 };
 
 allowxperm tee vendor_rpmb_device:blk_file ioctl { 0xb300 };
+
+# Captured during early qseecomd initialization on Warsaw.
+allow tee vendor_ufs_lun0_bsg_device:chr_file { getattr open read write ioctl };
+allowxperm tee vendor_ufs_lun0_bsg_device:chr_file ioctl { 0x2285 };

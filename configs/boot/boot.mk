@@ -4,15 +4,8 @@ WARSAW_BOOT_CONFIG := device/xiaomi/warsaw/configs/boot
 # GKI is built separately with the pinned Kleaf workspace, then its verified
 # Image and signed modules are consumed as one input set by the Android build.
 WARSAW_SOURCE_GKI_DIR := $(WARSAW_BOOT_DIR)/gki-no-kunit
-WARSAW_USE_OTA_GKI ?= false
-ifeq ($(WARSAW_USE_OTA_GKI),true)
-TARGET_PREBUILT_KERNEL := $(WARSAW_BOOT_DIR)/Image
-BOARD_PREBUILT_BOOTIMAGE := $(WARSAW_BOOT_DIR)/boot.img
-BOARD_PREBUILT_SYSTEM_DLKMIMAGE := $(WARSAW_BOOT_DIR)/system_dlkm.img
-else
 TARGET_PREBUILT_KERNEL := $(WARSAW_SOURCE_GKI_DIR)/Image
 BOARD_SYSTEM_DLKM_SRC := $(WARSAW_SOURCE_GKI_DIR)/system_dlkm
-endif
 
 # The unchanged OS4 userspace contains five 4 KiB-only IMS/data interface
 # libraries. Their per-module alignment exceptions are valid only with this
@@ -24,6 +17,9 @@ endif
 # ABL reads the SPL from AVB because the stock GKI header OS version is zero.
 # Keep the OTA boot SPL baseline for the matching source GKI and OEM modules.
 BOOT_SECURITY_PATCH := 2026-09-01
+# KeyMint reads this value when configuring the retained OS4 vendor implementation.
+# Keep the original vendor SPL independent of the rebuilt platform SPL.
+VENDOR_SECURITY_PATCH := 2026-09-01
 # The generic ramdisk is rebuilt from the current platform sources.
 INIT_BOOT_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 TARGET_KERNEL_VERSION := 6.6
@@ -75,15 +71,12 @@ BOARD_PREBUILT_VENDOR_DLKMIMAGE := $(WARSAW_BOOT_DIR)/vendor_dlkm.img
 BOARD_MKBOOTIMG_ARGS += --os_version 0 --os_patch_level 0
 BOARD_MKBOOTIMG_INIT_ARGS += --os_version 0 --os_patch_level 0
 
-# Diagnostic userdebug/eng images must boot permissive in both Android and
-# recovery. Keep the complete policy and neverallow checks so AVCs remain useful.
-ifneq ($(filter userdebug eng,$(TARGET_BUILD_VARIANT)),)
-BOARD_BOOTCONFIG += androidboot.selinux=permissive
-# This device has a kernel-less recovery; the generic build omits its cmdline.
-# Set it explicitly so recovery also requests permissive when booted separately.
-BOARD_RECOVERY_MKBOOTIMG_ARGS := $(BOARD_MKBOOTIMG_ARGS) --cmdline "androidboot.selinux=permissive"
-endif
-
 # Warsaw REC requires the verified MCA 99 percent PWM setting.
 # This only selects code linked into recovery and fastbootd.
 $(call soong_config_set_bool,warsaw_recovery,fan99,true)
+
+# Firmware mountpoints must exist in the ramdisk. Creating vendor-labelled
+# directories at runtime violates the platform's immutable-partition policy.
+define BOARD_RECOVERY_IMAGE_PREPARE
+mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/vendor/firmware_mnt $(TARGET_RECOVERY_ROOT_OUT)/vendor/firmware
+endef

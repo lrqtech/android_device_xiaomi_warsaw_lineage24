@@ -358,7 +358,6 @@ vendor.qcom.bluetooth.               u:object_r:vendor_bluetooth_prop:s0
 
 vendor.wc_transport.       u:object_r:vendor_bluetooth_prop:s0
 
-ctl.vendor.msm_irqbalance  u:object_r:vendor_msm_irqbalance_prop:s0
 
 ctl.vendor.port-bridge     u:object_r:vendor_ctl_port-bridge_prop:s0
 
@@ -706,7 +705,7 @@ persist.vendor.qcom.bluetooth.a2dp.       u:object_r:vendor_bluetooth_a2dp_mi_pr
 
 vendor.mm. u:object_r:vendor_audio_cloud_ctrl_mi_prop:s0
 
-persist.vendor.remoteauth.config         u:object_r:vendor_payment_security_prop:s0
+persist.vendor.remoteauth.config         u:object_r:vendor_warsaw_remoteauth_prop:s0 exact string
 
 persist.vendor.audio.cloud u:object_r:vendor_audio_cloud_ctrl_mi_prop:s0
 
@@ -939,3 +938,27 @@ vendor.mm.enable.qcom_parser u:object_r:vendor_video_prop:s0 exact bool
 
 vendor.all.modules.completed u:object_r:vendor_modprobe_prop:s0 exact bool
 vendor.all.modules.errors u:object_r:vendor_modprobe_prop:s0 exact int
+
+# The thermal daemon publishes completion of battery-current-limit setup.
+vendor.sys.thermal.bcl.boot_completed u:object_r:vendor_thermal_normal_prop:s0 exact bool
+
+# Queried by LocationService and OsAgent; no value is synthesized here.
+persist.vendor.sys.location.xtra.native_download u:object_r:vendor_warsaw_xtra_config_prop:s0 exact bool
+
+# Named readers captured in the strict camera window; keep default areas private.
+vendor.debug.egl.profiler u:object_r:vendor_warsaw_graphics_config_prop:s0 exact string
+vendor.debug.prerotation.disable u:object_r:vendor_warsaw_graphics_config_prop:s0 exact string
+ro.vendor.graphics.memory u:object_r:vendor_warsaw_graphics_config_prop:s0 exact string
+vendor.debug.egl.changepixelformat u:object_r:vendor_warsaw_graphics_config_prop:s0 exact string
+vendor.debug.egl.swapinterval u:object_r:vendor_warsaw_graphics_config_prop:s0 exact string
+vendor.gfx.perf_hint u:object_r:vendor_warsaw_graphics_config_prop:s0 exact string
+persist.vendor.low.cutoff u:object_r:vendor_camera_prop:s0 exact bool
+persist.vendor.cam.icap.dump u:object_r:vendor_camera_prop:s0 exact string
+persist.vendor.gallery.ocr.dump u:object_r:vendor_camera_prop:s0 exact string
+persist.vendor.fastrpc.process.attrs u:object_r:vendor_adsprpc_prop:s0 exact string
+persist.vendor.fastrpc.process.clockvote u:object_r:vendor_adsprpc_prop:s0 exact string
+
+# Exact getters in the retained camera APK; no default-area access.
+vendor.camera.debug.bracket.interval u:object_r:vendor_camera_prop:s0 exact int
+vendor.camera.debug.xrisp.evlist u:object_r:vendor_camera_prop:s0 exact string
+vendor.debug.ndd.frame_number u:object_r:vendor_camera_prop:s0 exact int

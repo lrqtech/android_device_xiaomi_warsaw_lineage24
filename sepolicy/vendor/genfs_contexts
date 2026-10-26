@@ -318,21 +318,13 @@ genfscon sysfs /devices/platform/soc/a600000.ssusb/a600000.dwc3/xhci-hcd.2.auto/
 
 genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/wireless u:object_r:vendor_sysfs_usb_supply:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon0/cable.0/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon0/cable.1/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon1/cable.0/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon1/cable.1/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon2/cable.0/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon2/cable.1/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon3/cable.0/ u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon3/cable.1/ u:object_r:vendor_sysfs_graphics:s0
 
 genfscon sysfs /devices/platform/soc/soc:mca_business_battery/power_supply/battery u:object_r:vendor_sysfs_battery_supply:s0
 
@@ -358,13 +350,9 @@ genfscon sysfs /devices/platform/soc/18590100.qcom,cpu7-cpu-l3-latfloor/devfreq 
 
 genfscon sysfs /devices/platform/soc/990000.i2c/i2c-0/0-0038/trusted_touch_type u:object_r:vendor_sysfs_trusted_touch_type:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon0/name u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon1/name u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon2/name u:object_r:vendor_sysfs_graphics:s0
 
-genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon/extcon3/name u:object_r:vendor_sysfs_graphics:s0
 
 genfscon sysfs /devices/platform/soc/1d84000.ufshc/qcom/boost_monitor_timer_ms u:object_r:vendor_sysfs_ufs:s0
 
@@ -1268,3 +1256,17 @@ genfscon sysfs /devices/virtual/thermal/thermal_message/torch_real_level u:objec
 
 # Match the OTA file label when the optional HDCP device creates this attribute.
 genfscon sysfs /devices/virtual/hdcp/msm_hdcp/min_level_change u:object_r:vendor_sysfs_graphics:s0
+
+# The OEM memory label covers the whole UFS LUN. Restore the standard block
+# subtree and uevent labels so vold can coldboot devices without memory writes.
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:0/block u:object_r:sysfs:s0
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:0/uevent u:object_r:sysfs:s0
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:0/block/sda/queue/discard_max_bytes u:object_r:vendor_sysfs_mmc_host:s0
+
+# Wake-source statistics for the retained I2C device; keep the dynamic wakeup ID.
+genfscon sysfs /devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a80000.i2c/i2c-3/3-0028/wakeup u:object_r:sysfs_wakeup:s0
+
+# Extcon IDs depend on probe order. Use the platform connector type for each
+# controller's complete extcon subtree instead of fixed numeric IDs.
+genfscon sysfs /devices/platform/soc/soc:qcom,msm-ext-disp/extcon u:object_r:sysfs_extcon:s0
+genfscon sysfs /devices/platform/soc/88e0000.qcom,msm-eud/extcon u:object_r:sysfs_extcon:s0

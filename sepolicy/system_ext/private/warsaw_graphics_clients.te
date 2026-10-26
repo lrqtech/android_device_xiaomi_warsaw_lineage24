@@ -17,3 +17,7 @@ typeattribute sdk_sandbox_next warsaw_ota_media_buffer_client;
 typeattribute vmlauncher_app warsaw_ota_media_buffer_client;
 typeattribute vzwomatrigger_app warsaw_ota_media_buffer_client;
 typeattribute permissioncontroller_app warsaw_ota_perf_callback_client;
+
+# The retained EGL profile client also runs during display and boot animation setup.
+typeattribute bootanim warsaw_qspm_render_client;
+typeattribute surfaceflinger warsaw_qspm_render_client;

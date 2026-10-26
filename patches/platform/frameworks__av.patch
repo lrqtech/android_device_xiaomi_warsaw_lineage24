@@ -18,10 +18,10 @@ index 12c722b28e9be73c26509c6a61f42315cfb30909..609c16ab5f8c1e6e06e8b4608ea81231
 +}
 diff --git a/camera/tests/WarsawCameraSessionParamsTest.cpp b/camera/tests/WarsawCameraSessionParamsTest.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..2c20e43ba4a03337b8dbbbd19777c3e2eb69605c
+index 0000000000..f52e4825ed
 --- /dev/null
 +++ b/camera/tests/WarsawCameraSessionParamsTest.cpp
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,164 @@
 +#include "utils/WarsawCameraSessionParams.h"
 +#include <gtest/gtest.h>
 +#include <cstring>
@@ -30,7 +30,8 @@ index 0000000000000000000000000000000000000000..2c20e43ba4a03337b8dbbbd19777c3e2
 +constexpr uint32_t kTag = 0x81da0001;
 +constexpr metadata_vendor_id_t kVendor = 17;
 +int tagType = TYPE_BYTE;
-+int count(const vendor_tag_ops_t*) { return 1; }
++int tagCount = 1;
++int count(const vendor_tag_ops_t*) { return tagCount; }
 +void tags(const vendor_tag_ops_t*, uint32_t* out) { *out = kTag; }
 +const char* section(const vendor_tag_ops_t*, uint32_t) { return "com.xiaomi.sessionparams"; }
 +const char* name(const vendor_tag_ops_t*, uint32_t) { return "clientName"; }
@@ -44,6 +45,7 @@ index 0000000000000000000000000000000000000000..2c20e43ba4a03337b8dbbbd19777c3e2
 +  }
 +  void SetUp() override {
 +    tagType = TYPE_BYTE;
++    tagCount = 1;
 +    installDescriptor();
 +    device = metadata(kVendor);
 +  }
@@ -62,6 +64,17 @@ index 0000000000000000000000000000000000000000..2c20e43ba4a03337b8dbbbd19777c3e2
 +    auto cache=sp<VendorTagDescriptorCache>::make();
 +    ASSERT_EQ(OK,cache->addVendorDescriptor(kVendor,desc));
 +    ASSERT_EQ(OK,VendorTagDescriptorCache::setAsGlobalVendorTagCache(cache));
++  }
++  void addExternalProvider() {
++    vendor_tag_ops_t ops{};
++    ops.get_tag_count=count; ops.get_all_tags=tags; ops.get_section_name=section;
++    ops.get_tag_name=name; ops.get_tag_type=type;
++    tagCount = 0;
++    sp<VendorTagDescriptor> external;
++    ASSERT_EQ(OK, VendorTagDescriptor::createDescriptorFromOps(&ops, external));
++    tagCount = 1;
++    ASSERT_EQ(OK, VendorTagDescriptorCache::getGlobalVendorTagCache()->
++            addVendorDescriptor(kVendor + 1, external));
 +  }
 +  static CameraMetadata metadata(metadata_vendor_id_t id) {
 +    auto* raw=allocate_camera_metadata(4,128);
@@ -114,6 +127,64 @@ index 0000000000000000000000000000000000000000..2c20e43ba4a03337b8dbbbd19777c3e2
 +TEST_F(SessionIdentityTest, NullParametersAreRejected) {
 +  EXPECT_EQ(BAD_VALUE,warsawCameraSession::setClientIdentity(nullptr,device,"com.android.camera"));
 +}
++TEST_F(SessionIdentityTest, ExternalProviderWithoutVendorTagsKeepsStandardSession) {
++  addExternalProvider();
++  auto external=metadata(kVendor+1);
++  auto params=metadata(kVendor+1);
++  const uint8_t intent=ANDROID_CONTROL_CAPTURE_INTENT_PREVIEW;
++  ASSERT_EQ(OK,params.update(ANDROID_CONTROL_CAPTURE_INTENT,&intent,1));
++  ASSERT_EQ(OK,warsawCameraSession::setClientIdentity(&params,external,"com.android.camera"));
++  EXPECT_EQ(kVendor+1,params.getVendorId());
++  EXPECT_FALSE(params.exists(kTag));
++  auto e=params.find(ANDROID_CONTROL_CAPTURE_INTENT);
++  ASSERT_EQ(1u,e.count); EXPECT_EQ(intent,e.data.u8[0]);
++}
++TEST_F(SessionIdentityTest, EmptyExternalSessionRemainsEmpty) {
++  addExternalProvider();
++  auto external=metadata(kVendor+1);
++  CameraMetadata params;
++  ASSERT_EQ(OK,warsawCameraSession::setClientIdentity(&params,external,"com.android.camera"));
++  EXPECT_TRUE(params.isEmpty());
++  EXPECT_EQ(CAMERA_METADATA_INVALID_VENDOR_ID,params.getVendorId());
++}
++TEST_F(SessionIdentityTest, ExternalProviderDoesNotBorrowGlobalOemTags) {
++  addExternalProvider();
++  sp<VendorTagDescriptor> oem;
++  ASSERT_EQ(OK,VendorTagDescriptorCache::getGlobalVendorTagCache()->
++          getVendorTagDescriptor(kVendor,&oem));
++  ASSERT_EQ(OK,VendorTagDescriptor::setAsGlobalVendorTagDescriptor(oem));
++  auto external=metadata(kVendor+1);
++  CameraMetadata params;
++  ASSERT_EQ(OK,warsawCameraSession::setClientIdentity(&params,external,"com.android.camera"));
++  EXPECT_TRUE(params.isEmpty());
++}
++TEST_F(SessionIdentityTest, ExternalProviderStillRejectsForeignMetadata) {
++  addExternalProvider();
++  auto external=metadata(kVendor+1);
++  auto params=metadata(kVendor);
++  EXPECT_EQ(BAD_VALUE,warsawCameraSession::setClientIdentity(&params,external,"com.android.camera"));
++  EXPECT_EQ(kVendor,params.getVendorId());
++}
++TEST_F(SessionIdentityTest, EmptyDescriptorDoesNotSelectAnUninitializedTag) {
++  addExternalProvider();
++  auto external=metadata(kVendor+1);
++  uint32_t tag=0xdeadbeef;
++  bool hasIdentity=true;
++  ASSERT_EQ(OK,warsawCameraSession::getClientNameTag(external,&tag,&hasIdentity));
++  EXPECT_FALSE(hasIdentity);
++  EXPECT_EQ(0xdeadbeefu,tag);
++}
++TEST_F(SessionIdentityTest, UnknownProviderCannotBorrowGlobalOemTags) {
++  sp<VendorTagDescriptor> oem;
++  ASSERT_EQ(OK,VendorTagDescriptorCache::getGlobalVendorTagCache()->
++          getVendorTagDescriptor(kVendor,&oem));
++  ASSERT_EQ(OK,VendorTagDescriptor::setAsGlobalVendorTagDescriptor(oem));
++  auto unknown=metadata(kVendor+2);
++  CameraMetadata params;
++  EXPECT_EQ(NAME_NOT_FOUND,warsawCameraSession::setClientIdentity(&params,unknown,"com.android.camera"));
++  EXPECT_TRUE(params.isEmpty());
++}
++
 +}
 diff --git a/drm/mediadrm/plugins/clearkey/aidl/Android.bp b/drm/mediadrm/plugins/clearkey/aidl/Android.bp
 index d049b6e1ca36445f3488f3748198413a863d6cf0..5e579ac1a2c006b88ff59cb317e6f9b951d7dbb6 100644
@@ -985,7 +1056,7 @@ index 362a390b8f8d819a63d34e5c663e9080103fb15d..8bd366143bfe5596a490340b767c9fb5
 +    },
 +}
 diff --git a/services/camera/libcameraservice/api2/CameraDeviceClient.cpp b/services/camera/libcameraservice/api2/CameraDeviceClient.cpp
-index 73d906d9d08e42f8c7f30cb78f47966255bac5f7..4a02d761eede4e527107bbdb574006c703ec8100 100644
+index 73d906d9d0..e940897d90 100644
 --- a/services/camera/libcameraservice/api2/CameraDeviceClient.cpp
 +++ b/services/camera/libcameraservice/api2/CameraDeviceClient.cpp
 @@ -48,6 +48,7 @@
@@ -996,12 +1067,128 @@ index 73d906d9d08e42f8c7f30cb78f47966255bac5f7..4a02d761eede4e527107bbdb574006c7
  
  // Convenience methods for constructing binder::Status objects for error returns
  #define STATUS_ERROR(errorCode, errorString) \
-@@ -894,7 +895,14 @@ binder::Status CameraDeviceClient::endConfigureLocked(int operatingMode,
+@@ -99,6 +100,7 @@ CameraDeviceClient::CameraDeviceClient(
+                         sharedMode, isVendorClient),
+       mInputStream(),
+       mStreamingRequestId(REQUEST_ID_NONE),
++      mSharedStreamingRequest(REQUEST_ID_NONE, REQUEST_ID_NONE),
+       mStreamingRequestLastFrameNumber(NO_IN_FLIGHT_REPEATING_FRAMES),
+       mRequestIdCounter(0),
+       mPrivilegedClient(false),
+@@ -151,12 +153,17 @@ status_t CameraDeviceClient::initializeImpl(TProviderPtr providerPtr,
+         }
+     }
+ 
++    const CameraMetadata &deviceInfo = mDevice->info();
++    auto partialResultCount = deviceInfo.find(ANDROID_REQUEST_PARTIAL_RESULT_COUNT);
++    if (partialResultCount.count > 0 && partialResultCount.data.i32[0] > 0) {
++        mNumPartialResults = partialResultCount.data.i32[0];
++    }
++
+     mFrameProcessor->registerListener(camera2::FrameProcessorBase::FRAME_PROCESSOR_LISTENER_MIN_ID,
+                                       camera2::FrameProcessorBase::FRAME_PROCESSOR_LISTENER_MAX_ID,
+                                       /*listener*/this,
+                                       /*sendPartials*/true);
+ 
+-    const CameraMetadata &deviceInfo = mDevice->info();
+     camera_metadata_ro_entry_t physicalKeysEntry = deviceInfo.find(
+             ANDROID_REQUEST_AVAILABLE_PHYSICAL_CAMERA_REQUEST_KEYS);
+     if (physicalKeysEntry.count > 0) {
+@@ -443,6 +450,13 @@ binder::Status CameraDeviceClient::submitRequestList(
+         return STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION, "Invalid Operation.");
+     }
+ 
++    if (mSharedMode && requests.size() > 1) {
++        // The shared-device interface accepts one request. Do not acknowledge a
++        // burst while silently submitting only its first member.
++        return STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION,
++                "Burst requests are not supported in shared mode");
++    }
++
+     List<const CameraDeviceBase::PhysicalCameraSettingsList> metadataRequestList;
+     std::list<SurfaceMap> surfaceMapList;
+     submitInfo->mRequestId = mRequestIdCounter;
+@@ -662,24 +676,57 @@ binder::Status CameraDeviceClient::submitRequestList(
+                     CameraMetadata filteredParams(mSupportedPhysicalRequestKeys.size());
+                     camera_metadata_t *meta = const_cast<camera_metadata_t *>(
+                             filteredParams.getAndLock());
++                    if (meta == nullptr) {
++                        filteredParams.unlock(meta);
++                        return STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION,
++                                "Unable to allocate physical camera request metadata");
++                    }
+                     set_camera_metadata_vendor_id(meta, mDevice->getVendorTagId());
+                     filteredParams.unlock(meta);
+ 
+                     for (const auto& keyIt : mSupportedPhysicalRequestKeys) {
+                         camera_metadata_ro_entry entry = it.settings.find(keyIt);
+                         if (entry.count > 0) {
+-                            filteredParams.update(entry);
++                            status_t physicalStatus = filteredParams.update(entry);
++                            if (physicalStatus != OK) {
++                                return STATUS_ERROR_FMT(CameraService::ERROR_INVALID_OPERATION,
++                                        "Unable to filter physical camera request metadata: %s (%d)",
++                                        strerror(-physicalStatus), physicalStatus);
++                            }
+                         }
+                     }
+ 
+                     physicalSettingsList.push_back({resolvedId, filteredParams,
+                             hasTestPatternModePhysicalKey, hasTestPatternDataPhysicalKey});
++                    // Copying through the temporary or list node can fail too.
++                    // A legitimate empty filtered request remains supported.
++                    if (!filteredParams.isEmpty() &&
++                            (--physicalSettingsList.end())->metadata.isEmpty()) {
++                        return STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION,
++                                "Unable to copy physical camera request metadata");
++                    }
+                 }
+             } else {
+                 physicalSettingsList.push_back({resolvedId, it.settings});
++                // A failed CameraMetadata clone is empty. Do not turn it into a
++                // valid-looking identity-only request in the Warsaw hook below.
++                if ((--physicalSettingsList.end())->metadata.isEmpty()) {
++                    return STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION,
++                            "Unable to copy capture request metadata");
++                }
+             }
+         }
+ 
++        // Xiaomi preview plugins consume clientName from per-frame metadata.
++        // Session parameters alone do not establish the identity of a request.
++        status_t identityStatus = warsawCameraSession::setClientIdentity(
++                &physicalSettingsList.begin()->metadata, mDevice->info(), getPackageName());
++        if (identityStatus != OK) {
++            return STATUS_ERROR_FMT(CameraService::ERROR_INVALID_OPERATION,
++                    "Failed to set camera request client identity: %s (%d)",
++                    strerror(-identityStatus), identityStatus);
++        }
++
+         if (!enforceRequestPermissions(physicalSettingsList.begin()->metadata)) {
+             // Callee logs
+             return STATUS_ERROR(CameraService::ERROR_PERMISSION_DENIED,
+@@ -773,8 +820,7 @@ binder::Status CameraDeviceClient::submitRequestList(
+             ALOGE("%s: %s", __FUNCTION__, msg.c_str());
+             res = STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION,
+                     msg.c_str());
+-        }
+-        if (mSharedMode) {
++        } else if (mSharedMode) {
+             mSharedRequestMap[sharedReqID] = submitInfo->mRequestId;
+             markClientActive();
+         }
+@@ -894,7 +940,20 @@ binder::Status CameraDeviceClient::endConfigureLocked(int operatingMode,
          return res;
      }
  
 -    status_t err = mDevice->configureStreams(sessionParams, operatingMode);
 +    CameraMetadata clientSessionParams(sessionParams);
++    // Preserve valid empty sessions, but never configure an identity-only
++    // session after losing nonempty caller controls to a failed clone.
++    if (!sessionParams.isEmpty() && clientSessionParams.isEmpty()) {
++        return STATUS_ERROR(CameraService::ERROR_INVALID_OPERATION,
++                "Unable to copy camera session metadata");
++    }
 +    status_t err = warsawCameraSession::setClientIdentity(&clientSessionParams, mDevice->info(), getPackageName());
 +    if (err != OK) {
 +        return STATUS_ERROR_FMT(CameraService::ERROR_INVALID_OPERATION,
@@ -1012,8 +1199,81 @@ index 73d906d9d08e42f8c7f30cb78f47966255bac5f7..4a02d761eede4e527107bbdb574006c7
      if (err == BAD_VALUE) {
          std::string msg = fmt::sprintf("Camera %s: Unsupported set of inputs/outputs provided",
                  mCameraIdStr.c_str());
+@@ -2029,7 +2088,8 @@ binder::Status CameraDeviceClient::flush(
+                 err);
+     }
+     if (mSharedMode) {
+-        mSharedRequestMap.clear();
++        // Results already queued to the frame processor can arrive after flush
++        // returns. Keep their client IDs until final results or terminal errors.
+         mStreamingRequestLastFrameNumber = *lastFrameNumber;
+     }
+     return res;
+@@ -2662,7 +2722,13 @@ void CameraDeviceClient::notifyError(int32_t errorCode,
+             clientReqId = mSharedStreamingRequest.second;
+         } else if (matchCaptureRequest) {
+             clientReqId = mSharedRequestMap[resultExtras.requestId];
+-            mSharedRequestMap.erase(resultExtras.requestId);
++            // A buffer or physical-camera metadata error can still be followed
++            // by the logical result. Retire only a terminal request/result error.
++            if (errorCode == hardware::camera2::ICameraDeviceCallbacks::ERROR_CAMERA_REQUEST ||
++                    (errorCode == hardware::camera2::ICameraDeviceCallbacks::ERROR_CAMERA_RESULT &&
++                    resultExtras.errorPhysicalCameraId.empty())) {
++                mSharedRequestMap.erase(resultExtras.requestId);
++            }
+         } else {
+             return;
+         }
+@@ -2671,6 +2737,9 @@ void CameraDeviceClient::notifyError(int32_t errorCode,
+         if (remoteCb != 0) {
+             remoteCb->onDeviceError(errorCode, mutableResultExtras);
+         }
++        if (mSharedStreamingRequest.first == REQUEST_ID_NONE && mSharedRequestMap.empty()) {
++            markClientIdle();
++        }
+         return;
+     }
+     {
+@@ -2944,6 +3013,7 @@ void CameraDeviceClient::onResultAvailable(const CaptureResult& result) {
+     ATRACE_CALL();
+     ALOGVV("%s E", __FUNCTION__);
+     CaptureResult mutableResult = result;
++    const bool isFinalResult = result.mResultExtras.partialResultCount >= mNumPartialResults;
+     bool matchStreamingRequest, matchCaptureRequest, sharedStreamingLastFrame;
+     if (mSharedMode) {
+         int clientReqId;
+@@ -2955,7 +3025,7 @@ void CameraDeviceClient::onResultAvailable(const CaptureResult& result) {
+             // more capture results to the client, till the lastframe number returned by the
+             // cancelRequest. Therefore, only clean the shared streaming request once all the frames for
+             // the repeating request have been delivered to the client.
+-            sharedStreamingLastFrame = (mStreamingRequestId == REQUEST_ID_NONE)
++            sharedStreamingLastFrame = isFinalResult && (mStreamingRequestId == REQUEST_ID_NONE)
+                     && (result.mResultExtras.frameNumber >= mStreamingRequestLastFrameNumber);
+             if (sharedStreamingLastFrame) {
+                 mSharedStreamingRequest.first = REQUEST_ID_NONE;
+@@ -2963,7 +3033,9 @@ void CameraDeviceClient::onResultAvailable(const CaptureResult& result) {
+             }
+         } else if (matchCaptureRequest) {
+             clientReqId = mSharedRequestMap[result.mResultExtras.requestId];
+-            mSharedRequestMap.erase(result.mResultExtras.requestId);
++            if (isFinalResult) {
++                mSharedRequestMap.erase(result.mResultExtras.requestId);
++            }
+         } else {
+             return;
+         }
+@@ -3002,7 +3074,8 @@ void CameraDeviceClient::onResultAvailable(const CaptureResult& result) {
+         if (mSharedMode) {
+             // If all the capture requests for this client has been processed,
+             // send onDeviceidle callback.
+-            if ((mSharedStreamingRequest.first == REQUEST_ID_NONE) && mSharedRequestMap.empty() ) {
++            if (isFinalResult && mSharedStreamingRequest.first == REQUEST_ID_NONE &&
++                    mSharedRequestMap.empty()) {
+                 markClientIdle();
+             }
+         }
 diff --git a/services/camera/libcameraservice/device3/Camera3Device.cpp b/services/camera/libcameraservice/device3/Camera3Device.cpp
-index ca159874fb960c7254e3a31d222f2bf7ff9c2ea7..eee656054613d23880e161fc20986ede84570f8b 100644
+index ca159874fb..f3cec0e75e 100644
 --- a/services/camera/libcameraservice/device3/Camera3Device.cpp
 +++ b/services/camera/libcameraservice/device3/Camera3Device.cpp
 @@ -79,6 +79,7 @@
@@ -1056,7 +1316,7 @@ index ca159874fb960c7254e3a31d222f2bf7ff9c2ea7..eee656054613d23880e161fc20986ede
      ATRACE_CALL();
  
      // Try to lock, but continue in case of failure (to avoid blocking in
-@@ -1457,8 +1469,17 @@ status_t Camera3Device::configureStreams(const CameraMetadata& sessionParams, in
+@@ -1457,8 +1469,21 @@ status_t Camera3Device::configureStreams(const CameraMetadata& sessionParams, in
  status_t Camera3Device::filterParamsAndConfigureLocked(const CameraMetadata& params,
          int operatingMode) {
      CameraMetadata filteredParams;
@@ -1065,9 +1325,13 @@ index ca159874fb960c7254e3a31d222f2bf7ff9c2ea7..eee656054613d23880e161fc20986ede
 +    std::vector<int32_t> platformSessionKeys;
 +    if (warsawCameraSession::needsClientIdentity()) {
 +        uint32_t clientTag;
-+        status_t status = warsawCameraSession::getClientNameTag(mDeviceInfo, &clientTag);
++        bool hasClientIdentity;
++        status_t status = warsawCameraSession::getClientNameTag(
++                mDeviceInfo, &clientTag, &hasClientIdentity);
 +        if (status != OK) return status;
-+        if (params.exists(clientTag)) platformSessionKeys.push_back(static_cast<int32_t>(clientTag));
++        if (hasClientIdentity && params.exists(clientTag)) {
++            platformSessionKeys.push_back(static_cast<int32_t>(clientTag));
++        }
 +    }
      SessionConfigurationUtils::filterParameters(params, mDeviceInfo,
 -            /*additionalKeys*/{}, mVendorTagId, filteredParams);
@@ -1075,7 +1339,7 @@ index ca159874fb960c7254e3a31d222f2bf7ff9c2ea7..eee656054613d23880e161fc20986ede
  
      camera_metadata_entry_t availableSessionKeys = mDeviceInfo.find(
              ANDROID_REQUEST_AVAILABLE_SESSION_KEYS);
-@@ -2899,7 +2920,9 @@ status_t Camera3Device::configureStreamsLocked(int operatingMode,
+@@ -2899,7 +2924,9 @@ status_t Camera3Device::configureStreamsLocked(int operatingMode,
                " injection camera has not been injected yet.", __FUNCTION__);
          mInjectionMethods->storeInjectionConfig(config, bufferSizes);
      }
@@ -2140,10 +2404,10 @@ index deca749a05241e52550ed1b4c48da7b9d3457c82..60915fc6a00800aa4822d6837be45f5a
          camera3::notify(states, msg, mSensorReadoutTimestampSupported,
 diff --git a/services/camera/libcameraservice/utils/WarsawCameraSessionParams.h b/services/camera/libcameraservice/utils/WarsawCameraSessionParams.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..06e7794c13ea9e3b79e0167228dadbdc8d97733a
+index 0000000000..4de58f1f30
 --- /dev/null
 +++ b/services/camera/libcameraservice/utils/WarsawCameraSessionParams.h
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,80 @@
 +/*
 + * Copyright (C) 2026 The LineageOS Project
 + * SPDX-License-Identifier: Apache-2.0
@@ -2154,24 +2418,36 @@ index 0000000000000000000000000000000000000000..06e7794c13ea9e3b79e0167228dadbdc
 +#include <camera/CameraMetadata.h>
 +#include <camera/VendorTagDescriptor.h>
 +#include <camera_metadata_hidden.h>
-+#include <utils/String8.h>
 +
 +namespace android::warsawCameraSession {
 +
 +// OS4 CameraImpl::updateSessionParams supplies this tag from the authenticated
 +// CameraService client identity. Applications must not choose another package.
-+inline status_t getClientNameTag(const CameraMetadata& deviceInfo, uint32_t* tag) {
-+    sp<VendorTagDescriptor> descriptor = VendorTagDescriptor::getGlobalVendorTagDescriptor();
-+    if (descriptor == nullptr || descriptor->getTagCount() == 0) {
++inline status_t getClientNameTag(const CameraMetadata& deviceInfo, uint32_t* tag,
++        bool* hasClientIdentity) {
++    if (tag == nullptr || hasClientIdentity == nullptr) return BAD_VALUE;
++    *hasClientIdentity = false;
++    sp<VendorTagDescriptor> descriptor;
++    const metadata_vendor_id_t vendorId = deviceInfo.getVendorId();
++    if (vendorId != CAMERA_METADATA_INVALID_VENDOR_ID) {
++        // A provider-scoped buffer must never use another provider's global tags.
 +        sp<VendorTagDescriptorCache> cache = VendorTagDescriptorCache::getGlobalVendorTagCache();
 +        if (cache == nullptr) return NAME_NOT_FOUND;
-+        status_t status = cache->getVendorTagDescriptor(deviceInfo.getVendorId(), &descriptor);
++        status_t status = cache->getVendorTagDescriptor(vendorId, &descriptor);
 +        if (status != OK) return status;
++    } else {
++        descriptor = VendorTagDescriptor::getGlobalVendorTagDescriptor();
 +    }
++    if (descriptor == nullptr) return NAME_NOT_FOUND;
++    // The retained external provider explicitly advertises no vendor tags.
++    // An unknown descriptor or an incomplete nonempty OEM table still fails.
++    if (descriptor->getTagCount() == 0) return OK;
 +    status_t status = CameraMetadata::getTagFromName(
 +            "com.xiaomi.sessionparams.clientName", descriptor.get(), tag);
 +    if (status != OK) return status;
-+    return descriptor->getTagType(*tag) == TYPE_BYTE ? OK : BAD_TYPE;
++    if (descriptor->getTagType(*tag) != TYPE_BYTE) return BAD_TYPE;
++    *hasClientIdentity = true;
++    return OK;
 +}
 +
 +inline bool needsClientIdentity() {
@@ -2182,25 +2458,179 @@ index 0000000000000000000000000000000000000000..06e7794c13ea9e3b79e0167228dadbdc
 +        const std::string& packageName) {
 +    if (!needsClientIdentity()) return OK;
 +    if (params == nullptr) return BAD_VALUE;
-+    uint32_t tag;
-+    status_t status = getClientNameTag(deviceInfo, &tag);
-+    if (status != OK) return status;
 +    const metadata_vendor_id_t vendorId = deviceInfo.getVendorId();
 +    const metadata_vendor_id_t previousId = params->getVendorId();
 +    if (previousId != CAMERA_METADATA_INVALID_VENDOR_ID && previousId != vendorId) {
 +        return BAD_VALUE;
 +    }
++    uint32_t tag;
++    bool hasClientIdentity;
++    status_t status = getClientNameTag(deviceInfo, &tag, &hasClientIdentity);
++    if (status != OK || !hasClientIdentity) return status;
 +    // endConfigure receives empty metadata when outputs are removed.
 +    // Bind that buffer to the device provider before resolving vendor tags.
 +    CameraMetadata authenticated(*params);
++    // CameraMetadata's copy constructor returns an empty buffer on allocation
++    // failure. Do not mistake a failed copy for an intentionally empty session:
++    // returning success here would discard the caller's capture controls.
++    if (!params->isEmpty() && authenticated.isEmpty()) return NO_MEMORY;
 +    camera_metadata_t* buffer = authenticated.release();
 +    if (buffer == nullptr) buffer = allocate_camera_metadata(1, packageName.size() + 1);
 +    if (buffer == nullptr) return NO_MEMORY;
 +    set_camera_metadata_vendor_id(buffer, vendorId);
 +    authenticated.acquire(buffer);
-+    status = authenticated.update(tag, String8(packageName.c_str()));
++    // Avoid an intermediate String8 allocation, whose failure can become an
++    // empty string. Metadata update reports allocation errors to this caller.
++    status = authenticated.update(tag,
++            reinterpret_cast<const uint8_t*>(packageName.c_str()), packageName.size() + 1);
 +    if (status == OK) params->swap(authenticated);
 +    return status;
 +}
 +
 +} // namespace android::warsawCameraSession
+diff --git a/services/camera/libcameraservice/api1/Camera2Client.cpp b/services/camera/libcameraservice/api1/Camera2Client.cpp
+index 3ac18f4fc8a65067a55a573442db0bd5885a4f81..a3a3838cba5facc1e32fbe4424aea05dd9bb0a3b 100644
+--- a/services/camera/libcameraservice/api1/Camera2Client.cpp
++++ b/services/camera/libcameraservice/api1/Camera2Client.cpp
+@@ -1211,7 +1211,7 @@ status_t Camera2Client::startRecordingL(Parameters &params, bool restart) {
+ 
+     if (!restart) {
+         sCameraService->playSound(CameraService::SOUND_RECORDING_START);
+-        mStreamingProcessor->updateRecordingRequest(params);
++        res = mStreamingProcessor->updateRecordingRequest(params);
+         if (res != OK) {
+             ALOGE("%s: Camera %d: Unable to update recording request: %s (%d)",
+                     __FUNCTION__, mCameraId, strerror(-res), res);
+diff --git a/services/camera/libcameraservice/api1/client2/StreamingProcessor.cpp b/services/camera/libcameraservice/api1/client2/StreamingProcessor.cpp
+index ff71e6b1ff1cd61c16af65aae0fd0d8b5576de9b..91b332bde48745a7336072ce9f0700657dd2fd43 100644
+--- a/services/camera/libcameraservice/api1/client2/StreamingProcessor.cpp
++++ b/services/camera/libcameraservice/api1/client2/StreamingProcessor.cpp
+@@ -36,6 +36,7 @@
+ #include "common/CameraDeviceBase.h"
+ #include "api1/Camera2Client.h"
+ #include "api1/client2/StreamingProcessor.h"
++#include "utils/WarsawCameraSessionParams.h"
+ #include "api1/client2/Camera2Heap.h"
+ 
+ namespace android {
+@@ -142,6 +143,18 @@ status_t StreamingProcessor::updatePreviewRequest(const Parameters &params) {
+         return res;
+     }
+ 
++    if (warsawCameraSession::needsClientIdentity()) {
++        sp<Camera2Client> client = mClient.promote();
++        if (client == nullptr) return INVALID_OPERATION;
++        res = warsawCameraSession::setClientIdentity(
++                &mPreviewRequest, device->info(), client->getPackageName());
++        if (res != OK) {
++            ALOGE("%s: Camera %d: Unable to set request client identity: %s (%d)",
++                    __FUNCTION__, mId, strerror(-res), res);
++            return res;
++        }
++    }
++
+     res = mPreviewRequest.update(ANDROID_REQUEST_ID,
+             &mPreviewRequestId, 1);
+     if (res != OK) {
+@@ -286,6 +299,18 @@ status_t StreamingProcessor::updateRecordingRequest(const Parameters &params) {
+         return res;
+     }
+ 
++    if (warsawCameraSession::needsClientIdentity()) {
++        sp<Camera2Client> client = mClient.promote();
++        if (client == nullptr) return INVALID_OPERATION;
++        res = warsawCameraSession::setClientIdentity(
++                &mRecordingRequest, device->info(), client->getPackageName());
++        if (res != OK) {
++            ALOGE("%s: Camera %d: Unable to set request client identity: %s (%d)",
++                    __FUNCTION__, mId, strerror(-res), res);
++            return res;
++        }
++    }
++
+     res = mRecordingRequest.update(ANDROID_REQUEST_ID,
+             &mRecordingRequestId, 1);
+     if (res != OK) {
+diff --git a/services/camera/libcameraservice/api1/client2/CaptureSequencer.cpp b/services/camera/libcameraservice/api1/client2/CaptureSequencer.cpp
+index 0b5e03f96cc445ca42ee9615e2f3dd5bddeafde4..c0784846b721918d71a84d8b865c6741cd7737e4 100644
+--- a/services/camera/libcameraservice/api1/client2/CaptureSequencer.cpp
++++ b/services/camera/libcameraservice/api1/client2/CaptureSequencer.cpp
+@@ -27,6 +27,7 @@
+ 
+ #include "api1/Camera2Client.h"
+ #include "api1/client2/CaptureSequencer.h"
++#include "utils/WarsawCameraSessionParams.h"
+ #include "api1/client2/Parameters.h"
+ #include "api1/client2/ZslProcessor.h"
+ 
+@@ -735,6 +736,14 @@ status_t CaptureSequencer::updateCaptureRequest(const Parameters &params,
+         return res;
+     }
+ 
++    res = warsawCameraSession::setClientIdentity(
++            &mCaptureRequest, client->getCameraDevice()->info(), client->getPackageName());
++    if (res != OK) {
++        ALOGE("%s: Camera %d: Unable to set capture client identity: %s (%d)",
++                __FUNCTION__, client->getCameraId(), strerror(-res), res);
++        return res;
++    }
++
+     res = params.updateRequestJpeg(&mCaptureRequest);
+     if (res != OK) {
+         ALOGE("%s: Camera %d: Unable to update JPEG entries of capture "
+diff --git a/services/camera/libcameraservice/api1/client2/ZslProcessor.cpp b/services/camera/libcameraservice/api1/client2/ZslProcessor.cpp
+index a92bae1a3a..0d55f688e8 100644
+--- a/services/camera/libcameraservice/api1/client2/ZslProcessor.cpp
++++ b/services/camera/libcameraservice/api1/client2/ZslProcessor.cpp
+@@ -37,6 +37,7 @@
+ #include "api1/Camera2Client.h"
+ #include "api1/client2/CaptureSequencer.h"
+ #include "api1/client2/ZslProcessor.h"
++#include "utils/WarsawCameraSessionParams.h"
+ #include "device3/Camera3Device.h"
+ 
+ typedef android::RingBufferConsumer::PinnedBufferItem PinnedBufferItem;
+@@ -445,6 +446,21 @@ status_t ZslProcessor::pushToReprocess(int32_t requestId) {
+             __FUNCTION__, (unsigned int) metadataIdx);
+     }
+ 
++    CameraMetadata request = mFrameList[metadataIdx];
++    // Candidate selection already requires a nonempty frame. Reject a failed
++    // clone before adding identity metadata or enqueueing the ZSL input buffer.
++    if (request.isEmpty()) {
++        ALOGE("%s: Camera %d: Unable to copy ZSL frame metadata", __FUNCTION__, mId);
++        return NO_MEMORY;
++    }
++    res = warsawCameraSession::setClientIdentity(
++            &request, client->getCameraDevice()->info(), client->getPackageName());
++    if (res != OK) {
++        ALOGE("%s: Camera %d: Unable to set ZSL client identity: %s (%d)",
++                __FUNCTION__, mId, strerror(-res), res);
++        return res;
++    }
++
+     if (nullptr == mInputSurface.get()) {
+         res = client->getCameraDevice()->getInputSurface(
+             &mInputSurface);
+@@ -477,8 +493,6 @@ status_t ZslProcessor::pushToReprocess(int32_t requestId) {
+     }
+ 
+     {
+-        CameraMetadata request = mFrameList[metadataIdx];
+-
+         // Verify that the frame is reasonable for reprocessing
+ 
+         camera_metadata_entry_t entry;
+diff --git a/services/camera/libcameraservice/api2/CameraDeviceClient.h b/services/camera/libcameraservice/api2/CameraDeviceClient.h
+index eea3cb9125..77e3f01479 100644
+--- a/services/camera/libcameraservice/api2/CameraDeviceClient.h
++++ b/services/camera/libcameraservice/api2/CameraDeviceClient.h
+@@ -413,6 +413,8 @@ private:
+     Mutex mStreamingRequestIdLock;
+     std::pair<int32_t, int32_t> mSharedStreamingRequest;
+     std::map<int32_t, int32_t> mSharedRequestMap;
++    // Set from static metadata before registering the result listener.
++    int32_t mNumPartialResults = 1;
+     int64_t mStreamingRequestLastFrameNumber;
+     static const int32_t REQUEST_ID_NONE = -1;
+ 

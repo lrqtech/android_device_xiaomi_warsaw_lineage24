@@ -70,7 +70,6 @@
 
 /(vendor|system/vendor)/bin/wifilearner    u:object_r:vendor_wifilearnersvc_exec:s0
 
-/(odm|vendor/odm)/bin/init\.mi\.serial\.sh        u:object_r:vendor_qti_init_shell_exec:s0
 
 /(vendor|system/vendor)/bin/qrtr-lookup                                            u:object_r:vendor_qrtr_exec:s0
 
@@ -114,7 +113,6 @@
 
 /(vendor|system/vendor)/bin/displayfeature                                 u:object_r:vendor_displayfeature_exec:s0
 
-/(vendor|system/vendor)/bin/msm_irqbalance u:object_r:vendor_msm_irqbalanced_exec:s0
 
 /(vendor|system/vendor)/bin/init\.qcrild\.sh        u:object_r:vendor_qti_init_shell_exec:s0
 
@@ -130,7 +128,6 @@
 
 /(vendor|system/vendor)/bin/init\.qti\.qcv\.sh          u:object_r:vendor_qti_init_shell_exec:s0
 
-/(odm|vendor/odm)/bin/init\.mi\.factory_id\.sh    u:object_r:vendor_qti_init_shell_exec:s0
 
 /(odm|vendor/odm|system/vendor)/bin/mlipayd     u:object_r:hal_mlipay_default_exec:s0
 
@@ -1601,7 +1598,6 @@
 
 /vendor/bin/ims_rtp_daemon      u:object_r:vendor_hal_imsrtp_exec:s0
 
-/dev/socket/wigig/wigignpt                      u:object_r:vendor_wigignpt_socket:s0
 
 /vendor/bin/wallpapercolor       u:object_r:wallpapercolor_exec:s0
 
@@ -2176,3 +2172,28 @@
 /sys/devices/virtual/usb_enhance/usb_enhance/current_eye_tune u:object_r:vendor_sysfs_usb_enhance_status:s0
 /sys/devices/virtual/usb_enhance/usb_enhance/usb_enhance_state u:object_r:vendor_sysfs_usb_enhance_control:s0
 /sys/devices/virtual/usb_enhance/usb_enhance/usb_enhance_support_mode u:object_r:vendor_sysfs_usb_enhance_status:s0
+
+# qseecomd queries UFS LUN 0 through the bsg SG_IO interface.
+/dev/0:0:0:0 u:object_r:vendor_ufs_lun0_bsg_device:s0
+
+# DSP code loaded by the camera process through FastRPC; the DSP partition keeps
+# its original labels and remains inaccessible to coredomain clients.
+/odm/lib/dsp/fastrpc_shell_unsigned_3 u:object_r:same_process_hal_file:s0
+
+# The source-built vendor AWK utility used by MI_RIC.
+/vendor/bin/awk u:object_r:vendor_toolbox_exec:s0
+
+/data/vendor/qmipriod(/.*)? u:object_r:vendor_warsaw_qmipriod_data_file:s0
+
+# Keep connector labels stable if init explicitly restores sysfs contexts.
+/sys/devices/platform/soc/soc:qcom,msm-ext-disp/extcon(/.*)? u:object_r:sysfs_extcon:s0
+/sys/devices/platform/soc/88e0000\.qcom,msm-eud/extcon(/.*)? u:object_r:sysfs_extcon:s0
+
+# The RIL snapshot is separate from other OEM minidump records.
+/data/vendor/diag -d u:object_r:vendor_ril_diag_dir:s0
+/data/vendor/diag/sync_info -- u:object_r:vendor_ril_sync_file:s0
+
+/data/vendor/nfc -d u:object_r:vendor_nfc_config_dir:s0
+/data/vendor/nfc/libnfc-nci-update\.conf -- u:object_r:vendor_nfc_config_file:s0
+
+/dev/migt_reset -c u:object_r:vendor_migt_reset_device:s0

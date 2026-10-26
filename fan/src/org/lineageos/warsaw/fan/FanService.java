@@ -14,6 +14,9 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.io.IOException;
+import java.util.concurrent.CancellationException;
+
 /** Applies the active user's manual PWM setting, including while the screen is off. */
 public final class FanService extends Service {
     private HandlerThread thread;
@@ -23,6 +26,7 @@ public final class FanService extends Service {
     private String lastStatus;
     private int lastDuty = -1;
     private boolean receiverRegistered;
+    private volatile boolean stopped;
     private final Runnable apply = this::applySetting;
     private final BroadcastReceiver users = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) { changed(); }
@@ -51,35 +55,65 @@ public final class FanService extends Service {
         return START_STICKY;
     }
     private void changed() {
+        if (stopped) return;
+        // Queue rescheduling on the owner thread so a running apply cannot erase a new request.
+        handler.post(() -> schedule(0));
+    }
+    private void schedule(long delay) {
+        if (stopped) return;
         handler.removeCallbacks(apply);
-        handler.post(apply);
+        handler.postDelayed(apply, delay);
+    }
+    private boolean isCurrent(int user) {
+        return !stopped && ActivityManager.getCurrentUser() == user;
     }
     private void applySetting() {
+        if (stopped) return;
+        boolean ready = false;
         try {
             int user = ActivityManager.getCurrentUser();
             boolean enabled = Settings.System.getIntForUser(getContentResolver(),
                     FanPreferences.ENABLE, 1, user) == 1;
             int duty = Settings.System.getIntForUser(getContentResolver(),
                     FanPreferences.PWM, FanPreferences.DEFAULT_PWM, user);
-            int observed = hardware.apply(enabled ? Math.max(0, Math.min(100, duty)) : 0);
+            int observed = hardware.apply(enabled ? Math.max(0, Math.min(100, duty)) : 0,
+                    () -> isCurrent(user));
+            if (!isCurrent(user)) throw new CancellationException("Fan request superseded");
             if (observed != lastDuty) {
-                Settings.Global.putInt(getContentResolver(), FanPreferences.CONFIRMED_PWM, observed);
+                if (!Settings.Global.putInt(getContentResolver(),
+                        FanPreferences.CONFIRMED_PWM, observed)) {
+                    throw new IOException("Cannot publish confirmed PWM");
+                }
                 lastDuty = observed;
             }
-            publish("ready");
+            ready = publish("ready");
+        } catch (CancellationException superseded) {
+            changed();
+            return;
         } catch (Exception error) {
+            if (stopped) return;
             if (!"unavailable".equals(lastStatus)) Log.e("CoolingFan", "Cannot apply PWM", error);
             publish("unavailable");
         }
-        handler.removeCallbacks(apply);
-        handler.postDelayed(apply, "ready".equals(lastStatus) ? 30000 : 5000);
+        schedule(ready ? 30000 : 5000);
     }
-    private void publish(String status) {
-        if (!status.equals(lastStatus) && Settings.Global.putString(
-                getContentResolver(), FanPreferences.STATUS, status)) lastStatus = status;
+    private boolean publish(String status) {
+        if (stopped) return false;
+        if (status.equals(lastStatus)) return true;
+        try {
+            if (!Settings.Global.putString(getContentResolver(), FanPreferences.STATUS, status)) {
+                return false;
+            }
+            lastStatus = status;
+            return true;
+        } catch (RuntimeException error) {
+            Log.e("CoolingFan", "Cannot publish fan status", error);
+            return false;
+        }
     }
     @Override public IBinder onBind(Intent intent) { return null; }
     @Override public void onDestroy() {
+        stopped = true;
         if (receiverRegistered) unregisterReceiver(users);
         getContentResolver().unregisterContentObserver(observer);
         handler.removeCallbacksAndMessages(null);

@@ -23,7 +23,11 @@ allow warsaw_camera_app vendor_sysfs_soc:file { open read getattr };
 
 # Only the captured camera FastRPC operations, not unrestricted app IOCTLs.
 allow warsaw_camera_app vendor_xdsp_device:chr_file { open read ioctl };
-allowxperm warsaw_camera_app vendor_xdsp_device:chr_file ioctl { 0x5203 0x520c 0x520d }; # GET_DSP_INFO: read DSP capabilities
+# Preserve the existing operations and add only the five codes observed during
+# real preview/capture: 0x5205, 0x5206, 0x5207, 0x520a and 0x520b.
+allowxperm warsaw_camera_app vendor_xdsp_device:chr_file ioctl {
+    0x5203 0x5205 0x5206 0x5207 0x520a 0x520b 0x520c 0x520d
+};
 
 # The OTA labels SoC identifiers as vendor_sysfs_public. Keep the selected
 # camera client working after restoring those exact kernel node labels.
@@ -41,3 +45,18 @@ get_prop(warsaw_camera_app, vendor_displayfeature_prop)
 get_prop(warsaw_camera_app, vendor_display_prop)
 # Adreno RenderThread reads gpu_model; no GPU control writes.
 allow warsaw_camera_app vendor_sysfs_kgsl:file r_file_perms;
+
+# The camera SDK reads FastRPC settings and watches read-only library paths.
+get_prop(warsaw_camera_app, vendor_adsprpc_prop)
+allow warsaw_camera_app adsprpcd_file:dir { read watch };
+allow warsaw_camera_app vendor_file:dir watch;
+
+# Both AIDL services are registered by the existing camera provider. Its Binder
+# calls and callbacks already have the camera-specific policy above.
+allow warsaw_camera_app {
+    hal_aidlbgservice_service
+    hal_postprocservice_service
+}:service_manager find;
+
+# Camera startup selects panel-dependent behavior from vendor.panel.display.
+get_prop(warsaw_camera_app, vendor_panel_info_prop)

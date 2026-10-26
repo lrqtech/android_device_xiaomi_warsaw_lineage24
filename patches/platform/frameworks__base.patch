@@ -105,18 +105,6 @@ index 0000000000000000000000000000000000000000..c3ebd4abccc94fd266b5875b3c4bf0ad
 +        return android.os.VibrationEffect.get(pattern[0], false).applyEffectStrength(pattern[1]);
 +    }
 +}
-diff --git a/core/java/android/view/IWindowManager.aidl b/core/java/android/view/IWindowManager.aidl
-index c0248e560608cf2ff61c1ecb251a7a3f6af748e5..d52f3304e127ebecc47cbe768e974dc10e72e674 100644
---- a/core/java/android/view/IWindowManager.aidl
-+++ b/core/java/android/view/IWindowManager.aidl
-@@ -1252,4 +1252,7 @@ interface IWindowManager
-      * Returns whether the display with {@code displayId} ignores orientation request.
-      */
-     boolean getIgnoreOrientationRequest(int displayId);
-+
-+    @EnforcePermission("CONTROL_KEYGUARD")
-+    boolean isWarsawFanKeyguardOccluded(int userId);
- }
 diff --git a/core/res/res/values/config_mainland_telephony.xml b/core/res/res/values/config_mainland_telephony.xml
 new file mode 100644
 index 0000000000000000000000000000000000000000..99524409359057692e75ce1b461a95372d04cc47
@@ -141,18 +129,6 @@ index f20a2b6a0e74fe8155c33d73ff446a4c47273f80..d2744a60858daa0cc18b23cf40ae51c3
 +    <java-symbol type="bool" name="config_useStockMainlandSignalStrength" />
 +  <java-symbol type="bool" name="config_useStockMainlandCarrierNames" />
 +</resources>
-diff --git a/media/java/android/media/IAudioService.aidl b/media/java/android/media/IAudioService.aidl
-index fbed45d0b35c827a2d56ecabde5bece12559ac38..3a6887f5b84fb27aed0e70ed0f8bd28411b2aed2 100644
---- a/media/java/android/media/IAudioService.aidl
-+++ b/media/java/android/media/IAudioService.aidl
-@@ -892,4 +892,7 @@ interface IAudioService {
-     @EnforcePermission("MODIFY_PHONE_STATE")
-     IAudioModeSession createAudioModeSession(in AudioModeSessionRequest request,
-             in IAudioModeSessionCallback callback);
-+
-+    @EnforcePermission("MODIFY_AUDIO_ROUTING")
-+    boolean hasWarsawFanTrackedRecorder(int uid);
- }
 diff --git a/packages/SystemUI/multivalentTests/src/com/android/systemui/biometrics/UdfpsControllerTest.java b/packages/SystemUI/multivalentTests/src/com/android/systemui/biometrics/UdfpsControllerTest.java
 index fee2b4ffb4df7752e29b7006e0cd7363ec9bda54..ca39bff55585c97e9ac7ee6a618a2afa09c94080 100644
 --- a/packages/SystemUI/multivalentTests/src/com/android/systemui/biometrics/UdfpsControllerTest.java
@@ -2051,120 +2027,6 @@ index 0000000000000000000000000000000000000000..142b5b6de214e230ec962f0e88acd2b2
 +        return result.setShareIdentityEnabled(true);
 +    }
 +}
-diff --git a/services/core/java/com/android/server/audio/AudioService.java b/services/core/java/com/android/server/audio/AudioService.java
-index 7f9555c7713cf23cfe9bf21a1ed0d0985b9bde2b..5ad0ddbcc1674bf5097b9333a82afbaab77a9e0a 100644
---- a/services/core/java/com/android/server/audio/AudioService.java
-+++ b/services/core/java/com/android/server/audio/AudioService.java
-@@ -15039,6 +15039,14 @@ public class AudioService extends IAudioService.Stub
-      * Interface for system components to get some extra functionality through
-      * LocalServices.
-      */
-+    @Override
-+    @android.annotation.EnforcePermission(MODIFY_AUDIO_ROUTING)
-+    public boolean hasWarsawFanTrackedRecorder(int uid) {
-+        hasWarsawFanTrackedRecorder_enforcePermission();
-+        WarsawFanAudioHooks.enforceCallerAndTarget(mContext, uid);
-+        return mRecordMonitor.hasWarsawFanTrackedRecorder(uid);
-+    }
-+
-     final class AudioServiceInternal extends AudioManagerInternal {
-         @Override
-         public void setRingerModeDelegate(RingerModeDelegate delegate) {
-diff --git a/services/core/java/com/android/server/audio/RecordingActivityMonitor.java b/services/core/java/com/android/server/audio/RecordingActivityMonitor.java
-index 6d4a1ea8f3c7ec172f85b5cc2de0629cd521894e..235ee9a99b2eb62d3a410dbcf95addf88fd2b7e2 100644
---- a/services/core/java/com/android/server/audio/RecordingActivityMonitor.java
-+++ b/services/core/java/com/android/server/audio/RecordingActivityMonitor.java
-@@ -223,6 +223,18 @@ public final class RecordingActivityMonitor implements AudioSystem.AudioRecordin
-      * @param uid the app uid
-      * @return true if a recorder is active, false otherwise
-      */
-+    boolean hasWarsawFanTrackedRecorder(int uid) {
-+        // A stopped recorder can remain owned by a communication app while playback
-+        // continues. Only count entries tied to an actual recorder Binder lifecycle.
-+        synchronized (mRecordStates) {
-+            for (RecordingState state : mRecordStates) {
-+                if (state.hasDeathHandler() && state.getConfig() != null
-+                        && state.getConfig().getClientUid() == uid) return true;
-+            }
-+        }
-+        return false;
-+    }
-+
-     public boolean isRecordingActiveForUid(int uid) {
-         synchronized (mRecordStates) {
-             for (RecordingState state : mRecordStates) {
-diff --git a/services/core/java/com/android/server/audio/WarsawFanAudioHooks.java b/services/core/java/com/android/server/audio/WarsawFanAudioHooks.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..af45bd4f9a177b7e5f77828a6f4446f2a965be94
---- /dev/null
-+++ b/services/core/java/com/android/server/audio/WarsawFanAudioHooks.java
-@@ -0,0 +1,66 @@
-+package com.android.server.audio;
-+
-+import android.Manifest;
-+import android.content.Context;
-+import android.content.pm.PackageManager;
-+import android.os.Binder;
-+import android.os.Build;
-+import android.os.Process;
-+import android.os.UserHandle;
-+
-+import java.util.Arrays;
-+import java.util.Collections;
-+import java.util.HashSet;
-+import java.util.Set;
-+
-+final class WarsawFanAudioHooks {
-+    private static final String OWNER = "com.android.settings";
-+    private static final Set<String> COMMUNICATION_PACKAGES =
-+            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-+                    "com.tencent.mm",
-+                    "com.tencent.mobileqq",
-+                    "com.alibaba.android.rimet",
-+                    "com.tencent.wework",
-+                    "com.whatsapp",
-+                    "com.ss.android.lark")));
-+
-+    private WarsawFanAudioHooks() { }
-+
-+    static void enforceCallerAndTarget(Context context, int targetUid) {
-+        context.enforceCallingPermission(Manifest.permission.MODIFY_AUDIO_ROUTING,
-+                "Warsaw fan recorder lifecycle");
-+        final int caller = Binder.getCallingUid();
-+        if (!"warsaw".equals(Build.DEVICE)
-+                || UserHandle.getAppId(targetUid) < Process.FIRST_APPLICATION_UID) {
-+            throw new SecurityException("Warsaw fan recorder lifecycle unavailable");
-+        }
-+
-+        final long identity = Binder.clearCallingIdentity();
-+        try {
-+            final PackageManager pm = context.getPackageManager();
-+            final int ownerUid;
-+            try {
-+                ownerUid = pm.getPackageUidAsUser(OWNER, PackageManager.MATCH_SYSTEM_ONLY,
-+                        UserHandle.getUserId(caller));
-+            } catch (PackageManager.NameNotFoundException missing) {
-+                throw new SecurityException("Warsaw fan owner absent");
-+            }
-+            final String[] callerPackages = pm.getPackagesForUid(caller);
-+            if (caller != Process.SYSTEM_UID || ownerUid != caller || callerPackages == null
-+                    || !Arrays.asList(callerPackages).contains(OWNER)
-+                    || pm.checkSignatures(Process.SYSTEM_UID, caller)
-+                            != PackageManager.SIGNATURE_MATCH) {
-+                throw new SecurityException(
-+                        "Caller is not the Settings system UID");
-+            }
-+
-+            final String[] targetPackages = pm.getPackagesForUid(targetUid);
-+            if (targetPackages == null || !Arrays.stream(targetPackages)
-+                    .anyMatch(COMMUNICATION_PACKAGES::contains)) {
-+                throw new SecurityException("Target UID is not a reviewed communication app");
-+            }
-+        } finally {
-+            Binder.restoreCallingIdentity(identity);
-+        }
-+    }
-+}
 diff --git a/services/core/java/com/android/server/biometrics/sensors/BiometricScheduler.java b/services/core/java/com/android/server/biometrics/sensors/BiometricScheduler.java
 index 1d4e8b8c185edbe26c97569c4f7f48fbd960533f..9d4d73b8b6844ee2a5d5563020668b6982a2368f 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/BiometricScheduler.java
@@ -2178,7 +2040,7 @@ index 1d4e8b8c185edbe26c97569c4f7f48fbd960533f..9d4d73b8b6844ee2a5d5563020668b69
          mCurrentOperation = null;
      }
 diff --git a/services/core/java/com/android/server/biometrics/sensors/BiometricStateCallback.java b/services/core/java/com/android/server/biometrics/sensors/BiometricStateCallback.java
-index a4b0a0eece5b74dcabce8842d6777a5d1496e97e..068f2612b714a8a7ab1e0d0122e294cd9bf22f32 100644
+index a4b0a0eece5b..314f49eeae85 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/BiometricStateCallback.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/BiometricStateCallback.java
 @@ -89,6 +89,7 @@ public class BiometricStateCallback<T extends BiometricServiceProvider<P>,
@@ -2197,6 +2059,42 @@ index a4b0a0eece5b74dcabce8842d6777a5d1496e97e..068f2612b714a8a7ab1e0d0122e294cd
          mBiometricState = STATE_IDLE;
          Slog.d(TAG, "Client finished, state updated to " + mBiometricState + ", client "
                  + client);
+@@ -161,13 +163,23 @@ public class BiometricStateCallback<T extends BiometricServiceProvider<P>,
+      */
+     public synchronized void registerBiometricStateListener(
+             @NonNull IBiometricStateListener listener) {
+-        mBiometricStateListeners.add(listener);
+-        broadcastCurrentEnrollmentState(listener);
++        final IBinder binder = listener.asBinder();
++        for (IBiometricStateListener registered : mBiometricStateListeners) {
++            if (registered.asBinder().equals(binder)) {
++                // Registration can be retried after a lost reply or snapshot failure.
++                // Refresh the snapshot without retaining another copy of the callback.
++                broadcastCurrentEnrollmentState(listener);
++                return;
++            }
++        }
+         try {
+-            listener.asBinder().linkToDeath(this, 0 /* flags */);
++            binder.linkToDeath(this, 0 /* flags */);
+         } catch (RemoteException e) {
+             Slog.e(TAG, "Failed to link to death", e);
++            return;
+         }
++        mBiometricStateListeners.add(listener);
++        broadcastCurrentEnrollmentState(listener);
+     }
+ 
+     private synchronized void broadcastCurrentEnrollmentState(
+@@ -210,7 +222,7 @@ public class BiometricStateCallback<T extends BiometricServiceProvider<P>,
+     }
+ 
+     @Override
+-    public void binderDied(IBinder who) {
++    public synchronized void binderDied(IBinder who) {
+         Slog.w(TAG, "Callback binder died: " + who);
+         if (mBiometricStateListeners.removeIf(listener -> listener.asBinder().equals(who))) {
+             Slog.w(TAG, "Removed dead listener for " + who);
 diff --git a/services/core/java/com/android/server/biometrics/sensors/WarsawFingerprintHooks.java b/services/core/java/com/android/server/biometrics/sensors/WarsawFingerprintHooks.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..9a03ec41b356b6d9e5370cbafe1dc5d2dc75cfdf
@@ -3429,10 +3327,10 @@ index 0000000000000000000000000000000000000000..e0ef6d135609aea1eccd7fd99fbe428c
 +}
 diff --git a/services/core/java/com/android/server/display/WarsawThermalDisplayListener.java b/services/core/java/com/android/server/display/WarsawThermalDisplayListener.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5398023b0cc75468269cc3cabead70e13b062da9
+index 000000000000..a0af00cf984a
 --- /dev/null
 +++ b/services/core/java/com/android/server/display/WarsawThermalDisplayListener.java
-@@ -0,0 +1,278 @@
+@@ -0,0 +1,281 @@
 +package com.android.server.display;
 +
 +import android.os.Binder;
@@ -3589,6 +3487,9 @@ index 0000000000000000000000000000000000000000..5398023b0cc75468269cc3cabead70e1
 +        if (current != null && (mSubscribers.isEmpty() || !current.registered
 +                || mRefreshRegistration)) {
 +            try {
++                // A failed reply may still mean the HAL removed the callback. Keep the
++                // token for cleanup, but never reuse it as a confirmed registration.
++                current.registered = false;
 +                if (current.mayOwnSlot) wire(current, UNREGISTER);
 +                current.mayOwnSlot = false;
 +                disconnect(current);
@@ -3909,10 +3810,10 @@ index 04c27b071c05ddbba53eceae8ddea8f346d3340e..42b63ff1528efe35b29ece231b998f84
  
 diff --git a/services/core/java/com/android/server/vibrator/WarsawHapticHooks.java b/services/core/java/com/android/server/vibrator/WarsawHapticHooks.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5fea5e3c3d6c34d3662c62099596b743b40a6cf4
+index 000000000000..b361c62f710a
 --- /dev/null
 +++ b/services/core/java/com/android/server/vibrator/WarsawHapticHooks.java
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,67 @@
 +package com.android.server.vibrator;
 +
 +import android.os.Build;
@@ -3939,7 +3840,7 @@ index 0000000000000000000000000000000000000000..5fea5e3c3d6c34d3662c62099596b743
 +            return nativePerform.getAsLong();
 +        }
 +        IBinder extension = null;
-+        boolean configured = false;
++        boolean mayNeedReset = false;
 +        try {
 +            if (!WarsawHapticPatterns.isSupported(effect.getEffectId()) || reason.length() > 2048) return 0;
 +            int end = reason.indexOf(';', PREFIX.length());
@@ -3950,14 +3851,15 @@ index 0000000000000000000000000000000000000000..5fea5e3c3d6c34d3662c62099596b743
 +            if (vibrator == null) return 0;
 +            extension = vibrator.getExtension();
 +            if (extension == null || !EXT.equals(extension.getInterfaceDescriptor())) return 0;
++            // The setter may take effect even if its Binder reply is lost.
++            mayNeedReset = true;
 +            amplitude(extension, gain);
-+            configured = true;
 +            return nativePerform.getAsLong();
 +        } catch (RemoteException | RuntimeException failure) {
 +            Slog.e("WarsawHaptic", "Camera gain/perform rejected", failure);
 +            return 0;
 +        } finally {
-+            if (configured) {
++            if (mayNeedReset) {
 +                try {
 +                    amplitude(extension, -1.0f);
 +                } catch (RemoteException | RuntimeException failure) {
@@ -3981,10 +3883,10 @@ index 0000000000000000000000000000000000000000..5fea5e3c3d6c34d3662c62099596b743
 +}
 diff --git a/services/core/java/com/android/server/warsaw/WarsawCameraMindLifecycle.java b/services/core/java/com/android/server/warsaw/WarsawCameraMindLifecycle.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20fcfca62b
+index 000000000000..dd90a507d119
 --- /dev/null
 +++ b/services/core/java/com/android/server/warsaw/WarsawCameraMindLifecycle.java
-@@ -0,0 +1,122 @@
+@@ -0,0 +1,150 @@
 +package com.android.server.warsaw;
 +
 +import android.content.ComponentName;
@@ -4005,9 +3907,12 @@ index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20
 +    private static final String TAG = "WarsawCameraMind";
 +    private static final ComponentName SERVICE = new ComponentName(
 +            "com.xiaomi.cameramind", "com.xiaomi.cameramind.CameraMindService");
++    private static final long BIND_TIMEOUT_MS = 30000;
 +    private final Context context;
 +    private final Handler worker;
 +    private final Runnable retry = this::bind;
++    private final Runnable bindingTimeout = this::onBindingTimeout;
++    private boolean started;
 +    private Connection connection;
 +    private long delayMs = 500;
 +
@@ -4018,7 +3923,11 @@ index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20
 +
 +    void start() {
 +        if (SystemProperties.getBoolean("persist.sys.miui.camera.cameramind.supported", false)) {
-+            worker.post(retry);
++            worker.post(() -> {
++                if (started) return;
++                started = true;
++                bind();
++            });
 +        }
 +    }
 +
@@ -4042,7 +3951,14 @@ index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20
 +    private void release() {
 +        Connection previous = connection;
 +        connection = null;
-+        if (previous != null && previous.bound) context.unbindService(previous);
++        worker.removeCallbacks(bindingTimeout);
++        if (previous != null) {
++            // Context keeps a dispatcher even when bind returns false or throws SecurityException.
++            try { context.unbindService(previous); }
++            catch (IllegalArgumentException removed) {
++                Slog.w(TAG, "CameraMind binding was already removed", removed);
++            }
++        }
 +    }
 +
 +    private void schedule() {
@@ -4051,9 +3967,16 @@ index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20
 +        delayMs = Math.min(20000, delayMs + 500);
 +    }
 +
-+    private void bind() {
-+        if (connection != null && connection.connected) return;
++    private void onBindingTimeout() {
++        if (connection == null || connection.connected) return;
++        Slog.e(TAG, "CameraMind binding timed out");
 +        release();
++        schedule();
++    }
++
++    private void bind() {
++        // An accepted request must finish or time out before another request is made.
++        if (connection != null) return;
 +        if (!trustedService()) {
 +            Slog.e(TAG, "CameraMind has an unexpected UID, signature or enabled state");
 +            schedule();
@@ -4062,21 +3985,21 @@ index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20
 +        Connection pending = new Connection();
 +        connection = pending;
 +        try {
-+            pending.bound = context.bindServiceAsUser(new Intent().setComponent(SERVICE), pending,
++            boolean accepted = context.bindServiceAsUser(new Intent().setComponent(SERVICE), pending,
 +                    Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT, worker, UserHandle.SYSTEM);
-+            if (!pending.bound) {
-+                connection = null;
-+                Slog.e(TAG, "CameraMind bind request was rejected");
++            if (accepted) {
++                worker.postDelayed(bindingTimeout, BIND_TIMEOUT_MS);
++                return;
 +            }
++            Slog.e(TAG, "CameraMind bind request was rejected");
 +        } catch (SecurityException failure) {
-+            connection = null;
 +            Slog.e(TAG, "CameraMind bind permission was rejected", failure);
 +        }
++        release();
 +        schedule();
 +    }
 +
 +    private final class Connection implements ServiceConnection {
-+        boolean bound;
 +        boolean connected;
 +
 +        @Override public void onServiceConnected(ComponentName name, IBinder service) {
@@ -4085,24 +4008,31 @@ index 0000000000000000000000000000000000000000..7a0171df2bbfd2a1327cf7b88a571c20
 +            if (connected) {
 +                delayMs = 500;
 +                worker.removeCallbacks(retry);
-+            } else schedule();
++                worker.removeCallbacks(bindingTimeout);
++            } else {
++                release();
++                schedule();
++            }
 +        }
 +
 +        @Override public void onServiceDisconnected(ComponentName name) {
 +            if (connection != this) return;
 +            connected = false;
++            release();
 +            schedule();
 +        }
 +
 +        @Override public void onBindingDied(ComponentName name) {
 +            if (connection != this) return;
 +            connected = false;
++            release();
 +            schedule();
 +        }
 +
 +        @Override public void onNullBinding(ComponentName name) {
 +            if (connection != this) return;
 +            Slog.e(TAG, "CameraMind returned a null engine binder");
++            release();
 +            schedule();
 +        }
 +    }
@@ -4427,82 +4357,6 @@ index 0000000000000000000000000000000000000000..cfe1b3b6f328113bd55fcceec433c1da
 +        } finally { reply.recycle(); request.recycle(); }
 +    }
 +}
-diff --git a/services/core/java/com/android/server/wm/WarsawFanSceneHooks.java b/services/core/java/com/android/server/wm/WarsawFanSceneHooks.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..e27bb94a96bcfb671b8a2c732271aeb529b23bed
---- /dev/null
-+++ b/services/core/java/com/android/server/wm/WarsawFanSceneHooks.java
-@@ -0,0 +1,51 @@
-+package com.android.server.wm;
-+
-+import android.app.ActivityManager;
-+import android.content.Context;
-+import android.content.pm.PackageManager;
-+import android.os.Binder;
-+import android.os.Build;
-+import android.os.Process;
-+import android.os.UserHandle;
-+
-+import com.android.server.policy.WindowManagerPolicy;
-+
-+final class WarsawFanSceneHooks {
-+    private static final String OWNER = "com.android.settings";
-+
-+    private WarsawFanSceneHooks() { }
-+
-+    static boolean isKeyguardOccluded(Context context, WindowManagerPolicy policy, int userId) {
-+        final int caller = Binder.getCallingUid();
-+        if (!"warsaw".equals(Build.DEVICE) || userId < 0) {
-+            throw new SecurityException("Warsaw fan scene input unavailable");
-+        }
-+        final long identity = Binder.clearCallingIdentity();
-+        try {
-+            PackageManager pm = context.getPackageManager();
-+            final int owner;
-+            try {
-+                owner = pm.getPackageUidAsUser(OWNER, PackageManager.MATCH_SYSTEM_ONLY,
-+                        UserHandle.getUserId(caller));
-+            } catch (PackageManager.NameNotFoundException missing) {
-+                throw new SecurityException("Warsaw fan owner absent");
-+            }
-+            String[] packages = pm.getPackagesForUid(caller);
-+            if (caller != Process.SYSTEM_UID || owner != caller || packages == null
-+                    || !java.util.Arrays.asList(packages).contains(OWNER)
-+                    || pm.checkSignatures(Process.SYSTEM_UID, caller) != PackageManager.SIGNATURE_MATCH) {
-+                throw new SecurityException("Caller is not the Settings system UID");
-+            }
-+            if (ActivityManager.getCurrentUser() != userId) {
-+                throw new IllegalStateException("Foreground user changed");
-+            }
-+            boolean occluded = policy.isKeyguardOccluded();
-+            if (ActivityManager.getCurrentUser() != userId) {
-+                throw new IllegalStateException("Foreground user changed during scene read");
-+            }
-+            return occluded;
-+        } finally {
-+            Binder.restoreCallingIdentity(identity);
-+        }
-+    }
-+}
-diff --git a/services/core/java/com/android/server/wm/WindowManagerService.java b/services/core/java/com/android/server/wm/WindowManagerService.java
-index 700c1d1cca1f71818570c6f6f6f345111ce966bd..3989b9df7c9c3b5e209b0eb2674cd183d32c9532 100644
---- a/services/core/java/com/android/server/wm/WindowManagerService.java
-+++ b/services/core/java/com/android/server/wm/WindowManagerService.java
-@@ -8331,6 +8331,14 @@ public class WindowManagerService extends IWindowManager.Stub
-         mPolicy.registerShortcutKey(shortcutCode, shortcutKeyReceiver);
-     }
- 
-+    @Override
-+    public boolean isWarsawFanKeyguardOccluded(int userId) {
-+        isWarsawFanKeyguardOccluded_enforcePermission();
-+        synchronized (mGlobalLock) {
-+            return WarsawFanSceneHooks.isKeyguardOccluded(mContext, mPolicy, userId);
-+        }
-+    }
-+
-     private final class LocalService extends WindowManagerInternal {
- 
-         @Override
 diff --git a/services/java/com/android/server/SystemServer.java b/services/java/com/android/server/SystemServer.java
 index 4bb406fc598d41dee71cc551812a0897af2c3044..a13de7098da87d07dcfeb7cc963de39d0d32f123 100644
 --- a/services/java/com/android/server/SystemServer.java
@@ -4693,3 +4547,546 @@ index 0000000000000000000000000000000000000000..da8de9c83b15e4b0e5c4ffe3f29d0003
 +                || !SystemProperties.get("ro.miui.ui.version.code", "").isEmpty();
 +    }
 +}
+diff --git a/services/core/java/com/android/server/wm/ActivityCallerState.java b/services/core/java/com/android/server/wm/ActivityCallerState.java
+index a333a4d46162..9652e7c9ed61 100644
+--- a/services/core/java/com/android/server/wm/ActivityCallerState.java
++++ b/services/core/java/com/android/server/wm/ActivityCallerState.java
+@@ -101,27 +101,71 @@ final class ActivityCallerState {
+         mCallerTokenInfoMap.put(callerToken, callerInfo);
+     }
+ 
+-    void computeCallerInfo(IBinder callerToken, Intent intent, int callerUid,
+-            String callerPackageName, boolean isCallerShareIdentityEnabled) {
+-        final CallerInfo callerInfo = new CallerInfo(callerUid, callerPackageName,
+-                isCallerShareIdentityEnabled);
+-        mCallerTokenInfoMap.put(callerToken, callerInfo);
++    /** Permission results captured before taking the window-manager lock. */
++    static final class UriPermissionSnapshot {
++        final int mUid;
++        final ArraySet<GrantUri> mContentUris;
++        final ArraySet<GrantUri> mReadableContentUris = new ArraySet<>();
++        final ArraySet<GrantUri> mWritableContentUris = new ArraySet<>();
++        final ArraySet<GrantUri> mInaccessibleContentUris = new ArraySet<>();
+ 
+-        final ArraySet<Uri> contentUris = getContentUrisFromIntent(intent);
+-        for (int i = contentUris.size() - 1; i >= 0; i--) {
+-            final Uri contentUri = contentUris.valueAt(i);
++        UriPermissionSnapshot(int uid, ArraySet<Uri> contentUris) {
++            mUid = uid;
++            mContentUris = normalizeUris(contentUris, uid);
++        }
+ 
+-            final boolean hasRead = addContentUriIfUidHasPermission(contentUri, callerUid,
+-                    Intent.FLAG_GRANT_READ_URI_PERMISSION, callerInfo.mReadableContentUris);
++        boolean matches(Intent intent, int uid) {
++            return mUid == uid
++                    && mContentUris.equals(normalizeUris(getContentUrisFromIntent(intent), uid));
++        }
+ 
+-            final boolean hasWrite = addContentUriIfUidHasPermission(contentUri, callerUid,
+-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION, callerInfo.mWritableContentUris);
++        private static ArraySet<GrantUri> normalizeUris(ArraySet<Uri> uris, int uid) {
++            final ArraySet<GrantUri> normalized = new ArraySet<>();
++            for (int i = uris.size() - 1; i >= 0; i--) {
++                normalized.add(convertToGrantUri(uris.valueAt(i), /* modeFlags */ 0, uid));
++            }
++            return normalized;
++        }
++    }
+ 
++    static UriPermissionSnapshot computeUriPermissions(ActivityTaskManagerService service,
++            Intent intent, int callerUid) {
++        final ArraySet<Uri> contentUris = getContentUrisFromIntent(intent);
++        final UriPermissionSnapshot permissions = new UriPermissionSnapshot(callerUid, contentUris);
++        for (int i = contentUris.size() - 1; i >= 0; i--) {
++            final Uri contentUri = contentUris.valueAt(i);
++            final boolean hasRead = addContentUriIfUidHasPermission(service, contentUri, callerUid,
++                    Intent.FLAG_GRANT_READ_URI_PERMISSION, permissions.mReadableContentUris);
++            final boolean hasWrite = addContentUriIfUidHasPermission(service, contentUri, callerUid,
++                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION, permissions.mWritableContentUris);
+             if (!hasRead && !hasWrite) {
+-                callerInfo.mInaccessibleContentUris.add(convertToGrantUri(contentUri,
++                permissions.mInaccessibleContentUris.add(convertToGrantUri(contentUri,
+                         /* modeFlags */ 0, callerUid));
+             }
+         }
++        return permissions;
++    }
++
++    void computeCallerInfo(IBinder callerToken, Intent intent, int callerUid,
++            String callerPackageName, boolean isCallerShareIdentityEnabled) {
++        computeCallerInfo(callerToken, intent, callerUid, callerPackageName,
++                isCallerShareIdentityEnabled, null);
++    }
++
++    void computeCallerInfo(IBinder callerToken, Intent intent, int callerUid,
++            String callerPackageName, boolean isCallerShareIdentityEnabled,
++            UriPermissionSnapshot permissions) {
++        // Interception can change both the caller and the Intent after resolution.
++        // Never apply the original caller's permissions to that replacement.
++        if (permissions == null || !permissions.matches(intent, callerUid)) {
++            permissions = computeUriPermissions(mAtmService, intent, callerUid);
++        }
++        final CallerInfo callerInfo = new CallerInfo(callerUid, callerPackageName,
++                isCallerShareIdentityEnabled);
++        callerInfo.mReadableContentUris.addAll(permissions.mReadableContentUris);
++        callerInfo.mWritableContentUris.addAll(permissions.mWritableContentUris);
++        callerInfo.mInaccessibleContentUris.addAll(permissions.mInaccessibleContentUris);
++        mCallerTokenInfoMap.put(callerToken, callerInfo);
+     }
+ 
+     boolean checkContentUriPermission(IBinder callerToken, GrantUri grantUri, int modeFlags) {
+@@ -162,10 +206,10 @@ final class ActivityCallerState {
+         return true;
+     }
+ 
+-    private boolean addContentUriIfUidHasPermission(Uri contentUri, int uid, int modeFlags,
+-            ArraySet<GrantUri> grantUris) {
++    private static boolean addContentUriIfUidHasPermission(ActivityTaskManagerService service,
++            Uri contentUri, int uid, int modeFlags, ArraySet<GrantUri> grantUris) {
+         final GrantUri grantUri = convertToGrantUri(contentUri, modeFlags, uid);
+-        if (mAtmService.mUgmInternal.checkUriPermission(grantUri, uid,
++        if (service.mUgmInternal.checkUriPermission(grantUri, uid,
+                 modeFlags, /* isFullAccessForContentUri */ true)) {
+             grantUris.add(grantUri);
+             return true;
+diff --git a/services/core/java/com/android/server/wm/ActivityClientController.java b/services/core/java/com/android/server/wm/ActivityClientController.java
+index c3a27109b9df..09547a26d1d4 100644
+--- a/services/core/java/com/android/server/wm/ActivityClientController.java
++++ b/services/core/java/com/android/server/wm/ActivityClientController.java
+@@ -466,10 +466,23 @@ class ActivityClientController extends IActivityClientController.Stub {
+         // Carefully collect grants without holding lock.
+         final NeededUriGrants destGrants = mService.collectGrants(destIntent, r);
+         final NeededUriGrants resultGrants = mService.collectGrants(resultData, r.resultTo);
++        final boolean captureCallerPermissions = android.security.Flags.contentUriPermissionApis();
++        final ActivityCallerState.UriPermissionSnapshot destCallerPermissions =
++                captureCallerPermissions
++                        ? ActivityCallerState.computeUriPermissions(mService, destIntent, r.getUid())
++                        : null;
++        final ActivityCallerState.UriPermissionSnapshot resultCallerPermissions =
++                captureCallerPermissions
++                        ? ActivityCallerState.computeUriPermissions(mService, resultData, r.getUid())
++                        : null;
+ 
+         synchronized (mGlobalLock) {
+-            return r.getRootTask().navigateUpTo(
+-                    r, destIntent, resolvedType, destGrants, resultCode, resultData, resultGrants);
++            if (!r.isInHistory() || r.getRootTask() == null) {
++                return false;
++            }
++            return r.getRootTask().navigateUpTo(r, destIntent, resolvedType, destGrants,
++                    resultCode, resultData, resultGrants, destCallerPermissions,
++                    resultCallerPermissions);
+         }
+     }
+ 
+@@ -517,6 +530,10 @@ class ActivityClientController extends IActivityClientController.Stub {
+ 
+         // Carefully collect grants without holding lock.
+         final NeededUriGrants resultGrants = mService.collectGrants(resultData, r.resultTo);
++        final ActivityCallerState.UriPermissionSnapshot callerPermissions =
++                android.security.Flags.contentUriPermissionApis()
++                        ? ActivityCallerState.computeUriPermissions(mService, resultData, r.getUid())
++                        : null;
+ 
+         synchronized (mGlobalLock) {
+             // Check again in case activity was removed when collecting grants.
+@@ -589,7 +606,7 @@ class ActivityClientController extends IActivityClientController.Stub {
+                     r.mRelaunchReason = RELAUNCH_REASON_NONE;
+                 } else {
+                     r.finishIfPossible(resultCode, resultData, resultGrants, "app-request",
+-                            true /* oomAdj */);
++                            true /* oomAdj */, callerPermissions);
+                     res = r.finishing;
+                     if (!res) {
+                         Slog.i(TAG, "Failed to finish by app-request");
+diff --git a/services/core/java/com/android/server/wm/ActivityRecord.java b/services/core/java/com/android/server/wm/ActivityRecord.java
+index 15303f7266df..8dc1367d2ed4 100644
+--- a/services/core/java/com/android/server/wm/ActivityRecord.java
++++ b/services/core/java/com/android/server/wm/ActivityRecord.java
+@@ -1851,8 +1851,12 @@ final class ActivityRecord extends WindowToken {
+     }
+ 
+     void computeInitialCallerInfo() {
+-        computeCallerInfo(initialCallerInfoAccessToken, intent, launchedFromUid,
+-                launchedFromPackage, mShareIdentity);
++        computeInitialCallerInfo(null);
++    }
++
++    void computeInitialCallerInfo(ActivityCallerState.UriPermissionSnapshot permissions) {
++        mCallerState.computeCallerInfo(initialCallerInfoAccessToken, intent, launchedFromUid,
++                launchedFromPackage, mShareIdentity, permissions);
+     }
+ 
+     void computeCallerInfo(IBinder callerToken, Intent intent, int callerUid,
+@@ -3523,6 +3527,11 @@ final class ActivityRecord extends WindowToken {
+      */
+     private void finishActivityResults(int resultCode, Intent resultData,
+             NeededUriGrants resultGrants) {
++        finishActivityResults(resultCode, resultData, resultGrants, null);
++    }
++
++    private void finishActivityResults(int resultCode, Intent resultData,
++            NeededUriGrants resultGrants, ActivityCallerState.UriPermissionSnapshot permissions) {
+         // Send the result if needed
+         if (resultTo != null) {
+             if (DEBUG_RESULTS) {
+@@ -3542,9 +3551,9 @@ final class ActivityRecord extends WindowToken {
+             IBinder callerToken = new Binder();
+             if (android.security.Flags.contentUriPermissionApis()) {
+                 try {
+-                    resultTo.computeCallerInfo(callerToken, resultData, this.getUid(),
++                    resultTo.mCallerState.computeCallerInfo(callerToken, resultData, this.getUid(),
+                             mAtmService.getPackageManager().getNameForUid(this.getUid()),
+-                            /* isShareIdentityEnabled */ false);
++                            /* isShareIdentityEnabled */ false, permissions);
+                     // Result callers cannot share their identity via
+                     // {@link ActivityOptions#setShareIdentityEnabled(boolean)} since
+                     // {@link android.app.Activity#setResult} doesn't have a
+@@ -3619,6 +3628,12 @@ final class ActivityRecord extends WindowToken {
+      */
+     @FinishRequest int finishIfPossible(int resultCode, Intent resultData,
+             NeededUriGrants resultGrants, String reason, boolean oomAdj) {
++        return finishIfPossible(resultCode, resultData, resultGrants, reason, oomAdj, null);
++    }
++
++    @FinishRequest int finishIfPossible(int resultCode, Intent resultData,
++            NeededUriGrants resultGrants, String reason, boolean oomAdj,
++            ActivityCallerState.UriPermissionSnapshot permissions) {
+         ProtoLog.v(WM_DEBUG_STATES, "Finishing activity r=%s, result=%d, data=%s, "
+                 + "reason=%s", this, resultCode, resultData, reason);
+ 
+@@ -3684,7 +3699,7 @@ final class ActivityRecord extends WindowToken {
+                 }
+             }
+ 
+-            finishActivityResults(resultCode, resultData, resultGrants);
++            finishActivityResults(resultCode, resultData, resultGrants, permissions);
+             final boolean wasVisibleRequested = mVisibleRequested;
+             if (mVisibleRequested) {
+                 setVisibility(false);
+@@ -4969,12 +4984,20 @@ final class ActivityRecord extends WindowToken {
+     void sendResult(int callingUid, String resultWho, int requestCode, int resultCode,
+             Intent data, IBinder callerToken, NeededUriGrants dataGrants,
+             boolean forceSendForMediaProjection) {
++        sendResult(callingUid, resultWho, requestCode, resultCode, data, callerToken, dataGrants,
++                forceSendForMediaProjection, null);
++    }
++
++    void sendResult(int callingUid, String resultWho, int requestCode, int resultCode,
++            Intent data, IBinder callerToken, NeededUriGrants dataGrants,
++            boolean forceSendForMediaProjection,
++            ActivityCallerState.UriPermissionSnapshot permissions) {
+         if (android.security.Flags.contentUriPermissionApis()
+                 && !mCallerState.hasCaller(callerToken)) {
+             try {
+-                computeCallerInfo(callerToken, data, callingUid,
++                mCallerState.computeCallerInfo(callerToken, data, callingUid,
+                         mAtmService.getPackageManager().getNameForUid(callingUid),
+-                        false /* isShareIdentityEnabled */);
++                        false /* isShareIdentityEnabled */, permissions);
+                 // Result callers cannot share their identity via
+                 // {@link ActivityOptions#setShareIdentityEnabled(boolean)} since
+                 // {@link android.app.Activity#setResult} doesn't have a {@link android.os.Bundle}.
+@@ -5081,9 +5104,17 @@ final class ActivityRecord extends WindowToken {
+      */
+     final void deliverNewIntentLocked(int callingUid, Intent intent, NeededUriGrants intentGrants,
+             String referrer, boolean isShareIdentityEnabled, int userId, int recipientAppId) {
++        deliverNewIntentLocked(callingUid, intent, intentGrants, referrer, isShareIdentityEnabled,
++                userId, recipientAppId, null);
++    }
++
++    final void deliverNewIntentLocked(int callingUid, Intent intent, NeededUriGrants intentGrants,
++            String referrer, boolean isShareIdentityEnabled, int userId, int recipientAppId,
++            ActivityCallerState.UriPermissionSnapshot permissions) {
+         IBinder callerToken = new Binder();
+         if (android.security.Flags.contentUriPermissionApis()) {
+-            computeCallerInfo(callerToken, intent, callingUid, referrer, isShareIdentityEnabled);
++            mCallerState.computeCallerInfo(callerToken, intent, callingUid, referrer,
++                    isShareIdentityEnabled, permissions);
+         }
+         // The activity now gets access to the data associated with this Intent.
+         mAtmService.mUgmInternal.grantUriPermissionUncheckedFromIntent(intentGrants,
+diff --git a/services/core/java/com/android/server/wm/ActivityStarter.java b/services/core/java/com/android/server/wm/ActivityStarter.java
+index b0b270ebb1ba..de894c0b062d 100644
+--- a/services/core/java/com/android/server/wm/ActivityStarter.java
++++ b/services/core/java/com/android/server/wm/ActivityStarter.java
+@@ -405,6 +405,8 @@ class ActivityStarter {
+         IApplicationThread caller;
+         Intent intent;
+         NeededUriGrants intentGrants;
++        ActivityCallerState.UriPermissionSnapshot callerUriPermissions;
++        boolean callerUriPermissionsPrecomputed;
+         // A copy of the original requested intent, in case for ephemeral app launch.
+         Intent ephemeralIntent;
+         String resolvedType;
+@@ -503,6 +505,8 @@ class ActivityStarter {
+             caller = null;
+             intent = null;
+             intentGrants = null;
++            callerUriPermissions = null;
++            callerUriPermissionsPrecomputed = false;
+             ephemeralIntent = null;
+             resolvedType = null;
+             activityInfo = null;
+@@ -549,6 +553,8 @@ class ActivityStarter {
+             caller = request.caller;
+             intent = request.intent;
+             intentGrants = request.intentGrants;
++            callerUriPermissions = request.callerUriPermissions;
++            callerUriPermissionsPrecomputed = request.callerUriPermissionsPrecomputed;
+             ephemeralIntent = request.ephemeralIntent;
+             resolvedType = request.resolvedType;
+             activityInfo = request.activityInfo;
+@@ -587,6 +593,39 @@ class ActivityStarter {
+             mOriginalCallerUid = request.mOriginalCallerUid;
+         }
+ 
++        void resolveCallerUriPermissions(ActivityTaskManagerService service) {
++            final ActivityCallerState.UriPermissionSnapshot precomputed =
++                    callerUriPermissionsPrecomputed ? callerUriPermissions : null;
++            callerUriPermissions = null;
++            callerUriPermissionsPrecomputed = false;
++            if (!android.security.Flags.contentUriPermissionApis()) {
++                return;
++            }
++            if (Thread.holdsLock(service.mGlobalLock)) {
++                // Internal navigation prepares this before taking the lock. Consume it once;
++                // ActivityCallerState still checks the final UID and URI set before using it.
++                callerUriPermissions = precomputed;
++                return;
++            }
++            int resolvedUid = callingUid;
++            if (caller != null) {
++                synchronized (service.mGlobalLock) {
++                    final WindowProcessController process = service.getProcessController(caller);
++                    if (process == null) {
++                        return;
++                    }
++                    resolvedUid = process.mUid;
++                }
++            } else if (resolvedUid < 0) {
++                resolvedUid = realCallingUid == DEFAULT_REAL_CALLING_UID
++                        ? Binder.getCallingUid() : realCallingUid;
++            }
++            if (resolvedUid >= 0) {
++                callerUriPermissions = ActivityCallerState.computeUriPermissions(
++                        service, intent, resolvedUid);
++            }
++        }
++
+         /**
+          * Resolve activity from the given intent for this launch.
+          */
+@@ -877,6 +916,9 @@ class ActivityStarter {
+             if (mRequest.activityInfo == null) {
+                 mRequest.resolveActivity(mSupervisor);
+             }
++            // Dynamic content-provider permission checks can call another process.
++            // Capture them before executeRequest enters the window-manager lock.
++            mRequest.resolveCallerUriPermissions(mService);
+ 
+             if (trackLaunchOriginator()) {
+                 synchronized (mService.mGlobalLock) {
+@@ -1865,7 +1907,7 @@ class ActivityStarter {
+         }
+ 
+         if (android.security.Flags.contentUriPermissionApis() && started.isAttached()) {
+-            started.computeInitialCallerInfo();
++            started.computeInitialCallerInfo(mRequest.callerUriPermissions);
+         }
+ 
+         // Apply setAlwaysOnTop when starting an activity is successful regardless of creating
+@@ -3357,7 +3399,7 @@ class ActivityStarter {
+         activity.deliverNewIntentLocked(mCallingUid, mStartActivity.intent, intentGrants,
+                 mStartActivity.launchedFromPackage, mStartActivity.mShareIdentity,
+                 mStartActivity.mUserId,
+-                UserHandle.getAppId(mStartActivity.getUid()));
++                UserHandle.getAppId(mStartActivity.getUid()), mRequest.callerUriPermissions);
+         mIntentDelivered = true;
+     }
+ 
+@@ -3556,6 +3598,12 @@ class ActivityStarter {
+         return mRequest.intent;
+     }
+ 
++    ActivityStarter setCallerUriPermissions(ActivityCallerState.UriPermissionSnapshot permissions) {
++        mRequest.callerUriPermissions = permissions;
++        mRequest.callerUriPermissionsPrecomputed = true;
++        return this;
++    }
++
+     ActivityStarter setIntentGrants(NeededUriGrants intentGrants) {
+         mRequest.intentGrants = intentGrants;
+         return this;
+diff --git a/services/core/java/com/android/server/wm/ActivityTaskManagerService.java b/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
+index 6cc67150ff2e..071fa239b857 100644
+--- a/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
++++ b/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
+@@ -7303,10 +7303,17 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
+ 
+             // Carefully collect grants without holding lock
+             final NeededUriGrants dataGrants = collectGrants(data, r);
++            final ActivityCallerState.UriPermissionSnapshot callerPermissions =
++                    android.security.Flags.contentUriPermissionApis() && callingUid >= 0
++                            ? ActivityCallerState.computeUriPermissions(
++                                    ActivityTaskManagerService.this, data, callingUid) : null;
+ 
+             synchronized (mGlobalLock) {
++                if (!r.isInHistory()) {
++                    return;
++                }
+                 r.sendResult(callingUid, resultWho, requestCode, resultCode, data, new Binder(),
+-                        dataGrants);
++                        dataGrants, false /* forceSendForMediaProjection */, callerPermissions);
+             }
+         }
+ 
+diff --git a/services/core/java/com/android/server/wm/Task.java b/services/core/java/com/android/server/wm/Task.java
+index 7fea3a9fd5b7..b1e680d42f6a 100644
+--- a/services/core/java/com/android/server/wm/Task.java
++++ b/services/core/java/com/android/server/wm/Task.java
+@@ -5874,6 +5874,15 @@ class Task extends TaskFragment {
+     boolean navigateUpTo(ActivityRecord srec, Intent destIntent, String resolvedType,
+             NeededUriGrants destGrants, int resultCode, Intent resultData,
+             NeededUriGrants resultGrants) {
++        return navigateUpTo(srec, destIntent, resolvedType, destGrants, resultCode, resultData,
++                resultGrants, null, null);
++    }
++
++    boolean navigateUpTo(ActivityRecord srec, Intent destIntent, String resolvedType,
++            NeededUriGrants destGrants, int resultCode, Intent resultData,
++            NeededUriGrants resultGrants,
++            ActivityCallerState.UriPermissionSnapshot destCallerPermissions,
++            ActivityCallerState.UriPermissionSnapshot resultCallerPermissions) {
+         if (!srec.attachedToProcess()) {
+             // Nothing to do if the caller is not attached, because this method should be called
+             // from an alive activity.
+@@ -5931,7 +5940,7 @@ class Task extends TaskFragment {
+             if (ar == finalParent) return true;
+ 
+             ar.finishIfPossible(resultCodeHolder[0], resultDataHolder[0], resultGrantsHolder[0],
+-                    "navigate-up", true /* oomAdj */);
++                    "navigate-up", true /* oomAdj */, resultCallerPermissions);
+             // Only return the supplied result for the first activity finished
+             resultCodeHolder[0] = Activity.RESULT_CANCELED;
+             resultDataHolder[0] = null;
+@@ -5945,6 +5954,7 @@ class Task extends TaskFragment {
+             // TODO(b/64750076): Check if calling pid should really be -1.
+             final int res = mAtmService.getActivityStartController()
+                     .obtainStarter(destIntent, "navigateUpTo")
++                    .setCallerUriPermissions(destCallerPermissions)
+                     .setResolvedType(resolvedType)
+                     .setUserId(srec.mUserId)
+                     .setCaller(srec.app.getThread())
+@@ -5961,7 +5971,7 @@ class Task extends TaskFragment {
+             foundParentInTask = isStartResultSuccessful(res);
+             if (res == ActivityManager.START_SUCCESS) {
+                 parent.finishIfPossible(resultCode, resultData, resultGrants,
+-                        "navigate-top", true /* oomAdj */);
++                        "navigate-top", true /* oomAdj */, resultCallerPermissions);
+             }
+         }
+         Binder.restoreCallingIdentity(origId);
+diff --git a/services/core/java/com/android/server/ConsumerIrService.java b/services/core/java/com/android/server/ConsumerIrService.java
+index 63dbaa5b3270..68a525c50110 100644
+--- a/services/core/java/com/android/server/ConsumerIrService.java
++++ b/services/core/java/com/android/server/ConsumerIrService.java
+@@ -25,6 +25,7 @@ import android.content.pm.PackageManager;
+ import android.hardware.IConsumerIrService;
+ import android.hardware.ir.ConsumerIrFreqRange;
+ import android.hardware.ir.IConsumerIr;
++import android.os.DeadObjectException;
+ import android.os.PowerManager;
+ import android.os.RemoteException;
+ import android.os.ServiceManager;
+@@ -32,6 +33,7 @@ import android.util.Slog;
+ 
+ public class ConsumerIrService extends IConsumerIrService.Stub {
+     private static final String TAG = "ConsumerIrService";
++    private static final String HAL_SERVICE_NAME = IConsumerIr.DESCRIPTOR + "/default";
+ 
+     private static final int MAX_XMIT_TIME = 2000000; /* in microseconds */
+ 
+@@ -67,12 +69,24 @@ public class ConsumerIrService extends IConsumerIrService.Stub {
+ 
+     private boolean getHalService() {
+         // Attempt to get the AIDL HAL service first
+-        final String fqName = IConsumerIr.DESCRIPTOR + "/default";
+         mAidlService = IConsumerIr.Stub.asInterface(
+-                        ServiceManager.waitForDeclaredService(fqName));
++                        ServiceManager.waitForDeclaredService(HAL_SERVICE_NAME));
+         return mAidlService != null;
+     }
+ 
++    // Caller holds mHalLock. init restarts the HAL after a crash; resolve its
++    // replacement without waiting indefinitely on a framework Binder thread.
++    private IConsumerIr getHalServiceLocked() {
++        if (mAidlService != null && !mAidlService.asBinder().isBinderAlive()) {
++            mAidlService = null;
++        }
++        if (mAidlService == null) {
++            mAidlService = IConsumerIr.Stub.asInterface(
++                    ServiceManager.checkService(HAL_SERVICE_NAME));
++        }
++        return mAidlService;
++    }
++
+     private void throwIfNoIrEmitter() {
+         if (!mHasNativeHal) {
+             throw new UnsupportedOperationException("IR emitter not available");
+@@ -102,12 +116,25 @@ public class ConsumerIrService extends IConsumerIrService.Stub {
+ 
+         // Right now there is no mechanism to ensure fair queing of IR requests
+         synchronized (mHalLock) {
+-            if (mAidlService != null) {
+-                try {
+-                    mAidlService.transmit(carrierFrequency, pattern);
+-                } catch (RemoteException ignore) {
+-                    Slog.e(TAG, "Error transmitting frequency: " + carrierFrequency);
+-                }
++            final IConsumerIr service = getHalServiceLocked();
++            if (service == null) {
++                Slog.e(TAG, "IR HAL is temporarily unavailable");
++                return;
++            }
++            // The HAL call is synchronous: keep the CPU awake until the pattern
++            // has completed or failed, including exception paths.
++            mWakeLock.acquire();
++            try {
++                service.transmit(carrierFrequency, pattern);
++            } catch (DeadObjectException e) {
++                mAidlService = null;
++                // Transmission may have reached the emitter. Never replay it;
++                // only a subsequent caller request may use the replacement HAL.
++                Slog.e(TAG, "IR HAL died while transmitting frequency: " + carrierFrequency, e);
++            } catch (RemoteException e) {
++                Slog.e(TAG, "Error transmitting frequency: " + carrierFrequency, e);
++            } finally {
++                mWakeLock.release();
+             }
+         }
+     }
+@@ -120,9 +147,10 @@ public class ConsumerIrService extends IConsumerIrService.Stub {
+         throwIfNoIrEmitter();
+ 
+         synchronized(mHalLock) {
+-            if (mAidlService != null) {
++            final IConsumerIr service = getHalServiceLocked();
++            if (service != null) {
+                 try {
+-                    ConsumerIrFreqRange[] output = mAidlService.getCarrierFreqs();
++                    ConsumerIrFreqRange[] output = service.getCarrierFreqs();
+                     if (output.length <= 0) {
+                         Slog.e(TAG, "Error getting carrier frequencies.");
+                     }
+@@ -132,6 +160,9 @@ public class ConsumerIrService extends IConsumerIrService.Stub {
+                         result[i * 2 + 1] = output[i].maxHz;
+                     }
+                     return result;
++                } catch (DeadObjectException e) {
++                    mAidlService = null;
++                    return null;
+                 } catch (RemoteException ignore) {
+                     return null;
+                 }

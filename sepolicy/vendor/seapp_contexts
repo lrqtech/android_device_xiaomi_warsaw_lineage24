@@ -1,5 +1,8 @@
 user=oem_2918 seinfo=platform name=.cacertservice domain=vendor_cacertservice_app type=app_data_file levelFrom=all
 
+# installd labels private data by package name, not the manifest process name.
+user=oem_2918 seinfo=platform name=vendor.qti.hardware.cacert.server type=app_data_file levelFrom=all
+
 user=_app seinfo=platform name=.qms domain=vendor_qms_app type=app_data_file levelFrom=all
 
 user=_app seinfo=platform name=.qtidataservices domain=vendor_qtidataservices_app type=app_data_file levelFrom=all

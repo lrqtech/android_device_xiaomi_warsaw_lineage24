@@ -8,6 +8,9 @@ typeattribute vendor_hal_keymint_strongbox hal_keymint_server;
 
 typeattribute vendor_hal_keymint_strongbox halserverdomain;
 
+# The NXP transport also connects directly to the eSE HAL.
+hal_client_domain(vendor_hal_keymint_strongbox, hal_secure_element)
+
 binder_use(vendor_hal_keymint_strongbox)
 
 hwbinder_use(vendor_hal_keymint_strongbox)

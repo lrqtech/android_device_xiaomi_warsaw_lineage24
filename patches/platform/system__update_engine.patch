@@ -1,5 +1,5 @@
 diff --git a/download_action.cc b/download_action.cc
-index 6f65006f55c458991a7810b828922ab8ed473aa3..fb81f2fee4822d34d0a8a5b888b0dd1dc4f6c224 100644
+index 6f65006f..dc7500df 100644
 --- a/download_action.cc
 +++ b/download_action.cc
 @@ -78,11 +78,21 @@ void DownloadAction::PerformAction() {
@@ -28,6 +28,27 @@ index 6f65006f55c458991a7810b828922ab8ed473aa3..fb81f2fee4822d34d0a8a5b888b0dd1d
    }
  
    StartDownloading();
+@@ -242,13 +252,15 @@ bool DownloadAction::ReceivedBytes(HttpFetcher* fetcher,
+ }
+ 
+ void DownloadAction::TransferComplete(HttpFetcher* fetcher, bool successful) {
+-  if (delta_performer_) {
+-    LOG_IF(WARNING, delta_performer_->Close() != 0)
+-        << "Error closing the writer.";
+-  }
+-  download_active_ = false;
+   ErrorCode code =
+       successful ? ErrorCode::kSuccess : ErrorCode::kDownloadTransferError;
++  if (delta_performer_ && delta_performer_->Close() != 0) {
++    LOG(ERROR) << "Error closing the writer.";
++    if (code == ErrorCode::kSuccess) {
++      code = ErrorCode::kDownloadWriteError;
++    }
++  }
++  download_active_ = false;
+   if (code == ErrorCode::kSuccess) {
+     if (delta_performer_ && !payload_->already_applied)
+       code = delta_performer_->VerifyPayload(payload_->hash, payload_->size);
 diff --git a/download_action_android_unittest.cc b/download_action_android_unittest.cc
 index 426d7fd2ff4c6ac4ce27abe244d30629f15e10e4..e403864e444a80b1c188a13efa2890ebc1af028b 100644
 --- a/download_action_android_unittest.cc
@@ -74,3 +95,40 @@ index 426d7fd2ff4c6ac4ce27abe244d30629f15e10e4..e403864e444a80b1c188a13efa2890eb
  TEST_F(DownloadActionTest, CacheManifestInvalid) {
    std::string data(METADATA_SIZE + SIGNATURE_SIZE, '-');
    MockPrefs prefs;
+diff --git a/payload_consumer/delta_performer.cc b/payload_consumer/delta_performer.cc
+index 53d4a8fc..1d504661 100644
+--- a/payload_consumer/delta_performer.cc
++++ b/payload_consumer/delta_performer.cc
+@@ -562,10 +562,15 @@ bool DeltaPerformer::Write(const void* bytes, size_t count, ErrorCode* error) {
+     CheckpointUpdateProgress(false);
+   }
+ 
+-  if (partition_writer_) {
+-    TEST_AND_RETURN_FALSE(partition_writer_->FinishedInstallOps());
++  if (partition_writer_ && !partition_writer_->FinishedInstallOps()) {
++    *error = ErrorCode::kDownloadWriteError;
++    return false;
++  }
++  if (CloseCurrentPartition() != 0) {
++    LOG(ERROR) << "Failed to close the final partition writer.";
++    *error = ErrorCode::kDownloadWriteError;
++    return false;
+   }
+-  CloseCurrentPartition();
+ 
+   // In major version 2, we don't add unused operation to the payload.
+   // If we already extracted the signature we should skip this step.
+diff --git a/payload_consumer/vabc_partition_writer.cc b/payload_consumer/vabc_partition_writer.cc
+index 94ad5fb8..e702ee1e 100644
+--- a/payload_consumer/vabc_partition_writer.cc
++++ b/payload_consumer/vabc_partition_writer.cc
+@@ -456,7 +456,8 @@ int VABCPartitionWriter::Close() {
+     LOG(INFO) << "Finalizing " << partition_update_.partition_name()
+               << " COW image";
+     if (!cow_writer_->Finalize()) {
+-      return -errno;
++      const int error = errno;
++      return error ? -error : -EIO;
+     }
+     cow_writer_ = nullptr;
+   }

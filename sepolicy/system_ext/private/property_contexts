@@ -38,3 +38,61 @@ ro.adb.secure.recovery u:object_r:warsaw_recovery_adbd_auth_prop:s0 exact bool
 
 # Per-transport readiness is independent of the ADB FunctionFS marker.
 sys.fastbootd.ready u:object_r:warsaw_fastbootd_ready_prop:s0 exact enum none usb tcp
+
+# QuickCamera is configured by system_ext, not by vendor init.
+persist.sys.miui.camera.quickcamera.supported u:object_r:warsaw_cameramind_prop:s0 exact bool
+
+# Retained vendor_dlkm build metadata; do not leave it as default_prop.
+ro.product.vendor_dlkm.cert u:object_r:build_vendor_prop:s0 exact string
+
+# Public, read-only Vulkan layer lists consumed by the platform loader.
+ro.vulkan.layers.platform u:object_r:graphics_config_prop:s0 exact string
+ro.vulkan.layers.oem u:object_r:graphics_config_prop:s0 exact string
+
+# Legacy platform setting consumed by the retained vendor init actions.
+persist.sys.ssr.enable_debug u:object_r:warsaw_ssr_debug_prop:s0 exact bool
+
+# Exact legacy property names read by the retained camera algorithms.
+persist.camera.aftrack.af_fix_output u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aftrack.af_test_mode u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aftrack.bypass u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aftrack.dump u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aftrack.dump_af_in_out u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aftrack.dump_det_track u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aftrack.loglevel u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.aiasd.isovalue u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.capture.swflip.dump u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.eebin.write u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.fstrack.bypass u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.fstrack.dump u:object_r:vendor_camera_prop:s0 exact string
+persist.camera.fstrack.loglevel u:object_r:vendor_camera_prop:s0 exact string
+persist.offlinelog.kernel.size u:object_r:vendor_camera_prop:s0 exact string
+persist.offlinelog.logcat.size u:object_r:vendor_camera_prop:s0 exact string
+ro.camera.req.fmq.size u:object_r:camera_config_prop:s0 exact int
+ro.camera.res.fmq.size u:object_r:camera_config_prop:s0 exact int
+ro.mi.os.version.incremental u:object_r:build_prop:s0 exact string
+ro.miui.build.region u:object_r:build_prop:s0 exact string
+ro.miui.region u:object_r:build_prop:s0 exact string
+
+# Read-only build and radio identity queried by the retained OEM clients.
+ro.bdsms u:object_r:radio_prop:s0 exact string
+ro.carrier.name u:object_r:radio_prop:s0 exact string
+ro.cit.nonrootbuild u:object_r:build_prop:s0 exact string
+ro.cust.test u:object_r:build_prop:s0 exact string
+ro.fota.oem u:object_r:build_prop:s0 exact string
+ro.mi.os.version.code u:object_r:build_prop:s0 exact string
+ro.miui.cust_variant u:object_r:build_prop:s0 exact string
+ro.miui.customized.region u:object_r:build_prop:s0 exact string
+ro.miui.ui.version.code u:object_r:build_prop:s0 exact string
+ro.product.mod_device u:object_r:build_prop:s0 exact string
+ro.radio.device_type u:object_r:radio_prop:s0 exact string
+ro.tiantong u:object_r:radio_prop:s0 exact string
+ro.mediatek.platform u:object_r:build_prop:s0 exact string
+ro.chipname u:object_r:build_prop:s0 exact string
+ro.hardware.chipname u:object_r:build_prop:s0 exact string
+
+# Read-only cross-OEM region probe; an unset value stays unset.
+ro.vendor.oplus.regionmark u:object_r:build_vendor_prop:s0 exact string
+
+# The legacy property name is retained by the product-side service.
+vendor.qvirtmgr.trustedvm.status u:object_r:vendor_qvirtmgr_prop:s0 exact string

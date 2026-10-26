@@ -3,7 +3,7 @@ package com.miui.cameraopt.quickcamera;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/** OS4 CamOptClientFormatMsg framing and image-title pairing, verified against original DEX. */
+/** OS4 CamOptClientFormatMsg framing with single-use image-title pairing. */
 final class CameraMindEventFormatter {
     private JSONObject pendingSnap;
     private String imageTitle;
@@ -18,6 +18,8 @@ final class CameraMindEventFormatter {
                 pendingSnap.put("imageUniqueName", imageTitle);
                 data = pendingSnap;
                 pendingSnap = null;
+                // Both halves were consumed. The next capture needs a new title.
+                imageTitle = null;
             } else ready = false;
         } else if (event == 2008) {
             if (imageTitle != null) {

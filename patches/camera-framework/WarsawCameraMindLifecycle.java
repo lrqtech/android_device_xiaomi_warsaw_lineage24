@@ -18,9 +18,12 @@ final class WarsawCameraMindLifecycle {
     private static final String TAG = "WarsawCameraMind";
     private static final ComponentName SERVICE = new ComponentName(
             "com.xiaomi.cameramind", "com.xiaomi.cameramind.CameraMindService");
+    private static final long BIND_TIMEOUT_MS = 30000;
     private final Context context;
     private final Handler worker;
     private final Runnable retry = this::bind;
+    private final Runnable bindingTimeout = this::onBindingTimeout;
+    private boolean started;
     private Connection connection;
     private long delayMs = 500;
 
@@ -31,7 +34,11 @@ final class WarsawCameraMindLifecycle {
 
     void start() {
         if (SystemProperties.getBoolean("persist.sys.miui.camera.cameramind.supported", false)) {
-            worker.post(retry);
+            worker.post(() -> {
+                if (started) return;
+                started = true;
+                bind();
+            });
         }
     }
 
@@ -55,7 +62,14 @@ final class WarsawCameraMindLifecycle {
     private void release() {
         Connection previous = connection;
         connection = null;
-        if (previous != null && previous.bound) context.unbindService(previous);
+        worker.removeCallbacks(bindingTimeout);
+        if (previous != null) {
+            // Context keeps a dispatcher even when bind returns false or throws SecurityException.
+            try { context.unbindService(previous); }
+            catch (IllegalArgumentException removed) {
+                Slog.w(TAG, "CameraMind binding was already removed", removed);
+            }
+        }
     }
 
     private void schedule() {
@@ -64,9 +78,16 @@ final class WarsawCameraMindLifecycle {
         delayMs = Math.min(20000, delayMs + 500);
     }
 
-    private void bind() {
-        if (connection != null && connection.connected) return;
+    private void onBindingTimeout() {
+        if (connection == null || connection.connected) return;
+        Slog.e(TAG, "CameraMind binding timed out");
         release();
+        schedule();
+    }
+
+    private void bind() {
+        // An accepted request must finish or time out before another request is made.
+        if (connection != null) return;
         if (!trustedService()) {
             Slog.e(TAG, "CameraMind has an unexpected UID, signature or enabled state");
             schedule();
@@ -75,21 +96,21 @@ final class WarsawCameraMindLifecycle {
         Connection pending = new Connection();
         connection = pending;
         try {
-            pending.bound = context.bindServiceAsUser(new Intent().setComponent(SERVICE), pending,
+            boolean accepted = context.bindServiceAsUser(new Intent().setComponent(SERVICE), pending,
                     Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT, worker, UserHandle.SYSTEM);
-            if (!pending.bound) {
-                connection = null;
-                Slog.e(TAG, "CameraMind bind request was rejected");
+            if (accepted) {
+                worker.postDelayed(bindingTimeout, BIND_TIMEOUT_MS);
+                return;
             }
+            Slog.e(TAG, "CameraMind bind request was rejected");
         } catch (SecurityException failure) {
-            connection = null;
             Slog.e(TAG, "CameraMind bind permission was rejected", failure);
         }
+        release();
         schedule();
     }
 
     private final class Connection implements ServiceConnection {
-        boolean bound;
         boolean connected;
 
         @Override public void onServiceConnected(ComponentName name, IBinder service) {
@@ -98,24 +119,31 @@ final class WarsawCameraMindLifecycle {
             if (connected) {
                 delayMs = 500;
                 worker.removeCallbacks(retry);
-            } else schedule();
+                worker.removeCallbacks(bindingTimeout);
+            } else {
+                release();
+                schedule();
+            }
         }
 
         @Override public void onServiceDisconnected(ComponentName name) {
             if (connection != this) return;
             connected = false;
+            release();
             schedule();
         }
 
         @Override public void onBindingDied(ComponentName name) {
             if (connection != this) return;
             connected = false;
+            release();
             schedule();
         }
 
         @Override public void onNullBinding(ComponentName name) {
             if (connection != this) return;
             Slog.e(TAG, "CameraMind returned a null engine binder");
+            release();
             schedule();
         }
     }

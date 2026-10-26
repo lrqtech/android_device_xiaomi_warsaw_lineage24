@@ -2,7 +2,7 @@
   "format": 1,
   "description": "Reviewed Warsaw prebuilt integration over LineageOS extract-utils. Exact generator input/output fingerprints prevent silently masking dependency changes.",
   "extract_utils_revision": "78ba5d58c4b06712e18bb387a2a72eac8fbc8d70",
-  "input_sha256": "a028aee6a9c84e7d976940c29d2ec41a05cad203212dd5d4e779427688bdfd38",
+  "input_sha256": "119106dd7d732c0034f57cb472ca37561bf6a50ba7225fa006d7e1b7b2d4b9a3",
   "defaults": {
     "android_app_import": {
       "enabled": {
@@ -18918,15 +18918,6 @@
         "value": true
       }
     ],
-    "com.qualcomm.qti.dpm.api@1.0_warsaw_system_ext": [
-      {
-        "op": "set",
-        "path": "/properties/target/android_arm64/srcs",
-        "value": [
-          "proprietary/vendor/lib64/com.qualcomm.qti.dpm.api@1.0.so"
-        ]
-      }
-    ],
     "libdiag_system": [
       {
         "op": "set",
@@ -21742,29 +21733,6 @@
         ]
       }
     ],
-    "com.xiaomi.plugin.ecdsnapshotdet": [
-      {
-        "op": "set",
-        "path": "/properties/target/android_arm64/shared_libs",
-        "value": [
-          "libcutils",
-          "liblog",
-          "libutils",
-          "libcamera_metadata_warsaw_vendor",
-          "libcom.xiaomi.pluginutils",
-          "libcom.xiaomi.metadatautils",
-          "libcom.xiaomi.debug",
-          "com.xiaomi.camdfx",
-          "libcamlog",
-          "libmialgo_utils",
-          "com.xiaomi.plugin.ecdengine",
-          "libc++",
-          "libc",
-          "libm",
-          "libdl"
-        ]
-      }
-    ],
     "com.xiaomi.plugin.edof": [
       {
         "op": "set",
@@ -22451,28 +22419,6 @@
           "vendor.xiaomi.hardware.camera.injection-V1-ndk_warsaw_vendor",
           "libbinder_ndk",
           "libbase",
-          "libc++",
-          "libc",
-          "libm",
-          "libdl"
-        ]
-      }
-    ],
-    "com.xiaomi.plugin.portraitrepair": [
-      {
-        "op": "set",
-        "path": "/properties/target/android_arm64/shared_libs",
-        "value": [
-          "libcutils",
-          "liblog",
-          "libutils",
-          "libcamera_metadata_warsaw_vendor",
-          "libcom.xiaomi.pluginutils",
-          "libcom.xiaomi.metadatautils",
-          "libcom.xiaomi.debug",
-          "com.xiaomi.camdfx",
-          "libcamlog",
-          "libportrait_repair_qnn",
           "libc++",
           "libc",
           "libm",
@@ -24408,33 +24354,6 @@
         ]
       }
     ],
-    "com.xiaomi.plugin.ecdengine": [
-      {
-        "op": "set",
-        "path": "/properties/target/android_arm64/shared_libs",
-        "value": [
-          "libcutils",
-          "liblog",
-          "libutils",
-          "libcamera_metadata_warsaw_vendor",
-          "libcom.xiaomi.pluginutils",
-          "libcom.xiaomi.metadatautils",
-          "libcom.xiaomi.debug",
-          "com.xiaomi.camdfx",
-          "libcamlog",
-          "libmialgo_utils",
-          "libion",
-          "libOpenCL",
-          "libtinyxml2",
-          "libvega_common",
-          "libecdpreproc",
-          "libc++",
-          "libc",
-          "libm",
-          "libdl"
-        ]
-      }
-    ],
     "camera.qcom.sm8750": [
       {
         "op": "set",
@@ -26000,47 +25919,6 @@
           "libcameraopt_stub",
           "libvndksupport",
           "android.hardware.graphics.allocator-V2-ndk",
-          "libc++",
-          "libc",
-          "libm",
-          "libdl"
-        ]
-      }
-    ],
-    "libmiface": [
-      {
-        "op": "set",
-        "path": "/properties/target/android_arm64/srcs",
-        "value": [
-          "proprietary/odm/lib64/libmiface_warsaw_face.so"
-        ]
-      },
-      {
-        "op": "set",
-        "path": "/properties/target/android_arm64/shared_libs",
-        "value": [
-          "libbase",
-          "libbinder_ndk",
-          "libcamera2ndk_warsaw_face",
-          "libcutils",
-          "libdmabufheap",
-          "libdumpstateutil",
-          "libhardware",
-          "libhidlbase",
-          "libhidltransport",
-          "liblog",
-          "libmediandk",
-          "libnativewindow",
-          "libstagefright_foundation",
-          "libui",
-          "libutils",
-          "libutilscallstack",
-          "android.hardware.biometrics.common-V4-ndk",
-          "android.hardware.biometrics.face-V4-ndk",
-          "vendor.xiaomi.hardware.aek-V1-ndk_warsaw_vendor",
-          "libmisight",
-          "libminksocket_vendor",
-          "libteecli",
           "libc++",
           "libc",
           "libm",
@@ -30450,7 +30328,104 @@
           "//frameworks/ex/camera2/extensions/sample"
         ]
       }
+    },
+    {
+      "type": "prebuilt_lib",
+      "properties": {
+        "name": "warsaw_fastrpc_shell_unsigned_3",
+        "device_specific": true,
+        "src": "proprietary/vendor/dsp/cdsp/fastrpc_shell_unsigned_3",
+        "sub_dir": "dsp",
+        "filename": "fastrpc_shell_unsigned_3"
+      }
+    },
+    {
+      "type": "cc_prebuilt_library_shared",
+      "properties": {
+        "name": "com.qualcomm.qti.dpm.api@1.0_warsaw_system_ext",
+        "stem": "com.qualcomm.qti.dpm.api@1.0",
+        "owner": "xiaomi",
+        "strip": {
+          "none": true
+        },
+        "target": {
+          "android_arm64": {
+            "srcs": [
+              "proprietary/vendor/lib64/com.qualcomm.qti.dpm.api@1.0.so"
+            ],
+            "shared_libs": [
+              "libhidlbase",
+              "liblog",
+              "libutils",
+              "libcutils",
+              "libc++",
+              "libc",
+              "libm",
+              "libdl"
+            ]
+          }
+        },
+        "compile_multilib": "64",
+        "prefer": true,
+        "system_ext_specific": true,
+        "enabled": {
+          "__bp_expr__": "select(soong_config_variable(\"warsaw_stock_abi\",\"enabled\"),{\"true\":true,default:false,})"
+        },
+        "stl": "none"
+      }
+    },
+    {
+      "type": "cc_prebuilt_library_shared",
+      "properties": {
+        "name": "libmiface",
+        "owner": "xiaomi",
+        "strip": {
+          "none": true
+        },
+        "target": {
+          "android_arm64": {
+            "srcs": [
+              "proprietary/odm/lib64/libmiface_warsaw_face.so"
+            ],
+            "shared_libs": [
+              "libbase",
+              "libbinder_ndk",
+              "libcamera2ndk_warsaw_face",
+              "libcutils",
+              "libdmabufheap",
+              "libdumpstateutil",
+              "libhardware",
+              "libhidlbase",
+              "libhidltransport",
+              "liblog",
+              "libmediandk",
+              "libnativewindow",
+              "libstagefright_foundation",
+              "libui",
+              "libutils",
+              "libutilscallstack",
+              "android.hardware.biometrics.common-V4-ndk",
+              "android.hardware.biometrics.face-V4-ndk",
+              "vendor.xiaomi.hardware.aek-V1-ndk_warsaw_vendor",
+              "libmisight",
+              "libminksocket_vendor",
+              "libteecli",
+              "libc++",
+              "libc",
+              "libm",
+              "libdl"
+            ]
+          }
+        },
+        "compile_multilib": "64",
+        "prefer": true,
+        "device_specific": true,
+        "enabled": {
+          "__bp_expr__": "select(soong_config_variable(\"warsaw_stock_abi\",\"enabled\"),{\"true\":true,default:false,})"
+        },
+        "stl": "none"
+      }
     }
   ],
-  "output_sha256": "6bd0deb5110231ca2f8a4ca47d77b67216ac20b5eec2d8dcdb0db3f410389376"
+  "output_sha256": "664cfae7c410baf03bf0b249c06244a48ff251d736b8a714054fe360c6b22da2"
 }

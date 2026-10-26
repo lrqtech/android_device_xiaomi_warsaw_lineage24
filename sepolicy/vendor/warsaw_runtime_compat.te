@@ -40,7 +40,7 @@ get_prop({ gpu_sphal_domain -isolated_app_all }, vendor_gralloc_prop)
 # zygote GL-preload configuration (the same contract as AOSP hal_evs_default).
 get_prop(mediacodec, zygote_config_prop)
 
-# These four observed GPU clients call the retained Adreno profile library's
+# The observed GPU clients call the retained Adreno profile library's
 # AIDL getGpuProf path. It returns read/write shared memory allocated by QSPM.
 # Do not grant the broader legacy HIDL or reverse-callback client contract.
 allow warsaw_qspm_render_client vendor_hal_qspmhal_service:service_manager find;
@@ -59,3 +59,43 @@ allow { priv_app mediaserver } vendor_imsvtdaemon:binder { call transfer };
 # The same observed Adreno readers need the kgsl directory and GPU model file.
 allow warsaw_qspm_render_client vendor_sysfs_kgsl:dir search;
 allow warsaw_qspm_render_client vendor_sysfs_kgsl:file r_file_perms;
+
+# The radio dispatcher uses the same process-domain locator as GNSS.
+get_prop(rild, vendor_pd_locater_dbg_prop)
+
+# Vendor init reads the platform-owned subsystem-restart diagnostic setting.
+get_prop(vendor_init, warsaw_ssr_debug_prop)
+
+# Keep initialization of the exact vendor XTRA flag on the vendor-init side.
+set_prop(vendor_init, vendor_warsaw_xtra_config_prop)
+
+# Retained EGL drivers query these exact options inside their ordinary clients.
+get_prop({ gpu_sphal_domain -isolated_app_all }, vendor_warsaw_graphics_config_prop)
+set_prop(vendor_init, vendor_warsaw_graphics_config_prop)
+# The retained Weaver and MIAuthSecret implementations publish only this state.
+# Keep it separate from payment provisioning and RPMB status properties.
+vendor_public_prop(vendor_warsaw_remoteauth_prop)
+set_prop(vendor_hal_weaver_default, vendor_warsaw_remoteauth_prop)
+set_prop(hal_miweaver_default, vendor_warsaw_remoteauth_prop)
+# Preserve the existing readers of the old shared property type.
+get_prop({ hal_mlipay_default hal_mfidoca_default hal_vsimapp_default
+    hal_micrtk_default hal_misecmedia_default hal_tidaservice_default
+    hal_mrm_default hal_mtdservice_default hal_idmanager_default },
+    vendor_warsaw_remoteauth_prop)
+
+# fstab checks the ext4 rescue partition before mounting it at /mnt/rescue.
+# Reuse the platform fsck ioctl allowlist; no access to other boot partitions.
+allow fsck rescue_block_device:blk_file rw_file_perms;
+
+# qmipriod owns its logging directory, not the generic vendor data hierarchy.
+type vendor_warsaw_qmipriod_data_file, file_type, data_file_type;
+allow vendor_qmipriod vendor_warsaw_qmipriod_data_file:dir { search open read getattr write add_name };
+allow vendor_qmipriod vendor_warsaw_qmipriod_data_file:file create_file_perms;
+
+# CameraProviderManager enumerates the separately labeled retained external provider.
+# The provider already runs in hal_camera_default with the standard Binder contract.
+allow cameraserver hal_external_camera_service:service_manager find;
+
+# The allocator reads gpu_model while creating its Adreno context at boot.
+# Directory traversal is already present; no GPU control writes are granted.
+allow hal_graphics_allocator_default vendor_sysfs_kgsl:file r_file_perms;

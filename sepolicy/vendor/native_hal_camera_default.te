@@ -359,3 +359,9 @@ allow hal_camera_default permission_service:service_manager { find };
 allow hal_camera_default tmpfs:file { read write getattr };
 
 allowxperm hal_camera_default vendor_dmabuf_display_heap_device:chr_file ioctl { 0x4800 };
+
+# The framework-side AIDL client exchanges objects with the camera provider.
+allow system_server hal_camera_default:binder { call transfer };
+
+# The retained provider reports camera events through the OEM event device.
+allow hal_camera_default miev_device:chr_file { open write };

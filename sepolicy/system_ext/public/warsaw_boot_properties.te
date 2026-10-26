@@ -1,0 +1,9 @@
+# Platform-owned diagnostic control; vendor init only reads it.
+system_restricted_prop(warsaw_ssr_debug_prop)
+
+# The system location client reads the optional vendor XTRA selection flag.
+# Keep writes on the vendor side; do not expose unrelated persist.vendor.sys keys.
+vendor_restricted_prop(vendor_warsaw_xtra_config_prop)
+
+# Exact EGL/graphics options read by processes that load the vendor GPU driver.
+vendor_restricted_prop(vendor_warsaw_graphics_config_prop)

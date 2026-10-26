@@ -27,29 +27,14 @@ index df5a8ed0d170a17b944c828e8f1dc3c3cf17d080..e0b7d1380f64ebfd85d368006f77dbc5
  #endif
  
 diff --git a/libs/gui/SurfaceComposerClient.cpp b/libs/gui/SurfaceComposerClient.cpp
-index d10624df614c6d0f0e523c1359190b859296a70d..a38e42aed9fff88f3c506d1e0dbabc4551cd83d6 100644
+index d10624df61..de99c444e5 100644
 --- a/libs/gui/SurfaceComposerClient.cpp
 +++ b/libs/gui/SurfaceComposerClient.cpp
-@@ -3562,4 +3562,21 @@ void ReleaseCallbackThread::threadMain() {
+@@ -3562,4 +3562,6 @@ void ReleaseCallbackThread::threadMain() {
      }
  }
  
 +#include "WarsawCameraFpsClient.inc"
-+
-+status_t SurfaceComposerClient::setWarsawGameFrameRateLease(
-+        const sp<IBinder>& owner, uid_t uid, float fps) {
-+    const auto service = ComposerServiceAIDL::getComposerService();
-+    if (!service) return DEAD_OBJECT;
-+    return statusTFromBinderStatus(service->setWarsawGameFrameRateLease(owner, uid, fps));
-+}
-+
-+status_t SurfaceComposerClient::hasWarsawGameFrameRateLease(
-+        const sp<IBinder>& owner, uid_t uid, float fps, bool* owned) {
-+    if (!owned) return BAD_VALUE;
-+    const auto service = ComposerServiceAIDL::getComposerService();
-+    if (!service) return DEAD_OBJECT;
-+    return statusTFromBinderStatus(service->hasWarsawGameFrameRateLease(owner, uid, fps, owned));
-+}
 +
  } // namespace android
 diff --git a/libs/gui/WarsawCameraFpsClient.inc b/libs/gui/WarsawCameraFpsClient.inc
@@ -93,7 +78,7 @@ index 0000000000000000000000000000000000000000..1d40fa67670a694905932fa7097f6172
 +    long[] timestamps;
 +}
 diff --git a/libs/gui/aidl/android/gui/ISurfaceComposer.aidl b/libs/gui/aidl/android/gui/ISurfaceComposer.aidl
-index ce8091a9156e3fa1c678926b4e648c02bf65673d..b1da6575e21b870e7feadecda0bb3344dfd4b97d 100644
+index ce8091a915..fec6f57ae3 100644
 --- a/libs/gui/aidl/android/gui/ISurfaceComposer.aidl
 +++ b/libs/gui/aidl/android/gui/ISurfaceComposer.aidl
 @@ -33,6 +33,7 @@ import android.gui.DisplayStatInfo;
@@ -104,14 +89,12 @@ index ce8091a9156e3fa1c678926b4e648c02bf65673d..b1da6575e21b870e7feadecda0bb3344
  import android.gui.HdrConversionCapability;
  import android.gui.HdrConversionStrategy;
  import android.gui.IActivePictureListener;
-@@ -683,4 +684,8 @@ interface ISurfaceComposer {
+@@ -683,4 +684,6 @@ interface ISurfaceComposer {
       * Requires root
       */
       void resetForcedPacesetter();
 +
 +    FpsMonitorCmd sentWarsawFpsMonitorCmd(int command, String layerName, IBinder owner);
-+    void setWarsawGameFrameRateLease(IBinder owner, int uid, float frameRate);
-+    boolean hasWarsawGameFrameRateLease(IBinder owner, int uid, float frameRate);
  }
 diff --git a/libs/gui/include/gui/FpsMonitorCmd.h b/libs/gui/include/gui/FpsMonitorCmd.h
 new file mode 100644
@@ -145,7 +128,7 @@ index 0000000000000000000000000000000000000000..a2dc92a8a1c4b5eb1e04e6126f4b7bd1
 +#endif
 +}
 diff --git a/libs/gui/include/gui/SurfaceComposerClient.h b/libs/gui/include/gui/SurfaceComposerClient.h
-index 068c0804e209e0a2e9df6b85ae23c62ee447f8ca..d988737a53446ce6bc4dff19f48ded6586666ed0 100644
+index 068c0804e2..0f5f73ab08 100644
 --- a/libs/gui/include/gui/SurfaceComposerClient.h
 +++ b/libs/gui/include/gui/SurfaceComposerClient.h
 @@ -47,6 +47,7 @@
@@ -156,22 +139,19 @@ index 068c0804e209e0a2e9df6b85ae23c62ee447f8ca..d988737a53446ce6bc4dff19f48ded65
  #include <android/gui/RegionSamplingDescriptor.h>
  #include <android/gui/TransactionBarrier.h>
  
-@@ -216,6 +217,10 @@ public:
+@@ -216,6 +217,7 @@ public:
  
      // Sets the frame rate of a particular app (uid). This is currently called
      // by GameManager.
 +    static status_t sentFpsMonitorCmd(int command, const String16& layerName, FpsMonitorCmd* output);
-+    static status_t setWarsawGameFrameRateLease(const sp<IBinder>& owner, uid_t uid, float fps);
-+    static status_t hasWarsawGameFrameRateLease(const sp<IBinder>& owner, uid_t uid,
-+                                               float fps, bool* owned);
      static status_t setGameModeFrameRateOverride(uid_t uid, float frameRate);
  
      // Sets the frame rate of a particular app (uid). This is currently called
 diff --git a/libs/gui/tests/Surface_test.cpp b/libs/gui/tests/Surface_test.cpp
-index 1b0e4faba75a87629ea3cf444e18ab2646bd2f85..7d1ae211c102611e670790bb94ed20d2f2fa7874 100644
+index 1b0e4faba7..cb1433bcc3 100644
 --- a/libs/gui/tests/Surface_test.cpp
 +++ b/libs/gui/tests/Surface_test.cpp
-@@ -1057,6 +1057,28 @@ public:
+@@ -1057,6 +1057,14 @@ public:
          return binder::Status::ok();
      }
  
@@ -180,20 +160,6 @@ index 1b0e4faba75a87629ea3cf444e18ab2646bd2f85..7d1ae211c102611e670790bb94ed20d2
 +            const sp<IBinder>& /*owner*/, gui::FpsMonitorCmd* result) override {
 +        *result = {};
 +        ADD_FAILURE() << "Unexpected FPS monitor request in the frame timestamp test";
-+        return binder::Status::fromExceptionCode(binder::Status::EX_UNSUPPORTED_OPERATION);
-+    }
-+
-+    binder::Status setWarsawGameFrameRateLease(
-+            const sp<IBinder>& /*owner*/, int32_t /*uid*/, float /*frameRate*/) override {
-+        ADD_FAILURE() << "Unexpected game frame-rate lease in the frame timestamp test";
-+        return binder::Status::fromExceptionCode(binder::Status::EX_UNSUPPORTED_OPERATION);
-+    }
-+
-+    binder::Status hasWarsawGameFrameRateLease(
-+            const sp<IBinder>& /*owner*/, int32_t /*uid*/, float /*frameRate*/,
-+            bool* owned) override {
-+        *owned = false;
-+        ADD_FAILURE() << "Unexpected game frame-rate lease query in the frame timestamp test";
 +        return binder::Status::fromExceptionCode(binder::Status::EX_UNSUPPORTED_OPERATION);
 +    }
 +
@@ -224,7 +190,7 @@ index 38b7c439be47e11d0c793e08cfb94883830c561b..9dc482dc84cf31a8fb32e4a406a0b8a0
      for (auto& handle : mDrawingState.callbackHandles) {
          handle.gpuCompositionDoneFence = glDoneFence;
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 9128394aa18b24846745d673566117732774fb07..39f318ff87310cc85867ad5d9175e5dcecc03b32 100644
+index 9128394aa1..0ead06422c 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -611,7 +611,9 @@ LatchUnsignaledConfig SurfaceFlinger::getLatchUnsignaledConfig() {
@@ -301,70 +267,29 @@ index 9128394aa18b24846745d673566117732774fb07..39f318ff87310cc85867ad5d9175e5dc
  
      mPowerModeChangeInProgress = true;
  
-@@ -9317,9 +9352,15 @@ const std::unordered_map<std::string, uint32_t>& SurfaceFlinger::getGenericLayer
-     return genericLayerMetadataKeyMap;
- }
- 
-+void SurfaceFlinger::applyWarsawGameFrameRate(uid_t uid, float frameRate) {
-+    static_cast<void>(mScheduler->schedule([this, uid, frameRate]()
-+                                              FTL_FAKE_GUARD(kMainThreadContext) {
-+        mScheduler->setGameModeFrameRateForUid(FrameRateOverride{uid, frameRate});
-+    }));
-+}
-+
- status_t SurfaceFlinger::setGameModeFrameRateOverride(uid_t uid, float frameRate) {
--    mScheduler->setGameModeFrameRateForUid(FrameRateOverride{uid, frameRate});
--    return NO_ERROR;
-+    return mWarsawGameFrameRates->setBase(uid, frameRate);
- }
- 
- status_t SurfaceFlinger::setGameDefaultFrameRateOverride(uid_t uid, float frameRate) {
-@@ -11135,6 +11176,30 @@ void SurfaceFlinger::updateHdrInfos(
+@@ -11135,6 +11170,8 @@ void SurfaceFlinger::updateHdrInfos(
      }
  }
  
 +#include "WarsawCameraFps.inc"
 +
-+binder::Status SurfaceComposerAIDL::setWarsawGameFrameRateLease(
-+        const sp<IBinder>& owner, int32_t uid, float frameRate) {
-+    if (IPCThreadState::self()->getCallingUid() != AID_SYSTEM) {
-+        return binderStatusFromStatusT(PERMISSION_DENIED);
-+    }
-+    return binderStatusFromStatusT(mFlinger->mWarsawGameFrameRates->setLease(
-+            owner, static_cast<uid_t>(uid), frameRate));
-+}
-+
-+binder::Status SurfaceComposerAIDL::hasWarsawGameFrameRateLease(
-+        const sp<IBinder>& owner, int32_t uid, float frameRate, bool* owned) {
-+    if (IPCThreadState::self()->getCallingUid() != AID_SYSTEM) {
-+        return binderStatusFromStatusT(PERMISSION_DENIED);
-+    }
-+    if (!owned || !owner || uid < AID_APP_START || !std::isfinite(frameRate)) {
-+        return binderStatusFromStatusT(BAD_VALUE);
-+    }
-+    *owned = mFlinger->mWarsawGameFrameRates->matches(owner,
-+            static_cast<uid_t>(uid), frameRate);
-+    return binder::Status::ok();
-+}
-+
  } // namespace android
  
  #if defined(__gl_h_)
 diff --git a/services/surfaceflinger/SurfaceFlinger.h b/services/surfaceflinger/SurfaceFlinger.h
-index 9d8ef0345470fb6f9cd8b2644dcf525507f02976..c1bd455c0330d829fbe2f06fc4ca2f72131a6119 100644
+index 9d8ef03454..55d5426d32 100644
 --- a/services/surfaceflinger/SurfaceFlinger.h
 +++ b/services/surfaceflinger/SurfaceFlinger.h
-@@ -100,6 +100,9 @@
+@@ -100,6 +100,8 @@
  #include "Scheduler/Scheduler.h"
  #include "ShaderRegistry.h"
  #include "SurfaceFlingerFactory.h"
 +#include "WarsawCameraFps.h"
 +#include "WarsawFodDisplayState.h"
-+#include "WarsawGameFrameRateLease.h"
  #include "ThreadContext.h"
  #include "Tracing/LayerTracing.h"
  #include "Tracing/TransactionTracing.h"
-@@ -277,6 +280,10 @@ public:
+@@ -277,6 +279,10 @@ public:
  
      // must be called before clients can connect
      void init() ANDROID_API;
@@ -375,31 +300,22 @@ index 9d8ef0345470fb6f9cd8b2644dcf525507f02976..c1bd455c0330d829fbe2f06fc4ca2f72
  
      // starts SurfaceFlinger main loop in the current thread
      void run() ANDROID_API;
-@@ -627,6 +634,13 @@ private:
+@@ -627,6 +633,8 @@ private:
      status_t setFrameTimelineInfo(const sp<Surface>& surface,
                                    const gui::FrameTimelineInfo& frameTimelineInfo);
  
-+    void applyWarsawGameFrameRate(uid_t uid, float frameRate);
-+    sp<WarsawGameFrameRateLease> mWarsawGameFrameRates =
-+            sp<WarsawGameFrameRateLease>::make([this](uid_t uid, float fps) {
-+                applyWarsawGameFrameRate(uid, fps);
-+            });
 +    sp<WarsawCameraFps> mWarsawCameraFps = sp<WarsawCameraFps>::make();
 +    WarsawFodDisplayState mWarsawFodDisplay;
      status_t setGameModeFrameRateOverride(uid_t uid, float frameRate);
  
      status_t setGameDefaultFrameRateOverride(uid_t uid, float frameRate);
-@@ -1896,6 +1910,13 @@ public:
+@@ -1896,6 +1904,9 @@ public:
      binder::Status getDisplayDecorationSupport(
              const sp<IBinder>& displayToken,
              std::optional<gui::DisplayDecorationSupport>* outSupport) override;
 +    binder::Status sentWarsawFpsMonitorCmd(int32_t command, const String16& layerName,
 +                                           const sp<IBinder>& owner,
 +                                           gui::FpsMonitorCmd* output) override;
-+    binder::Status setWarsawGameFrameRateLease(const sp<IBinder>& owner, int32_t uid,
-+                                              float frameRate) override;
-+    binder::Status hasWarsawGameFrameRateLease(const sp<IBinder>& owner, int32_t uid,
-+                                              float frameRate, bool* owned) override;
      binder::Status setGameModeFrameRateOverride(int32_t uid, float frameRate) override;
      binder::Status setGameDefaultFrameRateOverride(int32_t uid, float frameRate) override;
      binder::Status enableRefreshRateOverlay(bool active) override;
@@ -926,89 +842,4 @@ index 0000000000000000000000000000000000000000..1d38a224f0f2f58ae9a64245d265d269
 +    if (!std::isfinite(variance)) return std::nullopt;
 +    return IntervalStatistics{maxMs, minMs, static_cast<int32_t>(count), variance};
 +}
-+}
-diff --git a/services/surfaceflinger/WarsawGameFrameRateLease.h b/services/surfaceflinger/WarsawGameFrameRateLease.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..a06cd50b8a8c6267d62cdf44971b92bee5a811fe
---- /dev/null
-+++ b/services/surfaceflinger/WarsawGameFrameRateLease.h
-@@ -0,0 +1,79 @@
-+#pragma once
-+
-+#include <binder/IBinder.h>
-+#include <utils/Errors.h>
-+#include <private/android_filesystem_config.h>
-+#include <cmath>
-+#include <functional>
-+#include <map>
-+#include <mutex>
-+#include <utility>
-+
-+namespace android {
-+
-+class WarsawGameFrameRateLease final : public IBinder::DeathRecipient {
-+public:
-+    using Apply = std::function<void(uid_t, float)>;
-+    explicit WarsawGameFrameRateLease(Apply apply) : mApply(std::move(apply)) {}
-+
-+    status_t setBase(uid_t uid, float fps) {
-+        if (!valid(fps)) return BAD_VALUE;
-+        std::lock_guard lock(mMutex);
-+        if (fps == 0) mBase.erase(uid);
-+        else mBase[uid] = fps;
-+        if (mOwner == nullptr || mUid != uid) mApply(uid, fps);
-+        return NO_ERROR;
-+    }
-+
-+    status_t setLease(const sp<IBinder>& owner, uid_t uid, float fps) {
-+        if (owner == nullptr || !valid(fps) || uid % AID_USER_OFFSET < AID_APP_START
-+                || fps > 165.0f) return BAD_VALUE;
-+        std::lock_guard lock(mMutex);
-+        if (mOwner != nullptr && (owner != mOwner || uid != mUid)) return ALREADY_EXISTS;
-+        if (fps == 0) {
-+            if (mOwner != nullptr) releaseLocked(false);
-+            return NO_ERROR;
-+        }
-+        if (mOwner == nullptr) {
-+            status_t linked = owner->linkToDeath(sp<IBinder::DeathRecipient>::fromExisting(this));
-+            if (linked != NO_ERROR) return linked;
-+            mOwner = owner;
-+            mUid = uid;
-+        }
-+        mFps = fps;
-+        mApply(uid, fps);
-+        return NO_ERROR;
-+    }
-+
-+    bool matches(const sp<IBinder>& owner, uid_t uid, float fps) const {
-+        std::lock_guard lock(mMutex);
-+        return mOwner != nullptr && mOwner == owner && mUid == uid && mFps == fps;
-+    }
-+
-+    void binderDied(const wp<IBinder>& who) override {
-+        std::lock_guard lock(mMutex);
-+        if (mOwner != nullptr && who == wp<IBinder>(mOwner)) releaseLocked(true);
-+    }
-+
-+    ~WarsawGameFrameRateLease() override {
-+        if (mOwner != nullptr) mOwner->unlinkToDeath(wp<IBinder::DeathRecipient>::fromExisting(this));
-+    }
-+
-+private:
-+    static bool valid(float fps) { return std::isfinite(fps) && (fps == 0 || fps >= 1); }
-+    void releaseLocked(bool died) {
-+        auto base = mBase.find(mUid);
-+        mApply(mUid, base == mBase.end() ? 0.0f : base->second);
-+        if (!died) mOwner->unlinkToDeath(wp<IBinder::DeathRecipient>::fromExisting(this));
-+        mOwner.clear();
-+        mUid = 0;
-+        mFps = 0;
-+    }
-+    const Apply mApply;
-+    mutable std::mutex mMutex;
-+    std::map<uid_t, float> mBase;
-+    sp<IBinder> mOwner;
-+    uid_t mUid = 0;
-+    float mFps = 0;
-+};
 +}

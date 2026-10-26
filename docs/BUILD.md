@@ -5,11 +5,11 @@ dependencies, Repo, Python 3.11 or newer, and Git LFS.
 
 ## Sync the source set
 
-The manifest pins the platform revisions and selects `warsaw-20261024` for the
+The manifest pins the platform revisions and selects `warsaw-20261027` for the
 device and vendor trees. All three Warsaw repositories are public.
 
 ```sh
-git clone --branch warsaw-20261024 https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24.git "$HOME/warsaw-device"
+git clone --branch warsaw-20261027 https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24.git "$HOME/warsaw-device"
 mkdir -p "$HOME/android/lineage-warsaw"
 cd "$HOME/android/lineage-warsaw"
 repo init --standalone-manifest --git-lfs -u "file://$HOME/warsaw-device/docs/lineage-24.0-pinned.xml"
@@ -40,8 +40,9 @@ m --no-skip-soong-tests -j24 bacon
 
 Adjust the job count to the host's memory and CPU capacity. Keep neverallow,
 dependency, and Soong tests enabled. Output is written to
-`out/target/product/warsaw/`. The default userdebug and eng configurations keep
-normal boot and recovery in SELinux permissive mode.
+`out/target/product/warsaw/`. Normal boot and recovery use the platform default
+SELinux enforcing mode in every build variant. Physical-device qualification
+of the current source is still outstanding.
 
 The October 24 clean build used `BUILD_DATETIME=1792804649`. Setting that value
 alone does not guarantee identical package bytes: source contents, signing keys,
@@ -58,5 +59,5 @@ in a separate Kleaf workspace to rebuild it.
 
 Replace the Image and complete module set together, regenerate module indexes,
 and revalidate the OEM module ABI. The build requires 4 KiB pages for five
-retained IMS/data libraries. `WARSAW_USE_OTA_GKI=true` selects the stock fallback;
-that fallback is outside the no-KUnit configuration.
+retained IMS/data libraries. The unused OEM kernel/image fallback has been
+removed; the paired source-built GKI is the only device-selected input set.

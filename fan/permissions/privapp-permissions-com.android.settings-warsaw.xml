@@ -4,12 +4,5 @@
     <privapp-permissions package="com.android.settings">
         <permission name="android.permission.WRITE_SECURE_SETTINGS" />
         <permission name="android.permission.INTERACT_ACROSS_USERS_FULL" />
-        <permission name="android.permission.REAL_GET_TASKS" />
-        <permission name="android.permission.MANAGE_ACTIVITY_TASKS" />
-        <permission name="android.permission.MODIFY_AUDIO_ROUTING" />
-        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
-        <permission name="android.permission.SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE" />
-        <permission name="android.permission.SCHEDULE_EXACT_ALARM" />
-        <permission name="android.permission.CAMERA_OPEN_CLOSE_LISTENER" />
     </privapp-permissions>
 </permissions>

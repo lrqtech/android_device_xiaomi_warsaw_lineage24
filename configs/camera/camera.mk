@@ -24,7 +24,13 @@ PRODUCT_ODM_PROPERTIES += \
     ro.vendor.audio.special.video.frontfacingrecord.type=4,C,0,1,1,1 \
     persist.vendor.camera.cameramind.supported=true
 
+# The pinned CN MiuiCamera defaults ro.miui.build.region to cn, while the
+# OEM HAL defaults both region properties to 0 and then loads global beauty
+# tables. Keep the APK and HAL on the same OEM region, including the 8 GB table.
+# These keys already have exact build_prop labels readable by both domains.
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
+    ro.miui.build.region=cn \
+    ro.miui.region=CN \
     persist.sys.miui.camera.cameramind.supported=true
 
 # Real OS4 cloud settings provider used by CameraMind, with its update/rollback jobs.
@@ -36,6 +42,16 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += libwarsaw_cameraperf
 
 # OS4 QuickCamera transport and device low-battery capture protection.
+PRODUCT_SYSTEM_EXT_PROPERTIES += \
+    persist.sys.miui.camera.quickcamera.supported=true
+
 PRODUCT_ODM_PROPERTIES += \
-    persist.sys.miui.camera.quickcamera.supported=true \
     persist.vendor.low.cutoff=true
+
+# FastRPC opens this app-readable copy before its private DSP partition fallback.
+# The shell is unchanged Hexagon firmware from the pinned stock DSP image.
+PRODUCT_PACKAGES += warsaw_fastrpc_shell_unsigned_3
+
+# The retained anchor plugin is prepared with an unconditional ECD bypass.
+# Publish the disabled setting as well; saved properties cannot undo the fixup.
+PRODUCT_ODM_PROPERTIES += persist.vendor.camera.plugin.ecdplugin.bypass=1

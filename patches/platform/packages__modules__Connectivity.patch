@@ -1,0 +1,182 @@
+diff --git a/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyJob.java b/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyJob.java
+index e74e67d836..3507e322dd 100644
+--- a/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyJob.java
++++ b/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyJob.java
+@@ -47,8 +47,10 @@ public class CertificateTransparencyJob extends BroadcastReceiver {
+     private final AlarmManager mAlarmManager;
+     private final PendingIntent mPendingIntent;
+     private final IntentFilter mUpdateLogsIntentFilter;
+-    private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
++    private final ExecutorService mExecutorService;
+ 
++    // Scheduling, dependency ownership and queued work are guarded by this monitor.
++    private long mGeneration;
+     private boolean mScheduled = false;
+     private boolean mDependenciesReady = false;
+ 
+@@ -58,6 +60,17 @@ public class CertificateTransparencyJob extends BroadcastReceiver {
+             CertificateTransparencyDownloader certificateTransparencyDownloader,
+             SignatureVerifier signatureVerifier,
+             Collection<CompatibilityVersion> compatVersions) {
++        this(context, certificateTransparencyDownloader, signatureVerifier, compatVersions,
++                Executors.newSingleThreadExecutor());
++    }
++
++    CertificateTransparencyJob(
++            Context context,
++            CertificateTransparencyDownloader certificateTransparencyDownloader,
++            SignatureVerifier signatureVerifier,
++            Collection<CompatibilityVersion> compatVersions,
++            ExecutorService executorService) {
++        mExecutorService = executorService;
+         mContext = context;
+         mCertificateTransparencyDownloader = certificateTransparencyDownloader;
+         mSignatureVerifier = signatureVerifier;
+@@ -74,7 +87,7 @@ public class CertificateTransparencyJob extends BroadcastReceiver {
+         mUpdateLogsIntentFilter = new IntentFilter(ConfigUpdate.ACTION_UPDATE_CT_LOGS);
+     }
+ 
+-    void schedule() {
++    synchronized void schedule() {
+         if (!mScheduled) {
+             mContext.registerReceiver(
+                     this,
+@@ -94,7 +107,9 @@ public class CertificateTransparencyJob extends BroadcastReceiver {
+         }
+     }
+ 
+-    void cancel() {
++    synchronized void cancel() {
++        // Invalidate work queued before cancellation, even if the service is enabled again.
++        mGeneration++;
+         if (mScheduled) {
+             mAlarmManager.cancel(mPendingIntent);
+             mContext.unregisterReceiver(this);
+@@ -116,16 +131,28 @@ public class CertificateTransparencyJob extends BroadcastReceiver {
+     }
+ 
+     @Override
+-    public void onReceive(Context context, Intent intent) {
++    public synchronized void onReceive(Context context, Intent intent) {
+         if (!mUpdateLogsIntentFilter.hasAction(intent.getAction())) {
+             Log.w(TAG, "Received unexpected broadcast with action " + intent);
+             return;
+         }
+-        Future<?> unused =
+-                mExecutorService.submit(
+-                        intent.getBooleanExtra("delete", false)
+-                                ? this::deleteLogListDirectory
+-                                : this::startJob);
++        if (!mScheduled) {
++            return;
++        }
++        final long generation = mGeneration;
++        final boolean delete = intent.getBooleanExtra("delete", false);
++        Future<?> unused = mExecutorService.submit(() -> {
++            synchronized (CertificateTransparencyJob.this) {
++                if (!mScheduled || generation != mGeneration) {
++                    return;
++                }
++                if (delete) {
++                    deleteLogListDirectory();
++                } else {
++                    startJob();
++                }
++            }
++        });
+     }
+ 
+     private void startJob() {
+diff --git a/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java b/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java
+index d0dd564ce2..618a5dc394 100644
+--- a/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java
++++ b/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java
+@@ -20,8 +20,12 @@ import static com.android.net.ct.flags.Flags.flatbuffersLogList;
+ import static com.android.server.net.ct.Config.TAG;
+ 
+ import android.annotation.RequiresApi;
++import android.content.BroadcastReceiver;
+ import android.content.Context;
++import android.content.Intent;
++import android.content.IntentFilter;
+ import android.os.Build;
++import android.os.UserManager;
+ import android.provider.DeviceConfig;
+ import android.provider.DeviceConfig.Properties;
+ import android.util.Log;
+@@ -37,9 +41,26 @@ import java.util.concurrent.Executors;
+ public class CertificateTransparencyService implements DeviceConfig.OnPropertiesChangedListener {
+ 
+     private final CertificateTransparencyJob mCertificateTransparencyJob;
++    private final Context mContext;
++    private final UserManager mUserManager;
++    // Accessed only while holding this service's monitor.
++    private boolean mWaitingForUnlock;
++    private final BroadcastReceiver mUnlockReceiver = new BroadcastReceiver() {
++        @Override
++        public void onReceive(Context context, Intent intent) {
++            if (Intent.ACTION_USER_UNLOCKED.equals(intent.getAction())) {
++                // Recheck the enable flag and the context user's state. A callback may already
++                // be queued when cancellation unregisters this receiver.
++                onPropertiesChanged(new Properties.Builder(Config.NAMESPACE_NETWORK_SECURITY)
++                        .build());
++            }
++        }
++    };
+ 
+     /** Creates a new {@link CertificateTransparencyService} object. */
+     public CertificateTransparencyService(Context context) {
++        mContext = context;
++        mUserManager = context.getSystemService(UserManager.class);
+         SignatureVerifier signatureVerifier = new SignatureVerifier(context);
+         Collection<CompatibilityVersion> compatVersions = new ArrayList<>();
+         compatVersions.add(
+@@ -87,7 +108,7 @@ public class CertificateTransparencyService implements DeviceConfig.OnProperties
+     }
+ 
+     @Override
+-    public void onPropertiesChanged(Properties properties) {
++    public synchronized void onPropertiesChanged(Properties properties) {
+         if (!Config.NAMESPACE_NETWORK_SECURITY.equals(properties.getNamespace())) {
+             return;
+         }
+@@ -103,6 +124,21 @@ public class CertificateTransparencyService implements DeviceConfig.OnProperties
+     }
+ 
+     private void startService() {
++        // DownloadProvider uses credential-encrypted storage. BOOT_COMPLETED at the system
++        // service boundary can precede the first user unlock, so wait without losing the
++        // first update to the daily alarm interval.
++        if (!mUserManager.isUserUnlocked()) {
++            if (!mWaitingForUnlock) {
++                mContext.registerReceiver(mUnlockReceiver,
++                        new IntentFilter(Intent.ACTION_USER_UNLOCKED), Context.RECEIVER_EXPORTED);
++                mWaitingForUnlock = true;
++            }
++            // Close the race between checking the state and registering the receiver.
++            if (!mUserManager.isUserUnlocked()) {
++                return;
++            }
++        }
++        stopWaitingForUnlock();
+         if (Config.DEBUG) {
+             Log.d(TAG, "CertificateTransparencyService start");
+         }
+@@ -110,9 +146,17 @@ public class CertificateTransparencyService implements DeviceConfig.OnProperties
+     }
+ 
+     private void stopService() {
++        stopWaitingForUnlock();
+         if (Config.DEBUG) {
+             Log.d(TAG, "CertificateTransparencyService stop");
+         }
+         mCertificateTransparencyJob.cancel();
+     }
++
++    private void stopWaitingForUnlock() {
++        if (mWaitingForUnlock) {
++            mContext.unregisterReceiver(mUnlockReceiver);
++            mWaitingForUnlock = false;
++        }
++    }
+ }

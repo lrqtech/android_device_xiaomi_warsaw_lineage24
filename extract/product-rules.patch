@@ -30,7 +30,7 @@
      vendor/xiaomi/warsaw/proprietary/odm/etc/camera/AIGesture/buling_1s.png:$(TARGET_COPY_OUT_ODM)/etc/camera/AIGesture/buling_1s.png \
      vendor/xiaomi/warsaw/proprietary/odm/etc/camera/AIGesture/buling_2s.png:$(TARGET_COPY_OUT_ODM)/etc/camera/AIGesture/buling_2s.png \
      vendor/xiaomi/warsaw/proprietary/odm/etc/camera/AIGesture/buling_3s.png:$(TARGET_COPY_OUT_ODM)/etc/camera/AIGesture/buling_3s.png \
-@@ -1246,7 +1240,6 @@
+@@ -1241,7 +1235,6 @@
      vendor/xiaomi/warsaw/proprietary/odm/etc/camera/xmi_slmt_4x_720p.dlc:$(TARGET_COPY_OUT_ODM)/etc/camera/xmi_slmt_4x_720p.dlc \
      vendor/xiaomi/warsaw/proprietary/odm/etc/charger/BAA_config_common.json:$(TARGET_COPY_OUT_ODM)/etc/charger/BAA_config_common.json \
      vendor/xiaomi/warsaw/proprietary/odm/etc/charger/BAA_config_warsaw.json:$(TARGET_COPY_OUT_ODM)/etc/charger/BAA_config_warsaw.json \
@@ -38,7 +38,7 @@
      vendor/xiaomi/warsaw/proprietary/odm/etc/disp0/mdss_dsi_p12x_42_02_0a_dsc_cmd/cct_pcc.txt:$(TARGET_COPY_OUT_ODM)/etc/disp0/mdss_dsi_p12x_42_02_0a_dsc_cmd/cct_pcc.txt \
      vendor/xiaomi/warsaw/proprietary/odm/etc/disp0/mdss_dsi_p12x_42_02_0a_dsc_cmd/clstc/ClstcLut0.txt:$(TARGET_COPY_OUT_ODM)/etc/disp0/mdss_dsi_p12x_42_02_0a_dsc_cmd/clstc/ClstcLut0.txt \
      vendor/xiaomi/warsaw/proprietary/odm/etc/disp0/mdss_dsi_p12x_42_02_0a_dsc_cmd/clstc/ClstcLut1.txt:$(TARGET_COPY_OUT_ODM)/etc/disp0/mdss_dsi_p12x_42_02_0a_dsc_cmd/clstc/ClstcLut1.txt \
-@@ -1329,7 +1322,6 @@
+@@ -1324,7 +1317,6 @@
      vendor/xiaomi/warsaw/proprietary/odm/etc/dqe/parameter_config.ini:$(TARGET_COPY_OUT_ODM)/etc/dqe/parameter_config.ini \
      vendor/xiaomi/warsaw/proprietary/odm/etc/dqe/video_parameter_config.ini:$(TARGET_COPY_OUT_ODM)/etc/dqe/video_parameter_config.ini \
      vendor/xiaomi/warsaw/proprietary/odm/etc/dqe/whitelist_app.json:$(TARGET_COPY_OUT_ODM)/etc/dqe/whitelist_app.json \
@@ -46,7 +46,7 @@
      vendor/xiaomi/warsaw/proprietary/odm/etc/factory_cmd_config/modem.xml:$(TARGET_COPY_OUT_ODM)/etc/factory_cmd_config/modem.xml \
      vendor/xiaomi/warsaw/proprietary/odm/etc/init.panel_info.sh:$(TARGET_COPY_OUT_ODM)/etc/init.panel_info.sh \
      vendor/xiaomi/warsaw/proprietary/odm/etc/init/android.hardware.gnss-aidl-service-qti.rc:$(TARGET_COPY_OUT_ODM)/etc/init/android.hardware.gnss-aidl-service-qti.rc \
-@@ -1564,7 +1556,6 @@
+@@ -1559,7 +1551,6 @@
      vendor/xiaomi/warsaw/proprietary/odm/etc/touch/gameturbotool-control.json:$(TARGET_COPY_OUT_ODM)/etc/touch/gameturbotool-control.json \
      vendor/xiaomi/warsaw/proprietary/odm/etc/touch/gameturbotool-fastinput.json:$(TARGET_COPY_OUT_ODM)/etc/touch/gameturbotool-fastinput.json \
      vendor/xiaomi/warsaw/proprietary/odm/etc/touch/gameturbotool.json:$(TARGET_COPY_OUT_ODM)/etc/touch/gameturbotool.json \
@@ -54,7 +54,7 @@
      vendor/xiaomi/warsaw/proprietary/odm/firmware/0_click_P_RTP.bin:$(TARGET_COPY_OUT_ODM)/firmware/0_click_P_RTP.bin \
      vendor/xiaomi/warsaw/proprietary/odm/firmware/101_offlineCountdown_P_RTP.bin:$(TARGET_COPY_OUT_ODM)/firmware/101_offlineCountdown_P_RTP.bin \
      vendor/xiaomi/warsaw/proprietary/odm/firmware/102_sceneBombInjury_P_RTP.bin:$(TARGET_COPY_OUT_ODM)/firmware/102_sceneBombInjury_P_RTP.bin \
-@@ -2409,74 +2400,6 @@
+@@ -2404,74 +2395,6 @@
      vendor/xiaomi/warsaw/proprietary/odm/firmware/vpu35_4v_unsigned.mbn:$(TARGET_COPY_OUT_ODM)/firmware/vpu35_4v_unsigned.mbn \
      vendor/xiaomi/warsaw/proprietary/odm/firmware/warsaw_gtp_thp_config.ini:$(TARGET_COPY_OUT_ODM)/firmware/warsaw_gtp_thp_config.ini \
      vendor/xiaomi/warsaw/proprietary/odm/firmware/water_check.tflite:$(TARGET_COPY_OUT_ODM)/firmware/water_check.tflite \
@@ -129,7 +129,7 @@
      vendor/xiaomi/warsaw/proprietary/odm/lib64/camera/aon_front_i_1.pb:$(TARGET_COPY_OUT_ODM)/lib64/camera/aon_front_i_1.pb \
      vendor/xiaomi/warsaw/proprietary/odm/lib64/camera/aon_rear_i_2.pb:$(TARGET_COPY_OUT_ODM)/lib64/camera/aon_rear_i_2.pb \
      vendor/xiaomi/warsaw/proprietary/odm/lib64/camera/bitmlconfig.bin:$(TARGET_COPY_OUT_ODM)/lib64/camera/bitmlconfig.bin \
-@@ -2492,27 +2415,9 @@
+@@ -2487,27 +2410,9 @@
      vendor/xiaomi/warsaw/proprietary/odm/lib64/camera/com.qti.tuned.yanan_sunny_ov08f10_ultra_i.bin:$(TARGET_COPY_OUT_ODM)/lib64/camera/com.qti.tuned.yanan_sunny_ov08f10_ultra_i.bin \
      vendor/xiaomi/warsaw/proprietary/odm/lib64/camera/com.qti.tuned.yanan_sunny_ov20b40_front_i.bin:$(TARGET_COPY_OUT_ODM)/lib64/camera/com.qti.tuned.yanan_sunny_ov20b40_front_i.bin \
      vendor/xiaomi/warsaw/proprietary/odm/lib64/qsn1nrt430.bin:$(TARGET_COPY_OUT_ODM)/lib64/qsn1nrt430.bin \
@@ -157,7 +157,7 @@
      vendor/xiaomi/warsaw/proprietary/odm/vendor/etc/dolby_vision.cfg:$(TARGET_COPY_OUT_ODM)/vendor/etc/dolby_vision.cfg \
      vendor/xiaomi/warsaw/proprietary/odm/vendor/etc/videoCodecCapability.json:$(TARGET_COPY_OUT_ODM)/vendor/etc/videoCodecCapability.json \
      vendor/xiaomi/warsaw/proprietary/odm/vendor/etc/videobox.json:$(TARGET_COPY_OUT_ODM)/vendor/etc/videobox.json \
-@@ -2523,13 +2428,7 @@
+@@ -2518,13 +2423,7 @@
      vendor/xiaomi/warsaw/proprietary/system_ext/etc/init/imsvtdaemon.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/imsvtdaemon.rc \
      vendor/xiaomi/warsaw/proprietary/system_ext/etc/init/init.miui.cameraopt.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.miui.cameraopt.rc \
      vendor/xiaomi/warsaw/proprietary/system_ext/etc/init/init.xiaomi.cammsger.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.xiaomi.cammsger.rc \
@@ -171,7 +171,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/dsp/adsp/AudioSphereModule.so.1:$(TARGET_COPY_OUT_VENDOR)/dsp/adsp/AudioSphereModule.so.1 \
      vendor/xiaomi/warsaw/proprietary/vendor/dsp/adsp/CFCM.so.1:$(TARGET_COPY_OUT_VENDOR)/dsp/adsp/CFCM.so.1 \
      vendor/xiaomi/warsaw/proprietary/vendor/dsp/adsp/SAPlusCmnModule.so.1:$(TARGET_COPY_OUT_VENDOR)/dsp/adsp/SAPlusCmnModule.so.1 \
-@@ -2631,7 +2530,6 @@
+@@ -2626,7 +2525,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/dsp/cdsp/version.so:$(TARGET_COPY_OUT_VENDOR)/dsp/cdsp/version.so \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/HapticsPolicy.xml:$(TARGET_COPY_OUT_VENDOR)/etc/HapticsPolicy.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/Hapticsconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/Hapticsconfig.xml \
@@ -179,7 +179,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/acdbdata/IDP_UPD/IDP_UPD_acdb_cal.acdb:$(TARGET_COPY_OUT_VENDOR)/etc/acdbdata/IDP_UPD/IDP_UPD_acdb_cal.acdb \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/acdbdata/IDP_UPD/IDP_UPD_workspaceFileXml.qwsp:$(TARGET_COPY_OUT_VENDOR)/etc/acdbdata/IDP_UPD/IDP_UPD_workspaceFileXml.qwsp \
-@@ -2730,8 +2628,6 @@
+@@ -2725,8 +2623,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/acdbdata/tuna_qrd/QRD_tuna_workspaceFileXml.qwsp:$(TARGET_COPY_OUT_VENDOR)/etc/acdbdata/tuna_qrd/QRD_tuna_workspaceFileXml.qwsp \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/aidl/le_audio/aidl_audio_set_configurations.json:$(TARGET_COPY_OUT_VENDOR)/etc/aidl/le_audio/aidl_audio_set_configurations.json \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/aidl/le_audio/aidl_audio_set_scenarios.json:$(TARGET_COPY_OUT_VENDOR)/etc/aidl/le_audio/aidl_audio_set_scenarios.json \
@@ -188,7 +188,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/audio/audio_module_config_primary.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/audio_module_config_primary.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/audio/sku_kera/audio_effects.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_kera/audio_effects.conf \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/audio/sku_kera/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_kera/audio_effects.xml \
-@@ -2793,10 +2689,8 @@
+@@ -2788,10 +2684,8 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/bluetooth_qti_hearing_aid_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_qti_hearing_aid_audio_policy_configuration.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/camera/cameraopt_perf.json:$(TARGET_COPY_OUT_VENDOR)/etc/camera/cameraopt_perf.json \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/camera/cameraopt_vendor.json:$(TARGET_COPY_OUT_VENDOR)/etc/camera/cameraopt_vendor.json \
@@ -199,7 +199,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/cne/mwqem.conf:$(TARGET_COPY_OUT_VENDOR)/etc/cne/mwqem.conf \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/cne/profileMwqem.xml:$(TARGET_COPY_OUT_VENDOR)/etc/cne/profileMwqem.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/cne/wqeclient/ATT/ATT_profile1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/cne/wqeclient/ATT/ATT_profile1.xml \
-@@ -2828,11 +2722,8 @@
+@@ -2823,11 +2717,8 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/cne/wqeclient/VZW/VZW_profile5.xml:$(TARGET_COPY_OUT_VENDOR)/etc/cne/wqeclient/VZW/VZW_profile5.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/cne/wqeclient/VZW/VZW_profile6.xml:$(TARGET_COPY_OUT_VENDOR)/etc/cne/wqeclient/VZW/VZW_profile6.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/cne/wqeclient/VZW/VZW_profile7.xml:$(TARGET_COPY_OUT_VENDOR)/etc/cne/wqeclient/VZW/VZW_profile7.xml \
@@ -211,7 +211,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/display/DPU1010.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display/DPU1010.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/display/DPU10__.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display/DPU10__.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/display/DPU11__.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display/DPU11__.xml \
-@@ -2898,8 +2789,6 @@
+@@ -2893,8 +2784,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/displayconfig/display_layout_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_layout_configuration.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/dolby/dax-default-spatializer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/dolby/dax-default-spatializer.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/dolby/dax-default.xml:$(TARGET_COPY_OUT_VENDOR)/etc/dolby/dax-default.xml \
@@ -220,7 +220,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/eva/facedetection/bias.dat:$(TARGET_COPY_OUT_VENDOR)/etc/eva/facedetection/bias.dat \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/eva/facedetection/weight.dat:$(TARGET_COPY_OUT_VENDOR)/etc/eva/facedetection/weight.dat \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/eva/facelandmark/bias_1_1.dat:$(TARGET_COPY_OUT_VENDOR)/etc/eva/facelandmark/bias_1_1.dat \
-@@ -2915,16 +2804,14 @@
+@@ -2910,16 +2799,14 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/eva/itof/tuning_params_sensor_type_1.json:$(TARGET_COPY_OUT_VENDOR)/etc/eva/itof/tuning_params_sensor_type_1.json \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/excluded-input-devices.xml:$(TARGET_COPY_OUT_VENDOR)/etc/excluded-input-devices.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml \
@@ -239,7 +239,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/android.hardware.bluetooth@aidl-service-qti-debug.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.bluetooth@aidl-service-qti-debug.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/android.hardware.drm@1.1-service.wfdhdcp.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.drm@1.1-service.wfdhdcp.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/android.hardware.gatekeeper-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.gatekeeper-service-qti.rc \
-@@ -2936,13 +2823,8 @@
+@@ -2931,11 +2818,8 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/c2painternetservice.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/c2painternetservice.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/cnd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/cnd.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/com.qualcomm.qti.wifidisplayhal@1.0-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/com.qualcomm.qti.wifidisplayhal@1.0-service.rc \
@@ -247,23 +247,13 @@
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/dataqti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/dataqti.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/dcfd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/dcfd.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/ddr_freq.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/ddr_freq.rc \
--    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/ddr_training.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/ddr_training.rc \
--    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/diagcommd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/diagcommd.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/dlsc.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/dlsc.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/dms-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/dms-service.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/dumpstate-xiaomi.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/dumpstate-xiaomi.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/feature_enabler_client.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/feature_enabler_client.rc \
-@@ -2957,7 +2839,6 @@
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/hw/init.qcom.usb.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qcom.usb.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/hw/init.qti.kernel.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qti.kernel.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/hw/init.qti.kernel.target.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qti.kernel.target.rc \
--    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/hw/init.qti.ufs.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qti.ufs.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/hw/init.target.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.target.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/hypsys_vendor.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hypsys_vendor.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/ims-dataservice-daemon.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/ims-dataservice-daemon.rc \
-@@ -2968,40 +2849,30 @@
+@@ -2959,36 +2843,28 @@
+     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.qccvendor.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.qccvendor.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.qlm-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.qlm-service.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.qti.fm.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.qti.fm.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.qti.media.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.qti.media.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.qti.qcv.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.qti.qcv.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.time_daemon.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.time_daemon.rc \
@@ -271,7 +261,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.vendor.sensors.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.vendor.sensors.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.vendor.wlan.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.vendor.wlan.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init.wallpapercolor.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.wallpapercolor.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init_fan_service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init_fan_service.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/init_thermal-engine-v2.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init_thermal-engine-v2.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/ipacm-diag.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/ipacm-diag.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/libxiaomi_qcril.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/libxiaomi_qcril.rc \
@@ -285,11 +274,9 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/poweropt-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/poweropt-service.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qcrilNrd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qcrilNrd.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qdcmss.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qdcmss.rc \
--    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qguard.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qguard.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qmipriod.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qmipriod.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qms.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qms.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qseecomd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qseecomd.rc \
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qttestservice.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qttestservice.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qvrd_vndr.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qvrd_vndr.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/qwesd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/qwesd.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/shsusrd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/shsusrd.rc \
@@ -298,19 +285,18 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/ssgtzd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/ssgtzd.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/sxrd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/sxrd.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/tlpd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/tlpd.rc \
--    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/trace.debug-sun.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/trace.debug-sun.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/trusteduilistener.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/trusteduilistener.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/ufs_utils.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/ufs_utils.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.dolby.media.c2-default-service-dax.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.dolby.media.c2-default-service-dax.rc \
-@@ -3032,7 +2903,6 @@
-     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.psiclient@1.0-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.psiclient@1.0-service.rc \
+@@ -3018,7 +2894,6 @@
+     vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.memory.pasrmanager-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.memory.pasrmanager-service.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.qspmhal-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.qspmhal-service.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.rmt_storage.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.rmt_storage.rc \
 -    vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.smp2p.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.smp2p.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.syshealthmon-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.syshealthmon-service.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.qti.tftp.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.qti.tftp.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/vendor.sensors.qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.sensors.qti.rc \
-@@ -3057,7 +2927,6 @@
+@@ -3043,7 +2918,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/wfdvndservice.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/wfdvndservice.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/init/wlanramdumpcollector.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/wlanramdumpcollector.rc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
@@ -318,7 +304,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/libnfc-SN220_19_2MHZ.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-SN220_19_2MHZ.conf \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/libnfc-SN220_38_4MHZ.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-SN220_38_4MHZ.conf \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/libnfc-SN300_38_4MHZ.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-SN300_38_4MHZ.conf \
-@@ -3066,20 +2935,6 @@
+@@ -3052,20 +2926,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/libnfc-nxp-pnscr.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-nxp-pnscr.conf \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/libnfc-qrd-SN100.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-qrd-SN100.conf \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/libnfc-qrd-SN100_38_4MHZ.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-qrd-SN100_38_4MHZ.conf \
@@ -339,7 +325,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/media_codecs_c2_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_c2_audio.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/media_codecs_dolby_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_dolby_audio.xml \
-@@ -3123,11 +2978,6 @@
+@@ -3109,11 +2969,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/media_sun/video_system_specs.json:$(TARGET_COPY_OUT_VENDOR)/etc/media_sun/video_system_specs.json \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/media_tuna_v0/video_system_specs.json:$(TARGET_COPY_OUT_VENDOR)/etc/media_tuna_v0/video_system_specs.json \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/media_tuna_v1/video_system_specs.json:$(TARGET_COPY_OUT_VENDOR)/etc/media_tuna_v1/video_system_specs.json \
@@ -351,7 +337,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/modem/Diag.cfg:$(TARGET_COPY_OUT_VENDOR)/etc/modem/Diag.cfg \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/modem/Diag_RF.cfg:$(TARGET_COPY_OUT_VENDOR)/etc/modem/Diag_RF.cfg \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/modem/Diag_data.cfg:$(TARGET_COPY_OUT_VENDOR)/etc/modem/Diag_data.cfg \
-@@ -3197,19 +3047,7 @@
+@@ -3183,19 +3038,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/qcril_database/upgrade/other/0013_version_update_ecc_table.sql:$(TARGET_COPY_OUT_VENDOR)/etc/qcril_database/upgrade/other/0013_version_update_ecc_table.sql \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/qcril_database/upgrade/other/0014_version_update_modules.sql:$(TARGET_COPY_OUT_VENDOR)/etc/qcril_database/upgrade/other/0014_version_update_modules.sql \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/qcril_database/upgrade/other/0015_version_add_iccid_clir_pref_table.sql:$(TARGET_COPY_OUT_VENDOR)/etc/qcril_database/upgrade/other/0015_version_add_iccid_clir_pref_table.sql \
@@ -371,7 +357,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/res/images/default/charger/1.5k/0.png:$(TARGET_COPY_OUT_VENDOR)/etc/res/images/default/charger/1.5k/0.png \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/res/images/default/charger/1.5k/10.png:$(TARGET_COPY_OUT_VENDOR)/etc/res/images/default/charger/1.5k/10.png \
-@@ -3286,14 +3124,11 @@
+@@ -3272,14 +3115,11 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/res/images/default/charger/2k/92.png:$(TARGET_COPY_OUT_VENDOR)/etc/res/images/default/charger/2k/92.png \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/res/images/default/charger/2k/95.png:$(TARGET_COPY_OUT_VENDOR)/etc/res/images/default/charger/2k/95.png \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/res/images/default/charger/2k/97.png:$(TARGET_COPY_OUT_VENDOR)/etc/res/images/default/charger/2k/97.png \
@@ -386,7 +372,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/seccomp_policy/codec2.vendor.base-arm64.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/codec2.vendor.base-arm64.policy \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/seccomp_policy/codec2.vendor.ext-arm64.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/codec2.vendor.ext-arm64.policy \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/seccomp_policy/gnss@2.0-base.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/gnss@2.0-base.policy \
-@@ -3303,28 +3138,15 @@
+@@ -3289,28 +3129,15 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/seccomp_policy/gnss@2.0-xtwifi-client.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/gnss@2.0-xtwifi-client.policy \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/seccomp_policy/imsrtp.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/imsrtp.policy \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/seccomp_policy/qcrilnr@2.0.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/qcrilnr@2.0.policy \
@@ -415,7 +401,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/sn100u_ese_disableIso.pnscr:$(TARGET_COPY_OUT_VENDOR)/etc/sn100u_ese_disableIso.pnscr \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/sn100u_ese_disableIsoRead.pnscr:$(TARGET_COPY_OUT_VENDOR)/etc/sn100u_ese_disableIsoRead.pnscr \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/sn100u_nfcon.pnscr:$(TARGET_COPY_OUT_VENDOR)/etc/sn100u_nfcon.pnscr \
-@@ -3340,9 +3162,6 @@
+@@ -3326,9 +3153,6 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/sn100u_pnx_ese_sei2c_read.pnscr:$(TARGET_COPY_OUT_VENDOR)/etc/sn100u_pnx_ese_sei2c_read.pnscr \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/sn100u_pnx_ese_sn.pnscr:$(TARGET_COPY_OUT_VENDOR)/etc/sn100u_pnx_ese_sn.pnscr \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/snapdragon_color_libs_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/snapdragon_color_libs_config.xml \
@@ -425,7 +411,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/stub_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/stub_audio_policy_configuration.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/sysconfig/cacert-oem-defined-uids.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sysconfig/cacert-oem-defined-uids.xml \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/telephony/satellite_access_config.json:$(TARGET_COPY_OUT_VENDOR)/etc/telephony/satellite_access_config.json \
-@@ -3354,11 +3173,8 @@
+@@ -3340,11 +3164,8 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/tt_img/No_Signal.pkg:$(TARGET_COPY_OUT_VENDOR)/etc/tt_img/No_Signal.pkg \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/tt_img/Signal.pkg:$(TARGET_COPY_OUT_VENDOR)/etc/tt_img/Signal.pkg \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/tt_img/origin/Origin_Signal.pkg:$(TARGET_COPY_OUT_VENDOR)/etc/tt_img/origin/Origin_Signal.pkg \
@@ -437,7 +423,7 @@
      vendor/xiaomi/warsaw/proprietary/vendor/etc/wifi/kiwi_v2/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/kiwi_v2/WCNSS_qcom_cfg.ini \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/wifi/models/qcom_game_latency_predict.dlc:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/models/qcom_game_latency_predict.dlc \
      vendor/xiaomi/warsaw/proprietary/vendor/etc/wifi/models/qcom_qoe_predict.dlc:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/models/qcom_qoe_predict.dlc \
-@@ -3388,161 +3204,161 @@
+@@ -3374,161 +3195,161 @@
  
  PRODUCT_PACKAGES += \
      vendor.qti.diaghal-V1-ndk_warsaw_system \
@@ -750,7 +736,7 @@
      com.fingerprints.extension3-V1-ndk_warsaw_vendor \
      com.qualcomm.qti.dpm.api@1.0 \
      com.qualcomm.qti.imscmservice@1.0 \
-@@ -3561,31 +3377,31 @@
+@@ -3547,31 +3368,31 @@
      libVkLayer_ADRENO_qprofiler \
      libq3dtools_adreno \
      libq3dtools_esx \
@@ -793,7 +779,7 @@
      vendor.qti.hardware.alarm-impl \
      vendor.qti.hardware.bluetooth.finder-impl-qti \
      vendor.qti.hardware.bluetooth.xpanprovider-impl-qti \
-@@ -3633,7 +3449,7 @@
+@@ -3619,7 +3440,7 @@
      libMiVDR \
      libOpenCL \
      libOpenCL_adreno \
@@ -802,7 +788,7 @@
      libQSEEComAPI \
      libQcelp13SwCodec \
      libQtiRilLoadable \
-@@ -3644,55 +3460,54 @@
+@@ -3630,55 +3451,54 @@
      libTrustedInputAIDL \
      libTrustedInputUtils \
      libTrustedUIAIDL \
@@ -884,7 +870,7 @@
      libbaa_BasedOnCC_VolDown \
      libbaa_ChargeInfo \
      libbaa_ChargerModeProtect \
-@@ -3701,30 +3516,30 @@
+@@ -3687,30 +3507,30 @@
      libbaa_common \
      libbacklight-calib \
      libbatching \
@@ -923,7 +909,7 @@
      libclstc_algorithm_adapter \
      libclstc_gcp_adapter \
      libclstc_tm \
-@@ -3732,31 +3547,30 @@
+@@ -3718,31 +3538,30 @@
      libcneapiclient \
      libcneoplookup \
      libcneqmiutils \
@@ -968,7 +954,7 @@
      libcv_common \
      libdapparamstorage \
      libdataitems \
-@@ -3767,15 +3581,15 @@
+@@ -3753,15 +3572,15 @@
      libdiagatbparser \
      libdigital-dimming \
      libdisp-aba \
@@ -987,7 +973,7 @@
      libdmshal \
      libdolbyclstc \
      libdolbydecoderprocessor \
-@@ -3785,85 +3599,84 @@
+@@ -3771,85 +3590,84 @@
      libdolbyproxyandroid \
      libdolbyui \
      libdpps \
@@ -1112,7 +1098,7 @@
      liblbs_core \
      liblearningmodule \
      liblightninglaunches \
-@@ -3895,18 +3708,18 @@
+@@ -3881,18 +3699,18 @@
      liblowi_common \
      liblowi_wifihal \
      liblvacfs_wrapper \
@@ -1139,7 +1125,7 @@
      libmemutils \
      libmeters-ns \
      libmeters \
-@@ -3914,7 +3727,7 @@
+@@ -3900,7 +3718,7 @@
      libmialgo \
      libmidatabase \
      libmikaraoke \
@@ -1148,7 +1134,7 @@
      libminkdescriptor \
      libminkipcbinder_vendor \
      libminksocket_vendor \
-@@ -3929,10 +3742,10 @@
+@@ -3915,10 +3733,10 @@
      libmmosal_vendor \
      libmmrtpdecoder_vendor \
      libmmrtpencoder_vendor \
@@ -1163,7 +1149,7 @@
      libnicm \
      libnicm_dsi \
      libnicm_interface \
-@@ -3941,7 +3754,7 @@
+@@ -3927,7 +3745,7 @@
      libnicm_netlink \
      libnicm_recovery \
      libnicm_utils \
@@ -1172,7 +1158,7 @@
      libnova \
      libnspdependencyservice \
      libnspdescriptorhandlerservice \
-@@ -3961,7 +3774,7 @@
+@@ -3947,7 +3765,7 @@
      liboem_specific \
      liboemaids_vendor \
      liboemcrypto \
@@ -1181,7 +1167,7 @@
      liboffscreenpoweroptfeature \
      libopencl_loader \
      libopencv_core \
-@@ -3973,26 +3786,26 @@
+@@ -3959,26 +3777,26 @@
      libozocapability \
      libozotensorflowlite_c \
      libpal_net_if \
@@ -1217,7 +1203,7 @@
      libprocomp \
      libq-perflog \
      libqape_oem_ext \
-@@ -4047,12 +3860,12 @@
+@@ -4032,12 +3850,12 @@
      libqcrildataaidl \
      libqcrildatactl \
      libqcrildataqos \
@@ -1232,7 +1218,7 @@
      libqesdk2_0 \
      libqesdk_manager \
      libqesdoem_query_sys \
-@@ -4073,7 +3886,7 @@
+@@ -4058,7 +3876,7 @@
      libqrtr \
      libqrtrclient \
      libqseed3 \
@@ -1241,7 +1227,7 @@
      libqsh \
      libqsh_ble_pb \
      libqsh_wifi_test \
-@@ -4091,8 +3904,8 @@
+@@ -4076,8 +3894,8 @@
      libqti-scenariod \
      libqti-sslite \
      libqti-util \
@@ -1252,7 +1238,7 @@
      libqtigefar \
      libqtikeymaster4 \
      libqtikeymint \
-@@ -4116,32 +3929,32 @@
+@@ -4100,32 +3918,32 @@
      libril \
      librilqmimiscservices \
      librilutils \
@@ -1294,7 +1280,7 @@
      libshsc \
      libsi \
      libsilkyscrolls \
-@@ -4149,7 +3962,7 @@
+@@ -4133,7 +3951,7 @@
      libsn220u_fw \
      libsnapdragoncolor-manager \
      libsnapdragoncolor-qdcm \
@@ -1303,7 +1289,7 @@
      libsns_device_mode_stub \
      libsns_direct_channel_stub \
      libsns_dynamic_loader_stub \
-@@ -4158,26 +3971,27 @@
+@@ -4142,26 +3960,27 @@
      libsnsdiaglog \
      libsnsutils \
      libsoc_helper \
@@ -1342,7 +1328,7 @@
      libstnfc-auth \
      libstnfc-streset \
      libstreamprocessor \
-@@ -4187,20 +4001,20 @@
+@@ -4171,20 +3990,20 @@
      libsynx \
      libsys_info_cache \
      libsystem_health_mon2 \
@@ -1371,7 +1357,7 @@
      libtinyxml2_1 \
      libtlpd \
      libtlpd_configmgr \
-@@ -4210,18 +4024,18 @@
+@@ -4194,18 +4013,18 @@
      libtracker_6dof_impl \
      libtrustedapploader \
      libubwcp \
@@ -1396,7 +1382,7 @@
      libvideocallframe \
      libvideooptfeature \
      libvideorecovery_vendor \
-@@ -4230,9 +4044,7 @@
+@@ -4214,9 +4033,7 @@
      libvideotxr \
      libvideoutils \
      libvmfilexfer \
@@ -1407,7 +1393,7 @@
      libvppclient \
      libvppcommon \
      libvpphcp \
-@@ -4241,8 +4053,8 @@
+@@ -4225,8 +4042,8 @@
      libvpplibrary \
      libvpptestutils \
      libvui_dmgr_client \
@@ -1418,7 +1404,7 @@
      libwfdcodecv4l2_proprietary \
      libwfdcommonutils_proprietary \
      libwfdconfigutils_proprietary \
-@@ -4263,13 +4075,13 @@
+@@ -4247,13 +4064,13 @@
      libwfduibcsrc_vendor \
      libwfduibcsrcinterface_vendor \
      libwfdutils_proprietary \
@@ -1437,7 +1423,7 @@
      libwqe \
      libxiaomi_hydra \
      libxiaomi_mutils \
-@@ -4278,7 +4090,7 @@
+@@ -4262,7 +4079,7 @@
      libxiaomi_qmi \
      libxlog \
      libxml \
@@ -1446,7 +1432,7 @@
      libxpan_wifi_hal \
      libxrcommconnection \
      libxrcommcoreutils \
-@@ -4290,7 +4102,7 @@
+@@ -4274,7 +4091,7 @@
      libxrcommtimerservice_client \
      libxrcommtrafficshaperservice_client \
      libxtadapter \
@@ -1455,7 +1441,7 @@
      libclearkeycasplugin \
      libdrmclearkeyplugin \
      qcrilInterfaces \
-@@ -4315,7 +4127,7 @@
+@@ -4299,7 +4116,7 @@
      qcril_client \
      qcrild_libqcrilnr \
      qcrild_libqcrilnrutils \
@@ -1464,7 +1450,7 @@
      qti.video.utils.videobufferlayout \
      qtiPeripheralMgr \
      qtiril-utils \
-@@ -4341,35 +4153,35 @@
+@@ -4325,35 +4142,35 @@
      libvpt_action_recognition \
      libworker_pool \
      sensors.qsh \
@@ -1511,7 +1497,7 @@
      vendor.display.color@1.0 \
      vendor.display.color@1.1 \
      vendor.display.color@1.2 \
-@@ -4378,19 +4190,19 @@
+@@ -4362,19 +4179,19 @@
      vendor.display.color@1.5 \
      vendor.display.color@1.6 \
      vendor.display.color@1.7 \
@@ -1544,7 +1530,7 @@
      vendor.display.postproc@1.0 \
      vendor.dolby.dms-V1-ndk_warsaw_vendor \
      vendor.dolby.hardware.dms@2.0 \
-@@ -4408,20 +4220,20 @@
+@@ -4392,20 +4209,20 @@
      vendor.qti.diaghal-V1-ndk_warsaw_vendor \
      vendor.qti.esepowermanager@1.0 \
      vendor.qti.hardware.ListenSoundModelAidl-V1-ndk_warsaw_vendor \
@@ -1574,7 +1560,7 @@
      vendor.qti.hardware.capabilityconfigstore-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.data.cneaidlservice.internal.api-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.data.cneaidlservice.internal.constants-V1-ndk_warsaw_vendor \
-@@ -4435,40 +4247,40 @@
+@@ -4419,40 +4236,40 @@
      vendor.qti.hardware.data.ka-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.data.lceaidlservice-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.data.qmiaidlservice-V1-ndk_warsaw_vendor \
@@ -1649,7 +1635,7 @@
      vendor.qti.hardware.dpmaidlservice-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.dsp-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.embmsslaidl-V2-ndk_warsaw_vendor \
-@@ -4479,18 +4291,18 @@
+@@ -4463,18 +4280,18 @@
      vendor.qti.hardware.hexlp-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.minkipcbinder-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.mwqemadapteraidlservice-V1-ndk_warsaw_vendor \
@@ -1674,7 +1660,7 @@
      vendor.qti.hardware.qxr-V2-ndk_warsaw_vendor \
      vendor.qti.hardware.radio.am-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.radio.am@1.0 \
-@@ -4539,18 +4351,18 @@
+@@ -4523,18 +4340,18 @@
      vendor.qti.hardware.secureprocessor.config-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.secureprocessor.device-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.sensorscalibrate-V1-ndk_warsaw_vendor \
@@ -1699,7 +1685,7 @@
      vendor.qti.hardware.wifi.wifilearner-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.wifidisplaysession_aidl-V1-ndk_warsaw_vendor \
      vendor.qti.hardware.wifidisplaysessionl@1.0-halimpl \
-@@ -4635,7 +4447,7 @@
+@@ -4619,7 +4436,7 @@
      vendor.xiaomi.modem.qms-V1-ndk_warsaw_vendor \
      vendor.xiaomi.sensor.camera-V1-ndk_warsaw_vendor \
      vendor.xiaomi.sensor.citsensorservice-V1-ndk_warsaw_vendor \
@@ -1708,7 +1694,15 @@
      xiaomi.system.hypsys.common-V1-ndk_warsaw_vendor \
      vendor_lib_rfsa_adsp_activity_napp_header \
      vendor_lib_rfsa_adsp_activity_so \
-@@ -4666,7 +4478,7 @@
+@@ -4635,6 +4452,7 @@
+     vendor_lib_rfsa_adsp_libtracker_6dof_skel_8450_so \
+     vendor_lib_rfsa_adsp_nearby_napp_header \
+     vendor_lib_rfsa_adsp_nearby_so \
++    com.qualcomm.qti.dpm.api@1.0_warsaw_system_ext \
+     lib-imsvideocodec \
+     lib-imsvt \
+     lib-imsvtutils \
+@@ -4649,7 +4467,7 @@
      libmisight_jni \
      libmisuperframe \
      libmivk \
@@ -1717,7 +1711,7 @@
      vendor.qti.ImsRtpService-V2-ndk \
      vendor.qti.ImsVtService-ndk \
      vendor.qti.diaghal@1.0 \
-@@ -4956,9 +4768,9 @@
+@@ -4935,9 +4753,9 @@
      libQnnCpu \
      libQnnGpu \
      libQnnHtp \
@@ -1728,7 +1722,15 @@
      libSNPE \
      libSnpeHtpV79Stub \
      libaachaptics \
-@@ -5129,14 +4941,12 @@
+@@ -5094,6 +4912,7 @@
+     libmicamera_hal_policy \
+     libmicertkey \
+     libmieventnodewatch \
++    libmiface \
+     libminikin.xiaomi \
+     libmiocr \
+     libmiphone_capture_bokeh \
+@@ -5106,14 +4925,12 @@
      libmismartae \
      libmiweaver_empty \
      libmlipay \
@@ -1743,7 +1745,7 @@
      libmpbase \
      libmseccam \
      libmt \
-@@ -5154,9 +4964,6 @@
+@@ -5130,9 +4947,6 @@
      libproj_qmot_tracker \
      libproj_sot \
      libqfdservice \
@@ -1753,7 +1755,7 @@
      libqshcamera \
      librfs_warp \
      librhytheyecare \
-@@ -5267,7 +5074,6 @@
+@@ -5242,7 +5056,6 @@
      com.qualcomm.qti.services.systemhelper \
      ims \
      qcrilmsgtunnel \
@@ -1761,7 +1763,7 @@
      ims-ext-common \
      qti-telephony-hidl-wrapper-prd \
      uimgbalibrary \
-@@ -5324,24 +5130,24 @@
+@@ -5296,24 +5109,24 @@
      hlosminkdaemon \
      hostapd_cli \
      android.hardware.bluetooth@aidl-service-qti \
@@ -1796,7 +1798,7 @@
      audiohalservice.qti \
      hostapd \
      memoryCloudCtrl \
-@@ -5359,7 +5165,7 @@
+@@ -5331,7 +5144,7 @@
      vendor.qti.hardware.display.color-service \
      vendor.qti.hardware.display.composer-service \
      vendor.qti.hardware.display.demura-service \
@@ -1805,7 +1807,7 @@
      vendor.qti.hardware.minkipcbinder@1.0-service \
      vendor.qti.hardware.perf2-hal-service \
      vendor.qti.hardware.qseecom@1.0-service \
-@@ -5387,7 +5193,7 @@
+@@ -5359,7 +5172,7 @@
      vendor.xiaomi.hardware.uniperf-service \
      vendor.xiaomi.hardware.videoservice-service \
      vendor.xiaomi.modem.qms@1.0-service \
@@ -1814,7 +1816,7 @@
      hypsys_vendor \
      ims-dataservice-daemon \
      ims_rtp_daemon \
-@@ -5429,7 +5235,7 @@
+@@ -5401,7 +5214,7 @@
      init.qti.write \
      init.qvrd.usb_mtu_set \
      init.xiaomi.modem \
@@ -1823,7 +1825,7 @@
      ipacm-diag \
      iperf3.zc \
      irsc_util \
-@@ -5483,7 +5289,7 @@
+@@ -5454,7 +5267,7 @@
      ssr_diag \
      ssr_setup \
      subsystem_ramdump \
@@ -1832,7 +1834,7 @@
      tftp_server \
      thermal-engine-v2 \
      time_daemon \
-@@ -5493,7 +5299,7 @@
+@@ -5464,7 +5277,7 @@
      ufs_utils \
      vendor.dpmd \
      vendor.qti.diag \
@@ -1841,7 +1843,7 @@
      vendor.qti.qspmhal-service \
      vendor.qti.syshealthmon-service \
      vendor_modprobe \
-@@ -5560,3 +5366,296 @@
+@@ -5531,3 +5344,296 @@
  
  PRODUCT_PACKAGES += \
      vendor_lib64_soundfx_libmisoundfx_aidl_so

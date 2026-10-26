@@ -1,0 +1,3 @@
+# Publish the legacy framework radio property from the system init domain.
+on property:ro.vendor.oem.ctacode=*
+    setprop ro.ril.oem.ctacode ${ro.vendor.oem.ctacode}

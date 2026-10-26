@@ -1,0 +1,355 @@
+diff --git a/KeyUtil.cpp b/KeyUtil.cpp
+index 805776c95fdb05a91ac288f48667662a23295f46..4cccb784bea820f5d714b9d3b2165e8343d552ee 100644
+--- a/KeyUtil.cpp
++++ b/KeyUtil.cpp
+@@ -26,6 +26,7 @@
+ #include <linux/fscrypt.h>
+ #include <openssl/sha.h>
+ #include <sys/ioctl.h>
++#include <sys/stat.h>
+ 
+ #include <android-base/file.h>
+ #include <android-base/logging.h>
+@@ -443,10 +444,20 @@ bool evictKey(const std::string& mountpoint, const EncryptionPolicy& policy) {
+ bool retrieveOrGenerateKey(const std::string& key_path, const std::string& tmp_path,
+                            const KeyAuthentication& key_authentication, const KeyGeneration& gen,
+                            KeyBuffer* key) {
+-    if (pathExists(key_path)) {
++    struct stat st {};
++    const int key_status = lstat(key_path.c_str(), &st);
++    if (key_status == 0) {
++        if (!S_ISDIR(st.st_mode)) {
++            LOG(ERROR) << "Key path is not a directory: " << key_path;
++            return false;
++        }
+         LOG(DEBUG) << "Key exists, using: " << key_path;
+         if (!retrieveKey(key_path, key_authentication, key)) return false;
+     } else {
++        if (errno != ENOENT) {
++            PLOG(ERROR) << "Cannot inspect key directory " << key_path;
++            return false;
++        }
+         if (!gen.allow_gen) {
+             LOG(ERROR) << "No key found in " << key_path;
+             return false;
+diff --git a/Keystore.cpp b/Keystore.cpp
+index fd8a887c60f4c651d52d9223e0367c1d1b9d18d8..da9ba1bec4c904b26b4c0a2205ff94c229c2ac55 100644
+--- a/Keystore.cpp
++++ b/Keystore.cpp
+@@ -98,7 +98,10 @@ bool KeystoreOperation::finish(std::string* output) {
+         return false;
+     }
+ 
+-    if (output) *output = std::string(out_vec->begin(), out_vec->end());
++    if (output) {
++        output->clear();
++        if (out_vec) output->assign(out_vec->begin(), out_vec->end());
++    }
+ 
+     return true;
+ }
+@@ -223,30 +226,30 @@ KeystoreOperation Keystore::begin(const std::string& key, const km::Authorizatio
+     return KeystoreOperation(cor.iOperation, cor.upgradedBlob);
+ }
+ 
+-void Keystore::earlyBootEnded() {
++bool Keystore::earlyBootEnded() {
+     ::ndk::SpAIBinder binder(AServiceManager_waitForService(maintenance_service_name));
+     auto maint_service = ks2_maint::IKeystoreMaintenance::fromBinder(binder);
+ 
+     if (!maint_service) {
+         LOG(ERROR) << "Unable to connect to keystore2 maintenance service for earlyBootEnded";
+-        return;
++        return false;
+     }
+ 
+     auto rc = maint_service->earlyBootEnded();
+-    logKeystore2ExceptionIfPresent(rc, "earlyBootEnded");
++    return !logKeystore2ExceptionIfPresent(rc, "earlyBootEnded");
+ }
+ 
+-void Keystore::deleteAllKeys() {
++bool Keystore::deleteAllKeys() {
+     ::ndk::SpAIBinder binder(AServiceManager_waitForService(maintenance_service_name));
+     auto maint_service = ks2_maint::IKeystoreMaintenance::fromBinder(binder);
+ 
+     if (!maint_service) {
+         LOG(ERROR) << "Unable to connect to keystore2 maintenance service for deleteAllKeys";
+-        return;
++        return false;
+     }
+ 
+     auto rc = maint_service->deleteAllKeys();
+-    logKeystore2ExceptionIfPresent(rc, "deleteAllKeys");
++    return !logKeystore2ExceptionIfPresent(rc, "deleteAllKeys");
+ }
+ 
+ }  // namespace vold
+diff --git a/Keystore.h b/Keystore.h
+index 9850f91c7398f178e9aacd70d190e9d9875324b8..1c75651fc6fc1f56843c27e43cf892b02c2a6b45 100644
+--- a/Keystore.h
++++ b/Keystore.h
+@@ -126,10 +126,10 @@ class Keystore {
+ 
+     // Tell all Keymint devices that early boot has ended and early boot-only keys can no longer
+     // be created or used.
+-    static void earlyBootEnded();
++    [[nodiscard]] static bool earlyBootEnded();
+ 
+     // Tell all Keymint devices to delete all rollback-protected keys.
+-    static void deleteAllKeys();
++    [[nodiscard]] static bool deleteAllKeys();
+ 
+   private:
+     std::shared_ptr<ks2::IKeystoreSecurityLevel> securityLevel;
+diff --git a/MetadataCrypt.cpp b/MetadataCrypt.cpp
+index e435d7da7ad735ee27d1784aa34a55fd90318b73..7e60fad9a609d82b0f3ce2b3020a1818391db47e 100644
+--- a/MetadataCrypt.cpp
++++ b/MetadataCrypt.cpp
+@@ -130,13 +130,27 @@ static bool read_key(const std::string& metadata_key_dir, const KeyGeneration& g
+     LOG(DEBUG) << "metadata_key_dir/key: " << dir;
+     if (!MkdirsSync(dir, 0700)) return false;
+     auto in_dsu = android::base::GetBoolProperty("ro.gsid.image_running", false);
+-    // !pathExists(dir) does not imply there's a factory reset when in DSU mode.
+-    if (!pathExists(dir) && !in_dsu && first_key) {
++    // An inaccessible key directory is not evidence of a factory reset.
++    struct stat st {};
++    const int key_status = lstat(dir.c_str(), &st);
++    if (key_status != 0 && errno != ENOENT) {
++        PLOG(ERROR) << "Cannot inspect metadata key directory " << dir;
++        return false;
++    }
++    if (key_status == 0 && !S_ISDIR(st.st_mode)) {
++        LOG(ERROR) << "Metadata key path is not a directory: " << dir;
++        return false;
++    }
++    // Only a new key on the primary system can require hardware key cleanup.
++    if (key_status != 0 && gen.allow_gen && !in_dsu && first_key) {
+         auto delete_all = android::base::GetBoolProperty(
+                 "ro.crypto.metadata_init_delete_all_keys.enabled", false);
+         if (delete_all) {
+             LOG(INFO) << "Metadata key does not exist, calling deleteAllKeys";
+-            Keystore::deleteAllKeys();
++            if (!Keystore::deleteAllKeys()) {
++                LOG(ERROR) << "Hardware key cleanup failed; refusing to create metadata key";
++                return false;
++            }
+         } else {
+             LOG(DEBUG) << "Metadata key does not exist but "
+                           "ro.crypto.metadata_init_delete_all_keys.enabled is false";
+diff --git a/VoldNativeService.cpp b/VoldNativeService.cpp
+index 595092688c2886751f70c7c2b8ae40ce47dfcc76..20d54ba2e7c1bfdd20ddd0fa89b86ae54690a3f7 100644
+--- a/VoldNativeService.cpp
++++ b/VoldNativeService.cpp
+@@ -865,8 +865,8 @@ binder::Status VoldNativeService::earlyBootEnded() {
+     ACQUIRE_LOCK;
+ 
+     initializeIncFs();
+-    Keystore::earlyBootEnded();
+-    return Ok();
++    // Report KeyMint rejection or a failed Keystore connection to vdc/init.
++    return translate(Keystore::earlyBootEnded() ? 0 : -EIO);
+ }
+ 
+ binder::Status VoldNativeService::incFsEnabled(bool* _aidl_return) {
+diff --git a/model/VolumeBase.cpp b/model/VolumeBase.cpp
+index e20a049..f4e0982 100644
+--- a/model/VolumeBase.cpp
++++ b/model/VolumeBase.cpp
+@@ -202,21 +202,30 @@ status_t VolumeBase::doCreate() {
+ status_t VolumeBase::destroy() {
+     CHECK(mCreated);
+ 
++    status_t res = OK;
+     if (mState == State::kMounted) {
+-        unmount();
++        res = unmount();
+         setState(State::kBadRemoval);
+     } else {
+         setState(State::kRemoved);
+     }
+ 
++    // Physical removal consumes this volume even if unmounting failed. Unlike
++    // unmount(), destroy() cannot retain live children for a future retry.
++    for (const auto& vol : mVolumes) {
++        status_t childRes = vol->destroy();
++        if (res == OK) res = childRes;
++    }
++    mVolumes.clear();
++
+     auto listener = getListener();
+     if (listener) {
+         listener->onVolumeDestroyed(getId());
+     }
+ 
+-    status_t res = doDestroy();
++    status_t destroyRes = doDestroy();
+     mCreated = false;
+-    return res;
++    return res == OK ? destroyRes : res;
+ }
+ 
+ status_t VolumeBase::doDestroy() {
+@@ -248,21 +257,38 @@ status_t VolumeBase::unmount() {
+     }
+ 
+     setState(State::kEjecting);
+-    for (const auto& vol : mVolumes) {
+-        if (vol->destroy()) {
++    while (!mVolumes.empty()) {
++        auto vol = mVolumes.front();
++        // A failed child unmount must not tear down the backing volume. Keep
++        // that child and all remaining children available for a later retry.
++        if (vol->getState() == State::kMounted) {
++            status_t res = vol->unmount();
++            if (res != OK) {
++                setState(State::kMounted);
++                return res;
++            }
++        }
++        status_t res = vol->destroy();
++        // destroy() consumes the created state even when doDestroy() fails.
++        mVolumes.pop_front();
++        if (res != OK) {
+             LOG(WARNING) << getId() << " failed to destroy " << vol->getId() << " stacked above";
++            setState(State::kMounted);
++            return res;
+         }
+     }
+-    mVolumes.clear();
+ 
+     status_t res = doUnmount();
+-    setState(State::kUnmounted);
++    setState(res == OK ? State::kUnmounted : State::kMounted);
+     return res;
+ }
+ 
+ status_t VolumeBase::format(const std::string& fsType) {
+     if (mState == State::kMounted) {
+-        unmount();
++        status_t res = unmount();
++        if (res != OK) {
++            return res;
++        }
+     }
+ 
+     if ((mState != State::kUnmounted) && (mState != State::kUnmountable)) {
+diff --git a/model/PrivateVolume.cpp b/model/PrivateVolume.cpp
+index 1a51ec7..aaf6bb7 100644
+--- a/model/PrivateVolume.cpp
++++ b/model/PrivateVolume.cpp
+@@ -226,7 +226,10 @@ void PrivateVolume::doPostMount() {
+ }
+ 
+ status_t PrivateVolume::doUnmount() {
+-    ForceUnmount(mPath);
++    status_t res = ForceUnmount(mPath);
++    if (res != OK) {
++        return res;
++    }
+ 
+     if (TEMP_FAILURE_RETRY(rmdir(mPath.c_str()))) {
+         PLOG(ERROR) << getId() << " failed to rmdir mount point " << mPath;
+diff --git a/model/PublicVolume.cpp b/model/PublicVolume.cpp
+index bf7aaa6..482c4b6 100644
+--- a/model/PublicVolume.cpp
++++ b/model/PublicVolume.cpp
+@@ -376,7 +376,10 @@ status_t PublicVolume::doUnmount() {
+                 bind_mount_paths.push_back(mountPath);
+             } else {
+                 LOG(INFO) << "Removing Public Volume Bind Mount for: " << started_user;
+-                ForceUnmount(mountPath);
++                status_t result = ForceUnmount(mountPath);
++                if (result != OK) {
++                    return result;
++                }
+                 rmdir(mountPath.c_str());
+             }
+         }
+@@ -389,9 +392,10 @@ status_t PublicVolume::doUnmount() {
+                 return result;
+             }
+         } else {
+-            if (UnmountUserFuse(getMountUserId(), getInternalPath(), stableName) != OK) {
+-                PLOG(INFO) << "UnmountUserFuse failed on public fuse volume";
+-                return -errno;
++            status_t result = UnmountUserFuse(getMountUserId(), getInternalPath(), stableName);
++            if (result != OK) {
++                LOG(INFO) << "UnmountUserFuse failed on public fuse volume: " << result;
++                return result;
+             }
+         }
+ 
+@@ -399,13 +403,20 @@ status_t PublicVolume::doUnmount() {
+         mFuseMounted = false;
+     }
+ 
+-    ForceUnmount(kAsecPath);
++    if (getMountFlags() & MountFlags::kPrimary) {
++        status_t result = ForceUnmount(kAsecPath);
++        if (result != OK) {
++            return result;
++        }
++    }
+ 
+     if (mUseSdcardFs) {
+-        ForceUnmount(mSdcardFsDefault);
+-        ForceUnmount(mSdcardFsRead);
+-        ForceUnmount(mSdcardFsWrite);
+-        ForceUnmount(mSdcardFsFull);
++        for (const auto& path : {mSdcardFsDefault, mSdcardFsRead, mSdcardFsWrite, mSdcardFsFull}) {
++            status_t result = ForceUnmount(path);
++            if (result != OK) {
++                return result;
++            }
++        }
+ 
+         rmdir(mSdcardFsDefault.c_str());
+         rmdir(mSdcardFsRead.c_str());
+@@ -418,9 +429,13 @@ status_t PublicVolume::doUnmount() {
+         mSdcardFsFull.clear();
+     }
+ 
+-    if (ForceUnmount(mRawPath) != 0){
+-        umount2(mRawPath.c_str(),MNT_DETACH);
+-        PLOG(INFO) << "use umount lazy if force unmount fail";
++    if (ForceUnmount(mRawPath) != OK) {
++        if (umount2(mRawPath.c_str(), UMOUNT_NOFOLLOW | MNT_DETACH) != 0 &&
++            errno != EINVAL && errno != ENOENT) {
++            const int error = errno;
++            PLOG(ERROR) << "Failed to detach " << mRawPath;
++            return -error;
++        }
+     }
+     if(rmdir(mRawPath.c_str()) != 0) {
+         PLOG(INFO) << "rmdir mRawPath=" << mRawPath << " fail";
+diff --git a/model/EmulatedVolume.cpp b/model/EmulatedVolume.cpp
+index 2df35cb..b61e8bc 100644
+--- a/model/EmulatedVolume.cpp
++++ b/model/EmulatedVolume.cpp
+@@ -549,9 +549,10 @@ status_t EmulatedVolume::doUnmount() {
+                 return result;
+             }
+         } else {
+-            if (UnmountUserFuse(userId, getInternalPath(), label) != OK) {
+-                PLOG(INFO) << "UnmountUserFuse failed on emulated fuse volume";
+-                return -errno;
++            status_t result = UnmountUserFuse(userId, getInternalPath(), label);
++            if (result != OK) {
++                LOG(INFO) << "UnmountUserFuse failed on emulated fuse volume: " << result;
++                return result;
+             }
+         }
+ 
+diff --git a/Utils.cpp b/Utils.cpp
+index 99586fc..dce1cce 100644
+--- a/Utils.cpp
++++ b/Utils.cpp
+@@ -1713,6 +1713,7 @@ status_t UnmountUserFuse(userid_t user_id, const std::string& absolute_lower_pat
+     auto status = ForceUnmount(pass_through_path);
+     if (status != android::OK) {
+         LOG(ERROR) << "Failed to unmount " << pass_through_path;
++        return status;
+     }
+     rmdir(pass_through_path.c_str());
+ 

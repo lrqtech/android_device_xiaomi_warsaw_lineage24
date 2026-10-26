@@ -54,7 +54,6 @@ allow vendor_wcnss_service proc_net:file { getattr };
 
 allow vendor_wcnss_service vendor_sysfs_data:file { ioctl read getattr lock map open watch watch_reads };
 
-allow vendor_wcnss_service vendor_wigignpt_socket:sock_file { write };
 
 allow vendor_wcnss_service self:capability { net_admin };
 

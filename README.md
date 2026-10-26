@@ -8,9 +8,9 @@ Device configuration for unofficial LineageOS 24.0 (Android 17).
 | Platform | Qualcomm SM8750 / sun |
 | Firmware baseline | OS4.0.0.15.XHPCNXM |
 | Kernel | 6.6.118, 4 KiB pages, KUnit disabled |
-| SELinux | Permissive in normal boot and recovery |
+| SELinux | Enforcing by default in normal boot and recovery |
 
-## Sources
+## Sources and build
 
 | Repository | Checkout path |
 | --- | --- |
@@ -18,45 +18,59 @@ Device configuration for unofficial LineageOS 24.0 (Android 17).
 | [Vendor](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24) | `vendor/xiaomi/warsaw` |
 | [Kernel](https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24) | `common` in a separate Kleaf workspace |
 
-The three repositories use `lineage-24.0`. The `warsaw-20261024` tag identifies
-this source set; `warsaw-20261015` preserves the earlier publication.
+Use the `warsaw-20261027` tag in all three repositories. Development continues
+on `lineage-24.0`; older tags preserve their original source sets.
 
-## Build
+Follow [BUILD.md](docs/BUILD.md) to sync the pinned platform, retrieve vendor LFS
+objects, and apply the 36 companion patches. Keep dependency, neverallow,
+Treble labeling and Soong checks enabled.
 
-Follow [BUILD.md](docs/BUILD.md) to sync the pinned platform, retrieve the vendor
-LFS files, and apply the 33 companion patches. Then run:
+Manual fan controls are integrated into Settings, before Apps on the homepage.
+The unused OEM fan service and the excluded call-audio, gaming-display and
+gesture settings components are removed.
 
-```sh
-source build/envsetup.sh
-lunch lineage_warsaw-cp2a-userdebug
-m --no-skip-soong-tests bacon
-```
+## Vega / SenseTime
 
-The patch series includes the current recovery mount and sideload fixes,
-fastboot cleanup checks, startup ordering, and SELinux label repairs.
-Neverallow, ELF dependency, Treble labeling, and Soong checks remain enabled.
+The vendor baseline excludes the Vega/SenseTime libraries, their Mi FD and ECD
+consumers, face ROI encoder filter, models, and portrait-repair plugin. The
+associated facial attributes, closed-eye frame selection, ROI processing and
+portrait restoration are disabled. The camera selector uses the retained Qti FD
+node. Its descriptor and callback ABI were checked before changing the selection.
 
-The product retains fan controls. The optional call-audio, gaming-display, and
-gesture settings screens remain excluded.
+The two retained-library adaptations are reproducible with exact-hash scripts;
+the anchor plugin cannot re-enable ECD through a saved property. The original
+Qti FD library, sensor selection, crop and AWB configuration are preserved.
+See [proprietary files](docs/proprietary-files.md) and the vendor
+[difference list](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24/blob/warsaw-20261027/docs/DIFFERENCES.md).
+Camera image quality and codec behavior still require device testing.
 
 ## Vendor tools
 
 ```sh
 device/xiaomi/warsaw/setup-makefiles.py --check
 device/xiaomi/warsaw/extract-files.py --check /path/to/prepared/vendor/warsaw
+python3 device/xiaomi/warsaw/extract/tests/test_prepared_inputs.py
 ```
 
-These tools verify the 5,589 prepared userspace files and reproduce the vendor
-build definitions. Raw OTA and running-device extraction are not yet supported.
-See [proprietary files](docs/proprietary-files.md) and
-[source dependencies](docs/dependencies.md).
+The tools verify 5,559 prepared userspace inputs and reproduce 2,265 Blueprint
+modules. SHA256 pins, inline SHA1 pins, and retirement checks reject mismatched
+inputs and obsolete startup components. Raw OTA and running-device extraction
+remain unsupported. See [dependencies](docs/dependencies.md).
 
-## Status
+## Validation and known limits
 
-A clean userdebug build and host image checks completed on October 24, 2026.
-The subsequent tree cleanup passed a full Soong/Make configuration build.
-Physical-device boot, recovery, and hardware acceptance remain outstanding.
-SELinux is intentionally permissive during bring-up; see [STATUS.md](docs/STATUS.md).
+The October 27 source review checks normal and recovery SELinux policies for
+both `user` and `userdebug`, split-policy mappings, init declarations, module
+dependencies, and the Settings fan path. It also removes obsolete service
+definitions and debug triggers that stopped thermal control or changed modem
+log permissions to 777. See [SELinux and startup review](docs/SELINUX_AUDIT.md).
 
-Source origins and license scope are recorded in [PROVENANCE.md](docs/PROVENANCE.md)
-and [NOTICE](NOTICE). Existing per-file licenses and copyright notices apply.
+The last complete Android build is from October 24. Later source repairs have
+host verification only and are not included in those images. Current enforcing
+boot, recovery, updates and hardware behavior have not been qualified on a phone.
+Reported original-camera crop/AWB and IR appliance response remain unconfirmed.
+
+This tree is not ready for official admission. Installed-system extraction,
+remaining blob provenance, feasible OEM module source coverage and hardware
+acceptance are recorded in [OFFICIAL_SUPPORT.txt](docs/OFFICIAL_SUPPORT.txt).
+See [STATUS.md](docs/STATUS.md), [PROVENANCE.md](docs/PROVENANCE.md) and [NOTICE](NOTICE).

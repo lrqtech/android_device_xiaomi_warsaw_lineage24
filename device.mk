@@ -96,3 +96,12 @@ $(call inherit-product, vendor/xiaomi/warsaw/warsaw-vendor.mk)
 # Apply the NFC data labels through the system init domain, including existing data.
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/rootdir/etc/init.warsaw.nfc.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.warsaw.nfc.rc
+
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/rootdir/etc/init.warsaw.telephony.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.warsaw.telephony.rc
+
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/rootdir/etc/init.warsaw.vendor-data.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.warsaw.vendor-data.rc
+
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/rootdir/etc/init.warsaw.storage.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.warsaw.storage.rc

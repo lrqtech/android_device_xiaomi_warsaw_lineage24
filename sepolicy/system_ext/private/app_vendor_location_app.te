@@ -43,3 +43,6 @@ allow vendor_location_app cgroup:file { ioctl read write getattr lock append map
 allow vendor_location_app vendor_seempdw_socket:sock_file { write };
 
 type_transition vendor_location_app tmpfs:file appdomain_tmpfs;
+
+# Read the exact vendor XTRA flag, not the general vendor system-property area.
+get_prop(vendor_location_app, vendor_warsaw_xtra_config_prop)

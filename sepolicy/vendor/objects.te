@@ -370,7 +370,6 @@ type vendor_display_vendor_data_file, data_file_type, file_type;
 
 type vendor_qvirtmgr_exec, exec_type, file_type, system_file_type;
 
-type vendor_qvirtmgr_prop, property_type, system_property_type, system_restricted_property_type;
 
 
 type vendor_vm_qti_data_file, core_data_file_type, data_file_type, file_type, mlstrustedobject;
@@ -783,7 +782,6 @@ type vendor_ipacm-diag_prop, property_type, vendor_internal_property_type, vendo
 
 type vendor_ipacm_prop, property_type, vendor_internal_property_type, vendor_property_type;
 
-type vendor_msm_irqbalance_prop, property_type, vendor_internal_property_type, vendor_property_type;
 
 type vendor_dataqti_prop, property_type, vendor_internal_property_type, vendor_property_type;
 
@@ -811,7 +809,6 @@ type vendor_sysfs_usbpd_device, fs_type, sysfs_type;
 
 type vendor_sysfs_msm_power, fs_type, sysfs_type;
 
-type vendor_msm_irqbalanced_exec, exec_type, file_type, vendor_file_type;
 
 type vendor_wifi_prop, property_type, vendor_internal_property_type, vendor_property_type;
 
@@ -1241,7 +1238,6 @@ type vendor_vpp_data_file, data_file_type, file_type;
 
 type vendor_persist_vpp_file, file_type;
 
-type vendor_wigignpt_socket, file_type;
 
 type vendor_sysfs_max_chipset_log_size, fs_type, sysfs_type;
 
@@ -1698,3 +1694,6 @@ typeattribute hal_visdisplaysrv_service vendor_service;
 type vendor_radio_data_file, data_file_type, file_type;
 
 type hal_mitrustedui_service, hal_service_type, protected_service, service_manager_type;
+
+# The normal UFS LUN used by qseecomd is distinct from the RPMB LUN.
+type vendor_ufs_lun0_bsg_device, dev_type;

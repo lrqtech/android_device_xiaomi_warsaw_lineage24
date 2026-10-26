@@ -1274,6 +1274,6 @@
   </project>
   <contactinfo bugurl="go/repo-bug" />
   <remote name="warsaw-public" fetch="https://github.com/" />
-  <project name="lrqtech/android_device_xiaomi_warsaw_lineage24" path="device/xiaomi/warsaw" remote="warsaw-public" revision="refs/tags/warsaw-20261024" upstream="lineage-24.0" />
-  <project name="lrqtech/android_vendor_xiaomi_warsaw_lineage24" path="vendor/xiaomi/warsaw" remote="warsaw-public" revision="refs/tags/warsaw-20261024" upstream="lineage-24.0" />
+  <project name="lrqtech/android_device_xiaomi_warsaw_lineage24" path="device/xiaomi/warsaw" remote="warsaw-public" revision="refs/tags/warsaw-20261027" upstream="lineage-24.0" />
+  <project name="lrqtech/android_vendor_xiaomi_warsaw_lineage24" path="vendor/xiaomi/warsaw" remote="warsaw-public" revision="refs/tags/warsaw-20261027" upstream="lineage-24.0" />
 </manifest>

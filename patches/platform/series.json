@@ -1,13 +1,13 @@
 {
   "scope": "Companion platform changes for the pinned LineageOS 24.0 manifest. Apply once to the recorded base revisions.",
-  "snapshot_date": "2026-10-24",
+  "snapshot_date": "2026-10-25",
   "projects": [
     {
       "project": "bootable/recovery",
       "base_revision": "37c5d17bec80020b8dbfb0a0d39b4ba93b2b6efd",
       "patch": "bootable__recovery.patch",
-      "sha256": "ef1cbb3e4fd2a5c4929850fed2af8c594e51ebd099aea82b04b121c9557a92f5",
-      "purpose": "Handle mount, FUSE, sideload and wipe failures; retain recovery fan controls and startup ordering."
+      "sha256": "71d5cdf0888d68141683f49beb1ae536ff0ce0b202a4959b6cdc16ca7adf1297",
+      "purpose": "Handle mount, FUSE, sideload and wipe failures; distinguish acknowledged sideload completion from transport errors; retain recovery fan controls and startup ordering."
     },
     {
       "project": "build/make",
@@ -48,15 +48,15 @@
       "project": "frameworks/av",
       "base_revision": "937eb9047ec2f88620f1f6a4d9e407f6c869d91a",
       "patch": "frameworks__av.patch",
-      "sha256": "adf6e1f8f5ed9e26bb9e24975e0323f02aef069eea222bd47039fa1c4bf1a58b",
-      "purpose": "Translate OEM audio values and volume curves, register its existing adapter, and parse 8K time-lapse. Connect the existing CameraMind runtime and authenticated camera session identity."
+      "sha256": "4f15e53c1d3c803f45b0d5010ce52e579d55f19e6992594df9c859ce94673420",
+      "purpose": "Translate OEM audio values and volume curves, register its existing adapter, and parse 8K time-lapse. Connect the existing CameraMind runtime and authenticated camera session identity. Keep camera session identity tags provider-scoped and preserve external providers with empty tag tables. Stamp authenticated client identity into each logical capture request before HAL submission. Cover legacy preview, recording, still and ZSL requests, and propagate recording request setup errors. Preserve capture metadata and propagate identity-write allocation failures. Preserve shared-camera request identity through partial results and failures."
     },
     {
       "project": "frameworks/base",
       "base_revision": "e68d494b340affb257c9bf6e7f3623598926dc65",
       "patch": "frameworks__base.patch",
-      "sha256": "31fecb6d4e53905c9d6a0770c3ae2085f83dac502eb65b067b041838b3684203",
-      "purpose": "Retain existing hardware integration and add device-gated OEM mainland signal thresholds and network icon presentation."
+      "sha256": "5547099fbcf8626487005c797df06ebc9d2ef36b3a020a0f00e64e2d5d5a018b",
+      "purpose": "Retain existing hardware integration and add device-gated OEM mainland signal thresholds and network icon presentation. Capture caller URI permissions outside the window-manager lock for activity starts, photo results and navigation. Recover the infrared HAL connection after service death and hold the transmit wake lock without replaying uncertain transmissions. Keep display callback registration conservative after ambiguous unregister failures. Deduplicate biometric callback tokens, reject dead registrations, serialize registration with death cleanup, and clear uncertain camera haptic gain. Remove obsolete automatic-fan Binder endpoints."
     },
     {
       "project": "frameworks/ex",
@@ -69,8 +69,8 @@
       "project": "frameworks/native",
       "base_revision": "46018f54b42489de960c62c3db9de131abce43ea",
       "patch": "frameworks__native.patch",
-      "sha256": "2ad4b18bf56818181efa3c2a0fa2df5845a66a353fb66d840f0ab80e44144ab7",
-      "purpose": "Connect existing FOD display, camera FPS and frame-rate ownership helpers."
+      "sha256": "a04d3344309060954efc562966a5c89eb2466c65ea590ba5ff5a6e0bf568996a",
+      "purpose": "Connect active FOD display and camera FPS integration; omit the removed display APK's frame-rate lease endpoints."
     },
     {
       "project": "frameworks/opt/telephony",
@@ -164,6 +164,13 @@
       "purpose": "Bound vendor A2DP extension indexes and add regression cases."
     },
     {
+      "project": "packages/modules/Connectivity",
+      "base_revision": "7c04d866538e6f689823b769fb5c1e614ca0e295",
+      "patch": "packages__modules__Connectivity.patch",
+      "sha256": "421b9d956664b8b50455f4d933b25b84d13b5e87364b621d9638318ebc77ae6a",
+      "purpose": "Wait for context-user unlock before the first Certificate Transparency download; invalidate cancelled queued work and serialize dependency setup with teardown."
+    },
+    {
       "project": "packages/modules/Wifi",
       "base_revision": "1fc68a681229619b99999ebd80d048184741644d",
       "patch": "packages__modules__Wifi.patch",
@@ -181,8 +188,8 @@
       "project": "system/core",
       "base_revision": "65d661b1a536701e8b118be4e9728d7b5ca727c9",
       "patch": "system__core.patch",
-      "sha256": "7328179a8b06bdf45ca6763a6e72292963edd0010d042011bb3eaed49ce5e002",
-      "purpose": "Check fastboot metadata cleanup, preserve borrowed mounts, and retain device startup and USB integration."
+      "sha256": "67b6ad6a9a136c7671c8aeaa9b1ef0d9149987079576d98d7064a622bc763dfb",
+      "purpose": "Check startup labels and fastboot cleanup; preserve borrowed mounts and handle snapuserd readiness allocation failures."
     },
     {
       "project": "system/extras",
@@ -206,11 +213,25 @@
       "purpose": "Represent the retained OEM audio HAL private enum values and isolate current camera metadata for the retained face bridge."
     },
     {
+      "project": "system/security",
+      "base_revision": "123cc4af487922618cd99f28d05736e47eba7b00",
+      "patch": "system__security.patch",
+      "sha256": "944ac2637c1ef7509d82e65139e7d64248d9daaf858f6bc7ac7bee166592cc2f",
+      "purpose": "Stop RootOfTrust transfer after failed shared-secret negotiation; retry temporary earlyBootEnded and RootOfTrust transport failures with independent security-level acknowledgements and fresh challenges."
+    },
+    {
       "project": "system/update_engine",
       "base_revision": "b12fb307bb2f96c06370d143e38c3630f14044e0",
       "patch": "system__update_engine.patch",
-      "sha256": "3ee06b389d94809efe3536ded8a72b2139dc1f2126d910b83cad0d6791028e82",
-      "purpose": "Propagate download setup failures and cover the error path with a regression test."
+      "sha256": "cece434359ab6cf2a096ea6ecff15e78fd07d567b83fd78b7a386220f682791e",
+      "purpose": "Propagate download setup failures and cover the error path with a regression test. Propagate final-partition and download writer close failures, including COW finalization without errno."
+    },
+    {
+      "project": "system/vold",
+      "base_revision": "11d8982f824d52e8122c7aa732207ba66b8f23c8",
+      "patch": "system__vold.patch",
+      "sha256": "f8c72212ba652293bf1b8c2ce34c368bf68d58d3470164361d58aa569e12d9d4",
+      "purpose": "Propagate KeyMint maintenance failures, distinguish inaccessible key directories from missing keys, and accept nullable operation output. Preserve failed unmounts for retry, block formatting while mounted, and retain best-effort child teardown on physical removal. Propagate FUSE and raw-volume teardown failures; restrict ASEC teardown to its primary-volume owner."
     },
     {
       "project": "vendor/qcom/opensource/core-utils-vendor",

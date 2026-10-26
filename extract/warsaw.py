@@ -1,3 +1,4 @@
+# SPDX-FileCopyrightText: 2026 The LineageOS Project
 # SPDX-License-Identifier: Apache-2.0
 """Reproduce the prepared Warsaw vendor integration without changing its ABI."""
 
@@ -131,9 +132,53 @@ def blob_files():
 def verify_blobs(root):
     """Prepared inputs include adapted blobs; reject raw, LFS, or partial inputs."""
     root = root.resolve(strict=True)
+    retired = json.loads((DATA / 'retired-camera-inputs.json').read_text())['paths']
+    for rel in retired:
+        path = Path(rel)
+        if path.is_absolute() or '..' in path.parts or not path.parts:
+            raise ValueError('Unsafe retired camera path: ' + rel)
+        if (root / path).exists() or (root / path).is_symlink():
+            raise ValueError('Retired camera input remains in prepared tree: ' + rel)
+    retired_init = json.loads((DATA / 'retired-init-inputs.json').read_text())
+    for rel in retired_init['paths']:
+        path = Path(rel)
+        if path.is_absolute() or '..' in path.parts or not path.parts:
+            raise ValueError('Unsafe retired init path: ' + rel)
+        if (root / path).exists() or (root / path).is_symlink():
+            raise ValueError('Retired init input remains in prepared tree: ' + rel)
+    retired_services = set(retired_init['services'])
+    retired_controls = retired_services | set(retired_init['undefined_control_targets'])
+    forbidden_triggers = set(retired_init['forbidden_property_triggers'])
+    # Check unlisted scripts too: an obsolete init file must not slip through
+    # just because its path is absent from proprietary-files.txt.
+    for path in root.rglob('*'):
+        if path.suffix not in ('.rc', '.sh') or not path.is_file():
+            continue
+        if not path.resolve().is_relative_to(root):
+            raise ValueError('Unsafe prepared script: ' + str(path.relative_to(root)))
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            words = line.strip().split()
+            if not words or words[0].startswith('#'):
+                continue
+            service = words[1] if len(words) > 1 else ''
+            if words[0] == 'service' and service in retired_services:
+                raise ValueError('Retired init service: ' + service)
+            if words[0] in ('start', 'stop', 'restart', 'enable', 'exec_start'):
+                if service.rstrip(';') in retired_controls:
+                    raise ValueError('Retired service control: ' + service)
+            if words[0] == 'on':
+                triggers = {word.removeprefix('property:') for word in words[1:]
+                            if word.startswith('property:')}
+                if triggers & forbidden_triggers:
+                    raise ValueError('Unsafe retired property trigger in '
+                                     + str(path.relative_to(root)) + ':' + str(number))
     expected = {}
     for line in (DATA / 'proprietary.sha256').read_text().splitlines():
         digest_text, rel = line.split('  ', 1)
+        if not re.fullmatch(r'[0-9a-f]{64}', digest_text):
+            raise ValueError('Invalid prepared-input SHA256: ' + rel)
+        if rel in expected:
+            raise ValueError('Repeated prepared-input SHA256 path: ' + rel)
         expected[rel] = digest_text
     files = blob_files()
     if set(expected) != {f.dst for f in files}:
@@ -144,6 +189,18 @@ def verify_blobs(root):
             raise ValueError('Missing or unsafe prepared input: ' + file.dst)
         if sha256(path) != expected[file.dst]:
             raise ValueError('Prepared-input SHA256 mismatch: ' + file.dst)
+        # A two-hash extract-utils entry records the raw and fixed-up inputs.
+        # This importer accepts the prepared output only; it never applies an
+        # implicit raw-OTA fixup or ignores an inline pin.
+        for pin in (file.hash, file.fixup_hash):
+            if pin is not None and not re.fullmatch(r'[0-9a-f]{40}', pin):
+                raise ValueError('Invalid proprietary-files SHA1: ' + file.dst)
+        prepared_pin = file.fixup_hash or file.hash
+        if prepared_pin is not None:
+            with path.open('rb') as stream:
+                actual = hashlib.file_digest(stream, 'sha1').hexdigest()
+            if actual != prepared_pin:
+                raise ValueError('Proprietary-files prepared SHA1 mismatch: ' + file.dst)
     return files
 
 

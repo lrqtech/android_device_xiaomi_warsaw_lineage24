@@ -1,0 +1,15 @@
+# Prepare vendor data labels before main-class services start.
+on post-fs-data
+    mkdir /data/vendor/qmipriod 0770 radio radio
+    restorecon_recursive /data/vendor/qmipriod
+
+    # Preserve the selected OEM directory ownership and migrate existing labels.
+    mkdir /data/vendor/diag 2771 root log
+    restorecon_recursive /data/vendor/diag
+    # Preserve existing contents; init ignores ENOENT and does not follow links.
+    chmod 0660 /data/vendor/diag/sync_info
+
+    # Preserve NFC state; label only the parent and optional stack override.
+    mkdir /data/vendor/nfc 0770 nfc nfc
+    restorecon /data/vendor/nfc
+    restorecon /data/vendor/nfc/libnfc-nci-update.conf

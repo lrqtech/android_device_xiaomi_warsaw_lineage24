@@ -38,3 +38,88 @@ set_prop(vendor_init, vendor_vm_ssrenable_prop)
 set_prop(vendor_init, vendor_qcc_prop)
 set_prop(vendor_init, vendor_mi_ric_prop)
 set_prop(vendor_init, vendor_deviceid_prop)
+
+# Cold-boot evidence from the first installation on Warsaw.
+# fs_mgr mounts these exact firmware and persistent-storage directory types.
+allow init { vendor_firmware_file adsprpcd_file mnt_vendor_file mnt_product_file }:dir mounton;
+allow init { boot_block_device vendor_custom_ab_block_device }:lnk_file relabelto;
+allow init vendor_sysfs_mmc_host:file { open write };
+allow init kmsg_debug_device:chr_file getattr;
+
+# Volume discovery enumerates the mount roots; this grants no data-file access.
+allow vold { mnt_vendor_file mnt_product_file vendor_qmcs_file vendor_spunvm_file }:dir r_dir_perms;
+allow ueventd mnt_vendor_file:dir search;
+
+# Defaults are supplied by the ODM partition at boot.
+set_prop(vendor_init, vendor_camera_prop)
+set_prop(vendor_init, vendor_fp_prop)
+set_prop(vendor_init, vendor_touchfeature_prop)
+get_prop(vendor_init, vendor_sno_prop)
+get_prop(vendor_init, vendor_memory_min_free_kbytes)
+
+# ueventd resets the inherited nice value before handling coldboot events.
+allow ueventd self:capability sys_nice;
+
+# Retained module initializers create a private keyring and schedule kernel
+# workers in the loader's context. Keep key writes on loader-owned objects;
+# built-in trusted keyrings retain their existing kernel label and restrictions.
+allow vendor_modprobe self:key write;
+allow vendor_modprobe self:capability sys_nice;
+allow vendor_modprobe kernel:process setsched;
+userdebug_or_eng(`
+allow vendor_modprobe kmsg_debug_device:chr_file write;
+')
+
+# Service manager calls getInterfaceVersion/hash on the registered AIDL service.
+binder_use(vendor_hal_poweroptservice_qti)
+
+# PERFD selects targets from the read-only SoC parts and monitors thermal config.
+allow vendor_hal_perf_default { vendor_sys_nonsp_comp vendor_sys_sp_comp }:file { read open getattr };
+allow vendor_hal_perf_default thermal_data_file:dir { search open read getattr watch };
+allow vendor_hal_perf_default thermal_data_file:file r_file_perms;
+
+# QTI data services uses the retained AIDL IWLAN instance on each SIM slot.
+# Its existing Binder/callback permissions already cover the rild server.
+allow vendor_hal_iwlanservice_qti_client vendor_hal_iwlan_service:service_manager find;
+
+# USB supply attributes are below the qcom-battery controller directory.
+# Keep its controller files inaccessible to the USB HAL.
+allow vendor_hal_usb_qti vendor_sysfs_qcom_battery:dir search;
+
+# The OEM RIL writes its NV diagnostic snapshot to this one filename. Keep
+# other minidump contents outside the radio daemon's read/write contract.
+type vendor_ril_diag_dir, data_file_type, file_type;
+type vendor_ril_sync_file, data_file_type, file_type;
+allow rild vendor_ril_diag_dir:dir { search add_name };
+allow rild vendor_ril_sync_file:file { create open read write getattr };
+type_transition rild vendor_ril_diag_dir:file vendor_ril_sync_file "sync_info";
+
+# Preserve the existing minidump collectors' access to this relabeled file.
+allow mi_ric vendor_ril_sync_file:file { read getattr setattr open };
+allow { hal_misys_vendor_default hal_dumpstate_impl } vendor_ril_sync_file:file create_file_perms;
+allow hal_misyscore_default vendor_ril_sync_file:file setattr;
+
+# The parent type prevents the named transition from applying to nested dumps.
+allow mi_ric vendor_ril_diag_dir:dir { getattr search };
+allow hal_misys_vendor_default vendor_ril_diag_dir:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+allow hal_dumpstate_impl vendor_ril_diag_dir:dir { ioctl read write getattr lock open watch watch_reads add_name remove_name search };
+allow hal_misyscore_default vendor_ril_diag_dir:dir r_dir_perms;
+
+# NfcConfig probes this HAL-owned, optional override during service startup.
+# Keep its parent and regular file separate from NFC state and debug logs.
+type vendor_nfc_config_dir, data_file_type, file_type;
+type vendor_nfc_config_file, data_file_type, file_type;
+allow nfc vendor_nfc_config_dir:dir search;
+allow nfc vendor_nfc_config_file:file r_file_perms;
+
+# Retain the selected NFC HAL's existing data-directory/file operations.
+allow hal_nfc_default vendor_nfc_config_dir:dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir };
+allow hal_nfc_default vendor_nfc_config_file:file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads };
+type_transition hal_nfc_default vendor_nfc_config_dir:file vendor_nfc_config_file "libnfc-nci-update.conf";
+
+# Keep the scheduler-reset node distinct from the normal migt control device.
+# ueventd owns creation/labeling; the retained init action only sets its mode.
+type vendor_migt_reset_device, dev_type;
+
+# hypsys_vendor's BSPLogProcessor uses libmisight to publish events with O_WRONLY.
+allow hal_misys_vendor_default miev_device:chr_file { open write };

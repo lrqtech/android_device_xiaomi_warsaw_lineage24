@@ -24,7 +24,7 @@ final class WarsawHapticHooks {
             return nativePerform.getAsLong();
         }
         IBinder extension = null;
-        boolean configured = false;
+        boolean mayNeedReset = false;
         try {
             if (!WarsawHapticPatterns.isSupported(effect.getEffectId()) || reason.length() > 2048) return 0;
             int end = reason.indexOf(';', PREFIX.length());
@@ -35,14 +35,15 @@ final class WarsawHapticHooks {
             if (vibrator == null) return 0;
             extension = vibrator.getExtension();
             if (extension == null || !EXT.equals(extension.getInterfaceDescriptor())) return 0;
+            // The setter may take effect even if its Binder reply is lost.
+            mayNeedReset = true;
             amplitude(extension, gain);
-            configured = true;
             return nativePerform.getAsLong();
         } catch (RemoteException | RuntimeException failure) {
             Slog.e("WarsawHaptic", "Camera gain/perform rejected", failure);
             return 0;
         } finally {
-            if (configured) {
+            if (mayNeedReset) {
                 try {
                     amplitude(extension, -1.0f);
                 } catch (RemoteException | RuntimeException failure) {

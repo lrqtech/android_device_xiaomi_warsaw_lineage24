@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "source": "Warsaw OS4.0.0.15.XHPCNXM prepared baseline",
+  "description": "Redirect the six Mi FD selectors to the existing Qti FD node; force the existing anchor ECD bypass; preserve ELF ABI and all other bytes.",
+  "files": [
+    {
+      "path": "odm/lib64/com.qti.chiusecaseselector.so",
+      "input_sha256": "92301da6ecac778b7ea0e373b943edcd757d46c369dd9ea328fc565c64dc197f",
+      "output_sha256": "ad3d182f7ea15a032340013a51159badf6bed35343a53fa52b9062df00075535",
+      "patches": [
+        {
+          "kind": "qti_fd_selection",
+          "offset": 363968,
+          "before": "4ba4000000000000",
+          "after": "0b82000000000000"
+        },
+        {
+          "kind": "qti_fd_selection",
+          "offset": 388152,
+          "before": "4ba4000000000000",
+          "after": "0b82000000000000"
+        },
+        {
+          "kind": "qti_fd_selection",
+          "offset": 1040704,
+          "before": "4ba4000000000000",
+          "after": "0b82000000000000"
+        },
+        {
+          "kind": "qti_fd_selection",
+          "offset": 1050192,
+          "before": "4ba4000000000000",
+          "after": "0b82000000000000"
+        },
+        {
+          "kind": "qti_fd_selection",
+          "offset": 1121584,
+          "before": "4ba4000000000000",
+          "after": "0b82000000000000"
+        },
+        {
+          "kind": "qti_fd_selection",
+          "offset": 1209544,
+          "before": "4ba4000000000000",
+          "after": "0b82000000000000"
+        },
+        {
+          "kind": "retired_loader_string",
+          "offset": 42059,
+          "before": "636f6d2e6d692e6e6f64652e6664",
+          "after": "0000000000000000000000000000"
+        }
+      ],
+      "build_id": {
+        "offset": 776,
+        "before": "6a84d13fb86040921154f0a25593782b",
+        "after": "d832edc4ca647b2a412fe7a37294cd13"
+      }
+    },
+    {
+      "path": "odm/lib64/camera/plugins/com.xiaomi.plugin.anchor.so",
+      "input_sha256": "2338fdb5fbeeb0707522f718688720c6e09b9209fc03d546f96312c02635975a",
+      "output_sha256": "84415ac46aeec13ef4339ea981f7612836904f6247e2e0b0cfb53a6860091767",
+      "patches": [
+        {
+          "kind": "force_existing_ecd_bypass",
+          "va": "0x184a0",
+          "offset": 99488,
+          "before": "e6900094",
+          "after": "20008052"
+        }
+      ],
+      "build_id": {
+        "offset": 776,
+        "before": "776f4e9bedd615b97986b970959fc829",
+        "after": "837de67c9880a91bec15bc212a1d3745"
+      }
+    }
+  ]
+}

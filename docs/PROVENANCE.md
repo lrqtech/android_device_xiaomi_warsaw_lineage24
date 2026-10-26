@@ -10,9 +10,9 @@ build `17OS4.0.260920.220420124.QCPECN.S`.
 | Google Android common kernel | `c4127a25dcf3c8923daffa62632816f6acf0e135` |
 
 The public device and vendor histories include the subsequent integration and
-boot repairs. The `warsaw-20261024` tags identify the coordinated publication.
+boot repairs. The `warsaw-20261027` tags identify the coordinated publication.
 [lineage-24.0-pinned.xml](lineage-24.0-pinned.xml) records the platform revisions;
-[series.json](../patches/platform/series.json) records all 33 companion patches,
+[series.json](../patches/platform/series.json) records all 36 companion patches,
 their base commits, and SHA-256 hashes.
 
 The vendor [difference list](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/DIFFERENCES.md)

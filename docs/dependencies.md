@@ -30,12 +30,10 @@ and firmware together. The selected kernel uses 4 KiB pages.
 
 ## Platform patches
 
-The 33 patches cover all modified platform projects in the October 24 source
-checkout, including the later recovery, filesystem, update-engine, and restorecon
-repairs. Cache files are excluded. Each patch was checked against its recorded
+The 36 companion patches cover the modified platform projects, including the
+subsequent recovery, filesystem, update-engine, camera and restorecon repairs. Cache files are excluded. Each patch was checked against its recorded
 base and reverse-checked against the working source.
 
 Use `apply-platform-patches.py` as described in [BUILD.md](BUILD.md), then run
 `patches/check-patches.py` to check the applied state. Source inputs and regression
 tests elsewhere in `patches/` remain available to the build and companion projects.
-The two older audio patches are integration references, not additional steps.

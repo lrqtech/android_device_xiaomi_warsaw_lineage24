@@ -189,3 +189,6 @@ allow vendor_mfp-daemon customized_panic:file { write getattr lock append map op
 allow vendor_mfp-daemon vendor_sysfs_battery_supply:dir { search };
 
 allow vendor_mfp-daemon vendor_sysfs_battery_supply:file { read open };
+
+# The fingerprint daemon reads the touch controller's screen-film state.
+get_prop(vendor_mfp-daemon, vendor_touch_hostprocess_prop)

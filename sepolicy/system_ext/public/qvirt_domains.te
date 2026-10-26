@@ -3,3 +3,6 @@ type vendor_hal_qvirtservice_qti, domain;
 type vendor_hal_qvirtservice_qti_exec, exec_type, file_type, system_file_type;
 
 type vendor_qcrosvm_exec, exec_type, file_type, system_file_type;
+
+# State published by the retained product virtualization service and manager.
+type vendor_qvirtmgr_prop, property_type, system_property_type, system_restricted_property_type;

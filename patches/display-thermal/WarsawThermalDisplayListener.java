@@ -154,6 +154,9 @@ final class WarsawThermalDisplayListener {
         if (current != null && (mSubscribers.isEmpty() || !current.registered
                 || mRefreshRegistration)) {
             try {
+                // A failed reply may still mean the HAL removed the callback. Keep the
+                // token for cleanup, but never reuse it as a confirmed registration.
+                current.registered = false;
                 if (current.mayOwnSlot) wire(current, UNREGISTER);
                 current.mayOwnSlot = false;
                 disconnect(current);

@@ -1,0 +1,108 @@
+{
+  "source_set": "warsaw-20261027",
+  "scope": "Host-only source checks; no Android/kernel build, APK/image/OTA packaging or device execution",
+  "policies": [
+    {
+      "variant": "userdebug",
+      "mode": "system",
+      "sha256": "7f4b14fc054fd642d5ece259f74dc6c14f655f3e88a93e0848fa0cb14dbebfff",
+      "source_files": 972,
+      "permissive_domains": [
+        "su",
+        "backuptool"
+      ],
+      "registered_contracts": 1209,
+      "focused_contracts": 159,
+      "retired_contracts": [
+        {
+          "report": "services/shell-startup/native-operation-checks.json",
+          "index": 136,
+          "target": "vendor_msm_irqbalance_prop",
+          "type_absent": true,
+          "reason": "Executable, service and all shell callers were removed"
+        },
+        {
+          "report": "services/shell-startup/native-operation-checks.json",
+          "index": 137,
+          "target": "vendor_msm_irqbalanced_exec",
+          "type_absent": true,
+          "reason": "Executable, service and all shell callers were removed"
+        }
+      ],
+      "neverallow_enabled": true
+    },
+    {
+      "variant": "userdebug",
+      "mode": "recovery",
+      "sha256": "2f3a41b5dfd507d76be124a7cdb94b5b4defa9712fa214af5dd791123ce7bdb1",
+      "source_files": 961,
+      "permissive_domains": [
+        "recovery",
+        "su",
+        "backuptool"
+      ],
+      "registered_contracts": 375,
+      "focused_contracts": 45,
+      "retired_contracts": [],
+      "neverallow_enabled": true
+    },
+    {
+      "variant": "user",
+      "mode": "system",
+      "sha256": "87ebacb69e11ddac3259dd4d1eedbc28aa7633f1a7d3e97e4a263a08af0fac95",
+      "source_files": 972,
+      "permissive_domains": [],
+      "registered_contracts": 1209,
+      "focused_contracts": 159,
+      "retired_contracts": [
+        {
+          "report": "services/shell-startup/native-operation-checks.json",
+          "index": 136,
+          "target": "vendor_msm_irqbalance_prop",
+          "type_absent": true,
+          "reason": "Executable, service and all shell callers were removed"
+        },
+        {
+          "report": "services/shell-startup/native-operation-checks.json",
+          "index": 137,
+          "target": "vendor_msm_irqbalanced_exec",
+          "type_absent": true,
+          "reason": "Executable, service and all shell callers were removed"
+        }
+      ],
+      "neverallow_enabled": true
+    },
+    {
+      "variant": "user",
+      "mode": "recovery",
+      "sha256": "ff73882b7f62a408452cdbcb1fae174b3ee63b3a31d595842004b3fc9a2c5b8a",
+      "source_files": 961,
+      "permissive_domains": [],
+      "registered_contracts": 375,
+      "focused_contracts": 45,
+      "retired_contracts": [],
+      "neverallow_enabled": true
+    }
+  ],
+  "contexts": {
+    "validation_calls": 22,
+    "upstream_structural_test_runs": 2,
+    "empty_attribute_diagnostic": "isolated_compute_allowed_property_type is declared but has no assigned types in the configured platform policy; upstream tests accept its omission from the compiled policy"
+  },
+  "service_review": {
+    "declarations": 390,
+    "new_entrypoint_issues": 0,
+    "existing_special_cases": 7,
+    "selection": "Recorded product graph reconciled with current RC copy rules; no fresh product-configuration build"
+  },
+  "init_grammar_files": 190,
+  "vintf_assembly_groups": 4,
+  "module_checks": 477,
+  "boot_label_and_ioctl_checks": 70,
+  "fan_host_cases": 23,
+  "extractor_host_cases": 16,
+  "ril_control_cases": 27,
+  "prepared_userspace_inputs": 5559,
+  "blueprint_modules": 2265,
+  "vendor_payload_hashes": 6214
+}

@@ -1,4 +1,6 @@
-# Extracted from OS4.0.0.15.XHPCNXM (Android 17, official OTA).
+# Default source: OS4.0.0.15.XHPCNXM (Android 17, official OTA).
+# Prepared transformations and additional compatibility inputs: docs/proprietary-files.md.
+# Exact prepared-input SHA256 pins: extract/proprietary.sha256.
 odm/bin/audio-factory-test
 odm/bin/fidoca
 odm/bin/hw/android.hardware.gnss-aidl-service-qti
@@ -123,7 +125,6 @@ odm/etc/camera/IntellFocus_saliency.dlc
 odm/etc/camera/IntellFocus_track_backbone.dlc
 odm/etc/camera/IntellFocus_track_head.dlc
 odm/etc/camera/NGT_compressed.bin
-odm/etc/camera/SensePR_scene_configs.json
 odm/etc/camera/af_class_all.dlc
 odm/etc/camera/af_class_human.dlc
 odm/etc/camera/af_classify.dlc
@@ -191,11 +192,7 @@ odm/etc/camera/dualcam_prebokeh_params_pro.json
 odm/etc/camera/dualcam_predepth_params_pro.json
 odm/etc/camera/eclipse.bin
 odm/etc/camera/enhance_motiontuning.xml
-odm/etc/camera/facefocus_models/Vega_Attribute_Face_RGB_qnn2.24.15_int8_3.2.6_arm64.model
-odm/etc/camera/facefocus_models/Vega_Detect.model
-odm/etc/camera/facefocus_models/Vega_Detect_Sculpture.model
 odm/etc/camera/facesr.minn
-odm/etc/camera/facesr_ff_v6.0.25_qcom8750_rQsQ_hd@nb_20250311YuvQnn2.24.19x64Q35.3_20260318.model
 odm/etc/camera/fd.minn
 odm/etc/camera/fs_detect_1st.dlc
 odm/etc/camera/human_det_quant_npu_320.minn
@@ -2474,7 +2471,6 @@ odm/lib64/camera/com.qti.tuned.yanan_sunny_ov08f10_ultra_i.bin
 odm/lib64/camera/com.qti.tuned.yanan_sunny_ov20b40_front_i.bin
 odm/lib64/camera/components/com.arcsoft.node.videobokeh.so
 odm/lib64/camera/components/com.mi.node.aiasd.so
-odm/lib64/camera/components/com.mi.node.fd.so
 odm/lib64/camera/components/com.mi.node.miaihighlight.so
 odm/lib64/camera/components/com.mi.node.mimovie.so
 odm/lib64/camera/components/com.mi.node.mioisverify.so
@@ -2600,7 +2596,6 @@ odm/lib64/camera/plugins/com.xiaomi.plugin.capbokeh.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.capdepth.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.capdepthrefine.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.depurple.so
-odm/lib64/camera/plugins/com.xiaomi.plugin.ecdsnapshotdet.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.edof.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.filter.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.frontbokeh.so
@@ -2630,7 +2625,6 @@ odm/lib64/camera/plugins/com.xiaomi.plugin.offlineyuveis.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.offlineyuvreprocess.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.offlineyuvsplit.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.pixman.so
-odm/lib64/camera/plugins/com.xiaomi.plugin.portraitrepair.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.previewldc.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.remosaic.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.sdsr.so
@@ -2721,7 +2715,6 @@ odm/lib64/com.xiaomi.immunesystem.hook.chi.so
 odm/lib64/com.xiaomi.immunesystem.hook.mivi.so
 odm/lib64/com.xiaomi.immunesystem.hook.mtkhal.so
 odm/lib64/com.xiaomi.messagecenter.so
-odm/lib64/com.xiaomi.plugin.ecdengine.so
 odm/lib64/ese_weaver.so
 odm/lib64/hw/camera.qcom.sm8750.so
 odm/lib64/hw/camera.qcom.so
@@ -2842,7 +2835,6 @@ odm/lib64/libdisplaycount.so
 odm/lib64/libdisplaylog.so
 odm/lib64/libdither.so
 odm/lib64/libdynamicelvss.so
-odm/lib64/libecdpreproc.so
 odm/lib64/libecoengine.so
 odm/lib64/libeyecare.so
 odm/lib64/libfastmessage.so
@@ -2911,7 +2903,6 @@ odm/lib64/libmicamera_hal_core.so
 odm/lib64/libmicamera_hal_policy.so
 odm/lib64/libmicertkey.so
 odm/lib64/libmieventnodewatch.so
-odm/lib64/libmiface.so
 odm/lib64/libminikin.xiaomi.so
 odm/lib64/libmiocr.so
 odm/lib64/libmiphone_capture_bokeh.so
@@ -2942,7 +2933,6 @@ odm/lib64/liboischannel.so
 odm/lib64/libopencv.so
 odm/lib64/libopencv3a.so
 odm/lib64/libpaperMode.so
-odm/lib64/libportrait_repair_qnn.so
 odm/lib64/libpostprocinfo.so
 odm/lib64/libproj_qmot_tracker.so
 odm/lib64/libproj_sot.so
@@ -2968,7 +2958,6 @@ odm/lib64/libtouchreport_alg.so
 odm/lib64/libtouchreport_hal.so
 odm/lib64/libtouchreport_sensor.so
 odm/lib64/libtruetone.so
-odm/lib64/libvega_common.so
 odm/lib64/libvideoml.so
 odm/lib64/libvideomode.so
 odm/lib64/libvsim.so
@@ -3038,7 +3027,6 @@ system_ext/etc/seccomp_policy/qcrosvm.policy
 system_ext/framework/com.xiaomi.hardware.camera.companion-V1.jar
 system_ext/framework/qti-telephony-utils.jar
 system_ext/framework/vendor.qti.imsdatachannel.jar
-system_ext/lib64/com.qualcomm.qti.dpm.api@1.0.so;MODULE_SUFFIX=_warsaw_system_ext
 system_ext/lib64/lib-imsvideocodec.so
 system_ext/lib64/lib-imsvt.so
 system_ext/lib64/lib-imsvtutils.so
@@ -3075,7 +3063,6 @@ vendor/bin/csaudiotransfer_test
 vendor/bin/dcc-script-tuna.sh
 vendor/bin/dcc-script.sh
 vendor/bin/ddr_freq
-vendor/bin/debug-diag
 vendor/bin/diag-router
 vendor/bin/diag_mdlog
 vendor/bin/diagcommd
@@ -3085,8 +3072,6 @@ vendor/bin/drm_sample_app
 vendor/bin/dspservice
 vendor/bin/edgnss-daemon
 vendor/bin/embmsslServer
-vendor/bin/exec-debug-diag.sh
-vendor/bin/fan_service
 vendor/bin/feature_enabler_client
 vendor/bin/ffu
 vendor/bin/hexlpservice
@@ -3219,7 +3204,6 @@ vendor/bin/qseecomd
 vendor/bin/qsh_wifi_test
 vendor/bin/qt-service
 vendor/bin/qti
-vendor/bin/qttestservice
 vendor/bin/qvrcameratest
 vendor/bin/qwesd
 vendor/bin/rmt_storage
@@ -3676,8 +3660,6 @@ vendor/etc/init/cnd.rc
 vendor/etc/init/com.qualcomm.qti.wifidisplayhal@1.0-service.rc
 vendor/etc/init/dcfd.rc
 vendor/etc/init/ddr_freq.rc
-vendor/etc/init/ddr_training.rc
-vendor/etc/init/diagcommd.rc
 vendor/etc/init/dms-service.rc
 vendor/etc/init/dumpstate-xiaomi.rc
 vendor/etc/init/feature_enabler_client.rc
@@ -3692,7 +3674,6 @@ vendor/etc/init/hw/init.qcom.rc
 vendor/etc/init/hw/init.qcom.usb.rc
 vendor/etc/init/hw/init.qti.kernel.rc
 vendor/etc/init/hw/init.qti.kernel.target.rc
-vendor/etc/init/hw/init.qti.ufs.rc
 vendor/etc/init/hw/init.target.rc
 vendor/etc/init/hypsys_vendor.rc
 vendor/etc/init/ims-dataservice-daemon.rc
@@ -3702,13 +3683,11 @@ vendor/etc/init/init.embmssl_server.rc
 vendor/etc/init/init.qccvendor.rc
 vendor/etc/init/init.qlm-service.rc
 vendor/etc/init/init.qti.display_boot.rc;EXTRACT_ONLY
-vendor/etc/init/init.qti.fm.rc
 vendor/etc/init/init.qti.media.rc
 vendor/etc/init/init.time_daemon.rc
 vendor/etc/init/init.vendor.sensors.rc
 vendor/etc/init/init.vendor.wlan.rc
 vendor/etc/init/init.wallpapercolor.rc
-vendor/etc/init/init_fan_service.rc
 vendor/etc/init/init_thermal-engine-v2.rc
 vendor/etc/init/libxiaomi_qcril.rc
 vendor/etc/init/loc-launcher.rc
@@ -3720,17 +3699,14 @@ vendor/etc/init/ozonotify-1.0-service.rc
 vendor/etc/init/poweropt-service.rc
 vendor/etc/init/qcrilNrd.rc
 vendor/etc/init/qdcmss.rc
-vendor/etc/init/qguard.rc
 vendor/etc/init/qms.rc
 vendor/etc/init/qseecomd.rc
-vendor/etc/init/qttestservice.rc
 vendor/etc/init/qvrd_vndr.rc
 vendor/etc/init/qwesd.rc
 vendor/etc/init/slad.rc
 vendor/etc/init/snapdragon_services.rc
 vendor/etc/init/ssgtzd.rc
 vendor/etc/init/sxrd.rc
-vendor/etc/init/trace.debug-sun.rc
 vendor/etc/init/trusteduilistener.rc
 vendor/etc/init/ufs_utils.rc
 vendor/etc/init/vendor.dolby.media.c2-default-service-dax.rc
@@ -3762,7 +3738,6 @@ vendor/etc/init/vendor.qti.hardware.wifi.wifilearner-service.rc
 vendor/etc/init/vendor.qti.media.c2@1.0-service.rc
 vendor/etc/init/vendor.qti.media.c2audio@1.0-service.rc
 vendor/etc/init/vendor.qti.memory.pasrmanager-service.rc
-vendor/etc/init/vendor.qti.psiclient@1.0-service.rc
 vendor/etc/init/vendor.qti.qspa-service.rc;EXTRACT_ONLY
 vendor/etc/init/vendor.qti.qspmhal-service.rc
 vendor/etc/init/vendor.qti.rmt_storage.rc
@@ -4436,7 +4411,6 @@ vendor/lib64/libqcodec2_mockfilter.so
 vendor/lib64/libqcodec2_platform.so
 vendor/lib64/libqcodec2_psfilter.so
 vendor/lib64/libqcodec2_rffilter.so
-vendor/lib64/libqcodec2_roiencfilter.so
 vendor/lib64/libqcodec2_srfilter.so
 vendor/lib64/libqcodec2_streaminteg_filter.so
 vendor/lib64/libqcodec2_utils.so
@@ -4503,7 +4477,6 @@ vendor/lib64/libqtikeymaster4.so
 vendor/lib64/libqtikeymint.so
 vendor/lib64/libqtjsonhelper.so
 vendor/lib64/libqtnodes.so
-vendor/lib64/libqttestservice.so
 vendor/lib64/libqvr_cam_cdsp_driver_stub.so
 vendor/lib64/libqvrcamera_client.qti.so
 vendor/lib64/libqvrcameraplayback.so
@@ -5158,7 +5131,6 @@ vendor/lib64/soundfx/libvisualizeraidl.so;MODULE_SUFFIX=_warsaw_vendor
 vendor/bin/hw/wpa_supplicant;MODULE_SUFFIX=_warsaw_vendor
 vendor/bin/ipacm;MODULE_SUFFIX=_warsaw_vendor
 # Build the running manager with the current libbinder ABI.
-vendor/bin/vndservicemanager;EXTRACT_ONLY
 vendor/lib64/android.frameworks.sensorservice@1.0.so;MODULE_SUFFIX=_warsaw_vendor
 vendor/lib64/android.hardware.audio.common@5.0.so;MODULE_SUFFIX=_warsaw_vendor
 vendor/lib64/android.hardware.biometrics.common.thread.so;MODULE_SUFFIX=_warsaw_vendor
@@ -5604,8 +5576,9 @@ odm/lib64/libqllengine.so
 vendor/framework/androidx.camera.extensions.impl.jar
 
 # Prepared Warsaw compatibility inputs; see docs/proprietary-files.md.
-odm/lib64/libmiface_warsaw_face.so;EXTRACT_ONLY
-system/lib64/vendor.qti.hardware.perf2-V1-ndk.so;EXTRACT_ONLY
-system_ext/lib64/libqti-perfd-client_system.so;EXTRACT_ONLY
-system_ext/priv-app/WarsawCloudSettings/WarsawCloudSettings.apk;EXTRACT_ONLY
-vendor/lib64/libcamera2ndk_warsaw_face.so;EXTRACT_ONLY
+# Source: the matching prepared Warsaw vendor baseline; pins identify prepared bytes.
+odm/lib64/libmiface_warsaw_face.so;EXTRACT_ONLY|582dd9d0d1984ceb442ec1dddb6496c5a96c4dc4
+system/lib64/vendor.qti.hardware.perf2-V1-ndk.so;EXTRACT_ONLY|4db8165f7cd39238efb0604b220b3aa62841b578
+system_ext/lib64/libqti-perfd-client_system.so;EXTRACT_ONLY|87b391d6358b3ed9ff0392095a28c369e5f5405a
+system_ext/priv-app/WarsawCloudSettings/WarsawCloudSettings.apk;EXTRACT_ONLY|e2fabbcb55f4f5e56f5d36d982001b0210fefbae
+vendor/lib64/libcamera2ndk_warsaw_face.so;EXTRACT_ONLY|040b31dd47e5079ef244906f56b60e7e7ebe6317
